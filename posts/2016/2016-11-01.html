@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>《Web 性能权威指南》读书笔记 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/2016-11-01.html" rel="bookmark"
+         title="Permalink to 《Web 性能权威指南》读书笔记">《Web 性能权威指南》读书笔记</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"></p>
+<p>看<a href="https://book.douban.com/subject/25856314/">《Web 性能权威指南》</a>的起因是在看<a href="https://book.douban.com/subject/26869219/">《HTTPS 权威指南》</a>的时候，看到优化相关的，然后就延伸到想看一下这本书。<br>
+这本书，作者提供了免费的<a href="https://hpbn.co/">在线英文版</a>，建议还是看英文的，中文翻译版有些地方略生硬。</p>
+<h2>TCP 优化</h2>
+<p>这部分从协议出发，讲解了优化的要点。  </p>
+<blockquote>
+<p>三次握手带来的延迟使得创建每创建一个新的TCP连接都要付出很大的代价。而这也决定了提高TCP应用性能的关键，在于想办法重用连接。</p>
+</blockquote>
+<p>可以看到重用连接在后续的HTTP 优化都是重点。<br>
+第二章分内容和《HTTPS 权威指南》的9.1 有重合，可以都看下。  </p>
+<h3>把服务器内核升级到最新版本（Linux： 3.2+)</h3>
+<p>新内核能获得更好的性能，例如采用了PRR，比例降速算法。</p>
+<h3>确保cwnd 大小为10；</h3>
+<p>增大拥塞窗口，10表示10个<a href="https://en.wikipedia.org/wiki/Maximum_segment_size">MSS</a>，以太网标准的MSS 是1460。<br>
+前面提到内核升级也可以带来好处，Linux 3.2+ 的内核，cwnd都是默认10。<br>
+<img alt="OS_CWND" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164224.png"><br>
+图片来源：cdnplanet.com</p>
+<p>关于更改initcwnd、查看系统的initcwnd，可以参考:<br>
+<a href="http://www.cdnplanet.com/blog/tune-tcp-initcwnd-for-optimum-performance/">Tuning initcwnd for optimum performance</a>。  </p>
+<p>这一部分可以再看看火丁笔记的<a href="http://huoding.com/2013/11/21/299">《浅谈TCP优化》</a>。</p>
+<h3>禁用空闲后的慢启动</h3>
+<p>主要是存在长连接的时候，要确保把这个给关了。</p>
+<div class="highlight"><pre><span></span><code>sysctl<span class="w"> </span>-w<span class="w"> </span>net.ipv4.tcp_slow_start_after_idle<span class="o">=</span><span class="m">0</span>
+</code></pre></div>
+
+<h3>确保启动窗口缩放</h3>
+<div class="highlight"><pre><span></span><code>sysctl<span class="w"> </span>-w<span class="w"> </span>net.ipv4.tcp_windows_scaling<span class="o">=</span><span class="m">1</span>
+</code></pre></div>
+
+<h3>减少传输冗余数据</h3>
+<p>应用程序注意能少发数据就少发，这在后面的移动设备App优化上也是重点，移动网络的启动更加耗时和耗电。</p>
+<h3>压缩要传输的数据</h3>
+<p>例如web server 开启gzip，对js、css 做压缩。</p>
+<h3>把服务器放到离用户近的地方减少往返的时间</h3>
+<p>部署CDN，一方面边缘节点能够缓存文件，直接返回给用户。如果是需要回源的话，边缘节点如果能和回源保持长连接，这样可以降低用户访问整个耗时，因为用户只需要和边缘节点三次握手，距离近，耗时更短。<br>
+另外在部署HTTPS 的时候，除了TCP握手，还需要TLS握手，如果让边缘节点提供HTTPS，然后以HTTP向后反代，也是一种优化吧。现在CDN 厂商都支持HTTPS了，配置回源的时候选择HTTP 相比HTTPS 会更快，给源站的压力也更小一些，而且在IDC之间，运营商那台恶心的劫持问题应该少很多吧。</p>
+<h3>尽最大可能重用已经建立的TCP 连接</h3>
+<h2>UDP 优化</h2>
+<p>UDP 这部分，在工作中遇到的少，没太多体会。</p>
+<div class="highlight"><pre><span></span><code><span class="nv">Application</span><span class="w"> </span><span class="nv">must</span><span class="w"> </span><span class="nv">tolerate</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">wide</span><span class="w"> </span><span class="nv">range</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">Internet</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="nv">conditions</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">should</span><span class="w"> </span><span class="nv">control</span><span class="w"> </span><span class="nv">rate</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">transmission</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">should</span><span class="w"> </span><span class="nv">perform</span><span class="w"> </span><span class="nv">congestion</span><span class="w"> </span><span class="nv">control</span><span class="w"> </span><span class="nv">over</span><span class="w"> </span><span class="nv">all</span><span class="w"> </span><span class="nv">traffic</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">should</span><span class="w"> </span><span class="nv">use</span><span class="w"> </span><span class="nv">bandwidth</span><span class="w"> </span><span class="nv">similar</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">TCP</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">should</span><span class="w"> </span><span class="nv">back</span><span class="w"> </span><span class="nv">off</span><span class="w"> </span><span class="nv">retransmission</span><span class="w"> </span><span class="nv">counters</span><span class="w"> </span><span class="nv">following</span><span class="w"> </span><span class="nv">loss</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">should</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="k">send</span><span class="w"> </span><span class="nv">datagrams</span><span class="w"> </span><span class="nv">that</span><span class="w"> </span><span class="nv">exceed</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="nv">MTU</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">should</span><span class="w"> </span><span class="nv">handle</span><span class="w"> </span><span class="nv">datagram</span><span class="w"> </span><span class="nv">loss</span>,<span class="w"> </span><span class="nv">duplication</span>,<span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">reordering</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">should</span><span class="w"> </span><span class="nv">be</span><span class="w"> </span><span class="nv">robust</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">delivery</span><span class="w"> </span><span class="nv">delays</span><span class="w"> </span><span class="nv">up</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nv">minutes</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">should</span><span class="w"> </span><span class="nv">enable</span><span class="w"> </span><span class="nv">IPv4</span><span class="w"> </span><span class="nv">UDP</span><span class="w"> </span><span class="nv">checksum</span>,<span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">must</span><span class="w"> </span><span class="nv">enable</span><span class="w"> </span><span class="nv">IPv6</span><span class="w"> </span><span class="nv">checksum</span>.
+<span class="nv">Application</span><span class="w"> </span><span class="nv">may</span><span class="w"> </span><span class="nv">use</span><span class="w"> </span><span class="nv">keepalives</span><span class="w"> </span><span class="nv">when</span><span class="w"> </span><span class="nv">needed</span><span class="w"> </span><span class="ss">(</span><span class="nv">minimum</span><span class="w"> </span><span class="nv">interval</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="nv">seconds</span><span class="ss">)</span>.
+</code></pre></div>
+
+<h2>TLS 优化</h2>
+<p>关于TLS 优化还可以看《HTTPS 权威指南》的9.2：TLS协议优化。<br>
+另外淘宝的这份分析非常不错：<a href="http://velocity.oreilly.com.cn/2015/ppts/lizhenyu.pdf">《淘宝HTTPS探索》</a>  </p>
+<h3>SSL卸载</h3>
+<p>在保证兼容性的情况下，升级到新版的openSSL，可以有更好的性能。<br>
+HPBN的在这一章的建议是用物理机，纯CPU计算卸载，举了Google和Facebook为例。不过如果是使用的云服务的话，部分云厂商在负载均衡上都提供了SSL卸载的功能，不过感觉对ALPN这些协议的支持不知如何，所以还没试用过。云服务虚机+Nginx 来做卸载还是有少许压力的，高峰期的时候。Intel之类的硬件，甚至F5 这种，感觉成本有点高，不过性能确实非常好，如果有条件的话，可以上这类设备。不过使用了这些设备之后，算法升级、调优的自由度可能就不大了，需要综合考虑。  </p>
+<p>为了降低压力，可以对加密套件的选择进行优化，参考《HTTPS权威指南》一书的测试结果：<br>
+<img alt="TLS_Speed" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164304.png">  </p>
+<p><img alt="TLS_Speed_taobao" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164345.png">  </p>
+<p>建议：优先选择ECDHE，禁用DHE。</p>
+<h3>尽早握手</h3>
+<p>类似TCP的三次握手，TLS的握手过程也可以通过类似CDN的网络进行优化。在距离用户较近的地方搭建代理服务器，然后和后端保持长连接，这样降低用户到服务整个的握手时间。</p>
+<h3>证书优化</h3>
+<p>《HTTPS权威指南》提到的几点：</p>
+<ul>
+<li>使用尽可能少的证书</li>
+<li>只包含必须的证书</li>
+<li>提供完整的证书链</li>
+<li>使用椭圆曲线证书链</li>
+<li>小心同一张证书绑定过多域名</li>
+</ul>
+<p>一个常见的错误是在证书链里面包含根证书，毫无意义，还加大了传输开销。</p>
+<h3>优化TLS 记录大小</h3>
+<p>TLS 太小会造成浪费，头信息的比例过大。如果太大，会造成延迟，如果万一丢包，会非常糟糕。参考<a href="http://fangpeishi.com/optimizing-tls-record-size.html">TLS Record Size 优化笔记</a>。</p>
+<h3>其他</h3>
+<ul>
+<li>禁用服务器的TLS压缩，安全性问题，Nginx的话默认是不支持的；</li>
+<li>确保证书链不会超过拥塞窗口大小；</li>
+<li>启用会话缓存和无状态恢复，参考nginx 的 ssl_session_cache，ssl_session_timeout等。</li>
+<li>配置ssl_stapling</li>
+<li>配置ssl_session_tickets</li>
+<li>开启HSTS，这个开启得非常小心</li>
+</ul>
+<h2>无线网络优化</h2>
+<p>这部分内容介绍了很多关于移动网络的基础知识，也是为后面的HTTP优化做铺垫，毕竟现在移动App 非常发达。总的来说，移动设备上一次请求的代价更大，时间上和耗电上，所以减少请求和重用连接非常重要。</p>
+<h2>HTTP 优化</h2>
+<ul>
+<li>HTTP 1.0 升级到HTTP1.1</li>
+<li>减少DNS查询</li>
+<li>减少HTTP请求</li>
+<li>使用CDN</li>
+<li>添加Expires 头部并配置ETag标签</li>
+<li>Gzip 压缩资源</li>
+<li>避免HTTP 重定向</li>
+</ul>
+<h3>使用持久连接</h3>
+<h3>HTTP管道</h3>
+<p>消除部分等待时间。</p>
+<h3>域名分区</h3>
+<p>这个使用要适量，不让会适得其反。</p>
+<h3>拼接、压缩静态资源</h3>
+<p>直接参考<a href="https://ngxpagespeed.com">ngxpagespeed.com</a> 就可以了。</p>
+<h3>升级到HTTP 2.0</h3>
+<p>要注意不要把在HTTP 1.1 上的优化手段用到HTTP 2.0 上，会适得其反。</p>
+<h2>其他</h2>
+<p>书中还有大量其他内容，一些关于TCP、HTTP的基础介绍，以及移动网络、XMLHttpRequest、WebSocket、WebRTC等内容。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-11-01T00:00:00+08:00">
+      Tue 01 November 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/web.html">web </a><a href="https://fangpsh.github.io/tag/http.html">http </a><a href="https://fangpsh.github.io/tag/https.html">https </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
