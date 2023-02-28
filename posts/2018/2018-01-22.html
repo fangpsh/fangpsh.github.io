@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>关于Bash 你需要知道的十件事 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-01-22.html" rel="bookmark"
+         title="Permalink to 关于Bash 你需要知道的十件事">关于Bash 你需要知道的十件事</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>读到一篇文章<a href="https://zwischenzugs.com/2018/01/06/ten-things-i-wish-id-known-about-bash/">《Ten Things I Wish I’d Known About bash》</a>，所以有了这个畅销书式的标题，一些笔记。<br>
+感觉作者写这本书主要是为了推销他的新书<a href="https://leanpub.com/learnbashthehardway">《Learn Bash the Hard Way》</a>，不过其中十个关于Bash 的点，倒是挺有趣。</p>
+<h2>1) ` ` vs $()</h2>
+<p>这2个符号的效果一样，它们包含的内容都会被执行，然后再把结果赋值给变量，或者传递给其他命令，很常用：</p>
+<div class="highlight"><pre><span></span><code><span class="n">$</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="n n-Quoted">`ls`</span>
+<span class="n">$</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="n">$</span><span class="p">(</span><span class="n">ls</span><span class="p">)</span>
+</code></pre></div>
+
+<p>我个人常用<code>` `</code>，$() 不常用，它们2个有啥区别呢？看个例子：</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="se">\`</span><span class="nb">echo</span><span class="w"> </span><span class="se">\\\`</span><span class="nb">echo</span><span class="w"> </span>inside<span class="se">\\\`\`</span><span class="sb">`</span>
+
+$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span>inside<span class="k">)))</span>
+</code></pre></div>
+
+<p>2条语句效果一样，不过后者可读性明显好太多，以后写这种嵌套命令的时候，用<code>$()</code>吧，不然debug 起来得瞎眼。</p>
+<p>参考：</p>
+<ul>
+<li><a href="http://mywiki.wooledge.org/BashFAQ/082">Why is $(...) preferred over `...` (backticks)?</a></li>
+<li><a href="https://stackoverflow.com/questions/4708549/what-is-the-difference-between-command-and-command-in-shell-programming">What is the difference between $(command) and `command` in shell programming?</a></li>
+</ul>
+<p>这里有个小插曲，我不知道怎么用Markdown 写出反引号（backticks）内一对反引号的效果: <code>` `</code> ，发了一条tweet，得到了答案，这个符号好像也可以叫：<a href="https://en.wikipedia.org/wiki/Double_grave_accent">grave accent</a>，沉音符：</p>
+<div class="highlight"><pre><span></span><code>`` ` ` `` 
+</code></pre></div>
+
+<h2>2) 通配符 vs 正则表达式</h2>
+<p>这2个是完全不一样的东西，不懂作者说容易搞混。。。作者给的例子：</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#输出目录下所有的文件</span>
+$<span class="w"> </span>ls<span class="w"> </span>*
+
+<span class="c1">#输出目录下所有以. 开头的文件，是通配符，不是正则</span>
+$<span class="w"> </span>ls<span class="w"> </span>.*
+</code></pre></div>
+
+<h2>3) 返回码（Exit Codes）</h2>
+<p>Bash 的世界，0 是正常，非0 是异常。<code>echo $?</code> 可以得到上一条命令的返回码。其实是不是应该按照翻译叫退出码，不过编译语言里<code>return</code> 都叫返回码嘛。</p>
+<p>常常用grep 的返回码来判断特定内容是否存在，是因为如果存在grep 会返回0，不存在返回1，放在if 语句里面，非常直观、方便！见下文。</p>
+<h2>4) if 语句，[ 和 [[</h2>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span>grep<span class="w"> </span>not_there<span class="w"> </span>/dev/null
+<span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>hi
+<span class="k">else</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>lo
+<span class="k">fi</span>
+</code></pre></div>
+
+<p>以上脚本执行，输出lo ，非常直观有木有。</p>
+<p><code>[</code> 和<code>[[</code> 的差别，前者好像是内置命令，后者是关键词，一般尽量用后者就是了，比较方便。详细区别对比：<a href="http://blog.csdn.net/hittata/article/details/8049665">BASH 中单括号和双括号</a></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 直接执行会出错，$(grep note_there /dev/null) 输出为空，就变成了[ = &#39;&#39; ] ，</span>
+<span class="c1"># 这也就是为什么常常在一些老脚本里面看到这样的语句： [ x$(...) = &#39;&#39;]</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>not_there<span class="w"> </span>/dev/null<span class="k">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span>hi
+<span class="k">else</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span>lo
+<span class="k">fi</span>
+
+
+<span class="c1"># [[ 就没有以上困扰</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>not_there<span class="w"> </span>/dev/null<span class="k">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]]</span>
+<span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span>hi
+<span class="k">else</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span>lo
+<span class="k">fi</span>
+</code></pre></div>
+
+<h2>5) set</h2>
+<p>脚本开头我一般都会加上：</p>
+<div class="highlight"><pre><span></span><code>set -eu
+</code></pre></div>
+
+<p>-u 表示遇到没定义的变量的时候，直接退出，可以防止如下的悲剧：</p>
+<div class="highlight"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span><span class="cp">${</span><span class="n">ROOT</span><span class="cp">}</span>/
+</code></pre></div>
+
+<p>如果<code>${ROOT}</code> 没赋值，会发生什么？</p>
+<p>-e 表示执行过程中遇到非0 的退出状态码，直接退出，结束执行，也可以防止某些异常情况。</p>
+<p>完整的选择列表和解释：<a href="http://tldp.org/LDP/abs/html/options.html">Advanced Bash-Scripting Guide: Chapter 33. Options</a>。</p>
+<h2>6) &lt;()</h2>
+<p>作者说的这个我倒不常用，看起来挺方便。</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>grep<span class="w"> </span>somestring<span class="w"> </span>file1<span class="w"> </span>&gt;<span class="w"> </span>/tmp/a
+$<span class="w"> </span>grep<span class="w"> </span>somestring<span class="w"> </span>file2<span class="w"> </span>&gt;<span class="w"> </span>/tmp/b
+$<span class="w"> </span>diff<span class="w"> </span>/tmp/a<span class="w"> </span>/tmp/b
+</code></pre></div>
+
+<p>可以简化为：</p>
+<div class="highlight"><pre><span></span><code>diff<span class="w"> </span>&lt;<span class="o">(</span>grep<span class="w"> </span>somestring<span class="w"> </span>file1<span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>grep<span class="w"> </span>somestring<span class="w"> </span>file2<span class="o">)</span>
+</code></pre></div>
+
+<h2>7) Quoting</h2>
+<div class="highlight"><pre><span></span><code>A=&#39;123&#39;
+echo &quot;$A&quot;
+echo &#39;$A&#39;
+</code></pre></div>
+
+<p>单引号里面的内容不会展开，输出结果为：</p>
+<div class="highlight"><pre><span></span><code><span class="mf">123</span>
+<span class="err">$</span><span class="n">A</span>
+</code></pre></div>
+
+<p>作者文章里面这个例子：</p>
+<div class="highlight"><pre><span></span><code>mkdir -p tmp
+cd tmp
+touch a
+echo &quot;*&quot;
+echo &#39;*&#39;
+</code></pre></div>
+
+<p>不知道是因为版本原因还是配置问题，在我的机器上测试，都是输出 <code>*</code>，作者说的意想不到的结果大概是：</p>
+<div class="highlight"><pre><span></span><code>echo *
+</code></pre></div>
+
+<p>会输出当前目录下所有的文件名。</p>
+<h2>8) 最常用的三个快捷操作</h2>
+<ul>
+<li><code>!!</code>,重复执行上一条命令</li>
+<li><code>~</code>，展开为当前用户的home 目录</li>
+</ul>
+<p>作者列了他最常用的3个快捷操作：</p>
+<ul>
+<li><code>!@</code>，展开为上一条命令的所有参数；</li>
+<li><code>!:1-$</code>：这条命令看着有点复杂，<code>!</code>表示上一条命令，<code>:</code>是分隔符，后面就是表示取到第几位。<ul>
+<li><code>!:2-3</code>，展开为上一条命令的参数中的第2到第3位的内容。</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>bash-3.2$ echo 1 2 3 4 5
+1 2 3 4 5
+bash-3.2$ echo !:2-3
+2 3
+</code></pre></div>
+
+<ul>
+<li><code>:h</code> </li>
+</ul>
+<div class="highlight"><pre><span></span><code>grep isthere /long/path/to/some/file/or/other.txt
+cd !$:h
+</code></pre></div>
+
+<p><code>!$:h</code> 展开为 上一条命令最后一个参数的目录路径："/long/path/to/some/file/or"。</p>
+<h2>9) 启动顺序</h2>
+<p><img alt="shell-startup-actual" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228182436.png"></p>
+<p>作者放了1个图，左边是Bash，右边是Zsh，来源是：<a href="https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html">Shell startup scripts</a>。</p>
+<p>非常有趣、直观，顺着一种颜色看，Bash 启动过程，期间加载的文件，一目了然。读这篇文章，最大的收获就是见到这张图。</p>
+<h2>10) getopts (cheapci)</h2>
+<p>作者说的<a href="https://github.com/ianmiell/cheapci">chepci</a> 这个项目没咋看，不过这段脚本里的片段 可以作为学习getopts 的<a href="https://github.com/ianmiell/cheapci/blob/master/cheapci#L33-L95">例子</a>。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-01-22T00:00:00+08:00">
+      Mon 22 January 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/bash.html">bash </a><a href="https://fangpsh.github.io/tag/shell.html">shell </a><a href="https://fangpsh.github.io/tag/linux.html">linux </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

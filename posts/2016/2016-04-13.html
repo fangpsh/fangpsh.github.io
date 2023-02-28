@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Google Shell 编程风格指南 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/2016-04-13.html" rel="bookmark"
+         title="Permalink to Google Shell 编程风格指南">Google Shell 编程风格指南</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <ul>
+<li>原文：<a href="https://google.github.io/styleguide/shell.xml">https://google.github.io/styleguide/shell.xml</a>  </li>
+<li>修订版：1.26</li>
+<li>作者：Paul Armstrong 等</li>
+<li>注：代码片段内的注释未翻译，怕影响美观。</li>
+</ul>
+<h2>背景</h2>
+<h3>使用哪种Shell</h3>
+<p><strong><code>Bash</code> 是唯一被允许用于编写可执行文件的Shell 脚本语言（译注：存在多种Shell语言，可参考<a href="https://en.wikipedia.org/wiki/Unix_shell）">Wikipedia:Unix_Shell</a>。</strong><br>
+可执行文件必须以<code>#!/bin/bash</code> 开始（译注：<a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">Wikipedia:Shebang</a>），并且使用最小数量的执行选项(译注：<a href="https://www.chainsawonatireswing.com/2012/02/02/find-out-what-your-unix-shells-flags-are-then-change-them//?from=@">Find out what your UNIX shell’s flags are &amp; then change them</a>, <a href="https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html">The Set Builtin</a>）。<br>
+使用<code>set</code>设置shell 执行选项，以便用<code>bash &lt;脚本名&gt;</code> 的方式调用脚本时候不会破坏执行选项的功能。<br>
+限制所有的可执行shell 脚本统一使用bash 使得我们在机器上能统一安装一种shell 。 
+唯一的例外，你正在编写的项目强制你使用其他shell 语言。例如Solaris SVR4 软件包要求包内的任何脚本用纯Bourne shell 编写（译注：即sh，参考<a href="https://en.wikipedia.org/wiki/Bourne_shell">Wikipedia:Bourne_shell</a>）。  </p>
+<h3>什么时候使用Shell</h3>
+<p><strong>Shell 应该只用于编写小工具或者简单的包装脚本（译注：wrapper scripts，<a href="http://tldp.org/LDP/abs/html/wrapper.html">Shell Wrappers</a>）。</strong><br>
+尽管shell 脚本不是一种开发语言，但在Google 内部它被用于编写各种各样的工具性脚本。在广泛的开发部署中，遵循这份编程风格指南是一种共识，而不是一个建议。  </p>
+<p>一些准则： </p>
+<ul>
+<li>如果你主要是调用其他工具和做相对少量的数据处理，使用shell 来完成任务是合适的选择。</li>
+<li>如果你在意性能，请使用其他工具来代替shell。</li>
+<li>任何情况下，如果你发现需要使用数组（译注：<a href="http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_10_02.html">Bash:Array variables</a>），并且不是使用<code>${PIPESTATUS}</code>（译注：PIPESTATUS 保存着管道中各命令的返回值），你应该使用Python。</li>
+<li>如果你要编写一份超过一百行的Shell 脚本，你应该尽量使用Python 来编写。记住，随着Shell脚本行数的增长，尽早使用其他语言来重写你的脚本，以免将来重写的时候浪费更多的时间。</li>
+</ul>
+<!-- more -->
+<h2>Shell文件和解释器调用</h2>
+<h3>文件扩展名</h3>
+<p><strong>可执行文件应该不带扩展名（强烈建议）或者使用<code>.sh</code> 的扩展名。 库文件应该带一个<code>.sh</code>的扩展名，并且不应该是可执行的。</strong><br>
+当我们执行一个程序的时候不需要知道它是用什么语言写的，并且shell 也不要求脚本必须带扩展名。所以我们不希望一个可执行文件带着扩展名。<br>
+然而，对于库文件来说知道是什么语言写的却非常重要，有时需要使用不同的语言编写类似的库文件。使用代表语言的文件名后缀（即扩展名），就可以让使用不同语言编写的具有同样功能的库件有着相同的名字。  </p>
+<h3>SUID/SGID</h3>
+<p><strong>禁止在Shell 脚本中使用SUID 或SGID （译注：<a href="http://thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">What is SUID, SGID and Sticky bit ?</a>）</strong>  </p>
+<p>shell 存在太多的安全问题，以至于允许SUID/SGID 后几乎不可能保证shell 的安全。虽然bash 让运行 SUID 变得困难，但是在某些平台上还是有可能，所以我们明确禁止使用它。<br>
+当你需要提权的时候，使用<code>sudo</code>（译注：<a href="https://en.wikipedia.org/wiki/Sudo">Wikipedia:sudo</a>）。  </p>
+<h2>环境</h2>
+<h3>STDOUT vs STDERR</h3>
+<p><strong>所有的错误信息应该传入STDERR（译注：标准错误输出，延伸阅读：<a href="http://www.tldp.org/LDP/abs/html/io-redirection.html">I/O Redirection</a>）</strong>
+这使得从实际问题中区分正常状态变得容易。<br>
+推荐使用一个函数来专门打印错误信息和其他状态信息。</p>
+<div class="highlight"><pre><span></span><code><span class="n">err</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">echo</span><span class="w"> </span><span class="s">&quot;[$(date +&#39;%Y-%m-%dT%H:%M:%S%z&#39;)]: $@&quot;</span><span class="w"> </span><span class="o">&gt;&amp;</span><span class="mi">2</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="n">do_something</span><span class="p">;</span><span class="w"> </span><span class="n">then</span>
+<span class="w">  </span><span class="n">err</span><span class="w"> </span><span class="s">&quot;Unable to do_something&quot;</span>
+<span class="w">  </span><span class="n">exit</span><span class="w"> </span><span class="s">&quot;${E_DID_NOTHING}&quot;</span>
+<span class="n">fi</span>
+</code></pre></div>
+
+<h2>注释</h2>
+<h3>文件头</h3>
+<p><strong>每个文件的开头必须有一段关于它内容的概述</strong><br>
+每个文件必须在开头部分包含一段关于其内容的概述的注释。也可以选择添加版权声明和作者信息。<br>
+例：  </p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1">#</span>
+<span class="c1"># Perform hot backups of Oracle databases.</span>
+</code></pre></div>
+
+<h3>函数注释</h3>
+<p><strong>除了简短、明确的函数之外，任何一个函数都必须写注释。库文件的中的任何一个函数必须写注释，无论其长短和复杂性。</strong><br>
+他人应该能够在不阅读源码的情况下通过阅读注释（和帮助信息，如果有提供的话），从而学会使用你的程序或者库文件中的函数。<br>
+所有函数的注释都应该包含：  </p>
+<ul>
+<li>对函数的描述；</li>
+<li>会使用或修改的全局变量；</li>
+<li>函数传参；</li>
+<li>返回值，不是运行的最后一条命令默认的退出状态码。</li>
+</ul>
+<p>例：  </p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1">#</span>
+<span class="c1"># Perform hot backups of Oracle databases.</span>
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s1">&#39;/usr/xpg4/bin:/usr/bin:/opt/csw/bin:/opt/goog/bin&#39;</span>
+
+<span class="c1">#######################################</span>
+<span class="c1"># Cleanup files from the backup dir</span>
+<span class="c1"># Globals:</span>
+<span class="c1">#   BACKUP_DIR</span>
+<span class="c1">#   ORACLE_SID</span>
+<span class="c1"># Arguments:</span>
+<span class="c1">#   None</span>
+<span class="c1"># Returns:</span>
+<span class="c1">#   None</span>
+<span class="c1">#######################################</span>
+cleanup<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+...
+<span class="o">}</span>
+</code></pre></div>
+
+<h3>实现的注释</h3>
+<p><strong>代码中使用了技巧，或晦涩难懂，或有趣，或十分重要的部分你都应该添加注释。</strong><br>
+这里要遵循Google 代码注释的通用惯例。不要任何东西都添加注释。如果是一个复杂的算法，或者你在做一些与众不同的事情，加一段简短的注释。  </p>
+<h3>TODO 注释</h3>
+<p><strong>对临时性的代码，或短期的解决方案，或足够好但是不够完美的代码等添加TODO 注释。</strong><br>
+这和<a href="https://google.github.io/styleguide/cppguide.html#TODO_Comments">C++ Guide</a> 中的做法约定一致。<br>
+TODO 注释都应该在开头包含大写的TODO，跟着是一对小括号，中间注明你的用户名。冒号是可选的。最好也在TODO 条目末尾添加bug/ticket 号码。<br>
+例：  </p>
+<div class="highlight"><pre><span></span><code># TODO(mrmonkey): Handle the unlikely edge cases (bug ####)
+</code></pre></div>
+
+<h2>格式</h2>
+<p>修改代码的时候应该遵循现存代码风格，任何新代码都应该遵循下列规范。</p>
+<h3>缩进</h3>
+<p><strong>使用两个空格做缩进，不要使用tabs。</strong><br>
+在代码块之间使用空行提提高可读性。缩进是两个空格。无论如何都不要使用tabs。对于已经存在的文件，如实的保留已经存在的缩进。  </p>
+<h3>行宽和长字符串</h3>
+<p><strong>行宽最大为80 个字符。</strong><br>
+如果不得不写超过80 个字符的字符串，你应该尽可能的使用here 文档（译注：<a href="https://zh.wikipedia.org/wiki/Here文档">Wikipedia:Here文档</a>）或者嵌入新行。如果有超过80 个字符的字符串并且不能被分割，这是可以的，但是强烈建议找到一个合适的方法让它变短。  </p>
+<div class="highlight"><pre><span></span><code><span class="o">#</span> <span class="kr">DO</span> <span class="n">use</span> <span class="s">&#39;here document&#39;</span><span class="n">s</span>
+<span class="n">cat</span> <span class="o">&lt;&lt;</span><span class="kr">END</span><span class="p">;</span>
+<span class="n">I</span> <span class="n">am</span> <span class="n">an</span> <span class="n">exceptionally</span> <span class="n">long</span>
+<span class="n">string</span><span class="p">.</span>
+<span class="kr">END</span>
+
+<span class="o">#</span> <span class="n">Embedded</span> <span class="n">newlines</span> <span class="n">are</span> <span class="n">ok</span> <span class="n">too</span>
+<span class="n">long_string</span><span class="o">=</span><span class="err">&quot;</span><span class="n">I</span> <span class="n">am</span> <span class="n">an</span> <span class="n">exceptionally</span>
+  <span class="n">long</span> <span class="n">string</span><span class="p">.</span><span class="err">&quot;</span>
+</code></pre></div>
+
+<h3>管道</h3>
+<p><strong>如果一行写不下整条管道，那么应该一行一个管段的进行分割。</strong><br>
+如果一行能写下一条管道，那么就应该写到一行。 <br>
+如果写不下，就应该将管道分割为一个管段一行，以2个空格作为缩进。这个规范适用与使用“|” 链接起来的组合命令以及使用“||” 和“&amp;&amp;”的组合逻辑语句。  </p>
+<div class="highlight"><pre><span></span><code># All fits on one line
+command1 | command2
+
+# Long commands
+command1 \
+  | command2 \
+  | command3 \
+  | command4
+</code></pre></div>
+
+<h3>循环</h3>
+<p><strong><code>; do</code>, <code>; then</code> 与 <code>while</code>,<code>for</code> 或<code>if</code> 应置于同一行。</strong><br>
+Shell 中的循环有一点特别,但是我们遵循和声明函数时大括号的相同的准则。即<code>; then</code> 和 <code>; do</code> 应该和 if/for/while 语句写在同一行。<code>else</code> 应该独占一行，结束声明也应该独占一行，并且和开始声明垂直对齐。  </p>
+<p>例：  </p>
+<div class="highlight"><pre><span></span><code>for<span class="w"> </span>dir<span class="w"> </span>in<span class="w"> </span><span class="cp">${</span><span class="n">dirs_to_cleanup</span><span class="cp">}</span>;<span class="w"> </span>do
+<span class="w">  </span>if<span class="w"> </span>[[<span class="w"> </span>-d<span class="w"> </span>&quot;<span class="cp">${</span><span class="nb">dir</span><span class="cp">}</span>/<span class="cp">${</span><span class="n">ORACLE_SID</span><span class="cp">}</span>&quot;<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">    </span>log_date<span class="w"> </span>&quot;Cleaning<span class="w"> </span>up<span class="w"> </span>old<span class="w"> </span>files<span class="w"> </span>in<span class="w"> </span><span class="cp">${</span><span class="nb">dir</span><span class="cp">}</span>/<span class="cp">${</span><span class="n">ORACLE_SID</span><span class="cp">}</span>&quot;
+<span class="w">    </span>rm<span class="w"> </span>&quot;<span class="cp">${</span><span class="nb">dir</span><span class="cp">}</span>/<span class="cp">${</span><span class="n">ORACLE_SID</span><span class="cp">}</span>/&quot;*
+<span class="w">    </span>if<span class="w"> </span>[[<span class="w"> </span>&quot;$?&quot;<span class="w"> </span>-ne<span class="w"> </span>0<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">      </span>error_message
+<span class="w">    </span>fi
+<span class="w">  </span>else
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span>&quot;<span class="cp">${</span><span class="nb">dir</span><span class="cp">}</span>/<span class="cp">${</span><span class="n">ORACLE_SID</span><span class="cp">}</span>&quot;
+<span class="w">    </span>if<span class="w"> </span>[[<span class="w"> </span>&quot;$?&quot;<span class="w"> </span>-ne<span class="w"> </span>0<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">      </span>error_message
+<span class="w">    </span>fi
+<span class="w">  </span>fi
+done
+</code></pre></div>
+
+<h3>Case 声明</h3>
+<ul>
+<li><strong>可以选择2个空格作为缩进。</strong></li>
+<li><strong>匹配行右括号后面和<code>;;</code>前面都需要加一个空格。</strong></li>
+<li><strong>匹配模式，操作和<code>;;</code> 应该分成不同的行。长的语句或者多命令组合语句应该切割成多行。</strong></li>
+</ul>
+<p>匹配表达式应该比<code>case</code>和<code>esac</code> 缩进一级。多行操作应该再缩进一级。一般情况下，不需要给匹配表达式加引号。匹配模式前面不应该有左括号。避免使用<code>;&amp;</code> 和<code>;;&amp;</code>这些标记。</p>
+<div class="highlight"><pre><span></span><code><span class="n">case</span><span class="w"> </span><span class="s2">&quot;${expression}&quot;</span><span class="w"> </span><span class="ow">in</span>
+<span class="w">  </span><span class="n">a</span><span class="p">)</span>
+<span class="w">    </span><span class="n">variable</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
+<span class="w">    </span><span class="n">some_command</span><span class="w"> </span><span class="s2">&quot;${variable}&quot;</span><span class="w"> </span><span class="s2">&quot;${other_expr}&quot;</span><span class="w"> </span><span class="o">...</span>
+<span class="w">  </span><span class="p">;;</span>
+<span class="w">  </span><span class="n">absolute</span><span class="p">)</span>
+<span class="w">    </span><span class="n">actions</span><span class="o">=</span><span class="s2">&quot;relative&quot;</span>
+<span class="w">    </span><span class="n">another_command</span><span class="w"> </span><span class="s2">&quot;${actions}&quot;</span><span class="w"> </span><span class="s2">&quot;${other_expr}&quot;</span><span class="w"> </span><span class="o">...</span>
+<span class="w">  </span><span class="p">;;</span>
+<span class="w">  </span><span class="o">*</span><span class="p">)</span>
+<span class="w">    </span><span class="n">error</span><span class="w"> </span><span class="s2">&quot;Unexpected expression &#39;${expression}&#39;&quot;</span>
+<span class="w">  </span><span class="p">;;</span>
+<span class="n">esac</span>
+</code></pre></div>
+
+<h3>变量</h3>
+<p><strong>按优先级排序：和已存的风格一致；给你的变量加引号；推荐使用"${var}"而不是"$var"，但是视具体而定。</strong>  </p>
+<p>这些仅仅是指南，因为这个主题内容作为强制规定似乎是有争议的。<br>
+以下按照优先级排列：</p>
+<ol>
+<li>和现存代码的风格保持一致。</li>
+<li>给变量加引号，参考「加引号」一节。</li>
+<li>如果不是绝对必要或为了避免歧义，不要用大括号把单个字符的shell 变量或 特殊参数（译注：指$?,$$,$@,$*等这类参数，<a href="https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html">Special Parameters</a>）或位置参数（译注：<a href="https://www.gnu.org/software/bash/manual/html_node/Positional-Parameters.html"> Positional Parameters</a>）。推荐将其他所有变量都用大括号括起来。</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1"># Section of recommended cases.</span>
+
+<span class="c1"># Preferred style for &#39;special&#39; variables:</span>
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;Positional: $1&quot;</span><span class="w"> </span><span class="s2">&quot;$5&quot;</span><span class="w"> </span><span class="s2">&quot;$3&quot;</span>
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;Specials: !=$!, -=$-, _=$_. ?=$?, #=$# *=$* @=$@ \$=$$ ...&quot;</span>
+
+<span class="c1"># Braces necessary:</span>
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;many parameters: ${10}&quot;</span>
+
+<span class="c1"># Braces avoiding confusion:</span>
+<span class="c1"># Output is &quot;a0b0c0&quot;</span>
+<span class="n">set</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">c</span>
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;${1}0${2}0${3}0&quot;</span>
+
+<span class="c1"># Preferred style for other variables:</span>
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;PATH=${PATH}, PWD=${PWD}, mine=${some_var}&quot;</span>
+<span class="k">while</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="n">f</span><span class="p">;</span><span class="w"> </span><span class="n">do</span>
+<span class="w">  </span><span class="n">echo</span><span class="w"> </span><span class="s2">&quot;file=${f}&quot;</span>
+<span class="n">done</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">&lt;</span><span class="p">(</span><span class="n">ls</span><span class="w"> </span><span class="o">-</span><span class="n">l</span><span class="w"> </span><span class="o">/</span><span class="n">tmp</span><span class="p">)</span>
+
+<span class="c1"># Section of discouraged cases</span>
+
+<span class="c1"># Unquoted vars, unbraced vars, brace-quoted single letter</span>
+<span class="c1"># shell specials.</span>
+<span class="n">echo</span><span class="w"> </span><span class="n">a</span><span class="o">=$</span><span class="n">avar</span><span class="w"> </span><span class="s2">&quot;b=$bvar&quot;</span><span class="w"> </span><span class="s2">&quot;PID=${$}&quot;</span><span class="w"> </span><span class="s2">&quot;${1}&quot;</span>
+
+<span class="c1"># Confusing use: this is expanded as &quot;${1}0${2}0${3}0&quot;,</span>
+<span class="c1"># not &quot;${10}${20}${30}</span>
+<span class="n">set</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">c</span>
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;$10$20$30&quot;</span>
+</code></pre></div>
+
+<h3>加引号</h3>
+<ul>
+<li><strong>包含变量的字符串，命令替换，空格和shell 元字符都必须加引号，除了一定要仔细得处理表达式，不加引号。</strong></li>
+<li><strong>推荐给包含单词的字符串加引号（不包括命令选项或路径名）</strong></li>
+<li><strong>不要给字面上的整数加引号。</strong></li>
+<li><strong>仔细处理<code>[[</code>中匹配模式的引号。</strong></li>
+<li><strong>坚持使用"$@"，除非你有原因要使用 $* 。</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="cp"># &#39;Single&#39; quotes indicate that no substitution is desired.</span>
+<span class="cp"># &quot;Double&quot; quotes indicate that substitution is required/tolerated.</span>
+
+<span class="cp"># Simple examples</span>
+<span class="cp"># &quot;quote command substitutions&quot;</span>
+<span class="n">flag</span><span class="o">=</span><span class="s">&quot;$(some_command and its args &quot;</span><span class="n">$</span><span class="s">@&quot; &#39;quoted separately&#39;)&quot;</span>
+
+<span class="cp"># &quot;quote variables&quot;</span>
+<span class="n">echo</span><span class="w"> </span><span class="s">&quot;${flag}&quot;</span>
+
+<span class="cp"># &quot;never quote literal integers&quot;</span>
+<span class="n">value</span><span class="o">=</span><span class="mi">32</span>
+<span class="cp"># &quot;quote command substitutions&quot;, even when you expect integers</span>
+<span class="n">number</span><span class="o">=</span><span class="s">&quot;$(generate_number)&quot;</span>
+
+<span class="cp"># &quot;prefer quoting words&quot;, not compulsory</span>
+<span class="k">readonly</span><span class="w"> </span><span class="n">USE_INTEGER</span><span class="o">=</span><span class="err">&#39;</span><span class="nb">true</span><span class="err">&#39;</span>
+
+<span class="cp"># &quot;quote shell meta characters&quot;</span>
+<span class="n">echo</span><span class="w"> </span><span class="err">&#39;</span><span class="n">Hello</span><span class="w"> </span><span class="n">stranger</span><span class="p">,</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">well</span><span class="w"> </span><span class="n">met</span><span class="p">.</span><span class="w"> </span><span class="n">Earn</span><span class="w"> </span><span class="n">lots</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">$$$</span><span class="err">&#39;</span>
+<span class="n">echo</span><span class="w"> </span><span class="s">&quot;Process $$: Done making \$\$\$.&quot;</span>
+
+<span class="cp"># &quot;command options or path names&quot;</span>
+<span class="cp"># ($1 is assumed to contain a value here)</span>
+<span class="n">grep</span><span class="w"> </span><span class="o">-</span><span class="n">li</span><span class="w"> </span><span class="n">Hugo</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span><span class="w"> </span><span class="s">&quot;$1&quot;</span>
+
+<span class="cp"># Less simple examples</span>
+<span class="cp"># &quot;quote variables, unless proven false&quot;: ccs might be empty</span>
+<span class="n">git</span><span class="w"> </span><span class="n">send</span><span class="o">-</span><span class="n">email</span><span class="w"> </span><span class="o">--</span><span class="n">to</span><span class="w"> </span><span class="s">&quot;${reviewers}&quot;</span><span class="w"> </span><span class="n">$</span><span class="p">{</span><span class="n">ccs</span><span class="o">:+</span><span class="s">&quot;--cc&quot;</span><span class="w"> </span><span class="s">&quot;${ccs}&quot;</span><span class="p">}</span>
+
+<span class="cp"># Positional parameter precautions: $1 might be unset</span>
+<span class="cp"># Single quotes leave regex as-is.</span>
+<span class="n">grep</span><span class="w"> </span><span class="o">-</span><span class="n">cP</span><span class="w"> </span><span class="err">&#39;</span><span class="p">([</span><span class="n">Ss</span><span class="p">]</span><span class="n">pecial</span><span class="o">|</span><span class="err">\</span><span class="o">|?</span><span class="n">characters</span><span class="o">*</span><span class="p">)</span><span class="n">$</span><span class="err">&#39;</span><span class="w"> </span><span class="n">$</span><span class="p">{</span><span class="mi">1</span><span class="o">:+</span><span class="s">&quot;$1&quot;</span><span class="p">}</span>
+
+<span class="cp"># For passing on arguments,</span>
+<span class="cp"># &quot;$@&quot; is right almost everytime, and</span>
+<span class="cp"># $* is wrong almost everytime:</span>
+<span class="cp">#</span>
+<span class="cp"># * $* and $@ will split on spaces, clobbering up arguments</span>
+<span class="cp">#   that contain spaces and dropping empty strings;</span>
+<span class="cp"># * &quot;$@&quot; will retain arguments as-is, so no args</span>
+<span class="cp">#   provided will result in no args being passed on;</span>
+<span class="cp">#   This is in most cases what you want to use for passing</span>
+<span class="cp">#   on arguments.</span>
+<span class="cp"># * &quot;$*&quot; expands to one argument, with all args joined</span>
+<span class="cp">#   by (usually) spaces,</span>
+<span class="cp">#   so no args provided will result in one empty string</span>
+<span class="cp">#   being passed on.</span>
+<span class="cp"># (Consult &#39;man bash&#39; for the nit-grits ;-)</span>
+
+<span class="n">set</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="s">&quot;2 two&quot;</span><span class="w"> </span><span class="s">&quot;3 three tres&quot;</span><span class="p">;</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="n">$</span><span class="err">#</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="s">&quot;$*&quot;</span><span class="p">;</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="s">&quot;$#, $@&quot;</span><span class="p">)</span>
+<span class="n">set</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="s">&quot;2 two&quot;</span><span class="w"> </span><span class="s">&quot;3 three tres&quot;</span><span class="p">;</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="n">$</span><span class="err">#</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="s">&quot;$@&quot;</span><span class="p">;</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="s">&quot;$#, $@&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h2>特性和坑</h2>
+<h3>命令替换</h3>
+<p><strong>使用<code>$(command)</code> 代替反引号。</strong><br>
+嵌套的反引号需要在内部使用<code>\</code> 转义。嵌套的<code>$(command)</code> 不需要改变格式，可读性也更好。<br>
+例：  </p>
+<div class="highlight"><pre><span></span><code><span class="c1"># This is preferred:</span>
+<span class="k">var</span><span class="o">=</span><span class="s2">&quot;$(command &quot;</span><span class="o">$</span><span class="p">(</span><span class="n">command1</span><span class="p">)</span><span class="s2">&quot;)&quot;</span>
+
+<span class="c1"># This is not:</span>
+<span class="k">var</span><span class="o">=</span><span class="s2">&quot;`command \`command1\``&quot;</span>
+</code></pre></div>
+
+<h3>Test, [ 和 [[</h3>
+<p><strong>推荐使用<code>[[ ... ]]</code>代替 <code>[</code>,<code>test</code> 和<code>/usr/bin/[</code></strong>  <br>
+<code>[[ ... ]]</code> 可以降低错误，因为在 <code>[[</code> 和<code>]]</code>  直接不会发生路径扩展或单词分割，并且<code>[[ ... ]]</code> 允许正则表达式而<code>[ ... ]</code>不允许。  </p>
+<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="nt">This</span><span class="w"> </span><span class="nt">ensures</span><span class="w"> </span><span class="nt">the</span><span class="w"> </span><span class="nt">string</span><span class="w"> </span><span class="nt">on</span><span class="w"> </span><span class="nt">the</span><span class="w"> </span><span class="nt">left</span><span class="w"> </span><span class="nt">is</span><span class="w"> </span><span class="nt">made</span><span class="w"> </span><span class="nt">up</span><span class="w"> </span><span class="nt">of</span><span class="w"> </span><span class="nt">characters</span><span class="w"> </span><span class="nt">in</span><span class="w"> </span><span class="nt">the</span>
+<span class="err">#</span><span class="w"> </span><span class="nt">alnum</span><span class="w"> </span><span class="nt">character</span><span class="w"> </span><span class="nt">class</span><span class="w"> </span><span class="nt">followed</span><span class="w"> </span><span class="nt">by</span><span class="w"> </span><span class="nt">the</span><span class="w"> </span><span class="nt">string</span><span class="w"> </span><span class="nt">name</span><span class="o">.</span>
+<span class="err">#</span><span class="w"> </span><span class="nt">Note</span><span class="w"> </span><span class="nt">that</span><span class="w"> </span><span class="nt">the</span><span class="w"> </span><span class="nt">RHS</span><span class="w"> </span><span class="nt">should</span><span class="w"> </span><span class="nt">not</span><span class="w"> </span><span class="nt">be</span><span class="w"> </span><span class="nt">quoted</span><span class="w"> </span><span class="nt">here</span><span class="o">.</span>
+<span class="err">#</span><span class="w"> </span><span class="nt">For</span><span class="w"> </span><span class="nt">the</span><span class="w"> </span><span class="nt">gory</span><span class="w"> </span><span class="nt">details</span><span class="o">,</span><span class="w"> </span><span class="nt">see</span>
+<span class="err">#</span><span class="w"> </span><span class="nt">E14</span><span class="w"> </span><span class="nt">at</span><span class="w"> </span><span class="nt">http</span><span class="o">://</span><span class="nt">tiswww</span><span class="p">.</span><span class="nc">case</span><span class="p">.</span><span class="nc">edu</span><span class="o">/</span><span class="nt">php</span><span class="o">/</span><span class="nt">chet</span><span class="o">/</span><span class="nt">bash</span><span class="o">/</span><span class="nt">FAQ</span>
+<span class="nt">if</span><span class="w"> </span><span class="cp">[</span><span class="err">[</span><span class="w"> </span><span class="s2">&quot;filename&quot;</span><span class="w"> </span><span class="o">=</span><span class="err">~</span><span class="w"> </span><span class="p">^</span><span class="err">[[</span><span class="p">:</span><span class="nx">alnum</span><span class="p">:</span><span class="cp">]</span><span class="o">]+</span><span class="nt">name</span><span class="w"> </span><span class="o">]];</span><span class="w"> </span><span class="nt">then</span>
+<span class="w">  </span><span class="nt">echo</span><span class="w"> </span><span class="s2">&quot;Match&quot;</span>
+<span class="nt">fi</span>
+
+<span class="err">#</span><span class="w"> </span><span class="nt">This</span><span class="w"> </span><span class="nt">matches</span><span class="w"> </span><span class="nt">the</span><span class="w"> </span><span class="nt">exact</span><span class="w"> </span><span class="nt">pattern</span><span class="w"> </span><span class="s2">&quot;f*&quot;</span><span class="w"> </span><span class="o">(</span><span class="nt">Does</span><span class="w"> </span><span class="nt">not</span><span class="w"> </span><span class="nt">match</span><span class="w"> </span><span class="nt">in</span><span class="w"> </span><span class="nt">this</span><span class="w"> </span><span class="nt">case</span><span class="o">)</span>
+<span class="nt">if</span><span class="w"> </span><span class="cp">[</span><span class="err">[</span><span class="w"> </span><span class="s2">&quot;filename&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;f*&quot;</span><span class="w"> </span><span class="cp">]</span><span class="o">];</span><span class="w"> </span><span class="nt">then</span>
+<span class="w">  </span><span class="nt">echo</span><span class="w"> </span><span class="s2">&quot;Match&quot;</span>
+<span class="nt">fi</span>
+
+<span class="err">#</span><span class="w"> </span><span class="nt">This</span><span class="w"> </span><span class="nt">gives</span><span class="w"> </span><span class="nt">a</span><span class="w"> </span><span class="s2">&quot;too many arguments&quot;</span><span class="w"> </span><span class="nt">error</span><span class="w"> </span><span class="nt">as</span><span class="w"> </span><span class="nt">f</span><span class="o">*</span><span class="w"> </span><span class="nt">is</span><span class="w"> </span><span class="nt">expanded</span><span class="w"> </span><span class="nt">to</span><span class="w"> </span><span class="nt">the</span>
+<span class="err">#</span><span class="w"> </span><span class="nt">contents</span><span class="w"> </span><span class="nt">of</span><span class="w"> </span><span class="nt">the</span><span class="w"> </span><span class="nt">current</span><span class="w"> </span><span class="nt">directory</span>
+<span class="nt">if</span><span class="w"> </span><span class="cp">[</span><span class="w"> </span><span class="s2">&quot;filename&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">f</span><span class="o">*</span><span class="w"> </span><span class="cp">]</span><span class="o">;</span><span class="w"> </span><span class="nt">then</span>
+<span class="w">  </span><span class="nt">echo</span><span class="w"> </span><span class="s2">&quot;Match&quot;</span>
+<span class="nt">fi</span>
+</code></pre></div>
+
+<h3>检测字符串</h3>
+<p><strong>如果可能的话，使用引号而不是过滤字符串。</strong><br>
+检测字符串时候，Bash能够智能的处理空字符串。所以，为了让代码可读性更好，应用空或非空字符串测试，而不是过滤字符串。  </p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Do this:</span>
+<span class="k">if</span><span class="w"> </span><span class="p">[[</span><span class="w"> </span><span class="s2">&quot;${my_var}&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;some_string&quot;</span><span class="w"> </span><span class="p">]];</span><span class="w"> </span><span class="n">then</span>
+<span class="w">  </span><span class="n">do_something</span>
+<span class="n">fi</span>
+
+<span class="c1"># -z (string length is zero) and -n (string length is not zero) are</span>
+<span class="c1"># preferred over testing for an empty string</span>
+<span class="k">if</span><span class="w"> </span><span class="p">[[</span><span class="w"> </span><span class="o">-</span><span class="n">z</span><span class="w"> </span><span class="s2">&quot;${my_var}&quot;</span><span class="w"> </span><span class="p">]];</span><span class="w"> </span><span class="n">then</span>
+<span class="w">  </span><span class="n">do_something</span>
+<span class="n">fi</span>
+
+<span class="c1"># This is OK (ensure quotes on the empty side), but not preferred:</span>
+<span class="k">if</span><span class="w"> </span><span class="p">[[</span><span class="w"> </span><span class="s2">&quot;${my_var}&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="p">]];</span><span class="w"> </span><span class="n">then</span>
+<span class="w">  </span><span class="n">do_something</span>
+<span class="n">fi</span>
+
+<span class="c1"># Not this:</span>
+<span class="k">if</span><span class="w"> </span><span class="p">[[</span><span class="w"> </span><span class="s2">&quot;${my_var}X&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;some_stringX&quot;</span><span class="w"> </span><span class="p">]];</span><span class="w"> </span><span class="n">then</span>
+<span class="w">  </span><span class="n">do_something</span>
+<span class="n">fi</span><span class="w">  </span>
+</code></pre></div>
+
+<p>为避免对你检测的目的感到困惑，请直接使用<code>-z</code>或<code>-n</code>。  </p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Use this</span>
+<span class="k">if</span><span class="w"> </span><span class="p">[[</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="s2">&quot;${my_var}&quot;</span><span class="w"> </span><span class="p">]];</span><span class="w"> </span><span class="n">then</span>
+<span class="w">  </span><span class="n">do_something</span>
+<span class="n">fi</span>
+
+<span class="c1"># Instead of this as errors can occur if ${my_var} expands to a test</span>
+<span class="c1"># flag</span>
+<span class="k">if</span><span class="w"> </span><span class="p">[[</span><span class="w"> </span><span class="s2">&quot;${my_var}&quot;</span><span class="w"> </span><span class="p">]];</span><span class="w"> </span><span class="n">then</span>
+<span class="w">  </span><span class="n">do_something</span>
+<span class="n">fi</span>
+</code></pre></div>
+
+<h3>文件名的通配符扩展</h3>
+<p><strong>当对文件名使用通配符的时候，请使用准确的路径。</strong><br>
+因为文件名可以以<code>-</code>为开头，所以使用<code>./*</code> 代替<code>*</code>会更安全。  </p>
+<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">Here</span><span class="s1">&#39;s the contents of the directory:</span>
+<span class="s1"># -f  -r  somedir  somefile</span>
+
+<span class="s1"># This deletes almost everything in the directory by force</span>
+<span class="s1">psa@bilby$ rm -v *</span>
+<span class="s1">removed directory: `somedir&#39;</span>
+<span class="n">removed</span><span class="w"> </span><span class="err">`</span><span class="n">somefile</span><span class="s1">&#39;</span>
+
+<span class="s1"># As opposed to:</span>
+<span class="s1">psa@bilby$ rm -v ./*</span>
+<span class="s1">removed `./-f&#39;</span>
+<span class="n">removed</span><span class="w"> </span><span class="err">`</span><span class="p">.</span><span class="o">/-</span><span class="n">r</span><span class="s1">&#39;</span>
+<span class="s1">rm: cannot remove `./somedir&#39;</span><span class="err">:</span><span class="w"> </span><span class="k">Is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">directory</span>
+<span class="n">removed</span><span class="w"> </span><span class="err">`</span><span class="p">.</span><span class="o">/</span><span class="n">somefile</span><span class="err">&#39;</span>
+</code></pre></div>
+
+<h3>Eval</h3>
+<p><strong>应该避免使用<code>eval</code></strong><br>
+当用于给变量赋值时，eval 可以解析输入，设置变量，但是不能检查这些变量是什么。  </p>
+<div class="highlight"><pre><span></span><code><span class="c1"># What does this set?</span>
+<span class="c1"># Did it succeed? In part or whole?</span>
+<span class="n">eval</span><span class="w"> </span><span class="o">$</span><span class="p">(</span><span class="n">set_my_variables</span><span class="p">)</span>
+
+<span class="c1"># What happens if one of the returned values has a space in it?</span>
+<span class="n">variable</span><span class="o">=</span><span class="s2">&quot;$(eval some_function)&quot;</span>
+</code></pre></div>
+
+<h3>管道导入While</h3>
+<p><strong>相比管道导入while，更推荐使用程序替换（译注：<a href="http://tldp.org/LDP/abs/html/process-sub.html">Process Substitution</a>）或 for 循环。在 一个while 循环中修改的变量是不能传递给父进程的，因为循环命令是允许在一个子shell 中。</strong><br>
+管道导入while 循环中隐藏的子shell 让追踪bug 变得困难。  </p>
+<div class="highlight"><pre><span></span><code>last_line=&#39;NULL&#39;
+your_command<span class="w"> </span>|<span class="w"> </span>while<span class="w"> </span>read<span class="w"> </span>line;<span class="w"> </span>do
+<span class="w">  </span>last_line=&quot;<span class="cp">${</span><span class="n">line</span><span class="cp">}</span>&quot;
+done
+
+#<span class="w"> </span>This<span class="w"> </span>will<span class="w"> </span>output<span class="w"> </span>&#39;NULL&#39;
+echo<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">last_line</span><span class="cp">}</span>&quot;
+</code></pre></div>
+
+<p>如果你确定输入不包含空格或者特殊字符串（通常，这意味着不是用户输入的内容），请使用 for 循环。  </p>
+<div class="highlight"><pre><span></span><code>total=0
+#<span class="w"> </span>Only<span class="w"> </span>do<span class="w"> </span>this<span class="w"> </span>if<span class="w"> </span>there<span class="w"> </span>are<span class="w"> </span>no<span class="w"> </span>spaces<span class="w"> </span>in<span class="w"> </span>return<span class="w"> </span>values.
+for<span class="w"> </span>value<span class="w"> </span>in<span class="w"> </span>$(command);<span class="w"> </span>do
+<span class="w">  </span>total+=&quot;<span class="cp">${</span><span class="n">value</span><span class="cp">}</span>&quot;
+done
+</code></pre></div>
+
+<p>使用进程替换可以重定向输出，但是请将命令放置在一个显式的子shell 中，而不是为while 循环创建的隐式子shell。</p>
+<div class="highlight"><pre><span></span><code>total=0
+last_file=
+while<span class="w"> </span>read<span class="w"> </span>count<span class="w"> </span>filename;<span class="w"> </span>do
+<span class="w">  </span>total+=&quot;<span class="cp">${</span><span class="n">count</span><span class="cp">}</span>&quot;
+<span class="w">  </span>last_file=&quot;<span class="cp">${</span><span class="n">filename</span><span class="cp">}</span>&quot;
+done<span class="w"> </span><span class="err">&lt;</span><span class="w"> </span><span class="err">&lt;</span>(your_command<span class="w"> </span>|<span class="w"> </span>uniq<span class="w"> </span>-c)
+
+#<span class="w"> </span>This<span class="w"> </span>will<span class="w"> </span>output<span class="w"> </span>the<span class="w"> </span>second<span class="w"> </span>field<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span>output<span class="w"> </span>from
+#<span class="w"> </span>the<span class="w"> </span>command.
+echo<span class="w"> </span>&quot;Total<span class="w"> </span>=<span class="w"> </span><span class="cp">${</span><span class="n">total</span><span class="cp">}</span>&quot;
+echo<span class="w"> </span>&quot;Last<span class="w"> </span>one<span class="w"> </span>=<span class="w"> </span><span class="cp">${</span><span class="n">last_file</span><span class="cp">}</span>&quot;
+</code></pre></div>
+
+<p>当不需要传递非常的结果给父shell 的时候可以使用while 循环，通常情况下更多的结果需要复杂的“解析”。另外注意一些简单的例子通过类似aws 这样的工具解决起来更容易。这个特性在你特别不希望改变父进程域的变量的时候也是有用的。  </p>
+<div class="highlight"><pre><span></span><code>#<span class="w"> </span>Trivial<span class="w"> </span>implementation<span class="w"> </span>of<span class="w"> </span>awk<span class="w"> </span>expression:
+#<span class="w">   </span>awk<span class="w"> </span>&#39;$3<span class="w"> </span>==<span class="w"> </span>&quot;nfs&quot;<span class="w"> </span>{<span class="w"> </span>print<span class="w"> </span>$2<span class="w"> </span>&quot;<span class="w"> </span>maps<span class="w"> </span>to<span class="w"> </span>&quot;<span class="w"> </span>$1<span class="w"> </span>}&#39;<span class="w"> </span>/proc/mounts
+cat<span class="w"> </span>/proc/mounts<span class="w"> </span>|<span class="w"> </span>while<span class="w"> </span>read<span class="w"> </span>src<span class="w"> </span>dest<span class="w"> </span>type<span class="w"> </span>opts<span class="w"> </span>rest;<span class="w"> </span>do
+<span class="w">  </span>if<span class="w"> </span>[[<span class="w"> </span><span class="cp">${</span><span class="nb">type</span><span class="cp">}</span><span class="w"> </span>==<span class="w"> </span>&quot;nfs&quot;<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">    </span>echo<span class="w"> </span>&quot;NFS<span class="w"> </span><span class="cp">${</span><span class="n">dest</span><span class="cp">}</span><span class="w"> </span>maps<span class="w"> </span>to<span class="w"> </span><span class="cp">${</span><span class="n">src</span><span class="cp">}</span>&quot;
+<span class="w">  </span>fi
+done
+</code></pre></div>
+
+<h2>命名习惯</h2>
+<h3>函数名</h3>
+<p><strong>使用小写字母，用下划线分隔单词。使用<code>::</code>分隔库文件。函数名后面必须有小括号。关键词<code>function</code> 是可选的，但在项目中应该保持一致。</strong><br>
+如果你在写一个简单的函数，请用小写字母和下划线分隔单词。如果你在写一个包，包名请用<code>::</code> 分隔。左大括号必须和函数名在同一行（和Google 内的其他语言规范一样），并且在函数名和小括号直接不能有空格。  </p>
+<div class="highlight"><pre><span></span><code># Single function
+my_func() {
+  ...
+}
+
+# Part of a package
+mypackage::my_func() {
+  ...
+}
+</code></pre></div>
+
+<p>当函数名后面带"()" 的时候，关键词<code>function</code> 是多余的，但是它提高了函数的辨识度。  </p>
+<h3>变量名</h3>
+<p><strong>和函数名规范一致。</strong><br>
+循环内的变量名应该和其他变量名一样命名。  </p>
+<div class="highlight"><pre><span></span><code>for<span class="w"> </span>zone<span class="w"> </span>in<span class="w"> </span><span class="cp">${</span><span class="n">zones</span><span class="cp">}</span>;<span class="w"> </span>do
+<span class="w">  </span>something_with<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">zone</span><span class="cp">}</span>&quot;
+done
+</code></pre></div>
+
+<h3>常量名和环境变量名</h3>
+<p><strong>全部都应该大写，用下划线分隔，在文件顶部声明。</strong><br>
+常量和任何导出到环境的元素都应该大写。  </p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Constant</span>
+<span class="n">readonly</span><span class="w"> </span><span class="n">PATH_TO_FILES</span><span class="o">=</span><span class="s1">&#39;/some/path&#39;</span>
+
+<span class="c1"># Both constant and environment</span>
+<span class="n">declare</span><span class="w"> </span><span class="o">-</span><span class="n">xr</span><span class="w"> </span><span class="n">ORACLE_SID</span><span class="o">=</span><span class="s1">&#39;PROD&#39;</span>
+</code></pre></div>
+
+<p>有些元素在初始设置时就成了常量（例如通过getopts，（译注：<a href="http://wiki.bash-hackers.org/howto/getopts_tutorial">Small getopts tutorial</a>））。所以可以在getops 中或在某种情况中设置变量，但是应该在设置之后马上将其设置成只读。注意在函数内部<code>declare</code> 不会对全局变量进行操作，所以推荐使用<code>readonly</code>或<code>export</code>来代替。  </p>
+<div class="highlight"><pre><span></span><code>VERBOSE=&#39;false&#39;
+while<span class="w"> </span>getopts<span class="w"> </span>&#39;v&#39;<span class="w"> </span>flag;<span class="w"> </span>do
+<span class="w">  </span>case<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">flag</span><span class="cp">}</span>&quot;<span class="w"> </span>in
+<span class="w">    </span>v)<span class="w"> </span>VERBOSE=&#39;true&#39;<span class="w"> </span>;;
+<span class="w">  </span>esac
+done
+readonly<span class="w"> </span>VERBOSE
+</code></pre></div>
+
+<h3>源文件名</h3>
+<p><strong>全小写，如果有必要的话应该用下划线分隔单词。</strong><br>
+这和Google 内部的其他代码风格一致：<code>maketemplate</code>或<code>make_template</code>是可以的，但不可以是<code>make-template</code>。</p>
+<h3>只读变量</h3>
+<p><strong>使用<code>readonly</code>或<code>declare -r</code>来确保它们是只读的。</strong><br>
+因为全局变量在shell 中被广泛使用，所以在使用它们的时候捕获错误是非常重要的。当你声明变量的时如果打算让它们只读，那就明确的设置一下。  </p>
+<div class="highlight"><pre><span></span><code>zip_version=&quot;$(dpkg<span class="w"> </span>--status<span class="w"> </span>zip<span class="w"> </span>|<span class="w"> </span>grep<span class="w"> </span>Version:<span class="w"> </span>|<span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span>&#39;<span class="w"> </span>&#39;<span class="w"> </span>-f<span class="w"> </span>2)&quot;
+if<span class="w"> </span>[[<span class="w"> </span>-z<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">zip_version</span><span class="cp">}</span>&quot;<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">  </span>error_message
+else
+<span class="w">  </span>readonly<span class="w"> </span>zip_version
+fi
+</code></pre></div>
+
+<h3>使用局部变量</h3>
+<p><strong>使用<code>local</code>声明函数内的变量。声明和赋值应该在不同行。</strong><br>
+通过使用<code>local</code> 声明局部变量来确保它们只作用于函数和子函数内部。这样做避免污染全局命名空间，和避免不经意之间设置了一个对于函数外部十分重要的变量。  </p>
+<div class="highlight"><pre><span></span><code><span class="n">my_func2</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">local</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;$1&quot;</span>
+
+<span class="w">  </span><span class="c1"># Separate lines for declaration and assignment:</span>
+<span class="w">  </span><span class="n">local</span><span class="w"> </span><span class="n">my_var</span>
+<span class="w">  </span><span class="n">my_var</span><span class="o">=</span><span class="s2">&quot;$(my_func)&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="k">return</span>
+
+<span class="w">  </span><span class="c1"># DO NOT do this: $? contains the exit code of &#39;local&#39;, not my_func</span>
+<span class="w">  </span><span class="n">local</span><span class="w"> </span><span class="n">my_var</span><span class="o">=</span><span class="s2">&quot;$(my_func)&quot;</span>
+<span class="w">  </span><span class="p">[[</span><span class="w"> </span><span class="o">$</span><span class="err">?</span><span class="w"> </span><span class="o">-</span><span class="n">eq</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="k">return</span>
+
+<span class="w">  </span><span class="o">...</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+
+<h3>函数位置</h3>
+<p><strong>将所有函数一起放在常量下方。不要在函数之间挟藏可执行代码。</strong>  </p>
+<p>如果存在函数，请将它们一起放在文件的开头。只有includes，<code>set</code> 声明和常量设置有可能出现在函数上面。<br>
+不要在函数之间挟藏可执行代码。如果这样做会导致在debug 的时候，代码难以跟踪和出现意想不到的执行结果。</p>
+<h3>main</h3>
+<p><strong>至少包含一个函数的脚本，如果足够长的话，都应该有一个叫<code>main</code> 的函数。</strong><br>
+为了方便找到程序开始执行的地方，应该在所有函数的底部放一个叫<code>main</code>的主函数，包含主要的程序调用。这使得其他的代码保持一致性，也允许你使用<code>local</code>定义更多的变量（如果主代码不是一个函数是做不到的）。文件最后一行非注释的内容应该是调用<code>main</code>：  </p>
+<div class="highlight"><pre><span></span><code><span class="n">main</span><span class="w"> </span><span class="s">&quot;$@&quot;</span>
+</code></pre></div>
+
+<p>当然，对于顺序执行的简短代码，加'main' 函数是适得其反的，并不需要。</p>
+<h2>调用命令</h2>
+<h3>检查返回值</h3>
+<p><strong>总是检查返回值，并给出具体解释信息。</strong><br>
+对于非管道的命令，可以简单的使用<code>$?</code> 或使用<code>if</code> 语句直接检查返回值。<br>
+例：  </p>
+<div class="highlight"><pre><span></span><code>if<span class="w"> </span>!<span class="w"> </span>mv<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">file_list</span><span class="cp">}</span>&quot;<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">dest_dir</span><span class="cp">}</span>/&quot;<span class="w"> </span>;<span class="w"> </span>then
+<span class="w">  </span>echo<span class="w"> </span>&quot;Unable<span class="w"> </span>to<span class="w"> </span>move<span class="w"> </span><span class="cp">${</span><span class="n">file_list</span><span class="cp">}</span><span class="w"> </span>to<span class="w"> </span><span class="cp">${</span><span class="n">dest_dir</span><span class="cp">}</span>&quot;<span class="w"> </span>&gt;<span class="err">&amp;</span>2
+<span class="w">  </span>exit<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">E_BAD_MOVE</span><span class="cp">}</span>&quot;
+fi
+
+#<span class="w"> </span>Or
+mv<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">file_list</span><span class="cp">}</span>&quot;<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">dest_dir</span><span class="cp">}</span>/&quot;
+if<span class="w"> </span>[[<span class="w"> </span>&quot;$?&quot;<span class="w"> </span>-ne<span class="w"> </span>0<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">  </span>echo<span class="w"> </span>&quot;Unable<span class="w"> </span>to<span class="w"> </span>move<span class="w"> </span><span class="cp">${</span><span class="n">file_list</span><span class="cp">}</span><span class="w"> </span>to<span class="w"> </span><span class="cp">${</span><span class="n">dest_dir</span><span class="cp">}</span>&quot;<span class="w"> </span>&gt;<span class="err">&amp;</span>2
+<span class="w">  </span>exit<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">E_BAD_MOVE</span><span class="cp">}</span>&quot;
+fi
+</code></pre></div>
+
+<p>Bash 也有一个<code>PIPESTATUS</code> 的变量，可以通过它检查管道中各部分的返回值。如果你仅仅需要检查整条管道的执行成功或失败，可以参考下列做法：  </p>
+<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-cf<span class="w"> </span>-<span class="w"> </span>./*<span class="w"> </span>|<span class="w"> </span>(<span class="w"> </span>cd<span class="w"> </span>&quot;<span class="cp">${</span><span class="nb">dir</span><span class="cp">}</span>&quot;<span class="w"> </span><span class="err">&amp;&amp;</span><span class="w"> </span>tar<span class="w"> </span>-xf<span class="w"> </span>-<span class="w"> </span>)
+if<span class="w"> </span>[[<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">PIPESTATUS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="cp">}</span>&quot;<span class="w"> </span>-ne<span class="w"> </span>0<span class="w"> </span>||<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">PIPESTATUS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="cp">}</span>&quot;<span class="w"> </span>-ne<span class="w"> </span>0<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">  </span>echo<span class="w"> </span>&quot;Unable<span class="w"> </span>to<span class="w"> </span>tar<span class="w"> </span>files<span class="w"> </span>to<span class="w"> </span><span class="cp">${</span><span class="nb">dir</span><span class="cp">}</span>&quot;<span class="w"> </span>&gt;<span class="err">&amp;</span>2
+fi
+</code></pre></div>
+
+<p>然而，当你执行其他命令后<code>PIPESTATUS</code>就会被覆盖，如果你需要根据管道中不同部分发生的错误执行不同的动作，你需要在执行完命令之后立即将<code>PIPESTATUS</code> 赋值给一个变量（不要忘记 <code>[</code> 也是一个命令，抹除<code>PIPESTATUS</code>的内容）。  </p>
+<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-cf<span class="w"> </span>-<span class="w"> </span>./*<span class="w"> </span>|<span class="w"> </span>(<span class="w"> </span>cd<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">DIR</span><span class="cp">}</span>&quot;<span class="w"> </span><span class="err">&amp;&amp;</span><span class="w"> </span>tar<span class="w"> </span>-xf<span class="w"> </span>-<span class="w"> </span>)
+return_codes=(<span class="cp">${</span><span class="n">PIPESTATUS</span><span class="p">[</span><span class="o">*</span><span class="p">]</span><span class="cp">}</span>)
+if<span class="w"> </span>[[<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">return_codes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="cp">}</span>&quot;<span class="w"> </span>-ne<span class="w"> </span>0<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">  </span>do_something
+fi
+if<span class="w"> </span>[[<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">return_codes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="cp">}</span>&quot;<span class="w"> </span>-ne<span class="w"> </span>0<span class="w"> </span>]];<span class="w"> </span>then
+<span class="w">  </span>do_something_else
+fi
+</code></pre></div>
+
+<h3>内建命令 vs 外部命令</h3>
+<p><strong>在选择调用内建命令还是外部程序时，选择内建命令。</strong><br>
+我们推荐使用<a href="http://linux.die.net/man/1/bash">bash(1)</a>中「Parameter Expansion」部分提到的内建命令，因为内建命令更加可靠和可移植（特别是和sed 之类的命令相比）。<br>
+例：  </p>
+<div class="highlight"><pre><span></span><code>#<span class="w"> </span>Prefer<span class="w"> </span>this:
+addition=$((<span class="cp">${</span><span class="n">X</span><span class="cp">}</span><span class="w"> </span>+<span class="w"> </span><span class="cp">${</span><span class="n">Y</span><span class="cp">}</span>))
+substitution=&quot;<span class="cp">${</span><span class="n">string</span><span class="o">/</span><span class="c1">#foo/bar</span><span class="cp">}</span>&quot;
+
+#<span class="w"> </span>Instead<span class="w"> </span>of<span class="w"> </span>this:
+addition=&quot;$(expr<span class="w"> </span><span class="cp">${</span><span class="n">X</span><span class="cp">}</span><span class="w"> </span>+<span class="w"> </span><span class="cp">${</span><span class="n">Y</span><span class="cp">}</span>)&quot;
+substitution=&quot;$(echo<span class="w"> </span>&quot;<span class="cp">${</span><span class="n">string</span><span class="cp">}</span>&quot;<span class="w"> </span>|<span class="w"> </span>sed<span class="w"> </span>-e<span class="w"> </span>&#39;s/^foo/bar/&#39;)&quot;
+</code></pre></div>
+
+<h2>总结</h2>
+<p><strong>始终遵循常识。</strong></p>
+<p>请花几分钟阅读<a href="https://google.github.io/styleguide/cppguide.html">C++ Guide</a> 底部的Parting Words 部分。</p>
+<blockquote>
+<p>临别赠言</p>
+<p>始终遵循常识。</p>
+<p>当你编码时，花几分钟阅读一下其他代码，并熟悉它的风格。如果他们在if 条件从句中使用空格，那么你也应该这样做。如果他们的注释由星号组成的盒子围着，那么你也应该这样做。  </p>
+<p>编程风格指南是为了提供一个通用的编程规范，以便人们可以集中精力在编码实现上，而不是考虑代码形式上。我们展示了整体上的风格规范，另外局部的风格也同样重要。如果你在一个文件
+中添加的代码的风格和原来的风格差异巨大，当阅读这份代码时，整体的韵味就被破坏了。请尽量避免这样做。</p>
+<p>好了，关于编程风格指南写的够多了，代码本身更加有趣。尽情享受吧！</p>
+</blockquote>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-04-13T00:00:00+08:00">
+      Wed 13 April 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/shell.html">Shell </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

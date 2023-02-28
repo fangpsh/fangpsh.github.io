@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>尝试解决openSUSE下zypper软件包名称自动补全的问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2014/141216.html" rel="bookmark"
+         title="Permalink to 尝试解决openSUSE下zypper软件包名称自动补全的问题">尝试解决openSUSE下zypper软件包名称自动补全的问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外顺带修了一个小bug，当本地repo超过10条时，原来脚本生成的自动补全列表不全的问题。</p>
+<p>bash自带补全功能，要达到更好的补全效果需要安装bash-completion这个软件包，然后编写对应的补全脚本。关于bash-completion的内容，可以参考以下两个链接：</p>
+<ul>
+<li><a href="http://kodango.com/bash-competion-programming">编写 Bash 补全脚本</a></li>
+<li><a href="http://www.debian-administration.org/article/317/An_introduction_to_bash_completion_part_2">An introduction to bash completion: part 2</a></li>
+</ul>
+<p>软件包名词的自动补全问题主要就是怎么快速的获取软件包的名称，然后作为列表供选。
+一开始我是用zypper search 来获取，速度不堪忍受，（apt-get,aptitude 等的自动补全脚本是用apt-cache来获取，速度很快）。</p>
+<p>zypper se方式的脚本片段：</p>
+<div class="highlight"><pre><span></span><code>install<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>info<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>download<span class="w"> </span><span class="o">)</span>
+<span class="w">        </span><span class="nv">opts</span><span class="o">=(</span><span class="si">${</span><span class="nv">opts</span><span class="p">[@]</span><span class="si">}</span><span class="k">$(</span>echo<span class="p">;</span><span class="w"> </span><span class="nv">LC_ALL</span><span class="o">=</span>POSIX<span class="w"> </span><span class="nv">$ZYPPER</span><span class="w"> </span>se<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$curl</span><span class="s2">*&quot;</span><span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;1,5&#39;</span>d<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;|&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="k">)</span><span class="o">)</span>
+<span class="w">        </span><span class="p">;;</span>
+remove<span class="w"> </span><span class="p">|</span><span class="w"> </span>rm<span class="o">)</span>
+<span class="w">        </span><span class="nv">opts</span><span class="o">=(</span><span class="si">${</span><span class="nv">opts</span><span class="p">[@]</span><span class="si">}</span><span class="k">$(</span>echo<span class="p">;</span><span class="w"> </span><span class="nv">LC_ALL</span><span class="o">=</span>POSIX<span class="w"> </span><span class="nv">$ZYPPER</span><span class="w"> </span>se<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$curl</span><span class="s2">*&quot;</span><span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;1,5&#39;</span>d<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;|&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="k">)</span><span class="o">)</span>
+<span class="w">        </span><span class="p">;;</span>
+update<span class="w"> </span><span class="p">|</span><span class="w"> </span>up<span class="o">)</span>
+<span class="w">        </span><span class="nv">opts</span><span class="o">=(</span><span class="si">${</span><span class="nv">opts</span><span class="p">[@]</span><span class="si">}</span><span class="k">$(</span>echo<span class="p">;</span><span class="w"> </span><span class="nv">LC_ALL</span><span class="o">=</span>POSIX<span class="w"> </span><span class="nv">$ZYPPER</span><span class="w"> </span>list-updates<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;1,4&#39;</span>d<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;|&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="k">)</span><span class="o">)</span>
+<span class="w">        </span><span class="p">;;</span>
+</code></pre></div>
+
+<p>后来看了下libzypp，又看到 zypp-NameReqPrv 这个工具，试了下，速度快了一些，基本可以用了，不过感觉还不是太理想，特别是zypper install 的时候，如果列表生成的数组过大，还是有点卡顿，瓶颈在要对zypp-NameReqPrv的输出结果做过滤。<br>
+不知道还有没有更快的方式来获取软件列表，难道只能使用libzypp来编写？<br>
+另外如果使用zsh，并且使用了on-my-zsh的话好像是可以自动补全。第一次补全时会有明显的卡顿，后面再使用就很流畅了，可能做了缓存？ 不知道是怎么做到的，可以学习学习，然后迁移到bash下。  </p>
+<p>zypp-NameReqPrv 方式的脚本片段：</p>
+<div class="highlight"><pre><span></span><code>install<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>info<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>download<span class="w"> </span><span class="o">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$cur</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">                </span><span class="nv">opts</span><span class="o">=(</span><span class="si">${</span><span class="nv">opts</span><span class="p">[@]</span><span class="si">}</span><span class="k">$(</span>echo<span class="p">;</span><span class="w"> </span><span class="nv">LC_ALL</span><span class="o">=</span>POSIX<span class="w"> </span><span class="nv">$ZYPPNameReqPrv</span><span class="w"> </span><span class="nv">$cur</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;^［:blank:］*[0-9]+［:blank:］+</span><span class="nv">$cur</span><span class="s2">[a-Z0-9]*-&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">                           </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;s/-[0-9]+\..*//&#39;</span><span class="w"> </span><span class="p">|</span>sort<span class="w"> </span>-u<span class="k">)</span><span class="o">)</span>
+<span class="w">        </span><span class="k">fi</span>
+<span class="w">        </span><span class="p">;;</span>
+
+remove<span class="w"> </span><span class="p">|</span><span class="w"> </span>rm<span class="w"> </span><span class="p">|</span><span class="w"> </span>update<span class="w"> </span><span class="p">|</span><span class="w"> </span>up<span class="w"> </span><span class="o">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$cur</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">                </span><span class="nv">opts</span><span class="o">=(</span><span class="si">${</span><span class="nv">opts</span><span class="p">[@]</span><span class="si">}</span><span class="k">$(</span>echo<span class="p">;</span><span class="w"> </span><span class="nv">LC_ALL</span><span class="o">=</span>POSIX<span class="w"> </span><span class="nv">$ZYPPNameReqPrv</span><span class="w"> </span>--installed<span class="w"> </span><span class="nv">$cur</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;^［:blank:］*[0-9]+［:blank:］+</span><span class="nv">$cur</span><span class="s2">[a-Z0-9]*-&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">                              </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;s/-[0-9]+\..*//&#39;</span><span class="w"> </span><span class="p">|</span>sort<span class="w"> </span>-u<span class="k">)</span><span class="o">)</span>
+<span class="w">        </span><span class="k">fi</span>
+<span class="w">        </span><span class="p">;;</span>
+</code></pre></div>
+
+<p>使用openSUSE + bash 的同学可以试一试，把<a href="https://gist.github.com/fangpsh/86e13a771ccea24a206b">这份脚本</a>拷贝至 <code>/etc/bash_completion.d/</code> 下 。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2014-12-16T11:13:19+08:00">
+      Tue 16 December 2014
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2014.html">2014</a> Tagged <a href="https://fangpsh.github.io/tag/opensuse.html">opensuse </a><a href="https://fangpsh.github.io/tag/bash.html">bash </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

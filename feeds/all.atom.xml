@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2018-08-11T00:00:00+08:00</updated><entry><title>Google Shell 编程风格指南</title><link href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="alternate"></link><published>2018-08-11T00:00:00+08:00</published><updated>2018-08-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-11:/posts/2018/2018-08-11.html</id><summary type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在本地没有正确配置，导致上了跳板机之后，再SSH 就会失败，于是我在跳板机的&lt;code&gt;.bashrc&lt;/code&gt; 上写了一段检测脚本，如果变量&lt;code&gt;$SSH_AUTH_SOCK&lt;/code&gt; 不存在，就引导用户去看Wiki，不要烦我啦！&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2018-08-11T00:00:00+08:00</updated><entry><title>echo 输出导致SCP 失效的问题</title><link href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="alternate"></link><published>2018-08-11T00:00:00+08:00</published><updated>2018-08-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-11:/posts/2018/2018-08-11.html</id><summary type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在本地没有正确配置，导致上了跳板机之后，再SSH 就会失败，于是我在跳板机的&lt;code&gt;.bashrc&lt;/code&gt; 上写了一段检测脚本，如果变量&lt;code&gt;$SSH_AUTH_SOCK&lt;/code&gt; 不存在，就引导用户去看Wiki，不要烦我啦！&lt;/p&gt;
 &lt;p&gt;用了一段时间，有用户发现scp 文件到跳板机时会失败，Google 一下：&lt;a href="https://stackoverflow.com/questions/12440287/scp-doesnt-work-when-echo-in-bashrc"&gt;SCP doesn't work when echo in .bashrc?&lt;/a&gt;，怎么判断当前会话是scp？：&lt;a href="https://superuser.com/questions/690735/can-i-tell-if-im-in-an-scp-session-in-my-bashrc"&gt;Can I tell if I'm in an scp session in my .bashrc?&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;改下脚本：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$PS1&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-z&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$SSH_AUTH_SOCK&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;then&lt;/span&gt;
@@ -197,7 +197,153 @@
 &lt;li&gt;&lt;code&gt;curl -v --http2&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://github.com/bradfitz/http2/tree/master/h2i"&gt;h2i&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Wireshark&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2018"></category><category term="http"></category></entry><entry><title>《Web 性能权威指南》读书笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-11-01.html" rel="alternate"></link><published>2016-11-01T00:00:00+08:00</published><updated>2016-11-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-11-01:/posts/2016/2016-11-01.html</id><summary type="html">&lt;p&gt;&lt;img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"&gt;&lt;/p&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="http"></category></entry><entry><title>关于Bash 你需要知道的十件事</title><link href="https://fangpsh.github.io/posts/2018/2018-01-22.html" rel="alternate"></link><published>2018-01-22T00:00:00+08:00</published><updated>2018-01-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-01-22:/posts/2018/2018-01-22.html</id><summary type="html">&lt;p&gt;读到一篇文章&lt;a href="https://zwischenzugs.com/2018/01/06/ten-things-i-wish-id-known-about-bash/"&gt;《Ten Things I Wish I’d Known About bash》&lt;/a&gt;，所以有了这个畅销书式的标题，一些笔记。&lt;br&gt;
+感觉作者写这本书主要是为了推销他的新 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;读到一篇文章&lt;a href="https://zwischenzugs.com/2018/01/06/ten-things-i-wish-id-known-about-bash/"&gt;《Ten Things I Wish I’d Known About bash》&lt;/a&gt;，所以有了这个畅销书式的标题，一些笔记。&lt;br&gt;
+感觉作者写这本书主要是为了推销他的新书&lt;a href="https://leanpub.com/learnbashthehardway"&gt;《Learn Bash the Hard Way》&lt;/a&gt;，不过其中十个关于Bash 的点，倒是挺有趣。&lt;/p&gt;
+&lt;h2&gt;1) ` ` vs $()&lt;/h2&gt;
+&lt;p&gt;这2个符号的效果一样，它们包含的内容都会被执行，然后再把结果赋值给变量，或者传递给其他命令，很常用：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n n-Quoted"&gt;`ls`&lt;/span&gt;
+&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ls&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我个人常用&lt;code&gt;` `&lt;/code&gt;，$() 不常用，它们2个有啥区别呢？看个例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\`&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\\\`&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;inside&lt;span class="se"&gt;\\\`\`&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;
+
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;inside&lt;span class="k"&gt;)))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;2条语句效果一样，不过后者可读性明显好太多，以后写这种嵌套命令的时候，用&lt;code&gt;$()&lt;/code&gt;吧，不然debug 起来得瞎眼。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://mywiki.wooledge.org/BashFAQ/082"&gt;Why is $(...) preferred over `...` (backticks)?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://stackoverflow.com/questions/4708549/what-is-the-difference-between-command-and-command-in-shell-programming"&gt;What is the difference between $(command) and `command` in shell programming?&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这里有个小插曲，我不知道怎么用Markdown 写出反引号（backticks）内一对反引号的效果: &lt;code&gt;` `&lt;/code&gt; ，发了一条tweet，得到了答案，这个符号好像也可以叫：&lt;a href="https://en.wikipedia.org/wiki/Double_grave_accent"&gt;grave accent&lt;/a&gt;，沉音符：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;`` ` ` `` 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;2) 通配符 vs 正则表达式&lt;/h2&gt;
+&lt;p&gt;这2个是完全不一样的东西，不懂作者说容易搞混。。。作者给的例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;#输出目录下所有的文件&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;ls&lt;span class="w"&gt; &lt;/span&gt;*
+
+&lt;span class="c1"&gt;#输出目录下所有以. 开头的文件，是通配符，不是正则&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;ls&lt;span class="w"&gt; &lt;/span&gt;.*
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;3) 返回码（Exit Codes）&lt;/h2&gt;
+&lt;p&gt;Bash 的世界，0 是正常，非0 是异常。&lt;code&gt;echo $?&lt;/code&gt; 可以得到上一条命令的返回码。其实是不是应该按照翻译叫退出码，不过编译语言里&lt;code&gt;return&lt;/code&gt; 都叫返回码嘛。&lt;/p&gt;
+&lt;p&gt;常常用grep 的返回码来判断特定内容是否存在，是因为如果存在grep 会返回0，不存在返回1，放在if 语句里面，非常直观、方便！见下文。&lt;/p&gt;
+&lt;h2&gt;4) if 语句，[ 和 [[&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;not_there&lt;span class="w"&gt; &lt;/span&gt;/dev/null
+&lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;hi
+&lt;span class="k"&gt;else&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;lo
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;以上脚本执行，输出lo ，非常直观有木有。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[&lt;/code&gt; 和&lt;code&gt;[[&lt;/code&gt; 的差别，前者好像是内置命令，后者是关键词，一般尽量用后者就是了，比较方便。详细区别对比：&lt;a href="http://blog.csdn.net/hittata/article/details/8049665"&gt;BASH 中单括号和双括号&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# 直接执行会出错，$(grep note_there /dev/null) 输出为空，就变成了[ = &amp;#39;&amp;#39; ] ，&lt;/span&gt;
+&lt;span class="c1"&gt;# 这也就是为什么常常在一些老脚本里面看到这样的语句： [ x$(...) = &amp;#39;&amp;#39;]&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;not_there&lt;span class="w"&gt; &lt;/span&gt;/dev/null&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;hi
+&lt;span class="k"&gt;else&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;lo
+&lt;span class="k"&gt;fi&lt;/span&gt;
+
+
+&lt;span class="c1"&gt;# [[ 就没有以上困扰&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;not_there&lt;span class="w"&gt; &lt;/span&gt;/dev/null&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]]&lt;/span&gt;
+&lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;hi
+&lt;span class="k"&gt;else&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;lo
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;5) set&lt;/h2&gt;
+&lt;p&gt;脚本开头我一般都会加上：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;set -eu
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;-u 表示遇到没定义的变量的时候，直接退出，可以防止如下的悲剧：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;rm&lt;span class="w"&gt; &lt;/span&gt;-rf&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;ROOT&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如果&lt;code&gt;${ROOT}&lt;/code&gt; 没赋值，会发生什么？&lt;/p&gt;
+&lt;p&gt;-e 表示执行过程中遇到非0 的退出状态码，直接退出，结束执行，也可以防止某些异常情况。&lt;/p&gt;
+&lt;p&gt;完整的选择列表和解释：&lt;a href="http://tldp.org/LDP/abs/html/options.html"&gt;Advanced Bash-Scripting Guide: Chapter 33. Options&lt;/a&gt;。&lt;/p&gt;
+&lt;h2&gt;6) &amp;lt;()&lt;/h2&gt;
+&lt;p&gt;作者说的这个我倒不常用，看起来挺方便。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;somestring&lt;span class="w"&gt; &lt;/span&gt;file1&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;/tmp/a
+$&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;somestring&lt;span class="w"&gt; &lt;/span&gt;file2&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;/tmp/b
+$&lt;span class="w"&gt; &lt;/span&gt;diff&lt;span class="w"&gt; &lt;/span&gt;/tmp/a&lt;span class="w"&gt; &lt;/span&gt;/tmp/b
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;可以简化为：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;diff&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;&lt;span class="o"&gt;(&lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;somestring&lt;span class="w"&gt; &lt;/span&gt;file1&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;&lt;span class="o"&gt;(&lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;somestring&lt;span class="w"&gt; &lt;/span&gt;file2&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;7) Quoting&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;A=&amp;#39;123&amp;#39;
+echo &amp;quot;$A&amp;quot;
+echo &amp;#39;$A&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;单引号里面的内容不会展开，输出结果为：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="mf"&gt;123&lt;/span&gt;
+&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;作者文章里面这个例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mkdir -p tmp
+cd tmp
+touch a
+echo &amp;quot;*&amp;quot;
+echo &amp;#39;*&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;不知道是因为版本原因还是配置问题，在我的机器上测试，都是输出 &lt;code&gt;*&lt;/code&gt;，作者说的意想不到的结果大概是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;echo *
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;会输出当前目录下所有的文件名。&lt;/p&gt;
+&lt;h2&gt;8) 最常用的三个快捷操作&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;!!&lt;/code&gt;,重复执行上一条命令&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;~&lt;/code&gt;，展开为当前用户的home 目录&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;作者列了他最常用的3个快捷操作：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;!@&lt;/code&gt;，展开为上一条命令的所有参数；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;!:1-$&lt;/code&gt;：这条命令看着有点复杂，&lt;code&gt;!&lt;/code&gt;表示上一条命令，&lt;code&gt;:&lt;/code&gt;是分隔符，后面就是表示取到第几位。&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;!:2-3&lt;/code&gt;，展开为上一条命令的参数中的第2到第3位的内容。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;bash-3.2$ echo 1 2 3 4 5
+1 2 3 4 5
+bash-3.2$ echo !:2-3
+2 3
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;:h&lt;/code&gt; &lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;grep isthere /long/path/to/some/file/or/other.txt
+cd !$:h
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;!$:h&lt;/code&gt; 展开为 上一条命令最后一个参数的目录路径："/long/path/to/some/file/or"。&lt;/p&gt;
+&lt;h2&gt;9) 启动顺序&lt;/h2&gt;
+&lt;p&gt;&lt;img alt="shell-startup-actual" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228182436.png"&gt;&lt;/p&gt;
+&lt;p&gt;作者放了1个图，左边是Bash，右边是Zsh，来源是：&lt;a href="https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html"&gt;Shell startup scripts&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;非常有趣、直观，顺着一种颜色看，Bash 启动过程，期间加载的文件，一目了然。读这篇文章，最大的收获就是见到这张图。&lt;/p&gt;
+&lt;h2&gt;10) getopts (cheapci)&lt;/h2&gt;
+&lt;p&gt;作者说的&lt;a href="https://github.com/ianmiell/cheapci"&gt;chepci&lt;/a&gt; 这个项目没咋看，不过这段脚本里的片段 可以作为学习getopts 的&lt;a href="https://github.com/ianmiell/cheapci/blob/master/cheapci#L33-L95"&gt;例子&lt;/a&gt;。&lt;/p&gt;</content><category term="2018"></category><category term="bash"></category><category term="shell"></category><category term="linux"></category></entry><entry><title>《Web 性能权威指南》读书笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-11-01.html" rel="alternate"></link><published>2016-11-01T00:00:00+08:00</published><updated>2016-11-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-11-01:/posts/2016/2016-11-01.html</id><summary type="html">&lt;p&gt;&lt;img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"&gt;&lt;/p&gt;
 &lt;p&gt;看&lt;a href="https://book.douban.com/subject/25856314/"&gt;《Web 性能权威指南》&lt;/a&gt;的起因是在看&lt;a href="https://book.douban.com/subject/26869219/"&gt;《HTTPS 权威指南》&lt;/a&gt;的时候，看到优化相关的，然后就延伸到想看一下这本书。&lt;br&gt;
 这本书，作者提供了 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"&gt;&lt;/p&gt;
 &lt;p&gt;看&lt;a href="https://book.douban.com/subject/25856314/"&gt;《Web 性能权威指南》&lt;/a&gt;的起因是在看&lt;a href="https://book.douban.com/subject/26869219/"&gt;《HTTPS 权威指南》&lt;/a&gt;的时候，看到优化相关的，然后就延伸到想看一下这本书。&lt;br&gt;
@@ -305,7 +451,600 @@ HPBN的在这一章的建议是用物理机，纯CPU计算卸载，举了Google�
 &lt;h3&gt;升级到HTTP 2.0&lt;/h3&gt;
 &lt;p&gt;要注意不要把在HTTP 1.1 上的优化手段用到HTTP 2.0 上，会适得其反。&lt;/p&gt;
 &lt;h2&gt;其他&lt;/h2&gt;
-&lt;p&gt;书中还有大量其他内容，一些关于TCP、HTTP的基础介绍，以及移动网络、XMLHttpRequest、WebSocket、WebRTC等内容。&lt;/p&gt;</content><category term="2016"></category><category term="web"></category><category term="http"></category><category term="https"></category></entry><entry><title>cronic脚本修正</title><link href="https://fangpsh.github.io/posts/2015/2015-07-13.html" rel="alternate"></link><published>2015-07-13T00:00:00+08:00</published><updated>2015-07-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-07-13:/posts/2015/2015-07-13.html</id><summary type="html">&lt;p&gt;实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出），都会发送邮件通知，并且还需要在每台机器上配置smtp，非常麻烦。所以想着就在前面直接套了个脚本，如果任务异常，用curl调一下远程服务的api发送邮件即可。&lt;/p&gt;
+&lt;p&gt;书中还有大量其他内容，一些关于TCP、HTTP的基础介绍，以及移动网络、XMLHttpRequest、WebSocket、WebRTC等内容。&lt;/p&gt;</content><category term="2016"></category><category term="web"></category><category term="http"></category><category term="https"></category></entry><entry><title>记一个退出终端进程不退出的问题</title><link href="https://fangpsh.github.io/posts/2016/2016-05-23.html" rel="alternate"></link><published>2016-05-23T15:25:30+08:00</published><updated>2016-05-23T15:25:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-05-23:/posts/2016/2016-05-23.html</id><summary type="html">&lt;p&gt;某一天开发同学问了一个问题，他们在线上跑一个job，没用screen，nohup，把iTerm 窗口关了，job 没挂。再登录进去看，PPID 变成1，即进程被init …&lt;/p&gt;</summary><content type="html">&lt;p&gt;某一天开发同学问了一个问题，他们在线上跑一个job，没用screen，nohup，把iTerm 窗口关了，job 没挂。再登录进去看，PPID 变成1，即进程被init 进程接管。&lt;br&gt;
+在对应机器上执行&lt;code&gt;shopt&lt;/code&gt;, 发现：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;...
+gnu_errfmt      off
+histappend      off
+histreedit      off
+histverify      off
+hostcomplete    on
+huponexit       off
+interactive_comments    on
+lastpipe        off
+lithist         off
+login_shell     on
+mailwarn        off
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;注意CentOS 7 默认将&lt;code&gt;huponexit&lt;/code&gt; 设为&lt;code&gt;off&lt;/code&gt; 了，这样在用户将Shell 退出结束会话时，系统不会发送 SIGHUP 给所有进程，这效果其实类似使用了nohup，nohup 的作用就是忽略HUP 信号。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;huponexit&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;If&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;set&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;will&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;send&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;SIGHUP&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;all&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;jobs&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;when&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;an&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;interactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;login&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;shell&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;exits&lt;/span&gt;.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2016"></category><category term="shell"></category><category term="linux"></category></entry><entry><title>Google Shell 编程风格指南</title><link href="https://fangpsh.github.io/posts/2016/2016-04-13.html" rel="alternate"></link><published>2016-04-13T00:00:00+08:00</published><updated>2016-04-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-04-13:/posts/2016/2016-04-13.html</id><summary type="html">&lt;p&gt;google shell编程风格指南翻译&lt;/p&gt;</summary><content type="html">&lt;ul&gt;
+&lt;li&gt;原文：&lt;a href="https://google.github.io/styleguide/shell.xml"&gt;https://google.github.io/styleguide/shell.xml&lt;/a&gt;  &lt;/li&gt;
+&lt;li&gt;修订版：1.26&lt;/li&gt;
+&lt;li&gt;作者：Paul Armstrong 等&lt;/li&gt;
+&lt;li&gt;注：代码片段内的注释未翻译，怕影响美观。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;背景&lt;/h2&gt;
+&lt;h3&gt;使用哪种Shell&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;Bash&lt;/code&gt; 是唯一被允许用于编写可执行文件的Shell 脚本语言（译注：存在多种Shell语言，可参考&lt;a href="https://en.wikipedia.org/wiki/Unix_shell）"&gt;Wikipedia:Unix_Shell&lt;/a&gt;。&lt;/strong&gt;&lt;br&gt;
+可执行文件必须以&lt;code&gt;#!/bin/bash&lt;/code&gt; 开始（译注：&lt;a href="https://en.wikipedia.org/wiki/Shebang_(Unix)"&gt;Wikipedia:Shebang&lt;/a&gt;），并且使用最小数量的执行选项(译注：&lt;a href="https://www.chainsawonatireswing.com/2012/02/02/find-out-what-your-unix-shells-flags-are-then-change-them//?from=@"&gt;Find out what your UNIX shell’s flags are &amp;amp; then change them&lt;/a&gt;, &lt;a href="https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html"&gt;The Set Builtin&lt;/a&gt;）。&lt;br&gt;
+使用&lt;code&gt;set&lt;/code&gt;设置shell 执行选项，以便用&lt;code&gt;bash &amp;lt;脚本名&amp;gt;&lt;/code&gt; 的方式调用脚本时候不会破坏执行选项的功能。&lt;br&gt;
+限制所有的可执行shell 脚本统一使用bash 使得我们在机器上能统一安装一种shell 。 
+唯一的例外，你正在编写的项目强制你使用其他shell 语言。例如Solaris SVR4 软件包要求包内的任何脚本用纯Bourne shell 编写（译注：即sh，参考&lt;a href="https://en.wikipedia.org/wiki/Bourne_shell"&gt;Wikipedia:Bourne_shell&lt;/a&gt;）。  &lt;/p&gt;
+&lt;h3&gt;什么时候使用Shell&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Shell 应该只用于编写小工具或者简单的包装脚本（译注：wrapper scripts，&lt;a href="http://tldp.org/LDP/abs/html/wrapper.html"&gt;Shell Wrappers&lt;/a&gt;）。&lt;/strong&gt;&lt;br&gt;
+尽管shell 脚本不是一种开发语言，但在Google 内部它被用于编写各种各样的工具性脚本。在广泛的开发部署中，遵循这份编程风格指南是一种共识，而不是一个建议。  &lt;/p&gt;
+&lt;p&gt;一些准则： &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果你主要是调用其他工具和做相对少量的数据处理，使用shell 来完成任务是合适的选择。&lt;/li&gt;
+&lt;li&gt;如果你在意性能，请使用其他工具来代替shell。&lt;/li&gt;
+&lt;li&gt;任何情况下，如果你发现需要使用数组（译注：&lt;a href="http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_10_02.html"&gt;Bash:Array variables&lt;/a&gt;），并且不是使用&lt;code&gt;${PIPESTATUS}&lt;/code&gt;（译注：PIPESTATUS 保存着管道中各命令的返回值），你应该使用Python。&lt;/li&gt;
+&lt;li&gt;如果你要编写一份超过一百行的Shell 脚本，你应该尽量使用Python 来编写。记住，随着Shell脚本行数的增长，尽早使用其他语言来重写你的脚本，以免将来重写的时候浪费更多的时间。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- more --&gt;
+&lt;h2&gt;Shell文件和解释器调用&lt;/h2&gt;
+&lt;h3&gt;文件扩展名&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;可执行文件应该不带扩展名（强烈建议）或者使用&lt;code&gt;.sh&lt;/code&gt; 的扩展名。 库文件应该带一个&lt;code&gt;.sh&lt;/code&gt;的扩展名，并且不应该是可执行的。&lt;/strong&gt;&lt;br&gt;
+当我们执行一个程序的时候不需要知道它是用什么语言写的，并且shell 也不要求脚本必须带扩展名。所以我们不希望一个可执行文件带着扩展名。&lt;br&gt;
+然而，对于库文件来说知道是什么语言写的却非常重要，有时需要使用不同的语言编写类似的库文件。使用代表语言的文件名后缀（即扩展名），就可以让使用不同语言编写的具有同样功能的库件有着相同的名字。  &lt;/p&gt;
+&lt;h3&gt;SUID/SGID&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;禁止在Shell 脚本中使用SUID 或SGID （译注：&lt;a href="http://thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/"&gt;What is SUID, SGID and Sticky bit ?&lt;/a&gt;）&lt;/strong&gt;  &lt;/p&gt;
+&lt;p&gt;shell 存在太多的安全问题，以至于允许SUID/SGID 后几乎不可能保证shell 的安全。虽然bash 让运行 SUID 变得困难，但是在某些平台上还是有可能，所以我们明确禁止使用它。&lt;br&gt;
+当你需要提权的时候，使用&lt;code&gt;sudo&lt;/code&gt;（译注：&lt;a href="https://en.wikipedia.org/wiki/Sudo"&gt;Wikipedia:sudo&lt;/a&gt;）。  &lt;/p&gt;
+&lt;h2&gt;环境&lt;/h2&gt;
+&lt;h3&gt;STDOUT vs STDERR&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;所有的错误信息应该传入STDERR（译注：标准错误输出，延伸阅读：&lt;a href="http://www.tldp.org/LDP/abs/html/io-redirection.html"&gt;I/O Redirection&lt;/a&gt;）&lt;/strong&gt;
+这使得从实际问题中区分正常状态变得容易。&lt;br&gt;
+推荐使用一个函数来专门打印错误信息和其他状态信息。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;[$(date +&amp;#39;%Y-%m-%dT%H:%M:%S%z&amp;#39;)]: $@&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;amp;&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;do_something&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Unable to do_something&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;exit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;${E_DID_NOTHING}&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;fi&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;注释&lt;/h2&gt;
+&lt;h3&gt;文件头&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;每个文件的开头必须有一段关于它内容的概述&lt;/strong&gt;&lt;br&gt;
+每个文件必须在开头部分包含一段关于其内容的概述的注释。也可以选择添加版权声明和作者信息。&lt;br&gt;
+例：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+&lt;span class="c1"&gt;#&lt;/span&gt;
+&lt;span class="c1"&gt;# Perform hot backups of Oracle databases.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;函数注释&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;除了简短、明确的函数之外，任何一个函数都必须写注释。库文件的中的任何一个函数必须写注释，无论其长短和复杂性。&lt;/strong&gt;&lt;br&gt;
+他人应该能够在不阅读源码的情况下通过阅读注释（和帮助信息，如果有提供的话），从而学会使用你的程序或者库文件中的函数。&lt;br&gt;
+所有函数的注释都应该包含：  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对函数的描述；&lt;/li&gt;
+&lt;li&gt;会使用或修改的全局变量；&lt;/li&gt;
+&lt;li&gt;函数传参；&lt;/li&gt;
+&lt;li&gt;返回值，不是运行的最后一条命令默认的退出状态码。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;例：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+&lt;span class="c1"&gt;#&lt;/span&gt;
+&lt;span class="c1"&gt;# Perform hot backups of Oracle databases.&lt;/span&gt;
+
+&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/usr/xpg4/bin:/usr/bin:/opt/csw/bin:/opt/goog/bin&amp;#39;&lt;/span&gt;
+
+&lt;span class="c1"&gt;#######################################&lt;/span&gt;
+&lt;span class="c1"&gt;# Cleanup files from the backup dir&lt;/span&gt;
+&lt;span class="c1"&gt;# Globals:&lt;/span&gt;
+&lt;span class="c1"&gt;#   BACKUP_DIR&lt;/span&gt;
+&lt;span class="c1"&gt;#   ORACLE_SID&lt;/span&gt;
+&lt;span class="c1"&gt;# Arguments:&lt;/span&gt;
+&lt;span class="c1"&gt;#   None&lt;/span&gt;
+&lt;span class="c1"&gt;# Returns:&lt;/span&gt;
+&lt;span class="c1"&gt;#   None&lt;/span&gt;
+&lt;span class="c1"&gt;#######################################&lt;/span&gt;
+cleanup&lt;span class="o"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+...
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;实现的注释&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;代码中使用了技巧，或晦涩难懂，或有趣，或十分重要的部分你都应该添加注释。&lt;/strong&gt;&lt;br&gt;
+这里要遵循Google 代码注释的通用惯例。不要任何东西都添加注释。如果是一个复杂的算法，或者你在做一些与众不同的事情，加一段简短的注释。  &lt;/p&gt;
+&lt;h3&gt;TODO 注释&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;对临时性的代码，或短期的解决方案，或足够好但是不够完美的代码等添加TODO 注释。&lt;/strong&gt;&lt;br&gt;
+这和&lt;a href="https://google.github.io/styleguide/cppguide.html#TODO_Comments"&gt;C++ Guide&lt;/a&gt; 中的做法约定一致。&lt;br&gt;
+TODO 注释都应该在开头包含大写的TODO，跟着是一对小括号，中间注明你的用户名。冒号是可选的。最好也在TODO 条目末尾添加bug/ticket 号码。&lt;br&gt;
+例：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# TODO(mrmonkey): Handle the unlikely edge cases (bug ####)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;格式&lt;/h2&gt;
+&lt;p&gt;修改代码的时候应该遵循现存代码风格，任何新代码都应该遵循下列规范。&lt;/p&gt;
+&lt;h3&gt;缩进&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;使用两个空格做缩进，不要使用tabs。&lt;/strong&gt;&lt;br&gt;
+在代码块之间使用空行提提高可读性。缩进是两个空格。无论如何都不要使用tabs。对于已经存在的文件，如实的保留已经存在的缩进。  &lt;/p&gt;
+&lt;h3&gt;行宽和长字符串&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;行宽最大为80 个字符。&lt;/strong&gt;&lt;br&gt;
+如果不得不写超过80 个字符的字符串，你应该尽可能的使用here 文档（译注：&lt;a href="https://zh.wikipedia.org/wiki/Here文档"&gt;Wikipedia:Here文档&lt;/a&gt;）或者嵌入新行。如果有超过80 个字符的字符串并且不能被分割，这是可以的，但是强烈建议找到一个合适的方法让它变短。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="kr"&gt;DO&lt;/span&gt; &lt;span class="n"&gt;use&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;here document&amp;#39;&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+&lt;span class="n"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="kr"&gt;END&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;I&lt;/span&gt; &lt;span class="n"&gt;am&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt; &lt;span class="n"&gt;exceptionally&lt;/span&gt; &lt;span class="n"&gt;long&lt;/span&gt;
+&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="kr"&gt;END&lt;/span&gt;
+
+&lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="n"&gt;Embedded&lt;/span&gt; &lt;span class="n"&gt;newlines&lt;/span&gt; &lt;span class="n"&gt;are&lt;/span&gt; &lt;span class="n"&gt;ok&lt;/span&gt; &lt;span class="n"&gt;too&lt;/span&gt;
+&lt;span class="n"&gt;long_string&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="err"&gt;&amp;quot;&lt;/span&gt;&lt;span class="n"&gt;I&lt;/span&gt; &lt;span class="n"&gt;am&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt; &lt;span class="n"&gt;exceptionally&lt;/span&gt;
+  &lt;span class="n"&gt;long&lt;/span&gt; &lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="err"&gt;&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;管道&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;如果一行写不下整条管道，那么应该一行一个管段的进行分割。&lt;/strong&gt;&lt;br&gt;
+如果一行能写下一条管道，那么就应该写到一行。 &lt;br&gt;
+如果写不下，就应该将管道分割为一个管段一行，以2个空格作为缩进。这个规范适用与使用“|” 链接起来的组合命令以及使用“||” 和“&amp;amp;&amp;amp;”的组合逻辑语句。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# All fits on one line
+command1 | command2
+
+# Long commands
+command1 \
+  | command2 \
+  | command3 \
+  | command4
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;循环&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;; do&lt;/code&gt;, &lt;code&gt;; then&lt;/code&gt; 与 &lt;code&gt;while&lt;/code&gt;,&lt;code&gt;for&lt;/code&gt; 或&lt;code&gt;if&lt;/code&gt; 应置于同一行。&lt;/strong&gt;&lt;br&gt;
+Shell 中的循环有一点特别,但是我们遵循和声明函数时大括号的相同的准则。即&lt;code&gt;; then&lt;/code&gt; 和 &lt;code&gt;; do&lt;/code&gt; 应该和 if/for/while 语句写在同一行。&lt;code&gt;else&lt;/code&gt; 应该独占一行，结束声明也应该独占一行，并且和开始声明垂直对齐。  &lt;/p&gt;
+&lt;p&gt;例：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;for&lt;span class="w"&gt; &lt;/span&gt;dir&lt;span class="w"&gt; &lt;/span&gt;in&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;dirs_to_cleanup&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;;&lt;span class="w"&gt; &lt;/span&gt;do
+&lt;span class="w"&gt;  &lt;/span&gt;if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="nb"&gt;dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;ORACLE_SID&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;    &lt;/span&gt;log_date&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;Cleaning&lt;span class="w"&gt; &lt;/span&gt;up&lt;span class="w"&gt; &lt;/span&gt;old&lt;span class="w"&gt; &lt;/span&gt;files&lt;span class="w"&gt; &lt;/span&gt;in&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="nb"&gt;dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;ORACLE_SID&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+&lt;span class="w"&gt;    &lt;/span&gt;rm&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="nb"&gt;dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;ORACLE_SID&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&amp;quot;*
+&lt;span class="w"&gt;    &lt;/span&gt;if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;$?&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;-ne&lt;span class="w"&gt; &lt;/span&gt;0&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;      &lt;/span&gt;error_message
+&lt;span class="w"&gt;    &lt;/span&gt;fi
+&lt;span class="w"&gt;  &lt;/span&gt;else
+&lt;span class="w"&gt;    &lt;/span&gt;mkdir&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="nb"&gt;dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;ORACLE_SID&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+&lt;span class="w"&gt;    &lt;/span&gt;if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;$?&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;-ne&lt;span class="w"&gt; &lt;/span&gt;0&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;      &lt;/span&gt;error_message
+&lt;span class="w"&gt;    &lt;/span&gt;fi
+&lt;span class="w"&gt;  &lt;/span&gt;fi
+done
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Case 声明&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;可以选择2个空格作为缩进。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;匹配行右括号后面和&lt;code&gt;;;&lt;/code&gt;前面都需要加一个空格。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;匹配模式，操作和&lt;code&gt;;;&lt;/code&gt; 应该分成不同的行。长的语句或者多命令组合语句应该切割成多行。&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;匹配表达式应该比&lt;code&gt;case&lt;/code&gt;和&lt;code&gt;esac&lt;/code&gt; 缩进一级。多行操作应该再缩进一级。一般情况下，不需要给匹配表达式加引号。匹配模式前面不应该有左括号。避免使用&lt;code&gt;;&amp;amp;&lt;/code&gt; 和&lt;code&gt;;;&amp;amp;&lt;/code&gt;这些标记。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;case&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${expression}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;in&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;variable&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;...&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;some_command&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${variable}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${other_expr}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;absolute&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;relative&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;another_command&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${actions}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${other_expr}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Unexpected expression &amp;#39;${expression}&amp;#39;&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
+&lt;span class="n"&gt;esac&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;变量&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;按优先级排序：和已存的风格一致；给你的变量加引号；推荐使用"${var}"而不是"$var"，但是视具体而定。&lt;/strong&gt;  &lt;/p&gt;
+&lt;p&gt;这些仅仅是指南，因为这个主题内容作为强制规定似乎是有争议的。&lt;br&gt;
+以下按照优先级排列：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;和现存代码的风格保持一致。&lt;/li&gt;
+&lt;li&gt;给变量加引号，参考「加引号」一节。&lt;/li&gt;
+&lt;li&gt;如果不是绝对必要或为了避免歧义，不要用大括号把单个字符的shell 变量或 特殊参数（译注：指$?,$$,$@,$*等这类参数，&lt;a href="https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html"&gt;Special Parameters&lt;/a&gt;）或位置参数（译注：&lt;a href="https://www.gnu.org/software/bash/manual/html_node/Positional-Parameters.html"&gt; Positional Parameters&lt;/a&gt;）。推荐将其他所有变量都用大括号括起来。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Section of recommended cases.&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Preferred style for &amp;#39;special&amp;#39; variables:&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Positional: $1&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$5&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$3&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Specials: !=$!, -=$-, _=$_. ?=$?, #=$# *=$* @=$@ \$=$$ ...&amp;quot;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Braces necessary:&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;many parameters: ${10}&amp;quot;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Braces avoiding confusion:&lt;/span&gt;
+&lt;span class="c1"&gt;# Output is &amp;quot;a0b0c0&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${1}0${2}0${3}0&amp;quot;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Preferred style for other variables:&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;PATH=${PATH}, PWD=${PWD}, mine=${some_var}&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;do&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;file=${f}&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;done&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ls&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Section of discouraged cases&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Unquoted vars, unbraced vars, brace-quoted single letter&lt;/span&gt;
+&lt;span class="c1"&gt;# shell specials.&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=$&lt;/span&gt;&lt;span class="n"&gt;avar&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;b=$bvar&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;PID=${$}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${1}&amp;quot;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Confusing use: this is expanded as &amp;quot;${1}0${2}0${3}0&amp;quot;,&lt;/span&gt;
+&lt;span class="c1"&gt;# not &amp;quot;${10}${20}${30}&lt;/span&gt;
+&lt;span class="n"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$10$20$30&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;加引号&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;包含变量的字符串，命令替换，空格和shell 元字符都必须加引号，除了一定要仔细得处理表达式，不加引号。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;推荐给包含单词的字符串加引号（不包括命令选项或路径名）&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不要给字面上的整数加引号。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;仔细处理&lt;code&gt;[[&lt;/code&gt;中匹配模式的引号。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;坚持使用"$@"，除非你有原因要使用 $* 。&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="cp"&gt;# &amp;#39;Single&amp;#39; quotes indicate that no substitution is desired.&lt;/span&gt;
+&lt;span class="cp"&gt;# &amp;quot;Double&amp;quot; quotes indicate that substitution is required/tolerated.&lt;/span&gt;
+
+&lt;span class="cp"&gt;# Simple examples&lt;/span&gt;
+&lt;span class="cp"&gt;# &amp;quot;quote command substitutions&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;flag&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$(some_command and its args &amp;quot;&lt;/span&gt;&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="s"&gt;@&amp;quot; &amp;#39;quoted separately&amp;#39;)&amp;quot;&lt;/span&gt;
+
+&lt;span class="cp"&gt;# &amp;quot;quote variables&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;${flag}&amp;quot;&lt;/span&gt;
+
+&lt;span class="cp"&gt;# &amp;quot;never quote literal integers&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;32&lt;/span&gt;
+&lt;span class="cp"&gt;# &amp;quot;quote command substitutions&amp;quot;, even when you expect integers&lt;/span&gt;
+&lt;span class="n"&gt;number&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$(generate_number)&amp;quot;&lt;/span&gt;
+
+&lt;span class="cp"&gt;# &amp;quot;prefer quoting words&amp;quot;, not compulsory&lt;/span&gt;
+&lt;span class="k"&gt;readonly&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;USE_INTEGER&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;
+
+&lt;span class="cp"&gt;# &amp;quot;quote shell meta characters&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="n"&gt;Hello&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;stranger&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;and&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;well&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;met&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Earn&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;lots&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;of&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$$$&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Process $$: Done making \$\$\$.&amp;quot;&lt;/span&gt;
+
+&lt;span class="cp"&gt;# &amp;quot;command options or path names&amp;quot;&lt;/span&gt;
+&lt;span class="cp"&gt;# ($1 is assumed to contain a value here)&lt;/span&gt;
+&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;li&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Hugo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;null&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$1&amp;quot;&lt;/span&gt;
+
+&lt;span class="cp"&gt;# Less simple examples&lt;/span&gt;
+&lt;span class="cp"&gt;# &amp;quot;quote variables, unless proven false&amp;quot;: ccs might be empty&lt;/span&gt;
+&lt;span class="n"&gt;git&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;email&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;${reviewers}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;ccs&lt;/span&gt;&lt;span class="o"&gt;:+&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;--cc&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;${ccs}&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="cp"&gt;# Positional parameter precautions: $1 might be unset&lt;/span&gt;
+&lt;span class="cp"&gt;# Single quotes leave regex as-is.&lt;/span&gt;
+&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;cP&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="n"&gt;Ss&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;pecial&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="err"&gt;\&lt;/span&gt;&lt;span class="o"&gt;|?&lt;/span&gt;&lt;span class="n"&gt;characters&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;:+&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$1&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="cp"&gt;# For passing on arguments,&lt;/span&gt;
+&lt;span class="cp"&gt;# &amp;quot;$@&amp;quot; is right almost everytime, and&lt;/span&gt;
+&lt;span class="cp"&gt;# $* is wrong almost everytime:&lt;/span&gt;
+&lt;span class="cp"&gt;#&lt;/span&gt;
+&lt;span class="cp"&gt;# * $* and $@ will split on spaces, clobbering up arguments&lt;/span&gt;
+&lt;span class="cp"&gt;#   that contain spaces and dropping empty strings;&lt;/span&gt;
+&lt;span class="cp"&gt;# * &amp;quot;$@&amp;quot; will retain arguments as-is, so no args&lt;/span&gt;
+&lt;span class="cp"&gt;#   provided will result in no args being passed on;&lt;/span&gt;
+&lt;span class="cp"&gt;#   This is in most cases what you want to use for passing&lt;/span&gt;
+&lt;span class="cp"&gt;#   on arguments.&lt;/span&gt;
+&lt;span class="cp"&gt;# * &amp;quot;$*&amp;quot; expands to one argument, with all args joined&lt;/span&gt;
+&lt;span class="cp"&gt;#   by (usually) spaces,&lt;/span&gt;
+&lt;span class="cp"&gt;#   so no args provided will result in one empty string&lt;/span&gt;
+&lt;span class="cp"&gt;#   being passed on.&lt;/span&gt;
+&lt;span class="cp"&gt;# (Consult &amp;#39;man bash&amp;#39; for the nit-grits ;-)&lt;/span&gt;
+
+&lt;span class="n"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;2 two&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;3 three tres&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$*&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$#, $@&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;2 two&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;3 three tres&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$@&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$#, $@&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;特性和坑&lt;/h2&gt;
+&lt;h3&gt;命令替换&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;使用&lt;code&gt;$(command)&lt;/code&gt; 代替反引号。&lt;/strong&gt;&lt;br&gt;
+嵌套的反引号需要在内部使用&lt;code&gt;\&lt;/code&gt; 转义。嵌套的&lt;code&gt;$(command)&lt;/code&gt; 不需要改变格式，可读性也更好。&lt;br&gt;
+例：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# This is preferred:&lt;/span&gt;
+&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$(command &amp;quot;&lt;/span&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;command1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;)&amp;quot;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# This is not:&lt;/span&gt;
+&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;`command \`command1\``&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Test, [ 和 [[&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;推荐使用&lt;code&gt;[[ ... ]]&lt;/code&gt;代替 &lt;code&gt;[&lt;/code&gt;,&lt;code&gt;test&lt;/code&gt; 和&lt;code&gt;/usr/bin/[&lt;/code&gt;&lt;/strong&gt;  &lt;br&gt;
+&lt;code&gt;[[ ... ]]&lt;/code&gt; 可以降低错误，因为在 &lt;code&gt;[[&lt;/code&gt; 和&lt;code&gt;]]&lt;/code&gt;  直接不会发生路径扩展或单词分割，并且&lt;code&gt;[[ ... ]]&lt;/code&gt; 允许正则表达式而&lt;code&gt;[ ... ]&lt;/code&gt;不允许。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;This&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;ensures&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;string&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;left&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;made&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;up&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;of&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;characters&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;alnum&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;character&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;followed&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;by&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;string&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Note&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;that&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;RHS&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;should&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;be&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;quoted&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;here&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;For&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;gory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;details&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;see&lt;/span&gt;
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;E14&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;at&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;http&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="nt"&gt;tiswww&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;case&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;edu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;php&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;chet&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;bash&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;FAQ&lt;/span&gt;
+&lt;span class="nt"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="err"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;filename&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="err"&gt;~&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;^&lt;/span&gt;&lt;span class="err"&gt;[[&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;alnum&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="o"&gt;]+&lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]];&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Match&amp;quot;&lt;/span&gt;
+&lt;span class="nt"&gt;fi&lt;/span&gt;
+
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;This&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;matches&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;exact&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;pattern&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;f*&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;Does&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;match&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;this&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;case&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nt"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="err"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;filename&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;f*&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="o"&gt;];&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Match&amp;quot;&lt;/span&gt;
+&lt;span class="nt"&gt;fi&lt;/span&gt;
+
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;This&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;gives&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;too many arguments&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;error&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;f&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;expanded&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;contents&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;of&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;current&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;directory&lt;/span&gt;
+&lt;span class="nt"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;filename&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;f&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Match&amp;quot;&lt;/span&gt;
+&lt;span class="nt"&gt;fi&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;检测字符串&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;如果可能的话，使用引号而不是过滤字符串。&lt;/strong&gt;&lt;br&gt;
+检测字符串时候，Bash能够智能的处理空字符串。所以，为了让代码可读性更好，应用空或非空字符串测试，而不是过滤字符串。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Do this:&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${my_var}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;some_string&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;]];&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;do_something&lt;/span&gt;
+&lt;span class="n"&gt;fi&lt;/span&gt;
+
+&lt;span class="c1"&gt;# -z (string length is zero) and -n (string length is not zero) are&lt;/span&gt;
+&lt;span class="c1"&gt;# preferred over testing for an empty string&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${my_var}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;]];&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;do_something&lt;/span&gt;
+&lt;span class="n"&gt;fi&lt;/span&gt;
+
+&lt;span class="c1"&gt;# This is OK (ensure quotes on the empty side), but not preferred:&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${my_var}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;]];&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;do_something&lt;/span&gt;
+&lt;span class="n"&gt;fi&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Not this:&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${my_var}X&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;some_stringX&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;]];&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;do_something&lt;/span&gt;
+&lt;span class="n"&gt;fi&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;为避免对你检测的目的感到困惑，请直接使用&lt;code&gt;-z&lt;/code&gt;或&lt;code&gt;-n&lt;/code&gt;。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Use this&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${my_var}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;]];&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;do_something&lt;/span&gt;
+&lt;span class="n"&gt;fi&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Instead of this as errors can occur if ${my_var} expands to a test&lt;/span&gt;
+&lt;span class="c1"&gt;# flag&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${my_var}&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;]];&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;do_something&lt;/span&gt;
+&lt;span class="n"&gt;fi&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;文件名的通配符扩展&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;当对文件名使用通配符的时候，请使用准确的路径。&lt;/strong&gt;&lt;br&gt;
+因为文件名可以以&lt;code&gt;-&lt;/code&gt;为开头，所以使用&lt;code&gt;./*&lt;/code&gt; 代替&lt;code&gt;*&lt;/code&gt;会更安全。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Here&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;s the contents of the directory:&lt;/span&gt;
+&lt;span class="s1"&gt;# -f  -r  somedir  somefile&lt;/span&gt;
+
+&lt;span class="s1"&gt;# This deletes almost everything in the directory by force&lt;/span&gt;
+&lt;span class="s1"&gt;psa@bilby$ rm -v *&lt;/span&gt;
+&lt;span class="s1"&gt;removed directory: `somedir&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;removed&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="n"&gt;somefile&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;
+
+&lt;span class="s1"&gt;# As opposed to:&lt;/span&gt;
+&lt;span class="s1"&gt;psa@bilby$ rm -v ./*&lt;/span&gt;
+&lt;span class="s1"&gt;removed `./-f&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;removed&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;rm: cannot remove `./somedir&amp;#39;&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;Is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;directory&lt;/span&gt;
+&lt;span class="n"&gt;removed&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;somefile&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Eval&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;应该避免使用&lt;code&gt;eval&lt;/code&gt;&lt;/strong&gt;&lt;br&gt;
+当用于给变量赋值时，eval 可以解析输入，设置变量，但是不能检查这些变量是什么。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# What does this set?&lt;/span&gt;
+&lt;span class="c1"&gt;# Did it succeed? In part or whole?&lt;/span&gt;
+&lt;span class="n"&gt;eval&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;set_my_variables&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# What happens if one of the returned values has a space in it?&lt;/span&gt;
+&lt;span class="n"&gt;variable&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$(eval some_function)&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;管道导入While&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;相比管道导入while，更推荐使用程序替换（译注：&lt;a href="http://tldp.org/LDP/abs/html/process-sub.html"&gt;Process Substitution&lt;/a&gt;）或 for 循环。在 一个while 循环中修改的变量是不能传递给父进程的，因为循环命令是允许在一个子shell 中。&lt;/strong&gt;&lt;br&gt;
+管道导入while 循环中隐藏的子shell 让追踪bug 变得困难。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;last_line=&amp;#39;NULL&amp;#39;
+your_command&lt;span class="w"&gt; &lt;/span&gt;|&lt;span class="w"&gt; &lt;/span&gt;while&lt;span class="w"&gt; &lt;/span&gt;read&lt;span class="w"&gt; &lt;/span&gt;line;&lt;span class="w"&gt; &lt;/span&gt;do
+&lt;span class="w"&gt;  &lt;/span&gt;last_line=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+done
+
+#&lt;span class="w"&gt; &lt;/span&gt;This&lt;span class="w"&gt; &lt;/span&gt;will&lt;span class="w"&gt; &lt;/span&gt;output&lt;span class="w"&gt; &lt;/span&gt;&amp;#39;NULL&amp;#39;
+echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;last_line&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如果你确定输入不包含空格或者特殊字符串（通常，这意味着不是用户输入的内容），请使用 for 循环。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;total=0
+#&lt;span class="w"&gt; &lt;/span&gt;Only&lt;span class="w"&gt; &lt;/span&gt;do&lt;span class="w"&gt; &lt;/span&gt;this&lt;span class="w"&gt; &lt;/span&gt;if&lt;span class="w"&gt; &lt;/span&gt;there&lt;span class="w"&gt; &lt;/span&gt;are&lt;span class="w"&gt; &lt;/span&gt;no&lt;span class="w"&gt; &lt;/span&gt;spaces&lt;span class="w"&gt; &lt;/span&gt;in&lt;span class="w"&gt; &lt;/span&gt;return&lt;span class="w"&gt; &lt;/span&gt;values.
+for&lt;span class="w"&gt; &lt;/span&gt;value&lt;span class="w"&gt; &lt;/span&gt;in&lt;span class="w"&gt; &lt;/span&gt;$(command);&lt;span class="w"&gt; &lt;/span&gt;do
+&lt;span class="w"&gt;  &lt;/span&gt;total+=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+done
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;使用进程替换可以重定向输出，但是请将命令放置在一个显式的子shell 中，而不是为while 循环创建的隐式子shell。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;total=0
+last_file=
+while&lt;span class="w"&gt; &lt;/span&gt;read&lt;span class="w"&gt; &lt;/span&gt;count&lt;span class="w"&gt; &lt;/span&gt;filename;&lt;span class="w"&gt; &lt;/span&gt;do
+&lt;span class="w"&gt;  &lt;/span&gt;total+=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+&lt;span class="w"&gt;  &lt;/span&gt;last_file=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+done&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;(your_command&lt;span class="w"&gt; &lt;/span&gt;|&lt;span class="w"&gt; &lt;/span&gt;uniq&lt;span class="w"&gt; &lt;/span&gt;-c)
+
+#&lt;span class="w"&gt; &lt;/span&gt;This&lt;span class="w"&gt; &lt;/span&gt;will&lt;span class="w"&gt; &lt;/span&gt;output&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;second&lt;span class="w"&gt; &lt;/span&gt;field&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;last&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;output&lt;span class="w"&gt; &lt;/span&gt;from
+#&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;command.
+echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;Total&lt;span class="w"&gt; &lt;/span&gt;=&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;total&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;Last&lt;span class="w"&gt; &lt;/span&gt;one&lt;span class="w"&gt; &lt;/span&gt;=&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;last_file&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;当不需要传递非常的结果给父shell 的时候可以使用while 循环，通常情况下更多的结果需要复杂的“解析”。另外注意一些简单的例子通过类似aws 这样的工具解决起来更容易。这个特性在你特别不希望改变父进程域的变量的时候也是有用的。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#&lt;span class="w"&gt; &lt;/span&gt;Trivial&lt;span class="w"&gt; &lt;/span&gt;implementation&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;expression:
+#&lt;span class="w"&gt;   &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;&amp;#39;$3&lt;span class="w"&gt; &lt;/span&gt;==&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;nfs&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;{&lt;span class="w"&gt; &lt;/span&gt;print&lt;span class="w"&gt; &lt;/span&gt;$2&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;maps&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;$1&lt;span class="w"&gt; &lt;/span&gt;}&amp;#39;&lt;span class="w"&gt; &lt;/span&gt;/proc/mounts
+cat&lt;span class="w"&gt; &lt;/span&gt;/proc/mounts&lt;span class="w"&gt; &lt;/span&gt;|&lt;span class="w"&gt; &lt;/span&gt;while&lt;span class="w"&gt; &lt;/span&gt;read&lt;span class="w"&gt; &lt;/span&gt;src&lt;span class="w"&gt; &lt;/span&gt;dest&lt;span class="w"&gt; &lt;/span&gt;type&lt;span class="w"&gt; &lt;/span&gt;opts&lt;span class="w"&gt; &lt;/span&gt;rest;&lt;span class="w"&gt; &lt;/span&gt;do
+&lt;span class="w"&gt;  &lt;/span&gt;if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;==&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;nfs&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;    &lt;/span&gt;echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;NFS&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;dest&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;maps&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+&lt;span class="w"&gt;  &lt;/span&gt;fi
+done
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;命名习惯&lt;/h2&gt;
+&lt;h3&gt;函数名&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;使用小写字母，用下划线分隔单词。使用&lt;code&gt;::&lt;/code&gt;分隔库文件。函数名后面必须有小括号。关键词&lt;code&gt;function&lt;/code&gt; 是可选的，但在项目中应该保持一致。&lt;/strong&gt;&lt;br&gt;
+如果你在写一个简单的函数，请用小写字母和下划线分隔单词。如果你在写一个包，包名请用&lt;code&gt;::&lt;/code&gt; 分隔。左大括号必须和函数名在同一行（和Google 内的其他语言规范一样），并且在函数名和小括号直接不能有空格。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# Single function
+my_func() {
+  ...
+}
+
+# Part of a package
+mypackage::my_func() {
+  ...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;当函数名后面带"()" 的时候，关键词&lt;code&gt;function&lt;/code&gt; 是多余的，但是它提高了函数的辨识度。  &lt;/p&gt;
+&lt;h3&gt;变量名&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;和函数名规范一致。&lt;/strong&gt;&lt;br&gt;
+循环内的变量名应该和其他变量名一样命名。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;for&lt;span class="w"&gt; &lt;/span&gt;zone&lt;span class="w"&gt; &lt;/span&gt;in&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;zones&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;;&lt;span class="w"&gt; &lt;/span&gt;do
+&lt;span class="w"&gt;  &lt;/span&gt;something_with&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;zone&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+done
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;常量名和环境变量名&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;全部都应该大写，用下划线分隔，在文件顶部声明。&lt;/strong&gt;&lt;br&gt;
+常量和任何导出到环境的元素都应该大写。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Constant&lt;/span&gt;
+&lt;span class="n"&gt;readonly&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;PATH_TO_FILES&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/some/path&amp;#39;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Both constant and environment&lt;/span&gt;
+&lt;span class="n"&gt;declare&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;xr&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ORACLE_SID&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;PROD&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;有些元素在初始设置时就成了常量（例如通过getopts，（译注：&lt;a href="http://wiki.bash-hackers.org/howto/getopts_tutorial"&gt;Small getopts tutorial&lt;/a&gt;））。所以可以在getops 中或在某种情况中设置变量，但是应该在设置之后马上将其设置成只读。注意在函数内部&lt;code&gt;declare&lt;/code&gt; 不会对全局变量进行操作，所以推荐使用&lt;code&gt;readonly&lt;/code&gt;或&lt;code&gt;export&lt;/code&gt;来代替。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;VERBOSE=&amp;#39;false&amp;#39;
+while&lt;span class="w"&gt; &lt;/span&gt;getopts&lt;span class="w"&gt; &lt;/span&gt;&amp;#39;v&amp;#39;&lt;span class="w"&gt; &lt;/span&gt;flag;&lt;span class="w"&gt; &lt;/span&gt;do
+&lt;span class="w"&gt;  &lt;/span&gt;case&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;flag&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;in
+&lt;span class="w"&gt;    &lt;/span&gt;v)&lt;span class="w"&gt; &lt;/span&gt;VERBOSE=&amp;#39;true&amp;#39;&lt;span class="w"&gt; &lt;/span&gt;;;
+&lt;span class="w"&gt;  &lt;/span&gt;esac
+done
+readonly&lt;span class="w"&gt; &lt;/span&gt;VERBOSE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;源文件名&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;全小写，如果有必要的话应该用下划线分隔单词。&lt;/strong&gt;&lt;br&gt;
+这和Google 内部的其他代码风格一致：&lt;code&gt;maketemplate&lt;/code&gt;或&lt;code&gt;make_template&lt;/code&gt;是可以的，但不可以是&lt;code&gt;make-template&lt;/code&gt;。&lt;/p&gt;
+&lt;h3&gt;只读变量&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;使用&lt;code&gt;readonly&lt;/code&gt;或&lt;code&gt;declare -r&lt;/code&gt;来确保它们是只读的。&lt;/strong&gt;&lt;br&gt;
+因为全局变量在shell 中被广泛使用，所以在使用它们的时候捕获错误是非常重要的。当你声明变量的时如果打算让它们只读，那就明确的设置一下。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;zip_version=&amp;quot;$(dpkg&lt;span class="w"&gt; &lt;/span&gt;--status&lt;span class="w"&gt; &lt;/span&gt;zip&lt;span class="w"&gt; &lt;/span&gt;|&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;Version:&lt;span class="w"&gt; &lt;/span&gt;|&lt;span class="w"&gt; &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&amp;#39;&lt;span class="w"&gt; &lt;/span&gt;&amp;#39;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;2)&amp;quot;
+if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;-z&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;zip_version&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;  &lt;/span&gt;error_message
+else
+&lt;span class="w"&gt;  &lt;/span&gt;readonly&lt;span class="w"&gt; &lt;/span&gt;zip_version
+fi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;使用局部变量&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;使用&lt;code&gt;local&lt;/code&gt;声明函数内的变量。声明和赋值应该在不同行。&lt;/strong&gt;&lt;br&gt;
+通过使用&lt;code&gt;local&lt;/code&gt; 声明局部变量来确保它们只作用于函数和子函数内部。这样做避免污染全局命名空间，和避免不经意之间设置了一个对于函数外部十分重要的变量。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;my_func2&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$1&amp;quot;&lt;/span&gt;
+
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# Separate lines for declaration and assignment:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_var&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;my_var&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$(my_func)&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;||&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;
+
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# DO NOT do this: $? contains the exit code of &amp;#39;local&amp;#39;, not my_func&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_var&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$(my_func)&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="err"&gt;?&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;eq&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;||&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;
+
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;函数位置&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;将所有函数一起放在常量下方。不要在函数之间挟藏可执行代码。&lt;/strong&gt;  &lt;/p&gt;
+&lt;p&gt;如果存在函数，请将它们一起放在文件的开头。只有includes，&lt;code&gt;set&lt;/code&gt; 声明和常量设置有可能出现在函数上面。&lt;br&gt;
+不要在函数之间挟藏可执行代码。如果这样做会导致在debug 的时候，代码难以跟踪和出现意想不到的执行结果。&lt;/p&gt;
+&lt;h3&gt;main&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;至少包含一个函数的脚本，如果足够长的话，都应该有一个叫&lt;code&gt;main&lt;/code&gt; 的函数。&lt;/strong&gt;&lt;br&gt;
+为了方便找到程序开始执行的地方，应该在所有函数的底部放一个叫&lt;code&gt;main&lt;/code&gt;的主函数，包含主要的程序调用。这使得其他的代码保持一致性，也允许你使用&lt;code&gt;local&lt;/code&gt;定义更多的变量（如果主代码不是一个函数是做不到的）。文件最后一行非注释的内容应该是调用&lt;code&gt;main&lt;/code&gt;：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;$@&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;当然，对于顺序执行的简短代码，加'main' 函数是适得其反的，并不需要。&lt;/p&gt;
+&lt;h2&gt;调用命令&lt;/h2&gt;
+&lt;h3&gt;检查返回值&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;总是检查返回值，并给出具体解释信息。&lt;/strong&gt;&lt;br&gt;
+对于非管道的命令，可以简单的使用&lt;code&gt;$?&lt;/code&gt; 或使用&lt;code&gt;if&lt;/code&gt; 语句直接检查返回值。&lt;br&gt;
+例：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;if&lt;span class="w"&gt; &lt;/span&gt;!&lt;span class="w"&gt; &lt;/span&gt;mv&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;file_list&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;dest_dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;;&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;  &lt;/span&gt;echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;Unable&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;move&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;file_list&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;dest_dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="err"&gt;&amp;amp;&lt;/span&gt;2
+&lt;span class="w"&gt;  &lt;/span&gt;exit&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;E_BAD_MOVE&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+fi
+
+#&lt;span class="w"&gt; &lt;/span&gt;Or
+mv&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;file_list&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;dest_dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&amp;quot;
+if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;$?&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;-ne&lt;span class="w"&gt; &lt;/span&gt;0&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;  &lt;/span&gt;echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;Unable&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;move&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;file_list&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;dest_dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="err"&gt;&amp;amp;&lt;/span&gt;2
+&lt;span class="w"&gt;  &lt;/span&gt;exit&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;E_BAD_MOVE&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+fi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Bash 也有一个&lt;code&gt;PIPESTATUS&lt;/code&gt; 的变量，可以通过它检查管道中各部分的返回值。如果你仅仅需要检查整条管道的执行成功或失败，可以参考下列做法：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;tar&lt;span class="w"&gt; &lt;/span&gt;-cf&lt;span class="w"&gt; &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;./*&lt;span class="w"&gt; &lt;/span&gt;|&lt;span class="w"&gt; &lt;/span&gt;(&lt;span class="w"&gt; &lt;/span&gt;cd&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="nb"&gt;dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;tar&lt;span class="w"&gt; &lt;/span&gt;-xf&lt;span class="w"&gt; &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;)
+if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PIPESTATUS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;-ne&lt;span class="w"&gt; &lt;/span&gt;0&lt;span class="w"&gt; &lt;/span&gt;||&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PIPESTATUS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;-ne&lt;span class="w"&gt; &lt;/span&gt;0&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;  &lt;/span&gt;echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;Unable&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;tar&lt;span class="w"&gt; &lt;/span&gt;files&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="nb"&gt;dir&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="err"&gt;&amp;amp;&lt;/span&gt;2
+fi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;然而，当你执行其他命令后&lt;code&gt;PIPESTATUS&lt;/code&gt;就会被覆盖，如果你需要根据管道中不同部分发生的错误执行不同的动作，你需要在执行完命令之后立即将&lt;code&gt;PIPESTATUS&lt;/code&gt; 赋值给一个变量（不要忘记 &lt;code&gt;[&lt;/code&gt; 也是一个命令，抹除&lt;code&gt;PIPESTATUS&lt;/code&gt;的内容）。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;tar&lt;span class="w"&gt; &lt;/span&gt;-cf&lt;span class="w"&gt; &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;./*&lt;span class="w"&gt; &lt;/span&gt;|&lt;span class="w"&gt; &lt;/span&gt;(&lt;span class="w"&gt; &lt;/span&gt;cd&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;DIR&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;tar&lt;span class="w"&gt; &lt;/span&gt;-xf&lt;span class="w"&gt; &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;)
+return_codes=(&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PIPESTATUS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;)
+if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;return_codes&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;-ne&lt;span class="w"&gt; &lt;/span&gt;0&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;  &lt;/span&gt;do_something
+fi
+if&lt;span class="w"&gt; &lt;/span&gt;[[&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;return_codes&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;-ne&lt;span class="w"&gt; &lt;/span&gt;0&lt;span class="w"&gt; &lt;/span&gt;]];&lt;span class="w"&gt; &lt;/span&gt;then
+&lt;span class="w"&gt;  &lt;/span&gt;do_something_else
+fi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;内建命令 vs 外部命令&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;在选择调用内建命令还是外部程序时，选择内建命令。&lt;/strong&gt;&lt;br&gt;
+我们推荐使用&lt;a href="http://linux.die.net/man/1/bash"&gt;bash(1)&lt;/a&gt;中「Parameter Expansion」部分提到的内建命令，因为内建命令更加可靠和可移植（特别是和sed 之类的命令相比）。&lt;br&gt;
+例：  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#&lt;span class="w"&gt; &lt;/span&gt;Prefer&lt;span class="w"&gt; &lt;/span&gt;this:
+addition=$((&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;Y&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;))
+substitution=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="c1"&gt;#foo/bar&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+
+#&lt;span class="w"&gt; &lt;/span&gt;Instead&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;this:
+addition=&amp;quot;$(expr&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;Y&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;)&amp;quot;
+substitution=&amp;quot;$(echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&lt;span class="w"&gt; &lt;/span&gt;|&lt;span class="w"&gt; &lt;/span&gt;sed&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;&amp;#39;s/^foo/bar/&amp;#39;)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;总结&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;始终遵循常识。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;请花几分钟阅读&lt;a href="https://google.github.io/styleguide/cppguide.html"&gt;C++ Guide&lt;/a&gt; 底部的Parting Words 部分。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;临别赠言&lt;/p&gt;
+&lt;p&gt;始终遵循常识。&lt;/p&gt;
+&lt;p&gt;当你编码时，花几分钟阅读一下其他代码，并熟悉它的风格。如果他们在if 条件从句中使用空格，那么你也应该这样做。如果他们的注释由星号组成的盒子围着，那么你也应该这样做。  &lt;/p&gt;
+&lt;p&gt;编程风格指南是为了提供一个通用的编程规范，以便人们可以集中精力在编码实现上，而不是考虑代码形式上。我们展示了整体上的风格规范，另外局部的风格也同样重要。如果你在一个文件
+中添加的代码的风格和原来的风格差异巨大，当阅读这份代码时，整体的韵味就被破坏了。请尽量避免这样做。&lt;/p&gt;
+&lt;p&gt;好了，关于编程风格指南写的够多了，代码本身更加有趣。尽情享受吧！&lt;/p&gt;
+&lt;/blockquote&gt;</content><category term="2016"></category><category term="Shell"></category></entry><entry><title>cronic脚本修正</title><link href="https://fangpsh.github.io/posts/2015/2015-07-13.html" rel="alternate"></link><published>2015-07-13T00:00:00+08:00</published><updated>2015-07-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-07-13:/posts/2015/2015-07-13.html</id><summary type="html">&lt;p&gt;实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出），都会发送邮件通知，并且还需要在每台机器上配置smtp，非常麻烦。所以想着就在前面直接套了个脚本，如果任务异常，用curl调一下远程服务的api发送邮件即可。&lt;/p&gt;
 &lt;p&gt;找到这样一份shell脚本-- &lt;a href="http://habilis.net/cronic/"&gt;Cronic&lt;/a&gt;，不过这份脚本不满足一些需求，并在部署测试的时候遇到一些bug，修正如下。&lt;/p&gt;
 &lt;p&gt;上文脚本链接中的例子是：  &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="mf"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cronic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;backup&lt;/span&gt;
@@ -329,4 +1068,43 @@ HPBN的在这一章的建议是用物理机，纯CPU计算卸载，举了Google�
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;完整脚本见 &lt;a href="https://gist.github.com/fangpsh/688b56c029147f44d879"&gt;cronic.sh&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;另外有一个Python版本的，见 &lt;a href="http://www.zlovezl.cn/articles/pycronic-makes-crontab-emails-painless/"&gt;pycronic: 使crontab的报警更无痛&lt;/a&gt;。&lt;/p&gt;</content><category term="2015"></category><category term="crontab"></category><category term="cronic"></category><category term="bash"></category></entry></feed>
+&lt;p&gt;另外有一个Python版本的，见 &lt;a href="http://www.zlovezl.cn/articles/pycronic-makes-crontab-emails-painless/"&gt;pycronic: 使crontab的报警更无痛&lt;/a&gt;。&lt;/p&gt;</content><category term="2015"></category><category term="crontab"></category><category term="cronic"></category><category term="bash"></category></entry><entry><title>尝试解决openSUSE下zypper软件包名称自动补全的问题</title><link href="https://fangpsh.github.io/posts/2014/141216.html" rel="alternate"></link><published>2014-12-16T11:13:19+08:00</published><updated>2014-12-16T11:13:19+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-12-16:/posts/2014/141216.html</id><summary type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外顺带修了一个小bug，当本地repo超过10条时，原来脚本生成的自动补全列表不全的问题。&lt;/p&gt;
+&lt;p&gt;bash自带补全功能，要达到更好的补全效果需要安装bash-completion这个软件包，然后编写对应的补全脚本。关于bash-completion的内容，可以参考以下两个链接：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://kodango.com/bash-competion-programming"&gt;编写 Bash 补全脚本&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.debian-administration.org/article/317/An_introduction_to_bash_completion_part_2"&gt;An introduction to bash completion: part 2&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;软件包名词的自动补全问题主要就是怎么快速的获取软件包的名称，然后作为列表供选。
+一开始我是用zypper search 来获取，速度不堪忍受，（apt-get,aptitude 等的自动补全脚本是用apt-cache来获取，速度很快）。&lt;/p&gt;
+&lt;p&gt;zypper se方式的脚本片段：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;download&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;[@]&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;echo&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LC_ALL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;POSIX&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$ZYPPER&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;se&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$curl&lt;/span&gt;&lt;span class="s2"&gt;*&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;/dev/null&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;1,5&amp;#39;&lt;/span&gt;d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;|&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;tr&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; &amp;#39;&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
+remove&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rm&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;[@]&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;echo&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LC_ALL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;POSIX&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$ZYPPER&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;se&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$curl&lt;/span&gt;&lt;span class="s2"&gt;*&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;/dev/null&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;1,5&amp;#39;&lt;/span&gt;d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;|&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;tr&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; &amp;#39;&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
+update&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;up&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;[@]&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;echo&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LC_ALL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;POSIX&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$ZYPPER&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;list-updates&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;1,4&amp;#39;&lt;/span&gt;d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;|&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;tr&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; &amp;#39;&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;后来看了下libzypp，又看到 zypp-NameReqPrv 这个工具，试了下，速度快了一些，基本可以用了，不过感觉还不是太理想，特别是zypper install 的时候，如果列表生成的数组过大，还是有点卡顿，瓶颈在要对zypp-NameReqPrv的输出结果做过滤。&lt;br&gt;
+不知道还有没有更快的方式来获取软件列表，难道只能使用libzypp来编写？&lt;br&gt;
+另外如果使用zsh，并且使用了on-my-zsh的话好像是可以自动补全。第一次补全时会有明显的卡顿，后面再使用就很流畅了，可能做了缓存？ 不知道是怎么做到的，可以学习学习，然后迁移到bash下。  &lt;/p&gt;
+&lt;p&gt;zypp-NameReqPrv 方式的脚本片段：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;download&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$cur&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;[@]&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;echo&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LC_ALL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;POSIX&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$ZYPPNameReqPrv&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$cur&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;-E&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;^［:blank:］*[0-9]+［:blank:］+&lt;/span&gt;&lt;span class="nv"&gt;$cur&lt;/span&gt;&lt;span class="s2"&gt;[a-Z0-9]*-&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;                           &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sed&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;s/-[0-9]+\..*//&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;sort&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
+
+remove&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rm&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;update&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;up&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$cur&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;[@]&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;echo&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LC_ALL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;POSIX&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$ZYPPNameReqPrv&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--installed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$cur&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;-E&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;^［:blank:］*[0-9]+［:blank:］+&lt;/span&gt;&lt;span class="nv"&gt;$cur&lt;/span&gt;&lt;span class="s2"&gt;[a-Z0-9]*-&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;                              &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sed&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;s/-[0-9]+\..*//&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;sort&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;使用openSUSE + bash 的同学可以试一试，把&lt;a href="https://gist.github.com/fangpsh/86e13a771ccea24a206b"&gt;这份脚本&lt;/a&gt;拷贝至 &lt;code&gt;/etc/bash_completion.d/&lt;/code&gt; 下 。&lt;/p&gt;</content><category term="2014"></category><category term="opensuse"></category><category term="bash"></category></entry></feed>
