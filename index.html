@@ -25,6 +25,26 @@
 <section id="content" class="content">
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2020/2020-10-04.html" rel="bookmark" title="Permalink to Python requests 高级用法：timeouts、retries、hooks">Python requests 高级用法：timeouts、retries、hooks</a></h2> </header>
+                <div class="entry-content"> <p><img alt="python-requests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185617.png"></p>
+<ul>
+<li>原文地址：<a href="https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/">findwork.dev</a></li>
+<li>作者：Dani Hodovic</li>
+</ul>
+<p>在我使用的所有编程语言中，Python 的HTTP 库 <a href="https://requests.readthedocs.io/en/master/">requests</a> 是我最喜欢的HTTP 工具。它简单，直观，在Python 社区中无处不在 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2020/2020-09-09.html" rel="bookmark" title="Permalink to 一个双向MTR仅单向丢包的问题">一个双向MTR仅单向丢包的问题</a></h2> </header>
+                <div class="entry-content"> <p>现象:</p>
+<ol>
+<li>A 机器ping B 机器丢包，触发A MTR B，最后一跳丢包；</li>
+<li>B 机器ping A 机器丢包，触发B MTR A，最后一跳不丢包；</li>
+</ol>
+<p><img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png">
+<img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"></p>
+<p>按照之前的理解 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2020/2020-03-12.html" rel="bookmark" title="Permalink to 搭建IPv6 Only 测试环境">搭建IPv6 Only 测试环境</a></h2> </header>
                 <div class="entry-content"> <p><img alt="baidu.com" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184346.png"></p>
 <p>macOS 可以开启<a href="https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/NetworkingOverview/UnderstandingandPreparingfortheIPv6Transition/UnderstandingandPreparingfortheIPv6Transition.html">DNS64/NAT64</a>，
@@ -33,6 +53,17 @@
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-11-04.html" rel="bookmark" title="Permalink to ANAME、CNAME、DNAME">ANAME、CNAME、DNAME</a></h2> </header>
                 <div class="entry-content"> <p><a href="https://en.wikipedia.org/wiki/CNAME_record">CNAME</a> 很常见，一般人都很熟悉，将一个域名映射到另外一个域名。但是CNAME 有个限制，顶级域名（apex domain）不建议设置CNAME，因为会和MX 记 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-11-3.html" rel="bookmark" title="Permalink to IPv6-Test DNS 测试">IPv6-Test DNS 测试</a></h2> </header>
+                <div class="entry-content"> <p><img alt="ipv6-test" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185431.png"></p>
+<p>最近在折腾办公室的IPv6 环境，通过<a href="http://ipv6-test.com/">ipv6-test.com</a>测试的时候，对页面内的“DNS”的测试结果有点疑问。  </p>
+<ol>
+<li>DNS4 + IP6<ul>
+<li>Connectivity to an IPv6 address served by an IPv4-only name server</li>
+</ul>
+</li>
+<li>DNS6 …</li></ol> </div><!-- entry-content -->
         </article>
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="bookmark" title="Permalink to echo 输出导致SCP 失效的问题">echo 输出导致SCP 失效的问题</a></h2> </header>
@@ -60,18 +91,6 @@
                 <div class="entry-content"> <p><img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"></p>
 <p>看<a href="https://book.douban.com/subject/25856314/">《Web 性能权威指南》</a>的起因是在看<a href="https://book.douban.com/subject/26869219/">《HTTPS 权威指南》</a>的时候，看到优化相关的，然后就延伸到想看一下这本书。<br>
 这本书，作者提供了 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-05-23.html" rel="bookmark" title="Permalink to 记一个退出终端进程不退出的问题">记一个退出终端进程不退出的问题</a></h2> </header>
-                <div class="entry-content"> <p>某一天开发同学问了一个问题，他们在线上跑一个job，没用screen，nohup，把iTerm 窗口关了，job 没挂。再登录进去看，PPID 变成1，即进程被init …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-04-13.html" rel="bookmark" title="Permalink to Google Shell 编程风格指南">Google Shell 编程风格指南</a></h2> </header>
-                <div class="entry-content"> <p>google shell编程风格指南翻译</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2015/2015-07-13.html" rel="bookmark" title="Permalink to cronic脚本修正">cronic脚本修正</a></h2> </header>
-                <div class="entry-content"> <p>实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

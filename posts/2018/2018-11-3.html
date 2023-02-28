@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>IPv6-Test DNS 测试 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-11-3.html" rel="bookmark"
+         title="Permalink to IPv6-Test DNS 测试">IPv6-Test DNS 测试</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="ipv6-test" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185431.png"></p>
+<p>最近在折腾办公室的IPv6 环境，通过<a href="http://ipv6-test.com/">ipv6-test.com</a>测试的时候，对页面内的“DNS”的测试结果有点疑问。  </p>
+<ol>
+<li>DNS4 + IP6<ul>
+<li>Connectivity to an IPv6 address served by an IPv4-only name server</li>
+</ul>
+</li>
+<li>DNS6 + IP4<ul>
+<li>Connectivity to an IPv4 address served by an IPv6-only name server</li>
+</ul>
+</li>
+<li>DNS6 + IP6<ul>
+<li>Connectivity to an IPv6 address served by an IPv6-only name server</li>
+</ul>
+</li>
+</ol>
+<p>看下页面的网络请求，三种测试用例分别请求的地址：</p>
+<ol>
+<li>DNS4 + IP6<ul>
+<li>v6.zone4.ipv6-test.com</li>
+<li>AAAA 记录：2001:41d0:8:e8ad::1</li>
+</ul>
+</li>
+<li>DNS6 + IP4<ul>
+<li>v4.zone6.ipv6-test.com</li>
+<li>A 记录：5.135.165.173</li>
+</ul>
+</li>
+<li>DNS6 + IP6<ul>
+<li>v6.zone6.ipv6-test.com</li>
+<li>AAAA 记录：2001:41d0:8:e8ad::1</li>
+</ul>
+</li>
+</ol>
+<p>其实还有个<code>DNS4 + IP4</code>，没啥好测试的嘛。</p>
+<p>明白了，三种测试用例，DNS4/6 表示的是权威服务器的网络环境，要么是IPv4，要么是IPv6；IP4/6 只是其实分别是A和AAAA 记录。测试的其实是本地local dns 对</p>
+<ol>
+<li>权威服务器托管在IPv4 环境，通过AAAA记录（IPv6 网络）访问</li>
+<li>权威服务器托管在IPv6 环境，通过A记录（IPv4 网络）访问</li>
+<li>权威服务器托管在IPv6 环境，通过AAAA（IPv4 网络）访问</li>
+</ol>
+<p>所以，如果你是IPv4 网络的话，1、3 测试肯定是失败的，IPv6 不通嘛，但是2 可能能够成功，因为你的local dns 出口可能是能够访问IPv6 环境的，如果不行的话，换成<code>8.8.8.8</code> 试一试？</p>
+<p>我在电信的IPv6 环境下测试发现3 失败了，电信还没给IPv6 的DNS，默认的IPv4 的DNS 也不能访问到纯IPv6 环境的权威服务器，手动加个Google 的<code>2001:4860:4860::8888</code> 就好了。</p>
+<p>IPv6 要推广了，相关的一堆基础知识得抓紧补了，地址格式、SLAAC、DHCPv6、ICMPv6...想起大学计网老师居然自动跳过了IPv6 这一章！</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-11-03T00:00:00+08:00">
+      Sat 03 November 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/ipv6.html">ipv6 </a><a href="https://fangpsh.github.io/tag/dns.html">dns </a><a href="https://fangpsh.github.io/tag/network.html">network </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Python requests 高级用法：timeouts、retries、hooks - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2020/2020-10-04.html" rel="bookmark"
+         title="Permalink to Python requests 高级用法：timeouts、retries、hooks">Python requests 高级用法：timeouts、retries、hooks</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="python-requests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185617.png"></p>
+<ul>
+<li>原文地址：<a href="https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/">findwork.dev</a></li>
+<li>作者：Dani Hodovic</li>
+</ul>
+<p>在我使用的所有编程语言中，Python 的HTTP 库 <a href="https://requests.readthedocs.io/en/master/">requests</a> 是我最喜欢的HTTP 工具。它简单，直观，在Python 社区中无处不在。大多数与HTTP 交互的程序要么使用它，要么使用标准库的urllib3。</p>
+<p>由于简单的API ，requests 非常容易上手，不仅如此，在高级使用场景，它也有非常强的可扩展性。如果你在编写一个频繁调用API的客户端，或者一个网络爬虫，你需要能容忍网络异常，需要有效的debug 跟踪信息，还需要一些语法糖。</p>
+<p>以下是我在编写大量调用JSON API 的网络爬虫或者程序时，从requests 中发掘出的一些有用的功能特性汇总。</p>
+<ul>
+<li><a href="#请求钩子">请求钩子</a></li>
+<li><a href="#设置baseurl">设置BaseUrl</a></li>
+<li><a href="#设置默认超时">设置默认超时</a></li>
+<li><a href="#失败时重试">失败时重试</a></li>
+<li><a href="#结合超时和重试">结合超时和重试</a></li>
+<li><a href="#调试-http-请求">调试 HTTP 请求</a></li>
+<li><a href="#打印http-header">打印HTTP Header</a></li>
+<li><a href="#打印所有信息">打印所有信息</a></li>
+<li><a href="#测试和伪装请求">测试和伪装请求</a></li>
+<li><a href="#模仿浏览器行为">模仿浏览器行为</a></li>
+</ul>
+<h2>请求钩子</h2>
+<p>在使用第三方API接口的时候，你通常都想要验证返回响应是否有效。Requests 提供了一个快捷的方法 <code>raise_for_status()</code>，它确保响应的HTTP 状态码不是4xx 或者5xx，即请求未触发客户端或服务器错误。</p>
+<p>举个例子：</p>
+<div class="highlight"><pre><span></span><code><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/user/repos?page=1&#39;</span><span class="p">)</span>
+<span class="c1"># 确保此处无错误</span>
+<span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+</code></pre></div>
+
+<p>每次请求都需要调用<code>raise_for_status()</code>，太繁复了。幸运的是，requests 库提供了一个类似“钩子”的接口，你可以在请求的各个阶段添加回调。</p>
+<p>我们可以用钩子来确保每个响应对象都调用<code>raise_for_status()</code>。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 创建一个自定义的requests 对象，修改全局模块抛出异常</span>
+
+<span class="n">http</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+<span class="n">assert_status_hook</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">response</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+<span class="n">http</span><span class="o">.</span><span class="n">hooks</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">assert_status_hook</span><span class="p">]</span>
+
+<span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.github.com/user/repos?page=1&quot;</span><span class="p">)</span>
+
+<span class="o">&gt;</span> <span class="n">HTTPError</span><span class="p">:</span> <span class="mi">401</span> <span class="n">Client</span> <span class="n">Error</span><span class="p">:</span> <span class="n">Unauthorized</span> <span class="k">for</span> <span class="n">url</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">api</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">repos</span><span class="err">?</span><span class="n">page</span><span class="o">=</span><span class="mi">1</span>
+</code></pre></div>
+
+<h2>设置BaseUrl</h2>
+<p>假设你仅使用api.org 上的API。每次http 调用，你都需要重复写协议和域名：</p>
+<div class="highlight"><pre><span></span><code><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.org/list/&#39;</span><span class="p">)</span>
+<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.org/list/3/item&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>你可以通过使用<a href="https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession">BaseUrlSession</a> 少打一些字。它允许你为HTTP 客户端指定基础的url，这样每次请求时候只需要指定资源路径。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">requests_toolbelt</span> <span class="kn">import</span> <span class="n">sessions</span>
+<span class="n">http</span> <span class="o">=</span> <span class="n">sessions</span><span class="o">.</span><span class="n">BaseUrlSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://api.org&quot;</span><span class="p">)</span>
+<span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/list&quot;</span><span class="p">)</span>
+<span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/list/item&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>注意默认安装的requests 不包含<a href="https://github.com/requests/toolbelt">requests toolbelt</a>，你需要单独安装它。</p>
+<h2>设置默认超时</h2>
+<p>requests 文档<a href="https://requests.readthedocs.io/en/master/user/quickstart/#timeouts">建议</a> 你在所有生产环境的代码中都设置超时。如果忘记设置超时，异常的外部服务会导致你的应用hang 住，尤其大多数的Python 代码是同步的。</p>
+<div class="highlight"><pre><span></span><code><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://github.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</code></pre></div>
+
+<p>但是这样做非常重复，容易遗漏。未来某一天当你发现是由于某人忘记设置超时导致生产环境的程序停止时，你会大发雷霆。</p>
+<p><img alt="giphy" src="https://media.giphy.com/media/6IZzimIQN8guI/giphy.gif"></p>
+<p>我们可以使用<a href="https://requests.readthedocs.io/en/master/user/advanced/#transport-adapters">Transport Adapters</a> 为每个HTTP 请求设置默认超时时间。
+它可以确保即使开发人员忘记在他的调用中设置 timeout=1 参数，也设置了一个合理的超时时间，并且每次调用都可以覆盖它。</p>
+<p>下文是一个配置了默认超时的自定义 Transport Adapter  例子，灵感来自<a href="https://github.com/kennethreitz/requests/issues/3070#issuecomment-205070203">这条Github 评论</a>。在构建http 客户端和send() 方法时，我们重写了构造函数，提供了一个默认的超时时间，以确保当未传递timeout 参数时 会使用默认的超时时。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">requests.adapters</span> <span class="kn">import</span> <span class="n">HTTPAdapter</span>
+
+<span class="n">DEFAULT_TIMEOUT</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># seconds</span>
+
+<span class="k">class</span> <span class="nc">TimeoutHTTPAdapter</span><span class="p">(</span><span class="n">HTTPAdapter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">DEFAULT_TIMEOUT</span>
+        <span class="k">if</span> <span class="s2">&quot;timeout&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;timeout&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+
+<p>可以这样使用它：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">http</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+<span class="c1"># 挂载到 http、https </span>
+<span class="n">adapter</span> <span class="o">=</span> <span class="n">TimeoutHTTPAdapter</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="n">http</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+<span class="n">http</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+
+<span class="c1"># 使用默认超时： 2.5s </span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.twilio.com/&quot;</span><span class="p">)</span>
+
+<span class="c1"># 为特定请求覆盖超时时间</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.twilio.com/&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+
+<h2>失败时重试</h2>
+<p>我们常常会遇到网络连接中断，拥塞，或者服务器故障。如果想编写一个强大的软件，我们必须考虑到失败的情况，并指定重试策略。</p>
+<p>给HTTP 客户端添加重试策略非常简单。我们可以创建一个 HTTPAdapter，传入我们的重试策略。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">requests.packages.urllib3.util.retry</span> <span class="kn">import</span> <span class="n">Retry</span>
+
+<span class="n">retry_strategy</span> <span class="o">=</span> <span class="n">Retry</span><span class="p">(</span>
+    <span class="n">total</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">status_forcelist</span><span class="o">=</span><span class="p">[</span><span class="mi">429</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">],</span>
+    <span class="n">method_whitelist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">adapter</span> <span class="o">=</span> <span class="n">HTTPAdapter</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="n">retry_strategy</span><span class="p">)</span>
+<span class="n">http</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">http</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+<span class="n">http</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://en.wikipedia.org/w/api.php&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>默认的Retry 类已经有合理的默认值，不过它是<strong>深度</strong>可定制化的，以下是一些我常用到的参数。</p>
+<p>以下参数也包含requests 库的默认参数。</p>
+<div class="highlight"><pre><span></span><code><span class="n">total</span><span class="o">=</span><span class="mi">10</span>
+</code></pre></div>
+
+<p>重试总次数。如果失败的请求数或重定向次数达到该值，客户端会抛出<code>urllib3.exceptions.MaxRetryError</code> 异常。我会根据我调用的API 来调整这个参数，不过我通常将其设置为小于10，一般3次重试就足够了。</p>
+<div class="highlight"><pre><span></span><code><span class="n">status_forcelist</span><span class="o">=</span><span class="p">[</span><span class="mi">413</span><span class="p">,</span> <span class="mi">429</span><span class="p">,</span> <span class="mi">503</span><span class="p">]</span>
+</code></pre></div>
+
+<p>重试的HTTP 响应状态码。你可能想对<strong>常见的服务器错误（500，502，503，504）</strong> 都进行重试，因为服务器或者反向代理不遵循HTTP 规范。429 超出频率限制时总重试的原因是，urllib 库对于失败请求会有渐进性的退避策略，所以无碍。</p>
+<div class="highlight"><pre><span></span><code><span class="n">method_whitelist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;TRACE&quot;</span><span class="p">]</span>
+</code></pre></div>
+
+<p>重试的HTTP 方法。默认情况下，该参数包含除了POST 之外的所有HTTP 方法，因为POST 会导致新增。<strong>修改该参数增加POST</strong> 是因为大多数我接触过的API 都都不会返回错误码，并且不会在相同的调用中执行新增。如果不是这样，你最好给他们提个bug。</p>
+<div class="highlight"><pre><span></span><code><span class="n">backoff_factor</span><span class="o">=</span><span class="mi">0</span>
+</code></pre></div>
+
+<p>这个参数很有趣。它允许你修改进程在失败请求之间的休眠时间。算法是这样的：</p>
+<div class="highlight"><pre><span></span><code>{backoff factor} * (2 ** ({number of total retries} - 1))
+</code></pre></div>
+
+<p>举个例子，如果退避因子设置为：</p>
+<ul>
+<li>1秒，休眠时间依次为<code>0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256</code></li>
+<li>2秒 - <code>1, 2, 4, 8, 16, 32, 64, 128, 256, 512</code></li>
+<li>10秒 - <code>5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560</code></li>
+</ul>
+<p>值呈指数增长，是<a href="https://stackoverflow.com/a/28732630/2966951">重试策略</a> 的合理实现。</p>
+<p>这个参数默认是0，意味着不会设置指数退避，重试会立即执行。<strong>确保它被设置为1，以免击垮你的服务器！</strong>。</p>
+<p>重试模块的完整文档在<a href="https://urllib3.readthedocs.io/en/latest/reference/urllib3.util.html#module-urllib3.util.retry">这里</a>。</p>
+<h3>结合超时和重试</h3>
+<p>因为HTTPAdapter 是一样的，我们可以把重试和超时像下面这样结合起来：</p>
+<div class="highlight"><pre><span></span><code><span class="n">retries</span> <span class="o">=</span> <span class="n">Retry</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">backoff_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">status_forcelist</span><span class="o">=</span><span class="p">[</span><span class="mi">429</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">])</span>
+<span class="n">http</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="n">TimeoutHTTPAdapter</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="n">retries</span><span class="p">))</span>
+</code></pre></div>
+
+<h2>调试 HTTP 请求</h2>
+<p>有时请求失败，但是你无法找出原因。记录请求和响应或许能帮助你查明失败原因。有两种方法可以做到，使用内置的debug 日志配置，或者使用请求钩子。</p>
+<h3>打印HTTP Header</h3>
+<p>将日志调试等级调整到大于0，就会记录响应的HTTP Header。这是最简单的选项，但是它没法让你看到HTTP 请求和响应的包体。如果你调用的API会返回超大的包体或不合适打印出来，例如包含二进制内容，这个选项很有用。</p>
+<p>任何大于0 的日志等级，都会开启调制日志。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">http</span>
+
+<span class="n">http</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="o">.</span><span class="n">debuglevel</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.google.com/&quot;</span><span class="p">)</span>
+
+<span class="c1"># 输出</span>
+<span class="n">send</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;GET / HTTP/1.1</span><span class="se">\r\n</span><span class="s1">Host: www.google.com</span><span class="se">\r\n</span><span class="s1">User-Agent: python-requests/2.22.0</span><span class="se">\r\n</span><span class="s1">Accept-Encoding: gzip, deflate</span><span class="se">\r\n</span><span class="s1">Accept: */*</span><span class="se">\r\n</span><span class="s1">Connection: keep-alive</span><span class="se">\r\n\r\n</span><span class="s1">&#39;</span>
+<span class="n">reply</span><span class="p">:</span> <span class="s1">&#39;HTTP/1.1 200 OK</span><span class="se">\r\n</span><span class="s1">&#39;</span>
+<span class="n">header</span><span class="p">:</span> <span class="n">Date</span><span class="p">:</span> <span class="n">Fri</span><span class="p">,</span> <span class="mi">28</span> <span class="n">Feb</span> <span class="mi">2020</span> <span class="mi">12</span><span class="p">:</span><span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="n">GMT</span>
+<span class="n">header</span><span class="p">:</span> <span class="n">Expires</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">header</span><span class="p">:</span> <span class="n">Cache</span><span class="o">-</span><span class="n">Control</span><span class="p">:</span> <span class="n">private</span><span class="p">,</span> <span class="nb">max</span><span class="o">-</span><span class="n">age</span><span class="o">=</span><span class="mi">0</span>
+</code></pre></div>
+
+<h3>打印所有信息</h3>
+<p>如果你想打印整个HTTP 生命周期，包括请求和响应内容的文本内容，你可以使用请求钩子和requests_toolbelt 中的dump 工具。</p>
+<p>当我调用不会返回很多的响应内容的REST API 时，我更喜欢用这个选项。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">requests_toolbelt.utils</span> <span class="kn">import</span> <span class="n">dump</span>
+
+<span class="k">def</span> <span class="nf">logging_hook</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dump</span><span class="o">.</span><span class="n">dump_all</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+
+<span class="n">http</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">http</span><span class="o">.</span><span class="n">hooks</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">logging_hook</span><span class="p">]</span>
+
+<span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.openaq.org/v1/cities&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;BA&quot;</span><span class="p">})</span>
+
+<span class="c1"># 参考</span>
+<span class="o">&lt;</span> <span class="n">GET</span> <span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">cities</span><span class="err">?</span><span class="n">country</span><span class="o">=</span><span class="n">BA</span> <span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span>
+<span class="o">&lt;</span> <span class="n">Host</span><span class="p">:</span> <span class="n">api</span><span class="o">.</span><span class="n">openaq</span><span class="o">.</span><span class="n">org</span>
+
+<span class="o">&gt;</span> <span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span> <span class="mi">200</span> <span class="n">OK</span>
+<span class="o">&gt;</span> <span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="p">:</span> <span class="n">application</span><span class="o">/</span><span class="n">json</span><span class="p">;</span> <span class="n">charset</span><span class="o">=</span><span class="n">utf</span><span class="o">-</span><span class="mi">8</span>
+<span class="o">&gt;</span> <span class="n">Transfer</span><span class="o">-</span><span class="n">Encoding</span><span class="p">:</span> <span class="n">chunked</span>
+<span class="o">&gt;</span> <span class="n">Connection</span><span class="p">:</span> <span class="n">keep</span><span class="o">-</span><span class="n">alive</span>
+<span class="o">&gt;</span>
+<span class="p">{</span>
+   <span class="s2">&quot;meta&quot;</span><span class="p">:{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;openaq-api&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;license&quot;</span><span class="p">:</span><span class="s2">&quot;CC BY 4.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;website&quot;</span><span class="p">:</span><span class="s2">&quot;https://docs.openaq.org/&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;page&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+      <span class="s2">&quot;limit&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span>
+      <span class="s2">&quot;found&quot;</span><span class="p">:</span><span class="mi">1</span>
+   <span class="p">},</span>
+   <span class="s2">&quot;results&quot;</span><span class="p">:[</span>
+      <span class="p">{</span>
+         <span class="s2">&quot;country&quot;</span><span class="p">:</span><span class="s2">&quot;BA&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Goražde&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;city&quot;</span><span class="p">:</span><span class="s2">&quot;Goražde&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;count&quot;</span><span class="p">:</span><span class="mi">70797</span><span class="p">,</span>
+         <span class="s2">&quot;locations&quot;</span><span class="p">:</span><span class="mi">1</span>
+      <span class="p">}</span>
+   <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>参考 https://toolbelt.readthedocs.io/en/latest/dumputils.html</p>
+<h2>测试和伪装请求</h2>
+<p>使用第三方API 会给开发人员带来一个痛点，它们很难进行单元测试。<a href="https://sentry.io/">Sentry</a> 的工程师通过写了一个库来伪装请求，减轻了开发过程中的痛苦。</p>
+<p>无需发送请求到服务器，<a href="https://github.com/getsentry/responses">getsentry/responses</a> 截获了HTTP 请求并返回一个你的测试过程中添加的预先定义好的内容。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">responses</span>
+
+
+<span class="k">class</span> <span class="nc">TestAPI</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="nd">@responses</span><span class="o">.</span><span class="n">activate</span>  <span class="c1"># intercept HTTP calls within this method</span>
+    <span class="k">def</span> <span class="nf">test_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ch_1GH8so2eZvKYlo2CSMeAfRqt&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="s2">&quot;charge&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;customer&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;cu_1GGwoc2eZvKYlo2CL2m31GRn&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="s2">&quot;customer&quot;</span><span class="p">},</span>
+            <span class="p">}</span>
+        <span class="c1"># mock the Stripe API</span>
+        <span class="n">responses</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">responses</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span>
+            <span class="s2">&quot;https://api.stripe.com/v1/charges&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">response_data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.stripe.com/v1/charges&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> <span class="n">response_data</span><span class="p">)</span>
+</code></pre></div>
+
+<p>如果发出一个和伪装的响应不一致的请求，则会引发 ConnectionError。</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TestAPI</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="nd">@responses</span><span class="o">.</span><span class="n">activate</span>
+    <span class="k">def</span> <span class="nf">test_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">responses</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">responses</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="s2">&quot;https://api.stripe.com/v1/charges&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://invalid-request.com&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>输出</p>
+<div class="highlight"><pre><span></span><code><span class="n">requests</span><span class="p">.</span><span class="n">exceptions</span><span class="p">.</span><span class="nl">ConnectionError:</span><span class="w"> </span><span class="n">Connection</span><span class="w"> </span><span class="n">refused</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">Responses</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">call</span><span class="w"> </span><span class="n">doesn</span><span class="p">&#39;</span><span class="n">t</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">registered</span><span class="w"> </span><span class="n">mock</span><span class="p">.</span>
+
+<span class="nl">Request:</span>
+<span class="o">-</span><span class="w"> </span><span class="n">GET</span><span class="w"> </span><span class="nl">https:</span><span class="c1">//invalid-request.com/</span>
+
+<span class="n">Available</span><span class="w"> </span><span class="nl">matches:</span>
+<span class="o">-</span><span class="w"> </span><span class="n">GET</span><span class="w"> </span><span class="nl">https:</span><span class="c1">//api.stripe.com/v1/charges</span>
+</code></pre></div>
+
+<h2>模仿浏览器行为</h2>
+<p>如果你编写过足够多的web 爬虫代码，你会注意到某些网站会针对你是通过浏览器还是代码访问会返回不同的HTML。有时这是一种防爬虫的策略，但是通常是由于服务器会居于User-Agent 嗅探，找出最适合访问设备的内容（例如桌面端或移动端）。</p>
+<p>如果你想要服务器返回浏览器一样的内容，你可以重写请求的 User-Agent 头信息为FIrefox或Chrome。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="n">http</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">http</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0&quot;</span>
+<span class="p">})</span>
+</code></pre></div>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2020-10-04T00:00:00+08:00">
+      Sun 04 October 2020
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2020.html">2020</a> Tagged <a href="https://fangpsh.github.io/tag/python.html">Python </a><a href="https://fangpsh.github.io/tag/requests.html">Requests </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

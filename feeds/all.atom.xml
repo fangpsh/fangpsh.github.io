@@ -1,5 +1,351 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2020-03-12T00:00:00+08:00</updated><entry><title>搭建IPv6 Only 测试环境</title><link href="https://fangpsh.github.io/posts/2020/2020-03-12.html" rel="alternate"></link><published>2020-03-12T00:00:00+08:00</published><updated>2020-03-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-03-12:/posts/2020/2020-03-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="baidu.com" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184346.png"&gt;&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2020-10-04T00:00:00+08:00</updated><entry><title>Python requests 高级用法：timeouts、retries、hooks</title><link href="https://fangpsh.github.io/posts/2020/2020-10-04.html" rel="alternate"></link><published>2020-10-04T00:00:00+08:00</published><updated>2020-10-04T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-10-04:/posts/2020/2020-10-04.html</id><summary type="html">&lt;p&gt;&lt;img alt="python-requests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185617.png"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;原文地址：&lt;a href="https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/"&gt;findwork.dev&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;作者：Dani Hodovic&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在我使用的所有编程语言中，Python 的HTTP 库 &lt;a href="https://requests.readthedocs.io/en/master/"&gt;requests&lt;/a&gt; 是我最喜欢的HTTP 工具。它简单，直观，在Python 社区中无处不在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="python-requests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185617.png"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;原文地址：&lt;a href="https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/"&gt;findwork.dev&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;作者：Dani Hodovic&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在我使用的所有编程语言中，Python 的HTTP 库 &lt;a href="https://requests.readthedocs.io/en/master/"&gt;requests&lt;/a&gt; 是我最喜欢的HTTP 工具。它简单，直观，在Python 社区中无处不在。大多数与HTTP 交互的程序要么使用它，要么使用标准库的urllib3。&lt;/p&gt;
+&lt;p&gt;由于简单的API ，requests 非常容易上手，不仅如此，在高级使用场景，它也有非常强的可扩展性。如果你在编写一个频繁调用API的客户端，或者一个网络爬虫，你需要能容忍网络异常，需要有效的debug 跟踪信息，还需要一些语法糖。&lt;/p&gt;
+&lt;p&gt;以下是我在编写大量调用JSON API 的网络爬虫或者程序时，从requests 中发掘出的一些有用的功能特性汇总。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="#请求钩子"&gt;请求钩子&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#设置baseurl"&gt;设置BaseUrl&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#设置默认超时"&gt;设置默认超时&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#失败时重试"&gt;失败时重试&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#结合超时和重试"&gt;结合超时和重试&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#调试-http-请求"&gt;调试 HTTP 请求&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#打印http-header"&gt;打印HTTP Header&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#打印所有信息"&gt;打印所有信息&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#测试和伪装请求"&gt;测试和伪装请求&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#模仿浏览器行为"&gt;模仿浏览器行为&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;请求钩子&lt;/h2&gt;
+&lt;p&gt;在使用第三方API接口的时候，你通常都想要验证返回响应是否有效。Requests 提供了一个快捷的方法 &lt;code&gt;raise_for_status()&lt;/code&gt;，它确保响应的HTTP 状态码不是4xx 或者5xx，即请求未触发客户端或服务器错误。&lt;/p&gt;
+&lt;p&gt;举个例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;https://api.github.com/user/repos?page=1&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;# 确保此处无错误&lt;/span&gt;
+&lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;raise_for_status&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;每次请求都需要调用&lt;code&gt;raise_for_status()&lt;/code&gt;，太繁复了。幸运的是，requests 库提供了一个类似“钩子”的接口，你可以在请求的各个阶段添加回调。&lt;/p&gt;
+&lt;p&gt;我们可以用钩子来确保每个响应对象都调用&lt;code&gt;raise_for_status()&lt;/code&gt;。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# 创建一个自定义的requests 对象，修改全局模块抛出异常&lt;/span&gt;
+
+&lt;span class="n"&gt;http&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;assert_status_hook&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;raise_for_status&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hooks&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;response&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;assert_status_hook&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://api.github.com/user/repos?page=1&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;HTTPError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;401&lt;/span&gt; &lt;span class="n"&gt;Client&lt;/span&gt; &lt;span class="n"&gt;Error&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Unauthorized&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;api&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;github&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;repos&lt;/span&gt;&lt;span class="err"&gt;?&lt;/span&gt;&lt;span class="n"&gt;page&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;设置BaseUrl&lt;/h2&gt;
+&lt;p&gt;假设你仅使用api.org 上的API。每次http 调用，你都需要重复写协议和域名：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;https://api.org/list/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;https://api.org/list/3/item&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;你可以通过使用&lt;a href="https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession"&gt;BaseUrlSession&lt;/a&gt; 少打一些字。它允许你为HTTP 客户端指定基础的url，这样每次请求时候只需要指定资源路径。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;requests_toolbelt&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;sessions&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sessions&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;BaseUrlSession&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;base_url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://api.org&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/list&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/list/item&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;注意默认安装的requests 不包含&lt;a href="https://github.com/requests/toolbelt"&gt;requests toolbelt&lt;/a&gt;，你需要单独安装它。&lt;/p&gt;
+&lt;h2&gt;设置默认超时&lt;/h2&gt;
+&lt;p&gt;requests 文档&lt;a href="https://requests.readthedocs.io/en/master/user/quickstart/#timeouts"&gt;建议&lt;/a&gt; 你在所有生产环境的代码中都设置超时。如果忘记设置超时，异常的外部服务会导致你的应用hang 住，尤其大多数的Python 代码是同步的。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;https://github.com/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.001&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;但是这样做非常重复，容易遗漏。未来某一天当你发现是由于某人忘记设置超时导致生产环境的程序停止时，你会大发雷霆。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="giphy" src="https://media.giphy.com/media/6IZzimIQN8guI/giphy.gif"&gt;&lt;/p&gt;
+&lt;p&gt;我们可以使用&lt;a href="https://requests.readthedocs.io/en/master/user/advanced/#transport-adapters"&gt;Transport Adapters&lt;/a&gt; 为每个HTTP 请求设置默认超时时间。
+它可以确保即使开发人员忘记在他的调用中设置 timeout=1 参数，也设置了一个合理的超时时间，并且每次调用都可以覆盖它。&lt;/p&gt;
+&lt;p&gt;下文是一个配置了默认超时的自定义 Transport Adapter  例子，灵感来自&lt;a href="https://github.com/kennethreitz/requests/issues/3070#issuecomment-205070203"&gt;这条Github 评论&lt;/a&gt;。在构建http 客户端和send() 方法时，我们重写了构造函数，提供了一个默认的超时时间，以确保当未传递timeout 参数时 会使用默认的超时时。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;requests.adapters&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;HTTPAdapter&lt;/span&gt;
+
+&lt;span class="n"&gt;DEFAULT_TIMEOUT&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt; &lt;span class="c1"&gt;# seconds&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;TimeoutHTTPAdapter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HTTPAdapter&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DEFAULT_TIMEOUT&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;timeout&amp;quot;&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;timeout&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+            &lt;span class="k"&gt;del&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;timeout&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;timeout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;timeout&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;timeout&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;可以这样使用它：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+
+&lt;span class="n"&gt;http&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c1"&gt;# 挂载到 http、https &lt;/span&gt;
+&lt;span class="n"&gt;adapter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;TimeoutHTTPAdapter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;2.5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;http://&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# 使用默认超时： 2.5s &lt;/span&gt;
+&lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://api.twilio.com/&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# 为特定请求覆盖超时时间&lt;/span&gt;
+&lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://api.twilio.com/&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;失败时重试&lt;/h2&gt;
+&lt;p&gt;我们常常会遇到网络连接中断，拥塞，或者服务器故障。如果想编写一个强大的软件，我们必须考虑到失败的情况，并指定重试策略。&lt;/p&gt;
+&lt;p&gt;给HTTP 客户端添加重试策略非常简单。我们可以创建一个 HTTPAdapter，传入我们的重试策略。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;requests.packages.urllib3.util.retry&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Retry&lt;/span&gt;
+
+&lt;span class="n"&gt;retry_strategy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Retry&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;total&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;status_forcelist&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;429&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;500&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;502&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;503&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;504&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+    &lt;span class="n"&gt;method_whitelist&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;HEAD&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;GET&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;OPTIONS&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;adapter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;HTTPAdapter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;max_retries&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;retry_strategy&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;http://&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://en.wikipedia.org/w/api.php&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;默认的Retry 类已经有合理的默认值，不过它是&lt;strong&gt;深度&lt;/strong&gt;可定制化的，以下是一些我常用到的参数。&lt;/p&gt;
+&lt;p&gt;以下参数也包含requests 库的默认参数。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;total&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;重试总次数。如果失败的请求数或重定向次数达到该值，客户端会抛出&lt;code&gt;urllib3.exceptions.MaxRetryError&lt;/code&gt; 异常。我会根据我调用的API 来调整这个参数，不过我通常将其设置为小于10，一般3次重试就足够了。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;status_forcelist&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;413&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;429&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;503&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;重试的HTTP 响应状态码。你可能想对&lt;strong&gt;常见的服务器错误（500，502，503，504）&lt;/strong&gt; 都进行重试，因为服务器或者反向代理不遵循HTTP 规范。429 超出频率限制时总重试的原因是，urllib 库对于失败请求会有渐进性的退避策略，所以无碍。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;method_whitelist&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;HEAD&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;GET&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;PUT&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;DELETE&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;OPTIONS&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;TRACE&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;重试的HTTP 方法。默认情况下，该参数包含除了POST 之外的所有HTTP 方法，因为POST 会导致新增。&lt;strong&gt;修改该参数增加POST&lt;/strong&gt; 是因为大多数我接触过的API 都都不会返回错误码，并且不会在相同的调用中执行新增。如果不是这样，你最好给他们提个bug。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;backoff_factor&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这个参数很有趣。它允许你修改进程在失败请求之间的休眠时间。算法是这样的：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;{backoff factor} * (2 ** ({number of total retries} - 1))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;举个例子，如果退避因子设置为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1秒，休眠时间依次为&lt;code&gt;0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;2秒 - &lt;code&gt;1, 2, 4, 8, 16, 32, 64, 128, 256, 512&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;10秒 - &lt;code&gt;5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;值呈指数增长，是&lt;a href="https://stackoverflow.com/a/28732630/2966951"&gt;重试策略&lt;/a&gt; 的合理实现。&lt;/p&gt;
+&lt;p&gt;这个参数默认是0，意味着不会设置指数退避，重试会立即执行。&lt;strong&gt;确保它被设置为1，以免击垮你的服务器！&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;重试模块的完整文档在&lt;a href="https://urllib3.readthedocs.io/en/latest/reference/urllib3.util.html#module-urllib3.util.retry"&gt;这里&lt;/a&gt;。&lt;/p&gt;
+&lt;h3&gt;结合超时和重试&lt;/h3&gt;
+&lt;p&gt;因为HTTPAdapter 是一样的，我们可以把重试和超时像下面这样结合起来：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;retries&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Retry&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;total&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;backoff_factor&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;status_forcelist&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;429&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;500&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;502&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;503&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;504&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;TimeoutHTTPAdapter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;max_retries&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;retries&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;调试 HTTP 请求&lt;/h2&gt;
+&lt;p&gt;有时请求失败，但是你无法找出原因。记录请求和响应或许能帮助你查明失败原因。有两种方法可以做到，使用内置的debug 日志配置，或者使用请求钩子。&lt;/p&gt;
+&lt;h3&gt;打印HTTP Header&lt;/h3&gt;
+&lt;p&gt;将日志调试等级调整到大于0，就会记录响应的HTTP Header。这是最简单的选项，但是它没法让你看到HTTP 请求和响应的包体。如果你调用的API会返回超大的包体或不合适打印出来，例如包含二进制内容，这个选项很有用。&lt;/p&gt;
+&lt;p&gt;任何大于0 的日志等级，都会开启调制日志。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;http&lt;/span&gt;
+
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HTTPConnection&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;debuglevel&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+
+&lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://www.google.com/&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# 输出&lt;/span&gt;
+&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="sa"&gt;b&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;GET / HTTP/1.1&lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s1"&gt;Host: www.google.com&lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s1"&gt;User-Agent: python-requests/2.22.0&lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s1"&gt;Accept-Encoding: gzip, deflate&lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s1"&gt;Accept: */*&lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s1"&gt;Connection: keep-alive&lt;/span&gt;&lt;span class="se"&gt;\r\n\r\n&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;reply&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;HTTP/1.1 200 OK&lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;header&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Fri&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;28&lt;/span&gt; &lt;span class="n"&gt;Feb&lt;/span&gt; &lt;span class="mi"&gt;2020&lt;/span&gt; &lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;26&lt;/span&gt; &lt;span class="n"&gt;GMT&lt;/span&gt;
+&lt;span class="n"&gt;header&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Expires&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;header&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Cache&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Control&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;private&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;max&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;age&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;打印所有信息&lt;/h3&gt;
+&lt;p&gt;如果你想打印整个HTTP 生命周期，包括请求和响应内容的文本内容，你可以使用请求钩子和requests_toolbelt 中的dump 工具。&lt;/p&gt;
+&lt;p&gt;当我调用不会返回很多的响应内容的REST API 时，我更喜欢用这个选项。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;requests_toolbelt.utils&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;dump&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;logging_hook&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dump&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dump_all&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;utf-8&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="n"&gt;http&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hooks&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;response&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;logging_hook&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://api.openaq.org/v1/cities&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;country&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;BA&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+
+&lt;span class="c1"&gt;# 参考&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;GET&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cities&lt;/span&gt;&lt;span class="err"&gt;?&lt;/span&gt;&lt;span class="n"&gt;country&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;BA&lt;/span&gt; &lt;span class="n"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;1.1&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;Host&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;api&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;openaq&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;org&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;1.1&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt; &lt;span class="n"&gt;OK&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;Content&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Type&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;application&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;utf&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;Transfer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Encoding&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;chunked&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;keep&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;alive&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+   &lt;span class="s2"&gt;&amp;quot;meta&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:{&lt;/span&gt;
+      &lt;span class="s2"&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;openaq-api&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="s2"&gt;&amp;quot;license&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;CC BY 4.0&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="s2"&gt;&amp;quot;website&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://docs.openaq.org/&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="s2"&gt;&amp;quot;page&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="s2"&gt;&amp;quot;limit&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="s2"&gt;&amp;quot;found&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+   &lt;span class="p"&gt;},&lt;/span&gt;
+   &lt;span class="s2"&gt;&amp;quot;results&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:[&lt;/span&gt;
+      &lt;span class="p"&gt;{&lt;/span&gt;
+         &lt;span class="s2"&gt;&amp;quot;country&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;BA&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+         &lt;span class="s2"&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Goražde&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+         &lt;span class="s2"&gt;&amp;quot;city&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Goražde&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+         &lt;span class="s2"&gt;&amp;quot;count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;70797&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+         &lt;span class="s2"&gt;&amp;quot;locations&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+      &lt;span class="p"&gt;}&lt;/span&gt;
+   &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;参考 https://toolbelt.readthedocs.io/en/latest/dumputils.html&lt;/p&gt;
+&lt;h2&gt;测试和伪装请求&lt;/h2&gt;
+&lt;p&gt;使用第三方API 会给开发人员带来一个痛点，它们很难进行单元测试。&lt;a href="https://sentry.io/"&gt;Sentry&lt;/a&gt; 的工程师通过写了一个库来伪装请求，减轻了开发过程中的痛苦。&lt;/p&gt;
+&lt;p&gt;无需发送请求到服务器，&lt;a href="https://github.com/getsentry/responses"&gt;getsentry/responses&lt;/a&gt; 截获了HTTP 请求并返回一个你的测试过程中添加的预先定义好的内容。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;unittest&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;responses&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;TestAPI&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;unittest&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;TestCase&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nd"&gt;@responses&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;activate&lt;/span&gt;  &lt;span class="c1"&gt;# intercept HTTP calls within this method&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_simple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;response_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+                &lt;span class="s2"&gt;&amp;quot;id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ch_1GH8so2eZvKYlo2CSMeAfRqt&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                &lt;span class="s2"&gt;&amp;quot;object&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;charge&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                &lt;span class="s2"&gt;&amp;quot;customer&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;cu_1GGwoc2eZvKYlo2CL2m31GRn&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;object&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;customer&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+            &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="c1"&gt;# mock the Stripe API&lt;/span&gt;
+        &lt;span class="n"&gt;responses&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;responses&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GET&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s2"&gt;&amp;quot;https://api.stripe.com/v1/charges&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;response_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://api.stripe.com/v1/charges&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;assertEqual&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;response_data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如果发出一个和伪装的响应不一致的请求，则会引发 ConnectionError。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;TestAPI&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;unittest&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;TestCase&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nd"&gt;@responses&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;activate&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_simple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;responses&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;responses&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GET&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;https://api.stripe.com/v1/charges&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://invalid-request.com&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;输出&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exceptions&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nl"&gt;ConnectionError:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;refused&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;by&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Responses&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;call&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;doesn&lt;/span&gt;&lt;span class="p"&gt;&amp;#39;&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;match&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;any&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;registered&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mock&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+
+&lt;span class="nl"&gt;Request:&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;GET&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https:&lt;/span&gt;&lt;span class="c1"&gt;//invalid-request.com/&lt;/span&gt;
+
+&lt;span class="n"&gt;Available&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;matches:&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;GET&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https:&lt;/span&gt;&lt;span class="c1"&gt;//api.stripe.com/v1/charges&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;模仿浏览器行为&lt;/h2&gt;
+&lt;p&gt;如果你编写过足够多的web 爬虫代码，你会注意到某些网站会针对你是通过浏览器还是代码访问会返回不同的HTML。有时这是一种防爬虫的策略，但是通常是由于服务器会居于User-Agent 嗅探，找出最适合访问设备的内容（例如桌面端或移动端）。&lt;/p&gt;
+&lt;p&gt;如果你想要服务器返回浏览器一样的内容，你可以重写请求的 User-Agent 头信息为FIrefox或Chrome。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;update&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;
+    &lt;span class="s2"&gt;&amp;quot;User-Agent&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;})&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2020"></category><category term="Python"></category><category term="Requests"></category></entry><entry><title>一个双向MTR仅单向丢包的问题</title><link href="https://fangpsh.github.io/posts/2020/2020-09-09.html" rel="alternate"></link><published>2020-09-09T00:00:00+08:00</published><updated>2020-09-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-09-09:/posts/2020/2020-09-09.html</id><summary type="html">&lt;p&gt;现象:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A 机器ping B 机器丢包，触发A MTR B，最后一跳丢包；&lt;/li&gt;
+&lt;li&gt;B 机器ping A 机器丢包，触发B MTR A，最后一跳不丢包；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png"&gt;
+&lt;img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"&gt;&lt;/p&gt;
+&lt;p&gt;按照之前的理解 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;现象:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A 机器ping B 机器丢包，触发A MTR B，最后一跳丢包；&lt;/li&gt;
+&lt;li&gt;B 机器ping A 机器丢包，触发B MTR A，最后一跳不丢包；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png"&gt;
+&lt;img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"&gt;&lt;/p&gt;
+&lt;p&gt;按照之前的理解，A MTR B 和 B MTR ，最后一跳应该是镜像对等的：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c"&gt;A  MTR B :&lt;/span&gt;
+
+&lt;span class="c"&gt;A                   B&lt;/span&gt;
+&lt;span class="c"&gt;|&lt;/span&gt;&lt;span class="nb"&gt;---------&lt;/span&gt;&lt;span class="nv"&gt;&amp;gt;&lt;/span&gt;&lt;span class="nb"&gt;---------&lt;/span&gt;&lt;span class="c"&gt;|  &lt;/span&gt;&lt;span class="nv"&gt;&amp;lt;&lt;/span&gt;&lt;span class="c"&gt; icmp request  package1&lt;/span&gt;
+&lt;span class="c"&gt;|&lt;/span&gt;&lt;span class="nb"&gt;--------&lt;/span&gt;&lt;span class="nv"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nb"&gt;----------&lt;/span&gt;&lt;span class="c"&gt;|  &lt;/span&gt;&lt;span class="nv"&gt;&amp;lt;&lt;/span&gt;&lt;span class="c"&gt; icmp reply    package2&lt;/span&gt;
+
+&lt;span class="c"&gt;B MTR A:&lt;/span&gt;
+
+&lt;span class="c"&gt;B                   A&lt;/span&gt;
+&lt;span class="c"&gt;|&lt;/span&gt;&lt;span class="nb"&gt;---------&lt;/span&gt;&lt;span class="nv"&gt;&amp;gt;&lt;/span&gt;&lt;span class="nb"&gt;---------&lt;/span&gt;&lt;span class="c"&gt;|  &lt;/span&gt;&lt;span class="nv"&gt;&amp;lt;&lt;/span&gt;&lt;span class="c"&gt; icmp request  package3&lt;/span&gt;
+&lt;span class="c"&gt;|&lt;/span&gt;&lt;span class="nb"&gt;--------&lt;/span&gt;&lt;span class="nv"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nb"&gt;----------&lt;/span&gt;&lt;span class="c"&gt;|  &lt;/span&gt;&lt;span class="nv"&gt;&amp;lt;&lt;/span&gt;&lt;span class="c"&gt; icmp reply    package4&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如果A MTR B出现丢包，那么可能出现在 去程，也可能是回程，所以才需要B MTR A 来判断断点。
+可以认为：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;package1 走的路径 == package4 走的路径
+package2 走的路径 == package3 走的路径
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;A MTR B 丢包，意味着package1 或者package2 出现了丢，那么B MTR A 也应该会影响才对。
+既然事实不符合这个假设，那么说明这个假设是错的。那么是什么影响到了？&lt;/p&gt;
+&lt;p&gt;猜想：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;交换机会针对五元组负载均衡导致？，可是ICMP不带端口，MTR 默认是ICMP；  &lt;/li&gt;
+&lt;li&gt;交换机对icmp request 和reply 包的策略不同？B Ping A 也是丢包，排除这个猜想；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;既然B ping A 和 B MTR A 表现不一样，那么Ping 和MTR 有什么差异？&lt;/p&gt;
+&lt;p&gt;包大小？mtr 看了下icmp 包大小，ping 指定了下，B ping A，还是丢包。&lt;br&gt;
+TTL？ping 默认ttl = 64，mtr 的ttl 是从1 开始逐渐探测，拿到对端地址回包为止，在这个场景里，B MTR A ，最后一跳ttl = 15。&lt;/p&gt;
+&lt;p&gt;ping -t 指定ttl = 15，果然不丢，ttl &amp;gt; 15，即丢包。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;package1 的ttl = 去程最大，package4 的ttl = 64；
+package2 的ttl = 64，package3 的ttl = 回程最大。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;怀疑是ICMP 包的TTL  影响到了QoS 策略。用关键词搜索了下，发现了好像可以基于TTL 设置：&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9400/software/release/16-8/configuration_guide/qos/b_168_qos_9400_cg/b_168_qos_9400_cg_chapter_01.html"&gt;cisco:QoS&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Time-to-Live Classification
+You can classify packets based on the ACL map. You can set Time-to_live (TTL) as a criterion in the ACL list and perform a TTL check on the incoming packet. The access control entry is used to check the IPv4 TTL to match the value on the incoming packet. The classified packet is either marked or policed based on the policy-map action. Queueing cannot be configured on this classification.
+
+The following is an example of TTL classification:
+
+policy-map TTL_MATCH
+    class IPV4_TTL
+        police rate 6000000000
+        set dscp af23
+
+ip access-list extended IPV4_TTL
+    permit ip any any ttl eq 100
+    permit tcp any any ttl ne 150
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;不了解路由器和交换机的配置，咨询下两个云/IDC 厂商的网工，没有得到很多信息，姑且这么怀疑吧。&lt;/p&gt;</content><category term="2020"></category><category term="MTR"></category><category term="Network"></category></entry><entry><title>搭建IPv6 Only 测试环境</title><link href="https://fangpsh.github.io/posts/2020/2020-03-12.html" rel="alternate"></link><published>2020-03-12T00:00:00+08:00</published><updated>2020-03-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-03-12:/posts/2020/2020-03-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="baidu.com" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184346.png"&gt;&lt;/p&gt;
 &lt;p&gt;macOS 可以开启&lt;a href="https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/NetworkingOverview/UnderstandingandPreparingfortheIPv6Transition/UnderstandingandPreparingfortheIPv6Transition.html"&gt;DNS64/NAT64&lt;/a&gt;，
 简单快捷。但是mac mini 信号不太好，开发同学抱怨常常连不上，而且有多个组的同学要测试，再买几台mac mini 好 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="baidu.com" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184346.png"&gt;&lt;/p&gt;
 &lt;p&gt;macOS 可以开启&lt;a href="https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/NetworkingOverview/UnderstandingandPreparingfortheIPv6Transition/UnderstandingandPreparingfortheIPv6Transition.html"&gt;DNS64/NAT64&lt;/a&gt;，
@@ -147,7 +493,57 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 
 &lt;p&gt;这个时候你再解析&lt;code&gt;a1.aaa.example.com&lt;/code&gt;，得到的实际是&lt;code&gt;a1.bbb.example.org&lt;/code&gt; 的结果。因为&lt;code&gt;aaa.example.com&lt;/code&gt; 节点包括其子节点都映射到了&lt;code&gt;bbb.example.org&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;更详细的例子可以参考台湾网友的这篇文章：&lt;a href="https://ssorc.tw/994"&gt;DNS的CNAME/DNAME傻傻分不清楚&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;另外DNAME 记录，国内的DNS 服务商也几乎都不支持╮(╯▽╰)╭ 。&lt;/p&gt;</content><category term="2018"></category><category term="DNS"></category></entry><entry><title>echo 输出导致SCP 失效的问题</title><link href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="alternate"></link><published>2018-08-11T00:00:00+08:00</published><updated>2018-08-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-11:/posts/2018/2018-08-11.html</id><summary type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在本地没有正确配置，导致上了跳板机之后，再SSH 就会失败，于是我在跳板机的&lt;code&gt;.bashrc&lt;/code&gt; 上写了一段检测脚本，如果变量&lt;code&gt;$SSH_AUTH_SOCK&lt;/code&gt; 不存在，就引导用户去看Wiki，不要烦我啦！&lt;/p&gt;
+&lt;p&gt;另外DNAME 记录，国内的DNS 服务商也几乎都不支持╮(╯▽╰)╭ 。&lt;/p&gt;</content><category term="2018"></category><category term="DNS"></category></entry><entry><title>IPv6-Test DNS 测试</title><link href="https://fangpsh.github.io/posts/2018/2018-11-3.html" rel="alternate"></link><published>2018-11-03T00:00:00+08:00</published><updated>2018-11-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-11-03:/posts/2018/2018-11-3.html</id><summary type="html">&lt;p&gt;&lt;img alt="ipv6-test" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185431.png"&gt;&lt;/p&gt;
+&lt;p&gt;最近在折腾办公室的IPv6 环境，通过&lt;a href="http://ipv6-test.com/"&gt;ipv6-test.com&lt;/a&gt;测试的时候，对页面内的“DNS”的测试结果有点疑问。  &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;DNS4 + IP6&lt;ul&gt;
+&lt;li&gt;Connectivity to an IPv6 address served by an IPv4-only name server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;DNS6 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="ipv6-test" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185431.png"&gt;&lt;/p&gt;
+&lt;p&gt;最近在折腾办公室的IPv6 环境，通过&lt;a href="http://ipv6-test.com/"&gt;ipv6-test.com&lt;/a&gt;测试的时候，对页面内的“DNS”的测试结果有点疑问。  &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;DNS4 + IP6&lt;ul&gt;
+&lt;li&gt;Connectivity to an IPv6 address served by an IPv4-only name server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;DNS6 + IP4&lt;ul&gt;
+&lt;li&gt;Connectivity to an IPv4 address served by an IPv6-only name server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;DNS6 + IP6&lt;ul&gt;
+&lt;li&gt;Connectivity to an IPv6 address served by an IPv6-only name server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;看下页面的网络请求，三种测试用例分别请求的地址：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;DNS4 + IP6&lt;ul&gt;
+&lt;li&gt;v6.zone4.ipv6-test.com&lt;/li&gt;
+&lt;li&gt;AAAA 记录：2001:41d0:8:e8ad::1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;DNS6 + IP4&lt;ul&gt;
+&lt;li&gt;v4.zone6.ipv6-test.com&lt;/li&gt;
+&lt;li&gt;A 记录：5.135.165.173&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;DNS6 + IP6&lt;ul&gt;
+&lt;li&gt;v6.zone6.ipv6-test.com&lt;/li&gt;
+&lt;li&gt;AAAA 记录：2001:41d0:8:e8ad::1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其实还有个&lt;code&gt;DNS4 + IP4&lt;/code&gt;，没啥好测试的嘛。&lt;/p&gt;
+&lt;p&gt;明白了，三种测试用例，DNS4/6 表示的是权威服务器的网络环境，要么是IPv4，要么是IPv6；IP4/6 只是其实分别是A和AAAA 记录。测试的其实是本地local dns 对&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;权威服务器托管在IPv4 环境，通过AAAA记录（IPv6 网络）访问&lt;/li&gt;
+&lt;li&gt;权威服务器托管在IPv6 环境，通过A记录（IPv4 网络）访问&lt;/li&gt;
+&lt;li&gt;权威服务器托管在IPv6 环境，通过AAAA（IPv4 网络）访问&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;所以，如果你是IPv4 网络的话，1、3 测试肯定是失败的，IPv6 不通嘛，但是2 可能能够成功，因为你的local dns 出口可能是能够访问IPv6 环境的，如果不行的话，换成&lt;code&gt;8.8.8.8&lt;/code&gt; 试一试？&lt;/p&gt;
+&lt;p&gt;我在电信的IPv6 环境下测试发现3 失败了，电信还没给IPv6 的DNS，默认的IPv4 的DNS 也不能访问到纯IPv6 环境的权威服务器，手动加个Google 的&lt;code&gt;2001:4860:4860::8888&lt;/code&gt; 就好了。&lt;/p&gt;
+&lt;p&gt;IPv6 要推广了，相关的一堆基础知识得抓紧补了，地址格式、SLAAC、DHCPv6、ICMPv6...想起大学计网老师居然自动跳过了IPv6 这一章！&lt;/p&gt;</content><category term="2018"></category><category term="ipv6"></category><category term="dns"></category><category term="network"></category></entry><entry><title>echo 输出导致SCP 失效的问题</title><link href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="alternate"></link><published>2018-08-11T00:00:00+08:00</published><updated>2018-08-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-11:/posts/2018/2018-08-11.html</id><summary type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在本地没有正确配置，导致上了跳板机之后，再SSH 就会失败，于是我在跳板机的&lt;code&gt;.bashrc&lt;/code&gt; 上写了一段检测脚本，如果变量&lt;code&gt;$SSH_AUTH_SOCK&lt;/code&gt; 不存在，就引导用户去看Wiki，不要烦我啦！&lt;/p&gt;
 &lt;p&gt;用了一段时间，有用户发现scp 文件到跳板机时会失败，Google 一下：&lt;a href="https://stackoverflow.com/questions/12440287/scp-doesnt-work-when-echo-in-bashrc"&gt;SCP doesn't work when echo in .bashrc?&lt;/a&gt;，怎么判断当前会话是scp？：&lt;a href="https://superuser.com/questions/690735/can-i-tell-if-im-in-an-scp-session-in-my-bashrc"&gt;Can I tell if I'm in an scp session in my .bashrc?&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;改下脚本：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$PS1&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-z&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$SSH_AUTH_SOCK&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;then&lt;/span&gt;

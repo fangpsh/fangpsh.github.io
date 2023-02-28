@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>一个双向MTR仅单向丢包的问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2020/2020-09-09.html" rel="bookmark"
+         title="Permalink to 一个双向MTR仅单向丢包的问题">一个双向MTR仅单向丢包的问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>现象:</p>
+<ol>
+<li>A 机器ping B 机器丢包，触发A MTR B，最后一跳丢包；</li>
+<li>B 机器ping A 机器丢包，触发B MTR A，最后一跳不丢包；</li>
+</ol>
+<p><img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png">
+<img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"></p>
+<p>按照之前的理解，A MTR B 和 B MTR ，最后一跳应该是镜像对等的：</p>
+<div class="highlight"><pre><span></span><code><span class="c">A  MTR B :</span>
+
+<span class="c">A                   B</span>
+<span class="c">|</span><span class="nb">---------</span><span class="nv">&gt;</span><span class="nb">---------</span><span class="c">|  </span><span class="nv">&lt;</span><span class="c"> icmp request  package1</span>
+<span class="c">|</span><span class="nb">--------</span><span class="nv">&lt;</span><span class="nb">----------</span><span class="c">|  </span><span class="nv">&lt;</span><span class="c"> icmp reply    package2</span>
+
+<span class="c">B MTR A:</span>
+
+<span class="c">B                   A</span>
+<span class="c">|</span><span class="nb">---------</span><span class="nv">&gt;</span><span class="nb">---------</span><span class="c">|  </span><span class="nv">&lt;</span><span class="c"> icmp request  package3</span>
+<span class="c">|</span><span class="nb">--------</span><span class="nv">&lt;</span><span class="nb">----------</span><span class="c">|  </span><span class="nv">&lt;</span><span class="c"> icmp reply    package4</span>
+</code></pre></div>
+
+<p>如果A MTR B出现丢包，那么可能出现在 去程，也可能是回程，所以才需要B MTR A 来判断断点。
+可以认为：</p>
+<div class="highlight"><pre><span></span><code>package1 走的路径 == package4 走的路径
+package2 走的路径 == package3 走的路径
+</code></pre></div>
+
+<p>A MTR B 丢包，意味着package1 或者package2 出现了丢，那么B MTR A 也应该会影响才对。
+既然事实不符合这个假设，那么说明这个假设是错的。那么是什么影响到了？</p>
+<p>猜想：</p>
+<ol>
+<li>交换机会针对五元组负载均衡导致？，可是ICMP不带端口，MTR 默认是ICMP；  </li>
+<li>交换机对icmp request 和reply 包的策略不同？B Ping A 也是丢包，排除这个猜想；</li>
+</ol>
+<p>既然B ping A 和 B MTR A 表现不一样，那么Ping 和MTR 有什么差异？</p>
+<p>包大小？mtr 看了下icmp 包大小，ping 指定了下，B ping A，还是丢包。<br>
+TTL？ping 默认ttl = 64，mtr 的ttl 是从1 开始逐渐探测，拿到对端地址回包为止，在这个场景里，B MTR A ，最后一跳ttl = 15。</p>
+<p>ping -t 指定ttl = 15，果然不丢，ttl &gt; 15，即丢包。</p>
+<div class="highlight"><pre><span></span><code>package1 的ttl = 去程最大，package4 的ttl = 64；
+package2 的ttl = 64，package3 的ttl = 回程最大。
+</code></pre></div>
+
+<p>怀疑是ICMP 包的TTL  影响到了QoS 策略。用关键词搜索了下，发现了好像可以基于TTL 设置：</p>
+<p><a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9400/software/release/16-8/configuration_guide/qos/b_168_qos_9400_cg/b_168_qos_9400_cg_chapter_01.html">cisco:QoS</a></p>
+<div class="highlight"><pre><span></span><code>Time-to-Live Classification
+You can classify packets based on the ACL map. You can set Time-to_live (TTL) as a criterion in the ACL list and perform a TTL check on the incoming packet. The access control entry is used to check the IPv4 TTL to match the value on the incoming packet. The classified packet is either marked or policed based on the policy-map action. Queueing cannot be configured on this classification.
+
+The following is an example of TTL classification:
+
+policy-map TTL_MATCH
+    class IPV4_TTL
+        police rate 6000000000
+        set dscp af23
+
+ip access-list extended IPV4_TTL
+    permit ip any any ttl eq 100
+    permit tcp any any ttl ne 150
+...
+</code></pre></div>
+
+<p>不了解路由器和交换机的配置，咨询下两个云/IDC 厂商的网工，没有得到很多信息，姑且这么怀疑吧。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2020-09-09T00:00:00+08:00">
+      Wed 09 September 2020
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2020.html">2020</a> Tagged <a href="https://fangpsh.github.io/tag/mtr.html">MTR </a><a href="https://fangpsh.github.io/tag/network.html">Network </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
