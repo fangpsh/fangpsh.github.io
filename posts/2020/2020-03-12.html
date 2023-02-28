@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>搭建IPv6 Only 测试环境 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2020/2020-03-12.html" rel="bookmark"
+         title="Permalink to 搭建IPv6 Only 测试环境">搭建IPv6 Only 测试环境</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="baidu.com" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184346.png"></p>
+<p>macOS 可以开启<a href="https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/NetworkingOverview/UnderstandingandPreparingfortheIPv6Transition/UnderstandingandPreparingfortheIPv6Transition.html">DNS64/NAT64</a>，
+简单快捷。但是mac mini 信号不太好，开发同学抱怨常常连不上，而且有多个组的同学要测试，再买几台mac mini 好像有点费钱。</p>
+<p>所以接了个活，用<a href="https://openwrt.org/">OpenWrt</a> 搭建几个IPv6 Only 测试环境。</p>
+<h2>选路由</h2>
+<p>看了下，Newifi  D2、斐讯K2P 、极路由以及小米部分版本均可以刷OpenWrt。先是在京东下单了一个小米R3G，到手后发现是R3G V2，其实是4A，坑爹，刷机还得接TTL。
+转去咸鱼，挑了一个二手的<a href="https://openwrt.org/toh/xiaomi/mir3g">小米R3G</a>（V1，带USB）和 <a href="https://openwrt.org/toh/hwdata/d-team/d-team_newifi_d2">Newifi D2</a>。</p>
+<h2>刷机</h2>
+<p>小米R3G到手需要先刷<a href="https://breed.hackpascal.net/">Breed</a>，再刷OpenWrt，基本按照网上的教程没啥问题，参考<a href="https://blog.csdn.net/dvd_sun/article/details/89737513">小米路由器3G刷入OpenWrt</a>。</p>
+<p>刷完breed遇到一个问题，无法启动，电脑线连WAN口，只能进入breed，搜来搜去，看到两个帖子:</p>
+<ul>
+<li><a href="https://www.right.com.cn/forum/thread-255438-2-1.html">我已经解决小米路由器3G刷breed后无法刷固件的问题</a></li>
+<li><a href="https://www.bilibili.com/read/cv796610/">小米路由器3G（R3G）刷入BREED无法刷固件</a></li>
+</ul>
+<p>在breed环境设置界面删除normal_firmware_md5，保存重启，果然好了。</p>
+<p>Newifi D2 到手，卖家已经刷好breed 和定制版本的OpenWrt，不太喜欢，从openwrt.org 下载了一个升级包，覆盖即可。</p>
+<h2>DNS64/NAT64</h2>
+<p>基本是参考这篇帖子：<a href="https://blog.csdn.net/dengxinfa/article/details/104218997">openwrt使用tayga/totd实现NAT64/DNS64</a>，NAT64 安装tayga 照着配置没啥问题。除了tayga，还有一个新的项目<a href="https://www.jool.mx/en/openwrt.html">Jool</a>也可以实现NAT64。</p>
+<p>换源<code>/etc/opkg/distfeeds.conf</code>，中科大源最近好像有点问题，换成清华：</p>
+<div class="highlight"><pre><span></span><code>src/gz openwrt_core http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19.07.2/targets/ramips/mt7621/packages
+src/gz openwrt_kmods http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19.07.2/targets/ramips/mt7621/kmods/4.14.171-1-2e88863ccdd594fb8e842df3c25842ee
+src/gz openwrt_base http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19.07.2/packages/mipsel_24kc/base
+src/gz openwrt_luci http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19.07.2/packages/mipsel_24kc/luci
+src/gz openwrt_packages http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19.07.2/packages/mipsel_24kc/packages
+src/gz openwrt_routing http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19.07.2/packages/mipsel_24kc/routing
+src/gz openwrt_telephony http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19.07.2/packages/mipsel_24kc/telephony
+</code></pre></div>
+
+<p>参考前面教程设置完成后：</p>
+<div class="highlight"><pre><span></span><code>tayga-nat64 Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+          inet6 addr: fe80::xxx:xxx:xxx:1fea/64 Scope:Link
+          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1500  Metric:1
+          RX packets:36077 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:36793 errors:0 dropped:3 overruns:0 carrier:0
+          collisions:0 txqueuelen:500
+          RX bytes:15494186 (14.7 MiB)  TX bytes:15679087 (14.9 MiB)
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="n">root</span><span class="nv">@OpenWrt</span><span class="err">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">ping6</span><span class="w">  </span><span class="n">qq</span><span class="p">.</span><span class="n">com</span>
+<span class="n">PING</span><span class="w"> </span><span class="n">qq</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="p">(</span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="mi">56</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="n">bytes</span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">0</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.958</span><span class="w"> </span><span class="n">ms</span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.962</span><span class="w"> </span><span class="n">ms</span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">2</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">38.267</span><span class="w"> </span><span class="n">ms</span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">3</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.821</span><span class="w"> </span><span class="n">ms</span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">4</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.260</span><span class="w"> </span><span class="n">ms</span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">5</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.530</span><span class="w"> </span><span class="n">ms</span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">6</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.828</span><span class="w"> </span><span class="n">ms</span>
+<span class="o">^</span><span class="n">C</span>
+<span class="o">---</span><span class="w"> </span><span class="n">qq</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="n">ping</span><span class="w"> </span><span class="k">statistics</span><span class="w"> </span><span class="o">---</span>
+<span class="mi">7</span><span class="w"> </span><span class="n">packets</span><span class="w"> </span><span class="n">transmitted</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">packets</span><span class="w"> </span><span class="n">received</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="n">packet</span><span class="w"> </span><span class="n">loss</span>
+<span class="nf">round</span><span class="o">-</span><span class="n">trip</span><span class="w"> </span><span class="nf">min</span><span class="o">/</span><span class="nf">avg</span><span class="o">/</span><span class="nf">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">37.260</span><span class="o">/</span><span class="mf">37.803</span><span class="o">/</span><span class="mf">38.267</span><span class="w"> </span><span class="n">ms</span>
+</code></pre></div>
+
+<p>DNS64 需要totd，不过这软件在仓库中没了，需要交叉编译，有点麻烦。后来看到<a href="https://microcai.org/2019/02/13/nat64.html">unbound</a>，仓库里面也没有。那只能用<a href="https://openwrt.org/docs/guide-user/services/dns/bind">bind</a> 了。</p>
+<div class="highlight"><pre><span></span><code>opkg install bind-server
+/etc/init.d/named enable
+</code></pre></div>
+
+<p>修改配置<code>/etc/bind/named.conf</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">options</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="err">directory</span><span class="w"> </span><span class="err">&quot;/tmp&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="err">listen-on</span><span class="w"> </span><span class="err">port</span><span class="w"> </span><span class="err">53</span><span class="w">  </span><span class="err">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
+<span class="w">        </span><span class="nt">listen-on-v6</span><span class="w"> </span><span class="nt">port</span><span class="w"> </span><span class="nt">53</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
+
+<span class="w">        </span><span class="nt">recursion</span><span class="w"> </span><span class="nt">yes</span><span class="o">;</span>
+<span class="w">        </span><span class="nt">allow-recursion</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
+<span class="w">        </span><span class="nt">allow-query</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
+<span class="w">        </span><span class="nt">allow-query-cache</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
+
+
+<span class="w">        </span><span class="nt">forwarders</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="err">202.96.134.133</span><span class="p">;</span>
+<span class="w">                </span><span class="err">223.5.5.5</span><span class="p">;</span>
+<span class="w">                </span><span class="err">114.114.114.114</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="o">;</span>
+
+<span class="w">        </span><span class="nt">auth-nxdomain</span><span class="w"> </span><span class="nt">no</span><span class="o">;</span>
+<span class="w">        </span><span class="nt">dns64</span><span class="w"> </span><span class="nt">fd2e</span><span class="p">:</span><span class="nd">f49a</span><span class="p">:</span><span class="nd">9639</span><span class="p">:</span><span class="nd">1111</span><span class="o">::/</span><span class="nt">96</span><span class="w"> </span><span class="p">{}</span><span class="o">;</span><span class="w"> </span><span class="p">#</span><span class="nn">参考tayga</span><span class="w"> </span><span class="nt">中配额的前缀</span>
+<span class="err">}</span><span class="o">;</span>
+</code></pre></div>
+
+<p>openwrt 本身跑着一个dnsmasq，用作DNS 和DHCP 等服务，本来想通过<a href="https://openwrt.org/docs/guide-user/base-system/dhcp">server=</a> 配置，把请求转给bind，bind设置一个非53端口，
+不过尝试了下好像有点问题，那就直接关掉dnsmasq 的dns 服务好了(设置port为0)：
+<code>/etc/config/dhcp</code></p>
+<div class="highlight"><pre><span></span><code>config dnsmasq
+        option port &#39;0&#39;
+        option domainneeded &#39;1&#39;
+...
+</code></pre></div>
+
+<p>重启网络和named后，dig(<code>opkg install bind-tools</code>)测试一下：</p>
+<div class="highlight"><pre><span></span><code><span class="n">root</span><span class="nv">@OpenWrt</span><span class="err">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">dig</span><span class="w"> </span><span class="n">qq</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="n">AAAA</span><span class="w"> </span><span class="o">+</span><span class="n">short</span>
+<span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="nl">b703</span><span class="p">:</span><span class="n">e223</span>
+<span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">3</span><span class="nl">d81</span><span class="p">:</span><span class="mi">72</span><span class="n">f</span>
+<span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span>
+<span class="n">root</span><span class="nv">@OpenWrt</span><span class="err">:</span><span class="o">~</span><span class="err">#</span>
+</code></pre></div>
+
+<p>完美。</p>
+<p>再关闭下Lan口的DHCP 即可，可以在网页上点点点，或者修改下配置：</p>
+<div class="highlight"><pre><span></span><code>...
+config dhcp &#39;lan&#39;
+        option interface &#39;lan&#39;
+        option dhcpv6 &#39;server&#39;
+        option ra &#39;server&#39;
+        option ra_management &#39;1&#39;
+        option ignore &#39;1&#39;
+        option ra_default &#39;1&#39;
+...
+</code></pre></div>
+
+<p>配置项解释，可参考<a href="https://www.douban.com/note/618429634/">DHCPv6 over PPPoE on OpenWrt / LEDE</a>。</p>
+<p>最后，感谢各位网友的教程:) 。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2020-03-12T00:00:00+08:00">
+      Thu 12 March 2020
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2020.html">2020</a> Tagged <a href="https://fangpsh.github.io/tag/openwrt.html">OpenWrt </a><a href="https://fangpsh.github.io/tag/ipv6.html">IPv6 </a><a href="https://fangpsh.github.io/tag/dns64.html">DNS64 </a><a href="https://fangpsh.github.io/tag/nat64.html">NAT64 </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

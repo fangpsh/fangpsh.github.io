@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ANAME、CNAME、DNAME - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-11-04.html" rel="bookmark"
+         title="Permalink to ANAME、CNAME、DNAME">ANAME、CNAME、DNAME</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><a href="https://en.wikipedia.org/wiki/CNAME_record">CNAME</a> 很常见，一般人都很熟悉，将一个域名映射到另外一个域名。但是CNAME 有个限制，顶级域名（apex domain）不建议设置CNAME，因为会和MX 记录冲突，详细解释：<a href="https://www.v2ex.com/t/204489#26">为什么裸域名不可以设置 CNAME？#26</a>。</p>
+<p><a href="https://www.ietf.org/rfc/rfc1912.txt">RFC1912:2.4 CNAME records</a></p>
+<blockquote>
+<p>A CNAME record is not allowed to coexist with any other data.  In other words, if suzy.podunk.xx is an alias for sue.podunk.xx, you can't also have an MX record for suzy.podunk.edu, or an A record, or even a TXT record...</p>
+</blockquote>
+<p>所以就诞生了<a href="https://dnsmadeeasy.com/services/anamerecords/">ANAME</a>，有些DNS 服务商叫做<a href="https://support.dnsimple.com/articles/alias-record/">ALIAS</a>，可以在apex domain 上实现类似CNAME 效果。第一次见到这个，是在配置<a href="https://blog.github.com/2014-01-07-faster-more-awesome-github-pages/#apex-domain-examplecom---with-alias-or-a">Github Pages</a>。</p>
+<p>目前只有一些国外的DNS 服务商支持：</p>
+<blockquote>
+<p><a href="https://help.iwantmyname.com/customer/portal/articles/1599947-do-you-support-alias-or-aname-dns-records-">Do you support ALIAS or ANAME DNS records?</a></p>
+<ul>
+<li>CloudFlare</li>
+<li>DNSMadeEasy</li>
+<li>DNSimple</li>
+<li>PointDNS</li>
+<li>Amazon Route 53 (only for hosting on AWS)</li>
+</ul>
+</blockquote>
+<p>不过这是非标准的实现，生产环境还是少用为好。</p>
+<h2>DNAME</h2>
+<p>除了ANAME，CNAME，还有一个<a href="https://www.ietf.org/rfc/rfc2672.txt">DNAME</a>。DNAME 和CNAME 的区别是，CNAME 只是映射一个子域名，DNAME 映射的是整个子域名空间。</p>
+<p>举个例子：</p>
+<div class="highlight"><pre><span></span><code>aaa.example.com CNAME bbb.example.org
+
+还可以添加记录
+
+a1.aaa.example.com CNAME  b1.bbb.example.org
+</code></pre></div>
+
+<p><code>aaa</code> 的CNAME 只是表示把<code>aaa</code>这个子域名映射过去，并不影响<code>*.aaa</code>。但是如果DNAME 的话，就不一样了</p>
+<div class="highlight"><pre><span></span><code>aaa.example.com CNAME bbb.example.org
+</code></pre></div>
+
+<p>这个时候你再解析<code>a1.aaa.example.com</code>，得到的实际是<code>a1.bbb.example.org</code> 的结果。因为<code>aaa.example.com</code> 节点包括其子节点都映射到了<code>bbb.example.org</code>。</p>
+<p>更详细的例子可以参考台湾网友的这篇文章：<a href="https://ssorc.tw/994">DNS的CNAME/DNAME傻傻分不清楚</a>。</p>
+<p>另外DNAME 记录，国内的DNS 服务商也几乎都不支持╮(╯▽╰)╭ 。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-11-04T00:00:00+08:00">
+      Sun 04 November 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/dns.html">DNS </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>drop_caches - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-01-25.html" rel="bookmark"
+         title="Permalink to drop_caches">drop_caches</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png">
+<a href="https://www.linuxatemyram.com">Don't Panic! Your ram is fine!</a></p>
+<h2>问题排查</h2>
+<p>一台机器的CPU iowait 非常高，perf 分析发现耗时都在<code>isolate_freepages_block</code> 函数，iostat 看系统盘的iops 也达到瓶颈，free 查看机器内存 buff/cache 占了很大一部分，free 快没了。网友的类似状况： <a href="http://www.yangguanjun.com/2016/09/12/ceph-node-high-workload-issue/">Ceph节点load很高问题的分析解决</a>。</p>
+<p>程序对文件系统大量的随机读写，<a href="https://en.wikipedia.org/wiki/Page_cache">page cache</a> 上涨，内存吃紧，page cache 不断换入换出，磁盘瓶颈，CPU 堵住。</p>
+<p>可以临时drop 掉：</p>
+<div class="highlight"><pre><span></span><code>echo 1 &gt; /proc/sys/vm/drop_caches
+</code></pre></div>
+
+<p>想要也释放脏页，先执行<code>sync</code>，再drop。</p>
+<blockquote>
+<p>This is a non-destructive operation and will not free any dirty objects.
+To increase the number of objects freed by this operation, the user may run
+`sync' prior to writing to /proc/sys/vm/drop_caches.  This will minimize the
+number of dirty objects on the system and create more candidates to be
+dropped.</p>
+</blockquote>
+<p>另外一种类似的情况是reclaimable slab objects 占用高（dentries，inodes），分析过程可参考：<a href="http://colobu.com/2017/03/07/what-is-in-linux-cached/">谁吃了我的Linux内存?</a>。</p>
+<div class="highlight"><pre><span></span><code>echo 2 &gt; /proc/sys/vm/drop_caches
+</code></pre></div>
+
+<p>解决方法，换大内存机器，或者慢慢调整系统的<code>proc/sys/vm/pagecache_limit*</code> 等参数，还有文件系统的<code>/proc/sys/vm/dirty_*</code>，没太多经验，瞎子过河。</p>
+<div class="highlight"><pre><span></span><code>To free pagecache:
+echo 1 &gt; /proc/sys/vm/drop_caches
+To free reclaimable slab objects (includes dentries and inodes):
+echo 2 &gt; /proc/sys/vm/drop_caches
+To free slab objects and pagecache:
+echo 3 &gt; /proc/sys/vm/drop_caches
+</code></pre></div>
+
+<p>默认值是0，写入1 drop pagecache，写入2 drop reclaimable slab objects，写入3 都释放。</p>
+<hr>
+<h2>linux/fs/drop_caches.c</h2>
+<h3>问题一：echo 写入之后，值不会变，怎么办？会不会一直在drop？</h3>
+<p>不会，看看代码：</p>
+<p><a href="https://github.com/torvalds/linux/blob/master/fs/drop_caches.c#L39">linux/fs/drop_caches.c</a></p>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">drop_caches_sysctl_handler</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">ctl_table</span><span class="w"> </span><span class="o">*</span><span class="n">table</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">write</span><span class="p">,</span>
+<span class="w">        </span><span class="kt">void</span><span class="w"> </span><span class="n">__user</span><span class="w"> </span><span class="o">*</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="n">length</span><span class="p">,</span><span class="w"> </span><span class="n">loff_t</span><span class="w"> </span><span class="o">*</span><span class="n">ppos</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">ret</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proc_dointvec_minmax</span><span class="p">(</span><span class="n">table</span><span class="p">,</span><span class="w"> </span><span class="n">write</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="p">,</span><span class="w"> </span><span class="n">ppos</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">ret</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">write</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">stfu</span><span class="p">;</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sysctl_drop_caches</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">iterate_supers</span><span class="p">(</span><span class="n">drop_pagecache_sb</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">                </span><span class="n">count_vm_event</span><span class="p">(</span><span class="n">DROP_PAGECACHE</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sysctl_drop_caches</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">drop_slab</span><span class="p">();</span>
+<span class="w">                </span><span class="n">count_vm_event</span><span class="p">(</span><span class="n">DROP_SLAB</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stfu</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s (%d): drop_caches: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">current</span><span class="o">-&gt;</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">task_pid_nr</span><span class="p">(</span><span class="n">current</span><span class="p">),</span>
+<span class="w">                        </span><span class="n">sysctl_drop_caches</span><span class="p">);</span>
+<span class="w">           </span><span class="p">}</span>
+<span class="w">           </span><span class="n">stfu</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">sysctl_drop_caches</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>write 为True 的时候，才会执行drop 。</p>
+<p>另外<a href="https://www.fsl.cs.sunysb.edu/kernel-api/re449.html">proc_dointvec_minmax()</a> 这个函数的作用是检查传入的值符合大小，drop_cache 允许的值是1，2，3，4。</p>
+<blockquote>
+<p>Reads/writes up to table-&gt;maxlen/sizeof(unsigned int) integer values from/to the user buffer, treated as an ASCII string.<br>
+This routine will ensure the values are within the range specified by table-&gt;extra1 (min) and table-&gt;extra2 (max).<br>
+Returns 0 on success.  </p>
+</blockquote>
+<p><a href="https://github.com/torvalds/linux/blob/2ce079f04d5914dae14fdc8618f804cc0d2a1b8f/kernel/sysctl.c#L1399,L1407">linux/kernel/sysctl.c</a></p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">procname</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;drop_caches&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">data</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sysctl_drop_caches</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">maxlen</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span>
+<span class="w">    </span><span class="p">.</span><span class="n">mode</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="mo">0644</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">proc_handler</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">drop_caches_sysctl_handler</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">extra1</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">one</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">extra2</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">four</span><span class="p">,</span>
+<span class="p">},</span>
+</code></pre></div>
+
+<p>虽然默认值是0，但是如果你尝试写回0，是会失败的：</p>
+<div class="highlight"><pre><span></span><code><span class="o">-&gt;</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">vm</span><span class="o">/</span><span class="n">drop_caches</span>
+<span class="n">echo</span><span class="o">:</span><span class="w"> </span><span class="n">write</span><span class="w"> </span><span class="nf">error</span><span class="o">:</span><span class="w"> </span><span class="n">invalid</span><span class="w"> </span><span class="n">argument</span>
+</code></pre></div>
+
+<p>另外可以看到<code>sysctl_drop_caches</code> 为3(11b) 时，和1，2 做&amp; 操作，都为True，所以都会drop。</p>
+<h3>问题二：echo 写入4，是什么效果？</h3>
+<p>4(100b)，和1，2做&amp; 操作，都为False，所以不会drop，相当于关闭了drop 功能。</p>
+<p>stfu 为静态变量，第一次执行之后，stfu 为4，<code>if (!stfu)</code> 也始终为False。不过感觉这里有个问题，echo 4 一次之后，stfu 会始终为4，即使再echo 1|2|3，都无法改变，虽然能正常drop，但是pr_info 语句无法执行，dmesg 看不到日志，除非重启。</p>
+<div class="highlight"><pre><span></span><code>stfu |= sysctl_drop_caches &amp; 4;
+</code></pre></div>
+
+<hr>
+<h2>其他</h2>
+<ul>
+<li><a href="https://hoytech.com/vmtouch/">vmtouch - the Virtual Memory Toucher</a>，这个工具非常好用</li>
+<li><a href="http://linuxperf.com/?p=142">/PROC/MEMINFO之谜</a>，这篇文章对系统内存介绍的非常详细</li>
+</ul>
+<p>和这篇笔记主题无关的一个问题，也值得深究：</p>
+<ul>
+<li><a href="http://jaseywang.me/2012/10/21/numa-在-db-上的一些问题/">NUMA 在 DB 上的一些问题</a></li>
+<li><a href="http://cenalulu.github.io/linux/numa/">NUMA架构的CPU -- 你真的用好了么？</a></li>
+<li><a href="http://zhangliyong.github.io/posts/2014/04/09/mongodb-numa-dao-zhi-de-xing-neng-wen-ti.html">Mongodb NUMA 导致的性能问题</a></li>
+</ul>
+<hr>
+<p><a href="https://www.kernel.org/doc/Documentation/sysctl/vm.txt">kernel.org/doc/Documentation/sysctl/vm.txt</a>：</p>
+<div class="highlight"><pre><span></span><code><span class="n">drop_caches</span>
+
+<span class="n">Writing</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">cause</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="n">clean</span><span class="w"> </span><span class="n">caches</span><span class="p">,</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">well</span><span class="w"> </span><span class="k">as</span>
+<span class="n">reclaimable</span><span class="w"> </span><span class="n">slab</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="n">like</span><span class="w"> </span><span class="n">dentries</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">inodes</span><span class="o">.</span><span class="w">  </span><span class="n">Once</span><span class="w"> </span><span class="n">dropped</span><span class="p">,</span><span class="w"> </span><span class="n">their</span>
+<span class="n">memory</span><span class="w"> </span><span class="n">becomes</span><span class="w"> </span><span class="n">free</span><span class="o">.</span>
+
+<span class="n">To</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="n">pagecache</span><span class="p">:</span>
+<span class="n">echo</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">vm</span><span class="o">/</span><span class="n">drop_caches</span>
+<span class="n">To</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="n">reclaimable</span><span class="w"> </span><span class="n">slab</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="p">(</span><span class="n">includes</span><span class="w"> </span><span class="n">dentries</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">inodes</span><span class="p">):</span>
+<span class="n">echo</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">vm</span><span class="o">/</span><span class="n">drop_caches</span>
+<span class="n">To</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="n">slab</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">pagecache</span><span class="p">:</span>
+<span class="n">echo</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">vm</span><span class="o">/</span><span class="n">drop_caches</span>
+
+<span class="n">This</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">non</span><span class="o">-</span><span class="n">destructive</span><span class="w"> </span><span class="n">operation</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">dirty</span><span class="w"> </span><span class="n">objects</span><span class="o">.</span>
+<span class="n">To</span><span class="w"> </span><span class="n">increase</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="n">freed</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">operation</span><span class="p">,</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">run</span>
+<span class="err">`</span><span class="n">sync</span><span class="s1">&#39; prior to writing to /proc/sys/vm/drop_caches.  This will minimize the</span>
+<span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">dirty</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">system</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">create</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">candidates</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span>
+<span class="n">dropped</span><span class="o">.</span>
+
+<span class="n">This</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">means</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">growth</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">various</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="n">caches</span>
+<span class="p">(</span><span class="n">inodes</span><span class="p">,</span><span class="w"> </span><span class="n">dentries</span><span class="p">,</span><span class="w"> </span><span class="n">pagecache</span><span class="p">,</span><span class="w"> </span><span class="n">etc</span><span class="o">...</span><span class="p">)</span><span class="w">  </span><span class="n">These</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">automatically</span>
+<span class="n">reclaimed</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">memory</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">needed</span><span class="w"> </span><span class="n">elsewhere</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">system</span><span class="o">.</span>
+
+<span class="n">Use</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">cause</span><span class="w"> </span><span class="n">performance</span><span class="w"> </span><span class="n">problems</span><span class="o">.</span><span class="w">  </span><span class="n">Since</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">discards</span><span class="w"> </span><span class="n">cached</span>
+<span class="n">objects</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">cost</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">significant</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">CPU</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">recreate</span><span class="w"> </span><span class="n">the</span>
+<span class="n">dropped</span><span class="w"> </span><span class="n">objects</span><span class="p">,</span><span class="w"> </span><span class="n">especially</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">were</span><span class="w"> </span><span class="n">under</span><span class="w"> </span><span class="n">heavy</span><span class="w"> </span><span class="n">use</span><span class="o">.</span><span class="w">  </span><span class="n">Because</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">this</span><span class="p">,</span>
+<span class="n">use</span><span class="w"> </span><span class="n">outside</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">testing</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">debugging</span><span class="w"> </span><span class="n">environment</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">recommended</span><span class="o">.</span>
+
+<span class="n">You</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">informational</span><span class="w"> </span><span class="n">messages</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="nb">log</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="k">is</span>
+<span class="n">used</span><span class="p">:</span>
+
+<span class="n">cat</span><span class="w"> </span><span class="p">(</span><span class="mi">1234</span><span class="p">):</span><span class="w"> </span><span class="n">drop_caches</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+
+<span class="n">These</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">informational</span><span class="w"> </span><span class="n">only</span><span class="o">.</span><span class="w">  </span><span class="n">They</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">mean</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">anything</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">wrong</span>
+<span class="n">with</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">system</span><span class="o">.</span><span class="w">  </span><span class="n">To</span><span class="w"> </span><span class="n">disable</span><span class="w"> </span><span class="n">them</span><span class="p">,</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="n">bit</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="n">into</span><span class="w"> </span><span class="n">drop_caches</span><span class="o">.</span>
+</code></pre></div>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-01-25T00:00:00+08:00">
+      Thu 25 January 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/linux.html">linux </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
