@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Nginx 监控 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-01-30.html" rel="bookmark"
+         title="Permalink to Nginx 监控">Nginx 监控</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <ul>
+<li>[ ] <img alt="nginx" src="https://nginx.org/nginx.png"></li>
+</ul>
+<p>前年读过<a href="https://www.scalyr.com/community/guides">Scalyr</a> 几篇关于监控的文章，写得挺细致，今天翻收藏夹又发现这个链接，顺便整理一下，主要参考以下2 篇文章：</p>
+<ul>
+<li><a href="https://www.scalyr.com/community/guides/how-to-monitor-nginx-the-essential-guide">How to Monitor Nginx: The Essential Guide</a></li>
+<li><a href="https://www.scalyr.com/community/guides/an-in-depth-guide-to-nginx-metrics">An In-Depth Guide to Nginx Metrics</a></li>
+</ul>
+<h2>stub_status</h2>
+<p>参考<a href="http://nginx.org/en/docs/http/ngx_http_stub_status_module.html">ngx_http_stub_status_module</a> 配置<code>stub_status</code>，访问配置好的路径，看到的页面内容如下（如果是Tengine 还会有<code>request_time</code> 等）：</p>
+<div class="highlight"><pre><span></span><code>Active connections: 291
+server accepts handled requests
+16630948 16630948 31070465
+Reading: 6 Writing: 179 Waiting: 106 
+</code></pre></div>
+
+<h3>active connections</h3>
+<div class="highlight"><pre><span></span><code>Active = Reading + Writing + Waiting
+291    = 6       + 179     + 106
+</code></pre></div>
+
+<p>三种连接状态的解释如下：</p>
+<div class="highlight"><pre><span></span><code>Reading
+    Nginx 在读取请求头信息
+Writing
+    Nginx 在发送响应信息给客户端
+Waiting
+    空闲的连接。
+    2种情况会出现Waiting 的连接：
+    1.Nginx 读取完请求，还未发送响应信息之前；
+    2.发送完响应信息，等待下一个请求时，HTTP 1.1 的keep-alive 常常会出现这种情况。
+</code></pre></div>
+
+<p>这4 个值都应该采集，当 active connection 接近于  </p>
+<blockquote>
+<p>阈值：<a href="http://nginx.org/en/docs/ngx_core_module.html#worker_connections">worker_connections</a> * <a href="http://nginx.org/en/docs/ngx_core_module.html#worker_processes">worker_processes</a></p>
+</blockquote>
+<p>触发报警。</p>
+<h3>accepts，handled，requests，dropped</h3>
+<p>accepts 是Nginx 累积接受的连接数，handled 是累计处理完成的连接数。这2个数值一般相等，但是偶尔会发现
+handled 值略小于accepts，这说明有一部分请求被dropped：</p>
+<div class="highlight"><pre><span></span><code>dropped = accepts - handled
+</code></pre></div>
+
+<p>出现dropped 可能是因为达到Nginx 的处理极限，或者用户配置的限制，参考上文active connection 的报警阈值。应该采集accepts 和handled 的值，监控它们之间的差值。</p>
+<p>requests 常常比accpts 大好几倍，因为一个连接可能产生多个请求，可以通过采集requests，求出一定时间之内的差值，得到当前的RPS（Requests Per Second），每秒请求数，当请求数暴涨时（活动流量突发，被攻击等情况）能及时发现。</p>
+<h3>nginx-moduls-vts</h3>
+<p>Nginx 自带的stub_status 比较简陋，可以考虑加入模块：<a href="https://github.com/vozlt/nginx-module-vts">nginx-module-vts</a> 。</p>
+<p><img alt="nginx-module-vts" src="https://cloud.githubusercontent.com/assets/3648408/23890539/a4c0de18-08d5-11e7-9a8b-448662454854.png"></p>
+<p>上图看到的这些值，都可以通过模块提供的接口采集到，绘图、监控，具体参考模块的<a href="https://github.com/vozlt/nginx-module-vts/blob/master/README.md">README.md</a>。</p>
+<h2>日志</h2>
+<h3>访问日志（access.log）</h3>
+<p>访问日志中最重要的就是监控HTTP 状态码<code>$status</code>，1xx，2xx，3xx，4xx，5xx。按时间段切割计算上报。5xx 大家肯定会重视，不过3xx 和4xx 也需要注意，都是血的教训。<br>
+由于需要监控4xx 和3xx，要和业务沟通清楚，不要把业务状态码和HTTP 状态码混在一起。例如用户抽奖的请求，没中奖都返回404，误报严重。</p>
+<p>另外还可以采集日志中的<code>$upstream_response_time</code>，<code>$request_time</code> 等数值，一段时间内出现响应时间次数大于某个阈值，报警，可以及时发现后端服务异常、过载等情况。</p>
+<p>更进一步，就是用<a href="https://www.fluentd.org">fluentd</a>收集访问日志，采用<a href="https://www.elastic.co/products">ELK</a> 、<a href="https://www.graylog.org">Graylog</a>等做更细致的分析。</p>
+<h3>错误日志（error.log）</h3>
+<p>Nginx 的错误日志非常重要，我之前的做法是超过N 条就报警。由于error.log 的内容类型非常多，监控脚本需要过滤掉常见的、已知的错误。报警阈值尽量小，当有意想不到的错误出现时，能及时发现。</p>
+<h2>进程</h2>
+<p>在前公司的时候，有一回同事通过<code>salt cmd.run</code> 远程重启了Nginx，跑了一段时间之后，error.log 狂刷日志，发现进程的<code>Max open files</code>是1024。先不提如何避免这种情况，方法很多，但是监控还是可以加上。</p>
+<p>ps 过滤出Nginx 进程们的PID，再通过以下命令拿到进程的<code>Max open files</code> 值：</p>
+<div class="highlight"><pre><span></span><code>cat /proc/{PID}/limit
+</code></pre></div>
+
+<p>将得到的值 和设定的值对比，不匹配即报警。</p>
+<p>Nginx 是多进程模型，监控下进程状态，当有异常发生时能更快的发现，进程若处于<code>D</code>，<code>Z</code>，<code>X</code>，<code>T</code>等状态需要注意。</p>
+<h2>其他</h2>
+<ul>
+<li>CPU 各项指标（sys,idle,iowait,si...）</li>
+<li>系统负载（load)</li>
+<li>磁盘IO</li>
+<li>磁盘空间</li>
+<li>网卡流量、包量</li>
+<li>全连接队列、半连接队列溢出监控<ul>
+<li><code>netstat -s</code>："SYNs to LISTEN sockets dropped”，"times the listen queue of a socket overflowed"</li>
+<li>参考<a href="http://jm.taobao.org/2017/05/25/525-1/">关于TCP 半连接队列和全连接队列</a></li>
+</ul>
+</li>
+<li>域名过期监控，需要注意域名服务商或者DNSPod 之类的警告邮件，或者写个脚本whois 定期查询，或者设个日历、闹钟</li>
+<li>SSL 证书有效期监控，可以自己写个脚本监控，使用<code>openssl</code>命令，或者用下面这些在线服务：<ul>
+<li><a href="https://www.sslcloud.cn">SSL Cloud</a></li>
+<li><a href="https://certificatemonitor.org">Certificate Expiry Monitor</a></li>
+</ul>
+</li>
+<li>定期<code>nginx -t</code></li>
+<li><a href="https://www.datadoghq.com/blog/how-to-monitor-nginx/">How to monitor NGINX</a></li>
+</ul>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-01-30T00:00:00+08:00">
+      Tue 30 January 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/nginx.html">nginx </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

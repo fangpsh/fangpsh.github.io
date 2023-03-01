@@ -24,6 +24,22 @@
 <section id="content" class="content">
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-10-10.html" rel="bookmark" title="Permalink to TLS Record Size 优化笔记">TLS Record Size 优化笔记</a></h2> </header>
+                <div class="entry-content"> <h2>从淘宝说起</h2>
+<p>从<a href="http://velocity.oreilly.com.cn/2015/ppts/lizhenyu.pdf">《淘宝全站HTTPS实践》</a>开始说：  </p>
+<p><img alt="taobao-https" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160434.png"></p>
+<p>怎么优化呢，调大还是调小。<br>
+视频：17min分钟左右:  </p>
+<p><embed src='http://player.youku.com/player.php/sid/XMTM0MTUzMTk1Mg==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'></embed></p>
+<p>提到Google 动态调，然后一般设置4k，恩,到底怎样。</p>
+<p>看看野狗 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-07-31.html" rel="bookmark" title="Permalink to 监控所有NameServer的SOA 记录的序列号">监控所有NameServer的SOA 记录的序列号</a></h2> </header>
+                <div class="entry-content"> <p><a href="/posts/2016/2016-05-11.html">Bind DLZ With MySQL </a>或者其他方式搭建了权威DNS，为了高可用的话，肯定会有多组NameServer。
+除了常规的监控外，还需要监控所有SLave 的NS 的SOA …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-07-27.html" rel="bookmark" title="Permalink to Haproxy 作为Shadowsocks 中继遇到的一个问题">Haproxy 作为Shadowsocks 中继遇到的一个问题</a></h2> </header>
                 <div class="entry-content"> <p>之前用Haproxy 来转发Shadowsocks 的流量时遇到一个问题，现象是在使用Slack 的时候（聊天使用了Websocket），频繁重连。凭直觉是由于Haproxy 的某一项timeout …</p> </div><!-- entry-content -->
         </article>
@@ -57,16 +73,9 @@ Pelican 有一个生成 …</p> </div><!-- entry-content -->
 回答这个问题前需要了解一下计算机的启动过程 …</p> </div><!-- entry-content -->
         </article>
         <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2015/2015-07-30.html" rel="bookmark" title="Permalink to 一键连接VPN">一键连接VPN</a></h2> </header>
-                <div class="entry-content"> <p>公司安全的同事最近给OpenVPN加上了基于Google Authenticator的二步验证，密码是「常用密码」+「每次变化的Token」，每次在外边想做事都得打开手机查看Token，输入密码串，安全是 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2015/2015-07-13.html" rel="bookmark" title="Permalink to cronic脚本修正">cronic脚本修正</a></h2> </header>
-                <div class="entry-content"> <p>实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2015/2015-04-06.html" rel="bookmark" title="Permalink to 面向网页工程师与网站管理员的Web缓存教程">面向网页工程师与网站管理员的Web缓存教程</a></h2> </header>
-                <div class="entry-content"> <p>这是一篇知识性的文档。尽管是技术性文章，但是本文试图让相关的概念更容易被理解，及更容易被应用到实际场景中去 …</p> </div><!-- entry-content -->
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2015/2015-11-26.html" rel="bookmark" title="Permalink to Docker与虚拟机等的SSH权限管理控制解决方案">Docker与虚拟机等的SSH权限管理控制解决方案</a></h2> </header>
+                <div class="entry-content"> <p>Docker和VM一类的云平台的权限控制如果采用常见的方式，把登录者的公钥写入<code>~/.ssh/authorized_keys</code>, 由于企业内部的人员流动和权限变更，往往不是十分便利。  </p>
+<p>特别是如果还选择把authorized_keys 打到镜像 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

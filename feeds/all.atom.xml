@@ -1315,7 +1315,98 @@ verify 函数。&lt;/p&gt;
 &lt;li&gt;&lt;code&gt;curl -v --http2&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://github.com/bradfitz/http2/tree/master/h2i"&gt;h2i&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Wireshark&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2018"></category><category term="http"></category></entry><entry><title>drop_caches</title><link href="https://fangpsh.github.io/posts/2018/2018-01-25.html" rel="alternate"></link><published>2018-01-25T00:00:00+08:00</published><updated>2018-01-25T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-01-25:/posts/2018/2018-01-25.html</id><summary type="html">&lt;p&gt;&lt;img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png"&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="http"></category><category term="book"></category></entry><entry><title>Nginx 监控</title><link href="https://fangpsh.github.io/posts/2018/2018-01-30.html" rel="alternate"></link><published>2018-01-30T00:00:00+08:00</published><updated>2018-01-30T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-01-30:/posts/2018/2018-01-30.html</id><summary type="html">&lt;ul&gt;
+&lt;li&gt;[ ] &lt;img alt="nginx" src="https://nginx.org/nginx.png"&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;前年读过&lt;a href="https://www.scalyr.com/community/guides"&gt;Scalyr&lt;/a&gt; 几篇关于监控的文章，写得挺细致，今天翻收藏夹又发现这个链接，顺便整理一下，主要参考以下2 篇文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.scalyr.com/community/guides/how-to-monitor-nginx-the-essential-guide"&gt;How to …&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;ul&gt;
+&lt;li&gt;[ ] &lt;img alt="nginx" src="https://nginx.org/nginx.png"&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;前年读过&lt;a href="https://www.scalyr.com/community/guides"&gt;Scalyr&lt;/a&gt; 几篇关于监控的文章，写得挺细致，今天翻收藏夹又发现这个链接，顺便整理一下，主要参考以下2 篇文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.scalyr.com/community/guides/how-to-monitor-nginx-the-essential-guide"&gt;How to Monitor Nginx: The Essential Guide&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.scalyr.com/community/guides/an-in-depth-guide-to-nginx-metrics"&gt;An In-Depth Guide to Nginx Metrics&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;stub_status&lt;/h2&gt;
+&lt;p&gt;参考&lt;a href="http://nginx.org/en/docs/http/ngx_http_stub_status_module.html"&gt;ngx_http_stub_status_module&lt;/a&gt; 配置&lt;code&gt;stub_status&lt;/code&gt;，访问配置好的路径，看到的页面内容如下（如果是Tengine 还会有&lt;code&gt;request_time&lt;/code&gt; 等）：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Active connections: 291
+server accepts handled requests
+16630948 16630948 31070465
+Reading: 6 Writing: 179 Waiting: 106 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;active connections&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Active = Reading + Writing + Waiting
+291    = 6       + 179     + 106
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;三种连接状态的解释如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Reading
+    Nginx 在读取请求头信息
+Writing
+    Nginx 在发送响应信息给客户端
+Waiting
+    空闲的连接。
+    2种情况会出现Waiting 的连接：
+    1.Nginx 读取完请求，还未发送响应信息之前；
+    2.发送完响应信息，等待下一个请求时，HTTP 1.1 的keep-alive 常常会出现这种情况。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这4 个值都应该采集，当 active connection 接近于  &lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;阈值：&lt;a href="http://nginx.org/en/docs/ngx_core_module.html#worker_connections"&gt;worker_connections&lt;/a&gt; * &lt;a href="http://nginx.org/en/docs/ngx_core_module.html#worker_processes"&gt;worker_processes&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;触发报警。&lt;/p&gt;
+&lt;h3&gt;accepts，handled，requests，dropped&lt;/h3&gt;
+&lt;p&gt;accepts 是Nginx 累积接受的连接数，handled 是累计处理完成的连接数。这2个数值一般相等，但是偶尔会发现
+handled 值略小于accepts，这说明有一部分请求被dropped：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;dropped = accepts - handled
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;出现dropped 可能是因为达到Nginx 的处理极限，或者用户配置的限制，参考上文active connection 的报警阈值。应该采集accepts 和handled 的值，监控它们之间的差值。&lt;/p&gt;
+&lt;p&gt;requests 常常比accpts 大好几倍，因为一个连接可能产生多个请求，可以通过采集requests，求出一定时间之内的差值，得到当前的RPS（Requests Per Second），每秒请求数，当请求数暴涨时（活动流量突发，被攻击等情况）能及时发现。&lt;/p&gt;
+&lt;h3&gt;nginx-moduls-vts&lt;/h3&gt;
+&lt;p&gt;Nginx 自带的stub_status 比较简陋，可以考虑加入模块：&lt;a href="https://github.com/vozlt/nginx-module-vts"&gt;nginx-module-vts&lt;/a&gt; 。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="nginx-module-vts" src="https://cloud.githubusercontent.com/assets/3648408/23890539/a4c0de18-08d5-11e7-9a8b-448662454854.png"&gt;&lt;/p&gt;
+&lt;p&gt;上图看到的这些值，都可以通过模块提供的接口采集到，绘图、监控，具体参考模块的&lt;a href="https://github.com/vozlt/nginx-module-vts/blob/master/README.md"&gt;README.md&lt;/a&gt;。&lt;/p&gt;
+&lt;h2&gt;日志&lt;/h2&gt;
+&lt;h3&gt;访问日志（access.log）&lt;/h3&gt;
+&lt;p&gt;访问日志中最重要的就是监控HTTP 状态码&lt;code&gt;$status&lt;/code&gt;，1xx，2xx，3xx，4xx，5xx。按时间段切割计算上报。5xx 大家肯定会重视，不过3xx 和4xx 也需要注意，都是血的教训。&lt;br&gt;
+由于需要监控4xx 和3xx，要和业务沟通清楚，不要把业务状态码和HTTP 状态码混在一起。例如用户抽奖的请求，没中奖都返回404，误报严重。&lt;/p&gt;
+&lt;p&gt;另外还可以采集日志中的&lt;code&gt;$upstream_response_time&lt;/code&gt;，&lt;code&gt;$request_time&lt;/code&gt; 等数值，一段时间内出现响应时间次数大于某个阈值，报警，可以及时发现后端服务异常、过载等情况。&lt;/p&gt;
+&lt;p&gt;更进一步，就是用&lt;a href="https://www.fluentd.org"&gt;fluentd&lt;/a&gt;收集访问日志，采用&lt;a href="https://www.elastic.co/products"&gt;ELK&lt;/a&gt; 、&lt;a href="https://www.graylog.org"&gt;Graylog&lt;/a&gt;等做更细致的分析。&lt;/p&gt;
+&lt;h3&gt;错误日志（error.log）&lt;/h3&gt;
+&lt;p&gt;Nginx 的错误日志非常重要，我之前的做法是超过N 条就报警。由于error.log 的内容类型非常多，监控脚本需要过滤掉常见的、已知的错误。报警阈值尽量小，当有意想不到的错误出现时，能及时发现。&lt;/p&gt;
+&lt;h2&gt;进程&lt;/h2&gt;
+&lt;p&gt;在前公司的时候，有一回同事通过&lt;code&gt;salt cmd.run&lt;/code&gt; 远程重启了Nginx，跑了一段时间之后，error.log 狂刷日志，发现进程的&lt;code&gt;Max open files&lt;/code&gt;是1024。先不提如何避免这种情况，方法很多，但是监控还是可以加上。&lt;/p&gt;
+&lt;p&gt;ps 过滤出Nginx 进程们的PID，再通过以下命令拿到进程的&lt;code&gt;Max open files&lt;/code&gt; 值：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;cat /proc/{PID}/limit
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;将得到的值 和设定的值对比，不匹配即报警。&lt;/p&gt;
+&lt;p&gt;Nginx 是多进程模型，监控下进程状态，当有异常发生时能更快的发现，进程若处于&lt;code&gt;D&lt;/code&gt;，&lt;code&gt;Z&lt;/code&gt;，&lt;code&gt;X&lt;/code&gt;，&lt;code&gt;T&lt;/code&gt;等状态需要注意。&lt;/p&gt;
+&lt;h2&gt;其他&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;CPU 各项指标（sys,idle,iowait,si...）&lt;/li&gt;
+&lt;li&gt;系统负载（load)&lt;/li&gt;
+&lt;li&gt;磁盘IO&lt;/li&gt;
+&lt;li&gt;磁盘空间&lt;/li&gt;
+&lt;li&gt;网卡流量、包量&lt;/li&gt;
+&lt;li&gt;全连接队列、半连接队列溢出监控&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;netstat -s&lt;/code&gt;："SYNs to LISTEN sockets dropped”，"times the listen queue of a socket overflowed"&lt;/li&gt;
+&lt;li&gt;参考&lt;a href="http://jm.taobao.org/2017/05/25/525-1/"&gt;关于TCP 半连接队列和全连接队列&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;域名过期监控，需要注意域名服务商或者DNSPod 之类的警告邮件，或者写个脚本whois 定期查询，或者设个日历、闹钟&lt;/li&gt;
+&lt;li&gt;SSL 证书有效期监控，可以自己写个脚本监控，使用&lt;code&gt;openssl&lt;/code&gt;命令，或者用下面这些在线服务：&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.sslcloud.cn"&gt;SSL Cloud&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://certificatemonitor.org"&gt;Certificate Expiry Monitor&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;定期&lt;code&gt;nginx -t&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.datadoghq.com/blog/how-to-monitor-nginx/"&gt;How to monitor NGINX&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="nginx"></category></entry><entry><title>drop_caches</title><link href="https://fangpsh.github.io/posts/2018/2018-01-25.html" rel="alternate"></link><published>2018-01-25T00:00:00+08:00</published><updated>2018-01-25T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-01-25:/posts/2018/2018-01-25.html</id><summary type="html">&lt;p&gt;&lt;img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png"&gt;
 &lt;a href="https://www.linuxatemyram.com"&gt;Don't Panic! Your ram is fine!&lt;/a&gt;&lt;/p&gt;
 &lt;h2&gt;问题排查&lt;/h2&gt;
 &lt;p&gt;一台机器的CPU iowait 非常高，perf 分析发现耗时都在&lt;code&gt;isolate_freepages_block&lt;/code&gt; 函数，iostat 看系统盘的iops 也达到瓶颈，free 查看机器内 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png"&gt;
@@ -4117,7 +4208,7 @@ HPBN的在这一章的建议是用物理机，纯CPU计算卸载，举了Google�
 &lt;h3&gt;升级到HTTP 2.0&lt;/h3&gt;
 &lt;p&gt;要注意不要把在HTTP 1.1 上的优化手段用到HTTP 2.0 上，会适得其反。&lt;/p&gt;
 &lt;h2&gt;其他&lt;/h2&gt;
-&lt;p&gt;书中还有大量其他内容，一些关于TCP、HTTP的基础介绍，以及移动网络、XMLHttpRequest、WebSocket、WebRTC等内容。&lt;/p&gt;</content><category term="2016"></category><category term="web"></category><category term="http"></category><category term="https"></category></entry><entry><title>Nginx 加载配置的顺序分析</title><link href="https://fangpsh.github.io/posts/2016/2016-10-14.html" rel="alternate"></link><published>2016-10-14T13:59:30+08:00</published><updated>2016-10-14T13:59:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-10-14:/posts/2016/2016-10-14.html</id><summary type="html">&lt;h2&gt;问题背景&lt;/h2&gt;
+&lt;p&gt;书中还有大量其他内容，一些关于TCP、HTTP的基础介绍，以及移动网络、XMLHttpRequest、WebSocket、WebRTC等内容。&lt;/p&gt;</content><category term="2016"></category><category term="web"></category><category term="http"></category><category term="https"></category><category term="book"></category></entry><entry><title>Nginx 加载配置的顺序分析</title><link href="https://fangpsh.github.io/posts/2016/2016-10-14.html" rel="alternate"></link><published>2016-10-14T13:59:30+08:00</published><updated>2016-10-14T13:59:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-10-14:/posts/2016/2016-10-14.html</id><summary type="html">&lt;h2&gt;问题背景&lt;/h2&gt;
 &lt;p&gt;在部署HTTPS 的时候，2台Nginx 下都部署了多个域名的证书，即NginxA 部署了证书a.com 和b.com 的证书，NginxB 也部署了证书a.com 和b …&lt;/p&gt;</summary><content type="html">&lt;h2&gt;问题背景&lt;/h2&gt;
 &lt;p&gt;在部署HTTPS 的时候，2台Nginx 下都部署了多个域名的证书，即NginxA 部署了证书a.com 和b.com 的证书，NginxB 也部署了证书a.com 和b.com ，域名a.com 指向NginxA，域名b.com 指向NginxB。&lt;br&gt;
 在用&lt;a href="https://www.ssllabs.com"&gt;SSL LABS&lt;/a&gt; 检测的时候，发现b.com 会出现“This site works only in browsers with SNI support.”，而a.com 不会。&lt;br&gt;
@@ -4389,7 +4480,68 @@ https://github.com/nodejs/node-v0.x-archive/issues/6889&lt;/p&gt;
 相关的Nginx Patch: &lt;a href="https://github.com/cloudflare/sslconfig/blob/master/patches/nginx__dynamic_tls_records.patch"&gt;nginx__dynamic_tls_records.patch&lt;/a&gt;&lt;/p&gt;
 &lt;h2&gt;结论&lt;/h2&gt;
 &lt;p&gt;直接用cloudflare 的patch；&lt;br&gt;
-如果做不到动态，先适当调小。&lt;/p&gt;</content><category term="2016"></category><category term="TLS"></category><category term="HTTPS"></category><category term="Nginx"></category></entry><entry><title>Haproxy 作为Shadowsocks 中继遇到的一个问题</title><link href="https://fangpsh.github.io/posts/2016/2016-07-27.html" rel="alternate"></link><published>2016-07-27T14:57:00+08:00</published><updated>2016-07-27T14:57:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-07-27:/posts/2016/2016-07-27.html</id><summary type="html">&lt;p&gt;之前用Haproxy 来转发Shadowsocks 的流量时遇到一个问题，现象是在使用Slack 的时候（聊天使用了Websocket），频繁重连。凭直觉是由于Haproxy 的某一项timeout …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前用Haproxy 来转发Shadowsocks 的流量时遇到一个问题，现象是在使用Slack 的时候（聊天使用了Websocket），频繁重连。凭直觉是由于Haproxy 的某一项timeout 设置的不合理导致的。&lt;br&gt;
+如果做不到动态，先适当调小。&lt;/p&gt;</content><category term="2016"></category><category term="TLS"></category><category term="HTTPS"></category><category term="Nginx"></category></entry><entry><title>监控所有NameServer的SOA 记录的序列号</title><link href="https://fangpsh.github.io/posts/2016/2016-07-31.html" rel="alternate"></link><published>2016-07-31T19:49:30+08:00</published><updated>2016-07-31T19:49:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-07-31:/posts/2016/2016-07-31.html</id><summary type="html">&lt;p&gt;&lt;a href="/posts/2016/2016-05-11.html"&gt;Bind DLZ With MySQL &lt;/a&gt;或者其他方式搭建了权威DNS，为了高可用的话，肯定会有多组NameServer。
+除了常规的监控外，还需要监控所有SLave 的NS 的SOA …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="/posts/2016/2016-05-11.html"&gt;Bind DLZ With MySQL &lt;/a&gt;或者其他方式搭建了权威DNS，为了高可用的话，肯定会有多组NameServer。
+除了常规的监控外，还需要监控所有SLave 的NS 的SOA 序列号（Serial Number）是否和Master 一致，如果落后的话需要报警，有时候也有可能Master NS生成的记录有错，无法同步到Slave NS，也有可能是权限方面出错等等，总之，这个监控非常有必要。  &lt;/p&gt;
+&lt;p&gt;关于SOA 记录的介绍可以参考:&lt;a href="https://support.microsoft.com/zh-tw/kb/163971"&gt;DNS SOA 记录的结构&lt;/a&gt;。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;@   IN  SOA     nameserver.place.dom.  postmaster.place.dom. (
+                           1            ; serial number
+                           3600         ; refresh   [1h]
+                           600          ; retry     [10m]
+                           86400        ; expire    [1d]
+                           3600 )       ; min TTL   [1h]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;使用dig 命令向特定NameServer 查询特定域名的SOA 记录:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;dig&lt;span class="w"&gt; &lt;/span&gt;@NS_IP&lt;span class="w"&gt; &lt;/span&gt;domain&lt;span class="w"&gt; &lt;/span&gt;soa
+&amp;gt;&amp;gt;dig&lt;span class="w"&gt; &lt;/span&gt;@114.114.114.114&lt;span class="w"&gt; &lt;/span&gt;google.com&lt;span class="w"&gt; &lt;/span&gt;soa
+
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;dig&lt;span class="w"&gt; &lt;/span&gt;@NS_IP&lt;span class="w"&gt; &lt;/span&gt;domain&lt;span class="w"&gt; &lt;/span&gt;soa&lt;span class="w"&gt; &lt;/span&gt;+short&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;#返回简短的结果&lt;/span&gt;
+&amp;gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;dig&lt;span class="w"&gt; &lt;/span&gt;@8.8.8.8&lt;span class="w"&gt; &lt;/span&gt;google&lt;span class="w"&gt; &lt;/span&gt;soa&lt;span class="w"&gt; &lt;/span&gt;+short
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;!-- more --&gt;
+
+&lt;p&gt;&lt;img alt="dns_soa_serial_number" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171412.png"&gt;&lt;/p&gt;
+&lt;p&gt;一个OpenFalcon 的监控脚本：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#!/usr/bin/env bash&lt;/span&gt;
+&lt;span class="c1"&gt;#author: fangpsh&lt;/span&gt;
+&lt;span class="c1"&gt;#check whether NSs have same SOA serial&lt;/span&gt;
+&lt;span class="nv"&gt;DATE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;date&lt;span class="w"&gt; &lt;/span&gt;+%s&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;span class="nv"&gt;HOST&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;/etc/hostname&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;span class="c1"&gt;#your domain&lt;/span&gt;
+&lt;span class="nv"&gt;DOMAIN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="c1"&gt;#master name server&lt;/span&gt;
+&lt;span class="nv"&gt;MASTER_NS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="c1"&gt;#slave NSs, a space separated list&lt;/span&gt;
+&lt;span class="nv"&gt;SLAVE_NS_SET&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+
+q_serial&lt;span class="o"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+dig&lt;span class="w"&gt; &lt;/span&gt;@&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;1&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DOMAIN&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;soa&lt;span class="w"&gt; &lt;/span&gt;+short&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+&lt;span class="o"&gt;}&lt;/span&gt;
+
+&lt;span class="nv"&gt;dns_s&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;q_serial&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;${MASTER_NS}&amp;#39;&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;
+
+
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;[{\&amp;quot;metric\&amp;quot;: \&amp;quot;NS_Serial\&amp;quot;, \&amp;quot;endpoint\&amp;quot;: \&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;HOST&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;\&amp;quot;, \&amp;quot;tags\&amp;quot;: \&amp;quot;host=&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;MASTER_NS&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;\&amp;quot;, &amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;\&amp;quot;value\&amp;quot;: 0,&amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot; \&amp;quot;timestamp\&amp;quot;: &lt;/span&gt;&lt;span class="nv"&gt;$DATE&lt;/span&gt;&lt;span class="s2"&gt;, \&amp;quot;counterType\&amp;quot;: \&amp;quot;GAUGE\&amp;quot;, \&amp;quot;step\&amp;quot;: 60}&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ns&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;SLAVE_NS_SET&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;ns_s&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;q_serial&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;ns&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;,{\&amp;quot;metric\&amp;quot;: \&amp;quot;NS_Serial\&amp;quot;, \&amp;quot;endpoint\&amp;quot;: \&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;HOST&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;\&amp;quot;, \&amp;quot;tags\&amp;quot;: \&amp;quot;host=&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;ns&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;\&amp;quot;, &amp;quot;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;dns_s&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;ns_s&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;\&amp;quot;value\&amp;quot;: 0,&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;#ok&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;\&amp;quot;value\&amp;quot;: 1,&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;#error&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;fi&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot; \&amp;quot;timestamp\&amp;quot;: &lt;/span&gt;&lt;span class="nv"&gt;$DATE&lt;/span&gt;&lt;span class="s2"&gt;, \&amp;quot;counterType\&amp;quot;: \&amp;quot;GAUGE\&amp;quot;, \&amp;quot;step\&amp;quot;: 60}&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;done&lt;/span&gt;
+
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;]&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2016"></category><category term="DNS"></category></entry><entry><title>Haproxy 作为Shadowsocks 中继遇到的一个问题</title><link href="https://fangpsh.github.io/posts/2016/2016-07-27.html" rel="alternate"></link><published>2016-07-27T14:57:00+08:00</published><updated>2016-07-27T14:57:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-07-27:/posts/2016/2016-07-27.html</id><summary type="html">&lt;p&gt;之前用Haproxy 来转发Shadowsocks 的流量时遇到一个问题，现象是在使用Slack 的时候（聊天使用了Websocket），频繁重连。凭直觉是由于Haproxy 的某一项timeout …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前用Haproxy 来转发Shadowsocks 的流量时遇到一个问题，现象是在使用Slack 的时候（聊天使用了Websocket），频繁重连。凭直觉是由于Haproxy 的某一项timeout 设置的不合理导致的。&lt;br&gt;
 Websocket 协议可以分为2个阶段，先用HTTP 握手，然后建立长连接，通过ws 协议进行通信。将Haproxy 作为中继时，在建立长连接之后，Haproxy 就转入&lt;a href="http://blog.haproxy.com/2011/07/29/layer-4-load-balancing-tunnel-mode/"&gt;tunnel 模式&lt;/a&gt;：  &lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;TUN：tunnel（option http-tunnel）：这是 1.0 ~ 1.5-dev21 的默认模式，类似于隧道，HAProxy 仅处理第一个请求和响应，剩余的报文将直接转发而不进行处理。尽量不要使用这个模式，因为它在日志记录和 HTTP 处理上有很多问题。 --来源：liaoph.com&lt;/p&gt;
@@ -5404,7 +5556,15 @@ Initrd 这一步，Systemd 其实也可以接管，具体参考：&lt;a href="ht
 &lt;p&gt;Target 也是一种单元文件，但是它是引用和组织其他的单元文件，定义组织各种依赖关系。所以，Target 肯定可以实现Runlevel 的作用，只要定义六个Target 就可以了嘛。
 再看看下面这张图，就大致明白了启动的时候是怎么加载服务进程的：&lt;/p&gt;
 &lt;p&gt;&lt;img alt="bootup" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161805.png"&gt;&lt;/p&gt;
-&lt;p&gt;更多细节，以及关机的过程请参考：&lt;a href="https://www.freedesktop.org/software/systemd/man/bootup.html"&gt;bootup&lt;/a&gt;&lt;/p&gt;</content><category term="2016"></category><category term="Linux"></category><category term="Systemd"></category></entry><entry><title>一键连接VPN</title><link href="https://fangpsh.github.io/posts/2015/2015-07-30.html" rel="alternate"></link><published>2015-07-30T22:00:00+08:00</published><updated>2015-07-30T22:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-07-30:/posts/2015/2015-07-30.html</id><summary type="html">&lt;p&gt;公司安全的同事最近给OpenVPN加上了基于Google Authenticator的二步验证，密码是「常用密码」+「每次变化的Token」，每次在外边想做事都得打开手机查看Token，输入密码串，安全是 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;公司安全的同事最近给OpenVPN加上了基于Google Authenticator的二步验证，密码是「常用密码」+「每次变化的Token」，每次在外边想做事都得打开手机查看Token，输入密码串，安全是安全了，可是不能忍！&lt;/p&gt;
+&lt;p&gt;更多细节，以及关机的过程请参考：&lt;a href="https://www.freedesktop.org/software/systemd/man/bootup.html"&gt;bootup&lt;/a&gt;&lt;/p&gt;</content><category term="2016"></category><category term="Linux"></category><category term="Systemd"></category></entry><entry><title>Docker与虚拟机等的SSH权限管理控制解决方案</title><link href="https://fangpsh.github.io/posts/2015/2015-11-26.html" rel="alternate"></link><published>2015-11-26T15:59:00+08:00</published><updated>2015-11-26T15:59:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-11-26:/posts/2015/2015-11-26.html</id><summary type="html">&lt;p&gt;Docker和VM一类的云平台的权限控制如果采用常见的方式，把登录者的公钥写入&lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt;, 由于企业内部的人员流动和权限变更，往往不是十分便利。  &lt;/p&gt;
+&lt;p&gt;特别是如果还选择把authorized_keys 打到镜像 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Docker和VM一类的云平台的权限控制如果采用常见的方式，把登录者的公钥写入&lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt;, 由于企业内部的人员流动和权限变更，往往不是十分便利。  &lt;/p&gt;
+&lt;p&gt;特别是如果还选择把authorized_keys 打到镜像中的话，管理起来就会十分蛋疼。不过对于Docker这种容器，如果还需要开发登录进去进行Debug或者做其他操作的话，姿势上其实是不对的，不符合它的设计哲学，但是按照目前接触的国内使用Docker做内部云的厂商来看的话，大都是把Docker当作一个轻量级的VM来用而已，很多更是为了用Docker而用Docker。  &lt;/p&gt;
+&lt;p&gt;这是题外话，如果是在企业内部的Server（Docker的容器、VM以及物理机），应该选择公共帐号登录，而不是给每个开发者或者运维人员都开一个个人帐号上去搞，这样不仅会十分混乱，而且员工离职之类的还好带来不少“遗留问题”。  &lt;/p&gt;
+&lt;p&gt;一种解决思路是通过一些配置管理工具来管理Server的authorized_keys，例如Puppet、SaltStack、Ansible等。不过这需要运维人肉编辑配置文件，而且权限这种东西变更很频繁，所以更进一步是在这些配置管理工具只是进行开发，提供一个Web 服务作为权限控制平台。    &lt;/p&gt;
+&lt;p&gt;另外一种解决思路是通过&lt;a href="/posts/2015/2015-01-05.html"&gt;OpenSSH的AuthorizedKeysCommand选项&lt;/a&gt;，调用一个脚本，从远程的服务取得授权登者的公钥，具体做法可以参考前面链接的文章。  &lt;/p&gt;
+&lt;p&gt;这种方法有个问题，如果远端权限管理的服务宕机了，可能是一个Web 服务，MySQL Server或者LDAP，都将造成通过这种方式授权的用户无法登录，所以必须保证该服务的稳定性。  &lt;/p&gt;
+&lt;p&gt;另外应该禁止掉root登录，因为AuthorizedKeysCommand是作用于所有用户，包括root用户。将所有权限放在一个“篮子“里的话，除了得保证这个篮子的稳定性，还有安全性。  &lt;/p&gt;
+&lt;p&gt;通过开发定制化一个Web服务，可以做更多事情，例如控制帐号的有效期，权限的批量开通等等。  &lt;/p&gt;</content><category term="2015"></category><category term="SSH"></category></entry><entry><title>一键连接VPN</title><link href="https://fangpsh.github.io/posts/2015/2015-07-30.html" rel="alternate"></link><published>2015-07-30T22:00:00+08:00</published><updated>2015-07-30T22:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-07-30:/posts/2015/2015-07-30.html</id><summary type="html">&lt;p&gt;公司安全的同事最近给OpenVPN加上了基于Google Authenticator的二步验证，密码是「常用密码」+「每次变化的Token」，每次在外边想做事都得打开手机查看Token，输入密码串，安全是 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;公司安全的同事最近给OpenVPN加上了基于Google Authenticator的二步验证，密码是「常用密码」+「每次变化的Token」，每次在外边想做事都得打开手机查看Token，输入密码串，安全是安全了，可是不能忍！&lt;/p&gt;
 &lt;h2&gt;OSX 生成Token&lt;/h2&gt;
 &lt;p&gt;首先想到的是不要每次都打开手机，所以开始寻找Google Authenticator 生成工具的桌面版，果然有很多解决方案&lt;a href="http://superuser.com/questions/462478/is-there-a-google-authenticator-desktop-client"&gt;Is there a Google Authenticator desktop client?&lt;/a&gt;, 有Web版的、Java版的，不过最高效的当然是命令行版&lt;a href="http://www.nongnu.org/oath-toolkit/"&gt;oathtool&lt;/a&gt;:&lt;/p&gt;
 &lt;p&gt;安装oath-toolkit:&lt;/p&gt;

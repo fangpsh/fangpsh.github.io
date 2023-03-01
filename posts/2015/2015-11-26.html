@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Docker与虚拟机等的SSH权限管理控制解决方案 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2015/2015-11-26.html" rel="bookmark"
+         title="Permalink to Docker与虚拟机等的SSH权限管理控制解决方案">Docker与虚拟机等的SSH权限管理控制解决方案</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>Docker和VM一类的云平台的权限控制如果采用常见的方式，把登录者的公钥写入<code>~/.ssh/authorized_keys</code>, 由于企业内部的人员流动和权限变更，往往不是十分便利。  </p>
+<p>特别是如果还选择把authorized_keys 打到镜像中的话，管理起来就会十分蛋疼。不过对于Docker这种容器，如果还需要开发登录进去进行Debug或者做其他操作的话，姿势上其实是不对的，不符合它的设计哲学，但是按照目前接触的国内使用Docker做内部云的厂商来看的话，大都是把Docker当作一个轻量级的VM来用而已，很多更是为了用Docker而用Docker。  </p>
+<p>这是题外话，如果是在企业内部的Server（Docker的容器、VM以及物理机），应该选择公共帐号登录，而不是给每个开发者或者运维人员都开一个个人帐号上去搞，这样不仅会十分混乱，而且员工离职之类的还好带来不少“遗留问题”。  </p>
+<p>一种解决思路是通过一些配置管理工具来管理Server的authorized_keys，例如Puppet、SaltStack、Ansible等。不过这需要运维人肉编辑配置文件，而且权限这种东西变更很频繁，所以更进一步是在这些配置管理工具只是进行开发，提供一个Web 服务作为权限控制平台。    </p>
+<p>另外一种解决思路是通过<a href="/posts/2015/2015-01-05.html">OpenSSH的AuthorizedKeysCommand选项</a>，调用一个脚本，从远程的服务取得授权登者的公钥，具体做法可以参考前面链接的文章。  </p>
+<p>这种方法有个问题，如果远端权限管理的服务宕机了，可能是一个Web 服务，MySQL Server或者LDAP，都将造成通过这种方式授权的用户无法登录，所以必须保证该服务的稳定性。  </p>
+<p>另外应该禁止掉root登录，因为AuthorizedKeysCommand是作用于所有用户，包括root用户。将所有权限放在一个“篮子“里的话，除了得保证这个篮子的稳定性，还有安全性。  </p>
+<p>通过开发定制化一个Web服务，可以做更多事情，例如控制帐号的有效期，权限的批量开通等等。  </p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2015-11-26T15:59:00+08:00">
+      Thu 26 November 2015
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2015.html">2015</a> Tagged <a href="https://fangpsh.github.io/tag/ssh.html">SSH </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
