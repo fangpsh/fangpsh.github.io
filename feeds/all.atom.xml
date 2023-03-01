@@ -804,7 +804,16 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;/ol&gt;
 &lt;p&gt;所以，如果你是IPv4 网络的话，1、3 测试肯定是失败的，IPv6 不通嘛，但是2 可能能够成功，因为你的local dns 出口可能是能够访问IPv6 环境的，如果不行的话，换成&lt;code&gt;8.8.8.8&lt;/code&gt; 试一试？&lt;/p&gt;
 &lt;p&gt;我在电信的IPv6 环境下测试发现3 失败了，电信还没给IPv6 的DNS，默认的IPv4 的DNS 也不能访问到纯IPv6 环境的权威服务器，手动加个Google 的&lt;code&gt;2001:4860:4860::8888&lt;/code&gt; 就好了。&lt;/p&gt;
-&lt;p&gt;IPv6 要推广了，相关的一堆基础知识得抓紧补了，地址格式、SLAAC、DHCPv6、ICMPv6...想起大学计网老师居然自动跳过了IPv6 这一章！&lt;/p&gt;</content><category term="2018"></category><category term="ipv6"></category><category term="dns"></category><category term="network"></category></entry><entry><title>关闭服务器节能模式</title><link href="https://fangpsh.github.io/posts/2018/2018-09-20.html" rel="alternate"></link><published>2018-09-20T00:00:00+08:00</published><updated>2018-09-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-09-20:/posts/2018/2018-09-20.html</id><summary type="html">&lt;p&gt;不少服务器出厂默认是开启节能模式，会有很多“坑”，例如意外宕机。我不清楚这些坑现在还是否存在，或者该怎样绕过去，也 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;不少服务器出厂默认是开启节能模式，会有很多“坑”，例如意外宕机。我不清楚这些坑现在还是否存在，或者该怎样绕过去，也不想花费这个精力。
+&lt;p&gt;IPv6 要推广了，相关的一堆基础知识得抓紧补了，地址格式、SLAAC、DHCPv6、ICMPv6...想起大学计网老师居然自动跳过了IPv6 这一章！&lt;/p&gt;</content><category term="2018"></category><category term="ipv6"></category><category term="dns"></category><category term="network"></category></entry><entry><title>Airflow 并发trigger DAG 的问题</title><link href="https://fangpsh.github.io/posts/2018/2018-10-25.html" rel="alternate"></link><published>2018-10-25T00:00:00+08:00</published><updated>2018-10-25T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-10-25:/posts/2018/2018-10-25.html</id><summary type="html">&lt;p&gt;有一个小服务使用了&lt;a href="http://airflow.apache.org"&gt;airflow&lt;/a&gt;，会把比较耗时的离线任务丢到airflow 处理。
+在需要的时候触发（trigger_dag）这些任务。最近发现一小部分任务没 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;有一个小服务使用了&lt;a href="http://airflow.apache.org"&gt;airflow&lt;/a&gt;，会把比较耗时的离线任务丢到airflow 处理。
+在需要的时候触发（trigger_dag）这些任务。最近发现一小部分任务没成功，对应的dag 下也没找到日志记录，看起来是没触发成功。
+在airflow-web-server 中发现了异常日志：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;Run&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;id&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;already&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;exists&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;dag&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;id&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;看了下代码：&lt;a href="https://github.com/apache/incubator-airflow/blob/master/airflow/api/common/experimental/trigger_dag.py#L42,L55"&gt;incubator-airflow/airflow/api/common/experimental/trigger_dag.py&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;未指定run_id 的情况下，run_id 默认为&lt;code&gt;utcnow&lt;/code&gt;，并且还默认去掉了microsecond。这样的话，对同一个dag 大量并发trigger 的时候，run_id 很容易相同。&lt;/p&gt;
+&lt;p&gt;临时的解决方法，在trigger dag 时指定下run_id。我临时改成了 utcnow+uuid4，应该不会再撞上了吧，不然就是中彩票了。&lt;/p&gt;</content><category term="2018"></category><category term="Airflow"></category></entry><entry><title>关闭服务器节能模式</title><link href="https://fangpsh.github.io/posts/2018/2018-09-20.html" rel="alternate"></link><published>2018-09-20T00:00:00+08:00</published><updated>2018-09-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-09-20:/posts/2018/2018-09-20.html</id><summary type="html">&lt;p&gt;不少服务器出厂默认是开启节能模式，会有很多“坑”，例如意外宕机。我不清楚这些坑现在还是否存在，或者该怎样绕过去，也 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;不少服务器出厂默认是开启节能模式，会有很多“坑”，例如意外宕机。我不清楚这些坑现在还是否存在，或者该怎样绕过去，也不想花费这个精力。
 反正都是租用的服务器，完全不用操心电费；租机柜托管的，好像也不会另外算电费。没有BAT 量级的机器，没必要花功夫研究细节，关了即可。&lt;/p&gt;
 &lt;p&gt;让BIOS 接管电源管理，跑在最佳性能，整理下常见厂商的关闭步骤。&lt;/p&gt;
 &lt;h2&gt;Dell&lt;/h2&gt;
@@ -1035,7 +1044,62 @@ verify 函数。&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;hr&gt;
-&lt;p&gt;新的一周又开始咯😆 。&lt;/p&gt;</content><category term="2018"></category><category term="openldap"></category></entry><entry><title>《HTTP/2 基础教程》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="alternate"></link><published>2018-02-06T00:00:00+08:00</published><updated>2018-02-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-02-06:/posts/2018/2018-02-06.html</id><summary type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;新的一周又开始咯😆 。&lt;/p&gt;</content><category term="2018"></category><category term="openldap"></category></entry><entry><title>如何搭建一个高匿名的内部论坛</title><link href="https://fangpsh.github.io/posts/2018/2018-04-25.html" rel="alternate"></link><published>2018-04-25T00:00:00+08:00</published><updated>2018-04-25T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-04-25:/posts/2018/2018-04-25.html</id><summary type="html">&lt;p&gt;入职腾讯的时候，同学们给我推荐了一个App：&lt;a href="http://tongshiapp.com"&gt;同事&lt;/a&gt;，
+这个App 为同事之间提供了匿名交流的平台，各种高压线、污秽色情的信息 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;入职腾讯的时候，同学们给我推荐了一个App：&lt;a href="http://tongshiapp.com"&gt;同事&lt;/a&gt;，
+这个App 为同事之间提供了匿名交流的平台，各种高压线、污秽色情的信息络绎不绝，相当刺激。  &lt;/p&gt;
+&lt;p&gt;这个App 17年后期就出现HTTPS 证书过期、短信通道欠费收不到短信等问题，看起来要倒闭。有时候在想如果要搭建一个替代品，该如何平衡匿名性，又能验证是腾讯员工，我会怎么做，最后想了一个折中的办法。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="tongshiApp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165344.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;前提：员工不信任论坛管理员。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2&gt;邮件列表&lt;/h2&gt;
+&lt;p&gt;一开始的想法是通过邮件列表，因为邮箱还能匿名注册，而且有各种各样的移动客户端。怎么验证员工身份？无论是工作邮箱发验证码还是什么，只要涉及员工工作邮箱，服务端就有可能记录对应关系。或者通过邀请制度？又感觉不够收敛。做一个网站，只有内网可以访问，然后每日生成邀请码？Bingo，突然想到可以限制注册的来源，限制内网注册即可。&lt;/p&gt;
+&lt;h2&gt;Flarum&lt;/h2&gt;
+&lt;p&gt;没做邮件列表，基于&lt;a href="http://flarum.org"&gt;Flarum&lt;/a&gt;开始搭建。&lt;/p&gt;
+&lt;p&gt;域名：免费的.tk 域名玩一玩，开隐私保护，tongshi.tk。&lt;br&gt;
+服务器地址隐藏：cloudflare 免费CDN，全站开启。  &lt;/p&gt;
+&lt;p&gt;收集腾讯内网出口的IP 地址范围，三个段：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="mf"&gt;14.17.22.0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;24&lt;/span&gt;
+&lt;span class="mf"&gt;103.7.28.0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;22&lt;/span&gt;
+&lt;span class="mf"&gt;103.7.29.0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;24&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;开启HTTPS 支持，防止在公司内网访问，被中间人监听 🙈  。&lt;/p&gt;
+&lt;p&gt;由于使用了CloudFlare 做全站CDN，遇到一个问题，没法校验客户端IP，2个解决方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;升级CloudFlare 套餐，使用&lt;a href="https://support.cloudflare.com/hc/en-us/articles/115001595131-How-do-I-Lockdown-URLs-in-Cloudflare-"&gt;Zone lockdown&lt;/a&gt;功能。
+&lt;img alt="cloudflare_zone_lockdown" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165404.png"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;CloudFlare 会把客户端IP 放在 &lt;code&gt;$http_cf_connecting_ip&lt;/code&gt; 头里面，在Nginx 里面校验一下这个头。参考：&lt;a href="https://support.cloudflare.com/hc/en-us/articles/200170706-How-do-I-restore-original-visitor-IP-with-Nginx-"&gt;How do I restore original visitor IP with Nginx?&lt;/a&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;map $http_cf_connecting_ip $allowed {
+    default deny;
+    ~\s*14.17.22.*$ allow;
+    ~\s*103.7.28.*$ allow;
+    ~\s*103.7.29.*$ allow;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;测试了一下，客户端自己伪造这个头，无效，还是会被CloudFlare 重写为正确的客户端IP。&lt;/p&gt;
+&lt;p&gt;安装插件&lt;a href="https://gitlab.com/ReDevelopers/ReFlar/user-management"&gt;reflar/user-management&lt;/a&gt;，关闭邮箱注册。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;Disable&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;email&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;registration&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;在注册接口上限制一下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;location&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;api&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;reflar&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usermanagement&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$allowed&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;&amp;#39;&lt;/span&gt;&lt;span class="n"&gt;deny&lt;/span&gt;&lt;span class="p"&gt;&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mh"&gt;403&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;try_files&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$uri&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;$uri&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;api&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;php&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="n"&gt;$query_string&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;搞定。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="tongshi-tk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165416.png"&gt;&lt;/p&gt;
+&lt;p&gt;试验一下想法，过三天这台机器就到期，关了。&lt;/p&gt;
+&lt;p&gt;总结一下思路，通过办公网出口IP 做注册限制，较宽松的员工认证手段，又保证了一定的匿名性。&lt;/p&gt;
+&lt;p&gt;当然如果公司自己愿意做的话，在内网搭就非常简单了。然而这东西对于公司来说是洪水猛兽，审查还来不及。腾讯内网的乐问有匿名发帖功能，然而又有几个人信任匿名的安全性呢。&lt;/p&gt;</content><category term="2018"></category><category term="flarum"></category></entry><entry><title>《HTTP/2 基础教程》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="alternate"></link><published>2018-02-06T00:00:00+08:00</published><updated>2018-02-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-02-06:/posts/2018/2018-02-06.html</id><summary type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的个人公众号上推荐，读完却觉得作为基础教程还不错，翻译上觉得略生硬。作点简单的笔记，方便以后“按图索骥”。&lt;/p&gt;
 &lt;h2&gt;3.1.2 关键性能指标&lt;/h2&gt;
@@ -1515,7 +1579,44 @@ cd !$:h
 &lt;p&gt;作者放了1个图，左边是Bash，右边是Zsh，来源是：&lt;a href="https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html"&gt;Shell startup scripts&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;非常有趣、直观，顺着一种颜色看，Bash 启动过程，期间加载的文件，一目了然。读这篇文章，最大的收获就是见到这张图。&lt;/p&gt;
 &lt;h2&gt;10) getopts (cheapci)&lt;/h2&gt;
-&lt;p&gt;作者说的&lt;a href="https://github.com/ianmiell/cheapci"&gt;chepci&lt;/a&gt; 这个项目没咋看，不过这段脚本里的片段 可以作为学习getopts 的&lt;a href="https://github.com/ianmiell/cheapci/blob/master/cheapci#L33-L95"&gt;例子&lt;/a&gt;。&lt;/p&gt;</content><category term="2018"></category><category term="bash"></category><category term="shell"></category><category term="linux"></category></entry><entry><title>禁用透明大页</title><link href="https://fangpsh.github.io/posts/2017/2017-12-05.html" rel="alternate"></link><published>2017-12-05T00:00:00+08:00</published><updated>2017-12-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-05:/posts/2017/2017-12-05.html</id><summary type="html">&lt;ul&gt;
+&lt;p&gt;作者说的&lt;a href="https://github.com/ianmiell/cheapci"&gt;chepci&lt;/a&gt; 这个项目没咋看，不过这段脚本里的片段 可以作为学习getopts 的&lt;a href="https://github.com/ianmiell/cheapci/blob/master/cheapci#L33-L95"&gt;例子&lt;/a&gt;。&lt;/p&gt;</content><category term="2018"></category><category term="bash"></category><category term="shell"></category><category term="linux"></category></entry><entry><title>Ngxfmt</title><link href="https://fangpsh.github.io/posts/2018/2018-01-11.html" rel="alternate"></link><published>2018-01-11T00:00:00+08:00</published><updated>2018-01-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-01-11:/posts/2018/2018-01-11.html</id><summary type="html">&lt;p&gt;接手一坨缩进、格式乱七八糟的Nginx 配置，简直要命。想起golang 有一个gofmt，动手做一个简单的ngxfmt。&lt;/p&gt;
+&lt;p&gt;Nginx 的配置语法比较简单，分为块配 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;接手一坨缩进、格式乱七八糟的Nginx 配置，简直要命。想起golang 有一个gofmt，动手做一个简单的ngxfmt。&lt;/p&gt;
+&lt;p&gt;Nginx 的配置语法比较简单，分为块配置和简单配置，例如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;server { # simple reverse-proxy
+    listen       80;
+    server_name  domain2.com www.domain2.com;
+    access_log   logs/domain2.access.log  main;
+
+    # serve static files
+    location ~ ^/(/images|javascript|js|css|flash|media|static)/  {
+       root    /var/www/virtual/big.server.com/htdocs;
+       expires 30d;
+    }
+
+    # pass requests for dynamic content to rails/turbogears/zope, et al
+    location / {
+        proxy_pass      http://127.0.0.1:8080;
+    }
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;listen&lt;/code&gt;, &lt;code&gt;server_name&lt;/code&gt; 这种是简单配置，以分号结尾；&lt;code&gt;server&lt;/code&gt;，&lt;code&gt;locaiton&lt;/code&gt; 这种为块配置，带一对小括号。写过nginx 插件或者看过&lt;a href="http://lxr.nginx.org/source/src/core/ngx_conf_file.c"&gt;ngx_conf_parse&lt;/a&gt; 对nginx 的配置加载会更了解一点。&lt;/p&gt;
+&lt;p&gt;毕业快3年，忽然十分想念编译原理老师，语法分析，词法分析，LR，yacc，lex  什么的。然而编译原理龙书早被我卖了，买鸡肉卷吃。听说快乐基倒闭了？？可惜可惜。&lt;/p&gt;
+&lt;p&gt;只能非常不优雅的解决，从上往下手动撸，处理好缩进，清楚多余的空格，再整一下左对齐就好了。吃一个鸡肉卷的时间就能撸好🐔 。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ngxfmt" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164340.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;log_format&lt;/code&gt; 这换行可以说是非常舒服了😌  ，&lt;code&gt;gzip_types&lt;/code&gt; 这对齐能让人高潮🎆 。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ngxfmt-2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165631.png"&gt;&lt;/p&gt;
+&lt;p&gt;在前公司曾经三个产品线要写到一个server 里面，&lt;code&gt;server_name&lt;/code&gt; 长到让人绝望😭 ，而且偶尔还得改改，这样换行就清爽多了🍃 。&lt;/p&gt;
+&lt;p&gt;相邻的配置项如果一样，对所有的值都进行左对齐处理，像这样⬇️  ：&lt;br&gt;
+&lt;img alt="ngxfmt-2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165710.png"&gt;&lt;/p&gt;
+&lt;p&gt;源代码🐙  ：&lt;a href="https://github.com/fangpsh/ngxfmt"&gt;fangpsh/ngxfmt&lt;/a&gt;，&lt;br&gt;
+有点乱，回头再看估计会被恶心到，就像一次性吃了3个鸡肉卷。&lt;/p&gt;
+&lt;p&gt;其他：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.nginx.com/resources/wiki/start/topics/examples/full/"&gt;Full Example Configuration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/chr4/nginx.vim/blob/master/syntax/nginx.vim"&gt;nginx.vim&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.kancloud.cn/digest/understandingnginx/202597"&gt;Nginx 配置解析&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="nginx"></category><category term="python"></category></entry><entry><title>禁用透明大页</title><link href="https://fangpsh.github.io/posts/2017/2017-12-05.html" rel="alternate"></link><published>2017-12-05T00:00:00+08:00</published><updated>2017-12-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-05:/posts/2017/2017-12-05.html</id><summary type="html">&lt;ul&gt;
 &lt;li&gt;原文链接：&lt;a href="https://blog.nelhage.com/post/transparent-hugepages/#fn:tree"&gt;blog.nelhage.com&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;原文作者：&lt;a href="https://blog.nelhage.com/about/"&gt;Nelson Elhage&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;原文发表时间： 2017-07-10&lt;/li&gt;
@@ -1754,7 +1855,63 @@ ndefined reference to `MMDB_strerror&amp;#39;
 &lt;p&gt;再 &lt;code&gt;dig whoami.example.com&lt;/code&gt; 或者 &lt;code&gt;ping whoami.example.com&lt;/code&gt; 即可。&lt;/p&gt;
 &lt;p&gt;&lt;img alt="whoami_dig" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155233.png"&gt;&lt;/p&gt;
 &lt;h2&gt;代码&lt;/h2&gt;
-&lt;p&gt;实现代码: &lt;a href="https://gist.github.com/fangpsh/c7de2d718f6c50befe389eb646e60426"&gt;whoami.lua&lt;/a&gt;&lt;/p&gt;</content><category term="2017"></category><category term="openresty"></category><category term="dns"></category></entry><entry><title>图片优化笔记</title><link href="https://fangpsh.github.io/posts/2017/2017-06-08.html" rel="alternate"></link><published>2017-06-08T15:11:11+08:00</published><updated>2017-06-08T15:11:11+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-06-08:/posts/2017/2017-06-08.html</id><summary type="html">&lt;p&gt;这里说的图片优化，目标是想尽可能降低图片大小，但又要保证质量不错，非常矛盾。不过降低图片大小，可以剩一大笔流量 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;这里说的图片优化，目标是想尽可能降低图片大小，但又要保证质量不错，非常矛盾。不过降低图片大小，可以剩一大笔流量钱，降低负载，还能提升用户体验，值得花点功夫。&lt;/p&gt;
+&lt;p&gt;实现代码: &lt;a href="https://gist.github.com/fangpsh/c7de2d718f6c50befe389eb646e60426"&gt;whoami.lua&lt;/a&gt;&lt;/p&gt;</content><category term="2017"></category><category term="openresty"></category><category term="dns"></category></entry><entry><title>给Pelican 添加Twitter Card</title><link href="https://fangpsh.github.io/posts/2017/2017-08-21.html" rel="alternate"></link><published>2017-08-21T00:00:00+08:00</published><updated>2017-08-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-08-21:/posts/2017/2017-08-21.html</id><summary type="html">&lt;p&gt;之前发Tweet 的时候，发现有些链接能够被识别出内容，带着一个“卡片”。&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165513.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_demo_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165525.png"&gt;&lt;/p&gt;
+&lt;p&gt;一开始以为是Twitter 对某些网站的特殊照顾，最近喵了 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前发Tweet 的时候，发现有些链接能够被识别出内容，带着一个“卡片”。&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165513.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_demo_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165525.png"&gt;&lt;/p&gt;
+&lt;p&gt;一开始以为是Twitter 对某些网站的特殊照顾，最近喵了下某个网址的源码，才明白是需要自己设置的。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_meta" src="twitter_card_meta.jpg"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;twitter:card 是类型，常见的有summary 和summary_large_image&lt;/li&gt;
+&lt;li&gt;twitter:site 是网站的twitter 帐号&lt;/li&gt;
+&lt;li&gt;twitter:title 卡片显示的标题&lt;/li&gt;
+&lt;li&gt;twitter:description 卡片显示的内容概述&lt;/li&gt;
+&lt;li&gt;twitter:images 卡片中的图片&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;细节可以参考：&lt;a href="https://dev.twitter.com/cards/types/summary"&gt;Twitter Developer Documentation&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;对于我的个人博客来说，summary 类似的卡片就够用了，给每篇文章找个配图也挺累的。&lt;/p&gt;
+&lt;p&gt;博客是用Pelican 生成的，找了一下插件，果然有一个，我fork 了下，修了一个bug ：&lt;a href="https://github.com/fangpeishi/twitter_card"&gt;twitter_card&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;按照插件的说明搞完之后，测试一下，可以用这个工具：&lt;a href="https://cards-dev.twitter.com/validator"&gt;Card validator&lt;/a&gt;：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_validator" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165545.png"&gt;&lt;/p&gt;
+&lt;p&gt;搞定，然而并没有什么卵用。&lt;/p&gt;</content><category term="2017"></category><category term="pelican"></category></entry><entry><title>英文缩写字典</title><link href="https://fangpsh.github.io/posts/2017/2017-07-18.html" rel="alternate"></link><published>2017-07-18T00:00:00+08:00</published><updated>2017-07-18T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-07-18:/posts/2017/2017-07-18.html</id><summary type="html">&lt;p&gt;&lt;img alt="abbreviations_dictionary" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165301.png"&gt;&lt;/p&gt;
+&lt;p&gt;好久之前在V2EX 见过网友分享的 &lt;a href="https://www.v2ex.com/t/227197"&gt;发现一个查单词缩写的网站，妈妈再也不用担心我给变量命名了！&lt;/a&gt;，一直收藏着挺好用，不过 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="abbreviations_dictionary" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165301.png"&gt;&lt;/p&gt;
+&lt;p&gt;好久之前在V2EX 见过网友分享的 &lt;a href="https://www.v2ex.com/t/227197"&gt;发现一个查单词缩写的网站，妈妈再也不用担心我给变量命名了！&lt;/a&gt;，一直收藏着挺好用，不过由于个人一直在用的是Mac OS 自带的Dictionary App，如果能做个专门查缩写的字典库，就更方便了。&lt;/p&gt;
+&lt;p&gt;先要看看怎么创建一个Mac Dictionary App 的字典文件。&lt;/p&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://blog.nagpals.com/mac-dictionaries/"&gt;Create Custom Dictionaries For Mac OSX&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://developer.apple.com/library/content/documentation/UserExperience/Conceptual/DictionaryServicesProgGuide/Introduction/Introduction.html"&gt;Dictionary Services Programming Guide&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;第一个链接是一篇博文，比较老了，可以看一下，主要还是看第二个官方的指南。基本来说照着做即可，不过一开始就遇到一个问题，生成字典需要的Dictionary Development Kit 不见了。现在新版本的Xcode 都不带这个工具了，得自己去&lt;a href="https://developer.apple.com"&gt;developer.apple.com&lt;/a&gt;下Auxiliary Tools。下载之后解压开，把Dictionary Development Kit 拷贝到自己喜欢的目录，同时可以看下文件夹里面的project_templates ，照着这个改改即可。记得要改Makefile 里面的&lt;code&gt;DICT_BUILD_TOOL_DIR&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://apple.stackexchange.com/questions/80099/how-can-i-create-a-dictionary-for-mac-os-x"&gt;How can I create a dictionary for Mac OS X?&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;大概知道怎么构建字典之后，就开始找缩写的来源了，扒了下面这2个网站的内容：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://public.oed.com/how-to-use-the-oed/abbreviations/"&gt;public.oed.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.easypacelearning.com/english-books/english-books-for-download-pdf/category/33-3-dictionaries-to-download-in-pdf"&gt;easypacelearning.com&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;只收录缩写，不收录首字母大写，例如CCTV、NBA 这种，因为觉得首字母大写没啥用，这个字典的出发点就是我敲代码的时候，函数名太长了想找缩写。&lt;/p&gt;
+&lt;p&gt;手动整理加一些简单的命令，得到初始文件，再写个脚本生成需要的xml，最后得到字典，效果如上图。&lt;/p&gt;
+&lt;p&gt;字典库下载、相关源码：&lt;a href="https://github.com/fangpsh/Abbreviations"&gt;fangpsh/Abbreviations&lt;/a&gt;。&lt;/p&gt;</content><category term="2017"></category><category term="dictionary"></category><category term="mac"></category></entry><entry><title>Pelican插件：CDN Support</title><link href="https://fangpsh.github.io/posts/2017/2017-07-10.html" rel="alternate"></link><published>2017-07-10T00:00:00+08:00</published><updated>2017-07-10T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-07-10:/posts/2017/2017-07-10.html</id><summary type="html">&lt;p&gt;之前用WordPress 做博客的时候，用过一个&lt;a href="https://srd.wordpress.org/plugins/wp-super-cache/"&gt;WP Super Cache&lt;/a&gt; 的插件，&lt;br&gt;
+这个插件可以把WordPress 的页面静态化，然后用内存或者磁盘等做缓存，提升性 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前用WordPress 做博客的时候，用过一个&lt;a href="https://srd.wordpress.org/plugins/wp-super-cache/"&gt;WP Super Cache&lt;/a&gt; 的插件，&lt;br&gt;
+这个插件可以把WordPress 的页面静态化，然后用内存或者磁盘等做缓存，提升性能。&lt;/p&gt;
+&lt;p&gt;其中有个选项是开启CDN 支持，开启这种功能之后，插件会把所有指向本站的静态资源（CSS，JS，各类图片）的URL 替换为CDN 的URL，当然填入的CDN 域名需要配置好回源。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wp-super-cache" src="https://www.shoutmeloud.com/wp-content/uploads/2015/05/Enabling-cache-with-WP-Super-cache-plugin.png"&gt;&lt;/p&gt;
+&lt;p&gt;最近帮妹子做了一个网站，想着各种优化，又想起这事。这个网站是用Pelican 生成的，所有就有了这个插件。&lt;/p&gt;
+&lt;p&gt;Pelican 插件可以注册不同阶段的信号，选择了&lt;a href="http://docs.getpelican.com/en/3.6.3/plugins.html"&gt;&lt;code&gt;finalized&lt;/code&gt;&lt;/a&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;finalized:
+invoked after all the generators are executed and just before pelican exits useful for custom post processing actions, such as: - minifying js/css assets. - notify/ping search engines with an updated sitemap.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;用&lt;code&gt;re.sub&lt;/code&gt; 模块过滤生成的html 文件，替换静态资源的URL，再写回文件即可。&lt;/p&gt;
+&lt;p&gt;源代码及设置说明：https://github.com/fangpsh/cdn_support&lt;/p&gt;
+&lt;p&gt;当然，替换之后的CDN 域名，需要提前做好接入和回源设置等工作。&lt;/p&gt;</content><category term="2017"></category><category term="pelican"></category></entry><entry><title>图片优化笔记</title><link href="https://fangpsh.github.io/posts/2017/2017-06-08.html" rel="alternate"></link><published>2017-06-08T15:11:11+08:00</published><updated>2017-06-08T15:11:11+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-06-08:/posts/2017/2017-06-08.html</id><summary type="html">&lt;p&gt;这里说的图片优化，目标是想尽可能降低图片大小，但又要保证质量不错，非常矛盾。不过降低图片大小，可以剩一大笔流量 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;这里说的图片优化，目标是想尽可能降低图片大小，但又要保证质量不错，非常矛盾。不过降低图片大小，可以剩一大笔流量钱，降低负载，还能提升用户体验，值得花点功夫。&lt;/p&gt;
 &lt;p&gt;前端方面有一些关于图片加载速度的优化，例如CSS 画图，CSS 合并素材，甚至用CSS 把图片Base64 编码（不推荐），和这份笔记关系不大。&lt;/p&gt;
 &lt;h2&gt;格式选择&lt;/h2&gt;
 &lt;p&gt;不同的需求选择不同的格式, JPEG 能够满足的需求没必要选择PNG。&lt;/p&gt;

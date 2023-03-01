@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>如何搭建一个高匿名的内部论坛 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-04-25.html" rel="bookmark"
+         title="Permalink to 如何搭建一个高匿名的内部论坛">如何搭建一个高匿名的内部论坛</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>入职腾讯的时候，同学们给我推荐了一个App：<a href="http://tongshiapp.com">同事</a>，
+这个App 为同事之间提供了匿名交流的平台，各种高压线、污秽色情的信息络绎不绝，相当刺激。  </p>
+<p>这个App 17年后期就出现HTTPS 证书过期、短信通道欠费收不到短信等问题，看起来要倒闭。有时候在想如果要搭建一个替代品，该如何平衡匿名性，又能验证是腾讯员工，我会怎么做，最后想了一个折中的办法。</p>
+<p><img alt="tongshiApp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165344.png"></p>
+<p><strong>前提：员工不信任论坛管理员。</strong></p>
+<h2>邮件列表</h2>
+<p>一开始的想法是通过邮件列表，因为邮箱还能匿名注册，而且有各种各样的移动客户端。怎么验证员工身份？无论是工作邮箱发验证码还是什么，只要涉及员工工作邮箱，服务端就有可能记录对应关系。或者通过邀请制度？又感觉不够收敛。做一个网站，只有内网可以访问，然后每日生成邀请码？Bingo，突然想到可以限制注册的来源，限制内网注册即可。</p>
+<h2>Flarum</h2>
+<p>没做邮件列表，基于<a href="http://flarum.org">Flarum</a>开始搭建。</p>
+<p>域名：免费的.tk 域名玩一玩，开隐私保护，tongshi.tk。<br>
+服务器地址隐藏：cloudflare 免费CDN，全站开启。  </p>
+<p>收集腾讯内网出口的IP 地址范围，三个段：</p>
+<div class="highlight"><pre><span></span><code><span class="mf">14.17.22.0</span><span class="o">/</span><span class="mf">24</span>
+<span class="mf">103.7.28.0</span><span class="o">/</span><span class="mf">22</span>
+<span class="mf">103.7.29.0</span><span class="o">/</span><span class="mf">24</span>
+</code></pre></div>
+
+<p>开启HTTPS 支持，防止在公司内网访问，被中间人监听 🙈  。</p>
+<p>由于使用了CloudFlare 做全站CDN，遇到一个问题，没法校验客户端IP，2个解决方法：</p>
+<ul>
+<li>
+<p>升级CloudFlare 套餐，使用<a href="https://support.cloudflare.com/hc/en-us/articles/115001595131-How-do-I-Lockdown-URLs-in-Cloudflare-">Zone lockdown</a>功能。
+<img alt="cloudflare_zone_lockdown" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165404.png"></p>
+</li>
+<li>
+<p>CloudFlare 会把客户端IP 放在 <code>$http_cf_connecting_ip</code> 头里面，在Nginx 里面校验一下这个头。参考：<a href="https://support.cloudflare.com/hc/en-us/articles/200170706-How-do-I-restore-original-visitor-IP-with-Nginx-">How do I restore original visitor IP with Nginx?</a>。</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>map $http_cf_connecting_ip $allowed {
+    default deny;
+    ~\s*14.17.22.*$ allow;
+    ~\s*103.7.28.*$ allow;
+    ~\s*103.7.29.*$ allow;
+}
+</code></pre></div>
+
+<p>测试了一下，客户端自己伪造这个头，无效，还是会被CloudFlare 重写为正确的客户端IP。</p>
+<p>安装插件<a href="https://gitlab.com/ReDevelopers/ReFlar/user-management">reflar/user-management</a>，关闭邮箱注册。</p>
+<div class="highlight"><pre><span></span><code><span class="n">Disable</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="n">registration</span>
+</code></pre></div>
+
+<p>在注册接口上限制一下：</p>
+<div class="highlight"><pre><span></span><code><span class="n">location</span><span class="w"> </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">reflar</span><span class="o">/</span><span class="n">usermanagement</span><span class="o">/</span><span class="n">register</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">$allowed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">&#39;</span><span class="n">deny</span><span class="p">&#39;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mh">403</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">try_files</span><span class="w"> </span><span class="n">$uri</span><span class="w"> </span><span class="n">$uri</span><span class="o">/</span><span class="w"> </span><span class="o">/</span><span class="n">api</span><span class="p">.</span><span class="n">php</span><span class="o">?</span><span class="n">$query_string</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>搞定。</p>
+<p><img alt="tongshi-tk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165416.png"></p>
+<p>试验一下想法，过三天这台机器就到期，关了。</p>
+<p>总结一下思路，通过办公网出口IP 做注册限制，较宽松的员工认证手段，又保证了一定的匿名性。</p>
+<p>当然如果公司自己愿意做的话，在内网搭就非常简单了。然而这东西对于公司来说是洪水猛兽，审查还来不及。腾讯内网的乐问有匿名发帖功能，然而又有几个人信任匿名的安全性呢。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-04-25T00:00:00+08:00">
+      Wed 25 April 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/flarum.html">flarum </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

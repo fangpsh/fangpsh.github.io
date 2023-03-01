@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Airflow 并发trigger DAG 的问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-10-25.html" rel="bookmark"
+         title="Permalink to Airflow 并发trigger DAG 的问题">Airflow 并发trigger DAG 的问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>有一个小服务使用了<a href="http://airflow.apache.org">airflow</a>，会把比较耗时的离线任务丢到airflow 处理。
+在需要的时候触发（trigger_dag）这些任务。最近发现一小部分任务没成功，对应的dag 下也没找到日志记录，看起来是没触发成功。
+在airflow-web-server 中发现了异常日志：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">Run</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span>...<span class="w"> </span><span class="nv">already</span><span class="w"> </span><span class="nv">exists</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">dag</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span>...
+</code></pre></div>
+
+<p>看了下代码：<a href="https://github.com/apache/incubator-airflow/blob/master/airflow/api/common/experimental/trigger_dag.py#L42,L55">incubator-airflow/airflow/api/common/experimental/trigger_dag.py</a></p>
+<p>未指定run_id 的情况下，run_id 默认为<code>utcnow</code>，并且还默认去掉了microsecond。这样的话，对同一个dag 大量并发trigger 的时候，run_id 很容易相同。</p>
+<p>临时的解决方法，在trigger dag 时指定下run_id。我临时改成了 utcnow+uuid4，应该不会再撞上了吧，不然就是中彩票了。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-10-25T00:00:00+08:00">
+      Thu 25 October 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/airflow.html">Airflow </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

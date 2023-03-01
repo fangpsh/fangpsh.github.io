@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>给Pelican 添加Twitter Card - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-08-21.html" rel="bookmark"
+         title="Permalink to 给Pelican 添加Twitter Card">给Pelican 添加Twitter Card</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>之前发Tweet 的时候，发现有些链接能够被识别出内容，带着一个“卡片”。</p>
+<p>例如：</p>
+<p><img alt="twitter_card_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165513.png"></p>
+<p><img alt="twitter_card_demo_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165525.png"></p>
+<p>一开始以为是Twitter 对某些网站的特殊照顾，最近喵了下某个网址的源码，才明白是需要自己设置的。</p>
+<p><img alt="twitter_card_meta" src="twitter_card_meta.jpg"></p>
+<ul>
+<li>twitter:card 是类型，常见的有summary 和summary_large_image</li>
+<li>twitter:site 是网站的twitter 帐号</li>
+<li>twitter:title 卡片显示的标题</li>
+<li>twitter:description 卡片显示的内容概述</li>
+<li>twitter:images 卡片中的图片</li>
+</ul>
+<p>细节可以参考：<a href="https://dev.twitter.com/cards/types/summary">Twitter Developer Documentation</a>。</p>
+<p>对于我的个人博客来说，summary 类似的卡片就够用了，给每篇文章找个配图也挺累的。</p>
+<p>博客是用Pelican 生成的，找了一下插件，果然有一个，我fork 了下，修了一个bug ：<a href="https://github.com/fangpeishi/twitter_card">twitter_card</a>。</p>
+<p>按照插件的说明搞完之后，测试一下，可以用这个工具：<a href="https://cards-dev.twitter.com/validator">Card validator</a>：</p>
+<p><img alt="twitter_card_validator" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165545.png"></p>
+<p>搞定，然而并没有什么卵用。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-08-21T00:00:00+08:00">
+      Mon 21 August 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/pelican.html">pelican </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
