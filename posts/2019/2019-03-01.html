@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ip_local_port_range 小问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="bookmark"
+         title="Permalink to ip_local_port_range 小问题">ip_local_port_range 小问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>发现系统打印了一条日志，类似<a href="https://access.redhat.com/solutions/2887631">redhat solution:2887631</a>：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">Jan</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="mi">14</span>:<span class="mi">37</span>:<span class="mi">22</span><span class="w"> </span><span class="nv">localhost</span><span class="w"> </span><span class="nv">kernel</span>:<span class="w"> </span><span class="nv">ip_local_port_range</span>:<span class="w"> </span><span class="nv">prefer</span><span class="w"> </span><span class="nv">different</span><span class="w"> </span><span class="nv">parity</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">start</span><span class="o">/</span><span class="k">end</span><span class="w"> </span><span class="nv">values</span>.
+</code></pre></div>
+
+<p>意思是建议将<code>/proc/sys/net/ipv4/ip_local_port_range</code> 的两个数设置一个奇数，一个偶数。</p>
+<div class="highlight"><pre><span></span><code><span class="nv">ip_local_port_range</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nv">INTEGERS</span><span class="w">  </span>
+<span class="w">        </span><span class="nv">Defines</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">local</span><span class="w"> </span><span class="nv">port</span><span class="w"> </span><span class="nv">range</span><span class="w"> </span><span class="nv">that</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">used</span><span class="w"> </span><span class="nv">by</span><span class="w"> </span><span class="nv">TCP</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">UDP</span><span class="w"> </span><span class="nv">to</span><span class="w">  </span>
+<span class="w">        </span><span class="nv">choose</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">local</span><span class="w"> </span><span class="nv">port</span>.<span class="w"> </span><span class="nv">The</span><span class="w"> </span><span class="nv">first</span><span class="w"> </span><span class="nv">number</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">first</span>,<span class="w"> </span><span class="nv">the</span>
+<span class="w">        </span><span class="nv">second</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">last</span><span class="w"> </span><span class="nv">local</span><span class="w"> </span><span class="nv">port</span><span class="w"> </span><span class="nv">number</span>.
+<span class="w">        </span><span class="k">If</span><span class="w"> </span><span class="nv">possible</span>,<span class="w"> </span><span class="nv">it</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">better</span><span class="w"> </span><span class="nv">these</span><span class="w"> </span><span class="nv">numbers</span><span class="w"> </span><span class="nv">have</span><span class="w"> </span><span class="nv">different</span><span class="w"> </span><span class="nv">parity</span>.
+<span class="w">        </span><span class="ss">(</span><span class="nv">one</span><span class="w"> </span><span class="nv">even</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">one</span><span class="w"> </span><span class="nv">odd</span><span class="w"> </span><span class="nv">values</span><span class="ss">)</span>
+<span class="w">        </span><span class="nv">The</span><span class="w"> </span><span class="nv">default</span><span class="w"> </span><span class="nv">values</span><span class="w"> </span><span class="nv">are</span><span class="w"> </span><span class="mi">32768</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="mi">60999</span><span class="w"> </span><span class="nv">respectively</span>.
+</code></pre></div>
+
+<p>建议改，那就改一下咯。可是为什么呢？能让系统分配端口的时候更高效？</p>
+<p>搜索一下，找到2个相关的Patch：</p>
+<ul>
+<li><a href="https://www.spinics.net/lists/netdev/msg330439.html">[PATCH net-next] tcp/dccp: try to not exhaust ip_local_port_range in connect()</a></li>
+<li><a href="https://www.spinics.net/lists/netdev/msg330895.html">[PATCH net-next] tcp/dccp: warn user for preferred ip_local_port_range</a></li>
+</ul>
+<p>找下第一个Patch 里面的 <code>__inet_hash_connect</code> 函数的完整内容看下：<a href="https://github.com/torvalds/linux/blob/07f4c90062f8fc7c8c26f8f95324cbe8fa3145a5/net/ipv4/inet_hashtables.c#L483,L595">linux/net/ipv4/inet_hashtables.c</a>。</p>
+<p>参考：</p>
+<ul>
+<li><a href="http://linuxperf.com/?p=178">临时端口号(EPHEMERAL PORT)的动态分配</a></li>
+<li><a href="https://my.oschina.net/u/2310891/blog/652323">TCP你学得会：之 TCP端口选择那些事儿</a></li>
+<li><a href="https://vcpu.me/bind/">bind()实现源码分析</a></li>
+<li><a href="http://www.linuxtcpipstack.com/430.html">TCP层bind系统调用的实现分析</a></li>
+</ul>
+<p>看完好像有点明白了：</p>
+<div class="highlight"><pre><span></span><code><span class="gh">diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c</span>
+<span class="gh">index 3766bddb3e8a7303123aa7e32507f6f7801c10d5..8c0fc6fbc1afa08baf07ca86e98aa966a3f8e826 100644</span>
+<span class="gd">--- a/net/ipv4/inet_hashtables.c</span>
+<span class="gi">+++ b/net/ipv4/inet_hashtables.c</span>
+<span class="gu">@@ -501,8 +501,14 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,</span>
+<span class="w"> </span>        inet_get_local_port_range(net, &amp;low, &amp;high);
+<span class="w"> </span>        remaining = (high - low) + 1;
+
+<span class="gi">+        /* By starting with offset being an even number,</span>
+<span class="gi">+         * we tend to leave about 50% of ports for other uses,</span>
+<span class="gi">+         * like bind(0).</span>
+<span class="gi">+         */</span>
+<span class="gi">+        offset &amp;= ~1;  // offset 始终为偶数</span>
+<span class="gi">+</span>
+<span class="w"> </span>        local_bh_disable();
+<span class="gd">-        for (i = 1; i &lt;= remaining; i++) {</span>
+<span class="gi">+        for (i = 0; i &lt; remaining; i++) {</span>
+<span class="w"> </span>            port = low + (i + offset) % remaining;  // 每次总是加偶数开始找，即i=0 的时候
+<span class="w"> </span>            if (inet_is_local_reserved_port(net, port))
+<span class="w"> </span>                continue;
+<span class="gu">@@ -546,7 +552,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,</span>
+<span class="w"> </span>        return -EADDRNOTAVAIL;
+
+<span class="w"> </span>ok:
+<span class="gd">-        hint += i;</span>
+<span class="gi">+        hint += (i + 2) &amp; ~1;  // 每次调用函数时， offset = hint + port_offset; hint 是全局静态变量，始终为偶数</span>
+<span class="w"> </span>                               // 这样在同一个目地地址+端口，重复调用，且没其他connect 请求插入的时候，分配的端口号是加2递增
+
+<span class="w"> </span>        /* Head lock still held and bh&#39;s disabled */
+<span class="w"> </span>        inet_bind_hash(sk, tb, port);
+</code></pre></div>
+
+<p>N 个端口，每次从第偶数个开始找，看下<code>bind(0)</code> 分配端口的<a href="https://github.com/torvalds/linux/blob/29c6852602e259d2c1882f320b29d5c3fec0de04/net/ipv4/inet_connection_sock.c#L119">相关函数</a>：</p>
+<div class="highlight"><pre><span></span><code>smallest_rover = rover = prandom_u32() % remaining + low;
+</code></pre></div>
+
+<p>后者看意思是完全随机的，所以意思是<code>connect</code>从偶数个开始找，让出一半的空间给<code>bind(0)</code>，提高<code>bind(0)</code>的效率。</p>
+<p>如果是这样的话，为什么建议<code>ip_local_port_range</code> 可用的端口是偶数，即要有一个奇数、一个偶数呢？<code>offset</code> 每次也都是无论哪种情况是偶数，
+remaining 为偶数为奇数好像都不影响逻辑，只差一个而已，一定要50%？</p>
+<p>愚钝，没想明白。</p>
+<p>看了下新的<a href="https://github.com/torvalds/linux/blob/1580ab63fc9a03593072cc5656167a75c4f1d173/net/ipv4/inet_hashtables.c#L562">__inet_hash_connect</a>，感觉更合理一些，
+<code>connect</code> 优先从偶数个开始，如果分配失败，每次找下一个的时候，也是跳到下一个偶数个，即<code>port+=2</code>，<code>inet_csk_find_open_port</code>则是<a href="https://github.com/torvalds/linux/blob/b71acb0e372160167bf6d5500b88b30b52ccef6e/net/ipv4/inet_connection_sock.c#L208">反过来</a>，更加高效，大家都优先用一半，不行再找对方的一半。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2019-03-01T00:00:00+08:00">
+      Fri 01 March 2019
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2019.html">2019</a> Tagged <a href="https://fangpsh.github.io/tag/linux.html">linux </a><a href="https://fangpsh.github.io/tag/kernel.html">kernel </a><a href="https://fangpsh.github.io/tag/tcp.html">tcp </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

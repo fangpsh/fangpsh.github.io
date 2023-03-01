@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>基于OpenResty 的whoami.akaimai.net 实现 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-08-30.html" rel="bookmark"
+         title="Permalink to 基于OpenResty 的whoami.akaimai.net 实现">基于OpenResty 的whoami.akaimai.net 实现</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>上次收集整理[[获取Local DNS 地址信息]]) 的时候看到akamai 的<code>whoami.akamai.net</code>，想起之前看到<a href="https://twitter.com/agentzh/status/767963492850601985">agentzh</a> 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现。</p>
+<p>找到agentzh 当时的 <a href="https://gist.github.com/agentzh/6c50d37510daef792ed220fa0d970393">gist</a>，第一次学习OpenResty ，决定照猫画虎。看起来要在OpenResty 里面接受dns 数据包，并且返回，需要用到<a href="https://github.com/openresty/stream-lua-nginx-module">stream-lua-nginx-module</a>这个模块，这里要注意的时候，截至目前(2017-08-30) master 分支还不支持 <code>ngx.req.udp_socket</code> ，agentzh 当时hack 的代码都在 bloody-dns-server 分支下面。</p>
+<h2>编译OpenResty</h2>
+<p>说来惭愧，编译OpenResty费了好大一番工夫。先是没有看清stream-lua-nginx-modele 的分支，直接用master 分支的编译，测试代码的时候直接返回 <code>ngx.req.udp_socket</code> 是空。</p>
+<p>然后用bloody-dns-server 分支编译，又遇到 mmdb 库的问题。Mac OS 下需要在编译的时候指定maxminddb 的库：</p>
+<div class="highlight"><pre><span></span><code>.<span class="o">/</span><span class="nv">configure</span><span class="w"> </span>\
+<span class="o">--</span><span class="nv">with</span><span class="o">-</span><span class="nv">cc</span><span class="o">-</span><span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/openssl/include/ -I/usr/local/opt/pcre/include/&quot;</span><span class="w"> </span>\
+<span class="o">--</span><span class="nv">with</span><span class="o">-</span><span class="nv">ld</span><span class="o">-</span><span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/openssl/lib/ -L/usr/local/opt/pcre/lib/ -L/opt/mmdb/lib -lmaxminddb&quot;</span><span class="w"> </span>\<span class="w"> </span>
+<span class="o">--</span><span class="nv">with</span><span class="o">-</span><span class="nv">stream</span><span class="w"> </span>\
+<span class="o">--</span><span class="nv">with</span><span class="o">-</span><span class="nv">stream_ssl_module</span><span class="w"> </span>\
+<span class="o">--</span><span class="nv">add</span><span class="o">-</span><span class="nv">module</span><span class="o">=</span>.<span class="o">/</span><span class="nv">bundle</span><span class="o">/</span><span class="nv">stream</span><span class="o">-</span><span class="nv">lua</span><span class="o">-</span><span class="nv">nginx</span><span class="o">-</span><span class="nv">module</span>
+</code></pre></div>
+
+<p>不然会出现一堆:</p>
+<div class="highlight"><pre><span></span><code>undefined reference to `MMDB_open&#39;
+undefined reference to `MMDB_strerror&#39;
+undefined reference to `MMDB_lookup_sockaddr&#39;
+ndefined reference to `MMDB_strerror&#39;
+...
+</code></pre></div>
+
+<p>我看了一下 stream-lua-nginx-module 的<code>build.sh</code> 是显式指定了<code>-L/opt/mmdb/lib -lmaxminddb</code>，但是nginx 编译的时候没指定，就会报错。</p>
+<p>相关问题：<a href="https://stackoverflow.com/questions/32425361/ld-symbols-not-found-for-architecture-x86-64-clang-linker-command-failed">ld: symbols not found for architecture x86_64, clang: linker command failed</a>。</p>
+<p>遇到错误：</p>
+<div class="highlight"><pre><span></span><code><span class="nl">nginx</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">alert</span><span class="o">]</span><span class="w"> </span><span class="n">cannot</span><span class="w"> </span><span class="k">open</span><span class="w"> </span><span class="k">file</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">mmdb</span><span class="o">/</span><span class="k">database</span><span class="o">/</span><span class="n">GeoLite2</span><span class="o">-</span><span class="n">Country</span><span class="p">.</span><span class="n">mmdb</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nl">reading</span><span class="p">:</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="n">opening</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">specified</span><span class="w"> </span><span class="n">MaxMind</span><span class="w"> </span><span class="n">DB</span><span class="w"> </span><span class="k">file</span><span class="w"> </span><span class="ow">in</span>
+</code></pre></div>
+
+<p>去Maxmind 官网下一个，丢到对应的目录即可。</p>
+<p>另外编译的时候要注意选择版本，我选择的是OpenResty-1.11.2.5，其中的Nginx 的版本是<code>1.11.2</code>，太新的Nginx 可能没测试过。</p>
+<h2>实现whoami.akamai.net</h2>
+<p>编译成功之后，就是开始动手了。</p>
+<p>首先是DNS 报文格式，参考这2篇文章：</p>
+<ul>
+<li><a href="https://www.ietf.org/rfc/rfc1035.txt">rfc1035 DOMAIN NAMES - IMPLEMENTATION AND SPECIFICATION</a></li>
+<li><a href="http://zhujunwu.cn/python-dns-server/">Python利用socket架设DNS服务</a></li>
+</ul>
+<p>以及自己用wireshark 抓包分析。</p>
+<p>对着文档一个一个bit 校对，对任何DNS 查询报文，都拿出它的IP，然后返回一条A记录就好了，效果如下：</p>
+<p><img alt="whoami" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155214.png"></p>
+<h2>上线</h2>
+<p>我在个人的VPS 上部署了一个，再添加一条NS 记录，注意需要是域名，不能添加IP：</p>
+<p><img alt="whoami_ns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155222.png"></p>
+<p>再 <code>dig whoami.example.com</code> 或者 <code>ping whoami.example.com</code> 即可。</p>
+<p><img alt="whoami_dig" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155233.png"></p>
+<h2>代码</h2>
+<p>实现代码: <a href="https://gist.github.com/fangpsh/c7de2d718f6c50befe389eb646e60426">whoami.lua</a></p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-08-30T00:00:00+08:00">
+      Wed 30 August 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/openresty.html">openresty </a><a href="https://fangpsh.github.io/tag/dns.html">dns </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

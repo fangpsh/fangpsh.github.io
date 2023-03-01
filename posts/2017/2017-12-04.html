@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chrome，ERR_SPDY_PROTOCOL_ERROR 和无效的HTTP header - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-12-04.html" rel="bookmark"
+         title="Permalink to Chrome，ERR_SPDY_PROTOCOL_ERROR 和无效的HTTP header">Chrome，ERR_SPDY_PROTOCOL_ERROR 和无效的HTTP header</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <ul>
+<li>原文地址：<a href="https://www.michalspacek.com/chrome-err_spdy_protocol_error-and-an-invalid-http-header">michalspacek.com</a></li>
+<li>原文作者：<a href="https://www.michalspacek.com/contact">Michal Špaček</a></li>
+<li>发表时间：2017-08-28</li>
+</ul>
+<p>当你把网站迁移到性能更好的HTTP/2 协议时，可能会出现Chrome 没法加载页面的问题，取而代之是一个显示<strong>This site can’t be reached</strong>，以及错误信息为<code>ERR_SPDY_PROTOCOL_ERROR</code> 的页面。错误信息里面没有提到HTTP/2， 可能是因为 HTTP/2 是从SPDY 协议发展而来，所以错误信息还是老的SPDY。</p>
+<p><img alt="chrome_err_spdy_protocol_error" src="chrome_err_spdy_protocol_error.png"></p>
+<p>出现<code>ERR_SPDY_PROTOCOL_ERROR</code> 可能是因为服务器发送了一个无效的HTTP header。Chrome 处理二进制的HTTP/2 协议时有一些严格，不会处理以空格代替破折号的header（例如用<code>Referrer Policy</code> 代替<code>Referrer-Policy</code>），也不会处理带着2个冒号的header（例如<code>Content-Security-Policy:: ...</code>），所以检查下你的header 是否准确。Firefox 会忽略这些无效的header，正常显示页面。</p>
+<p>给出一个如何找到这些有问题的header 的方法。访问<code>chrome://net-internals/#events</code>（这链接没法点击，只能复制然后粘贴到地址栏再访问），在搜索框输入你的域名（我以<code>example.com</code>为例），然后在其他标签中打开出问题的网站。返回<code>chrome://net-internals/#events</code> ，选中Source Type 是<code>HTTP2_SESSION</code> 的行。</p>
+<p><img alt="chrome-events-http2_session" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228211536.png"></p>
+<p>在右边，可以看到HTTP/2 协议的详细信息，重点部分如下：</p>
+<div class="highlight"><pre><span></span><code><span class="n">t</span><span class="o">=</span><span class="mi">50413</span> <span class="p">[</span><span class="n">st</span><span class="o">=</span><span class="mi">7</span><span class="p">]</span>  <span class="n">HTTP2_SESSION_RECV_INVALID_HEADER</span>
+                <span class="o">--&gt;</span> <span class="n">header_name</span> <span class="o">=</span> <span class="s">&quot;referrer policy&quot;</span>
+                <span class="o">--&gt;</span> <span class="n">header_value</span> <span class="o">=</span> <span class="s">&quot;same-origin&quot;</span>
+<span class="n">t</span><span class="o">=</span><span class="mi">50413</span> <span class="p">[</span><span class="n">st</span><span class="o">=</span><span class="mi">7</span><span class="p">]</span>  <span class="n">HTTP2_SESSION_SEND_RST_STREAM</span>
+               <span class="o">--&gt;</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Could not parse Spdy Control Frame Header.&quot;</span>
+               <span class="o">--&gt;</span> <span class="n">error_code</span> <span class="o">=</span> <span class="s">&quot;1 (PROTOCOL_ERROR)&quot;</span>
+               <span class="o">--&gt;</span> <span class="n">stream_id</span> <span class="o">=</span> <span class="mi">3</span>
+</code></pre></div>
+
+<p>看到<code>HTTP2_SESSION_RECV_INVALID_HEADER</code> 那行了吗？无效的header 就在它下面，在这个问题中，无效的header 是<code>referrer policy</code>，用空格代替了破折号。HTTP/2 协议理的header 名称必须全小写，如果你发送一个<code>Referrer-Policy</code>的header，浏览器会视为<code>referrer-policy</code>。在这个问题中，被视为成无效的<code>referrer policy</code>。</p>
+<p>在你浏览器的<code>chrome://net-internals/</code>中，你能发现很多有趣的东西。这里有一些不会出现在开发者工具中的请求，例如浏览器扩展发出的请求。去试一试，说不定下次你debug 时能帮上忙。我在研究<a href="https://www.michalspacek.com/opera-browsers-vpn-is-just-a-proxy">Opera browser “VPN” </a>和<a href="https://www.michalspacek.com/ur-browser-vpn-and-other-tales">“VPN” in UR browser</a> 就用过它。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-12-04T00:00:00+08:00">
+      Mon 04 December 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/chrome.html">chrome </a><a href="https://fangpsh.github.io/tag/http2.html">http2 </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

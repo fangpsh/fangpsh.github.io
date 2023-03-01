@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>禁用透明大页 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-12-05.html" rel="bookmark"
+         title="Permalink to 禁用透明大页">禁用透明大页</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <ul>
+<li>原文链接：<a href="https://blog.nelhage.com/post/transparent-hugepages/#fn:tree">blog.nelhage.com</a></li>
+<li>原文作者：<a href="https://blog.nelhage.com/about/">Nelson Elhage</a></li>
+<li>原文发表时间： 2017-07-10</li>
+<li>原文许可协议：<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></li>
+</ul>
+<h2>tl;dr（长话短说）</h2>
+<p><a href="https://www.kernel.org/doc/Documentation/vm/transhuge.txt">“透明大页（Transparent Hugepages）”</a>是一个Linux 内核特性，它通过提高处理器的内存映射硬件的使用效率（译注：降低TLB Miss 和page fault，提高TLB 的命中率，这部分基础知识可以翻下操作系统书）来获取更好的性能。在绝大多数Linux 发行版中是默认启用的（“<code>enabled=always</code>”）。</p>
+<p>透明大页能让一些应用程序的<a href="https://lwn.net/Articles/423590/">性能提高一点点</a>（最好的情况大约是10%，一般在0~3%），但是会造成很明显的性能问题（参考：1.<a href="https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/">mongodb</a>，2.<a href="https://blogs.oracle.com/linux/performance-issues-with-transparent-huge-pages-thp">oracle</a>, 3.<a href="https://docs.splunk.com/Documentation/Splunk/6.5.2/ReleaseNotes/SplunkandTHP">splunk</a>）, 甚至会造成严重的内存泄漏（参考：1.<a href="https://blog.digitalocean.com/transparent-huge-pages-and-alternative-memory-allocators/">digitalocean</a>，2.<a href="https://github.com/golang/go/issues/8832">golang/go</a>）.</p>
+<p>为了避免这些问题，你应该将运行的服务器设置成<code>enabled=madvise</code>。</p>
+<div class="highlight"><pre><span></span><code>echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+</code></pre></div>
+
+<p>并在服务器的内核命令行上设置<code>transparent_hugepage=madvise</code>（例如在<code>/etc/default/grub</code> 中设置）。</p>
+<p>完成这些修改之后，应用程序能通过透明大页提升性能，也能避免上述问题（译注：设置成<code>madvise</code>，应用程序通过设置<code>MADV_HUGEPAGE</code>标志就能分配到大页，不需要的程序则不受影响）。</p>
+<p>继续阅读了解更多细节。</p>
+<!-- more -->
+
+<h2>什么是透明大页？</h2>
+<h3>什么是大页？</h3>
+<p>数十年来，处理器和操作系统之间通过使用<a href="https://en.wikipedia.org/wiki/Virtual_memory">虚拟内存</a>，在应用程序可见的内存空间（“虚拟内存空间(virtual address space)”）和底层的物理内存之间设置了间接层。间接层不仅保护了应用程序互相不受影响，还有许多强大的特性。</p>
+<p>非常多的 x86 处理器都是通过一个叫<a href="https://en.wikipedia.org/wiki/Page_table">页表（page table）</a>的方案实现虚拟内存，这个方案会在内存中存一个非常大的映射表（实际上一个深度不同的树结构，不过也可以看作是一个稀疏表）。传统上，x86 处理器中一份页表条目对应一份4KB 的内存“页”。</p>
+<p>虽然页表都是存在内存里，但是处理器会缓存一部分页表条目到处理器的寄存器上，它被称为<a href="https://en.wikipedia.org/wiki/Translation_lookaside_buffer">TLB</a> 。查看我笔记本上的<code>cpuid(1)</code>（译注：<a href="http://www.etallen.com/cpuid.html">Linux tool to dump x86 CPUID information about the CPU(s)</a>）发现最低等级的TLB 只包含64个条目，每个条目对应一份4KB 的数据页。现在是2017年，64*4KB 只有四分之一兆字节，远小于目前使用的大多数应用程序的工作内存。这种大小不匹配的情况意味着占用大量内存的应用程序会周期性的遇到TLB 不命中的情况，从而需要花费很高的代价访问主内存，只为得到具体的内存地址（译注：TLB Miss 之后需要访问内存中的页表，从而得到具体内存地址）。</p>
+<p>为了改进TLB 的效率，x86 及其他处理器长期以来都支持创建“大页（huge pages）”，大页的页表条目能映射一大段的物理内存地址。根据操作系统的配置不同，大多数最近的芯片能够映射2MB，4MB，甚至1GB 的内存页。使用大页意味着TLB 存着更多的数据，对某些特定的任务来说效率更高。</p>
+<h3>什么是透明大页？</h3>
+<p>存在各种页表管理方式，这意味着操作系统需要决定如何映射地址空间和物理内存。由于应用程序的内存管理接口（例如<code>mmap(2)</code>）一直都是基于最小的 4KB 页，所以内核映射数据必须以4KB 为单位。最简单和最灵活的（就已支持的内存布局而言）方案是只采用4KB 的页，应用程序映射内存无法使用大页。长期以来，这是内核最通用的内存管理策略。</p>
+<p>对于需要大量内存并对性能敏感的应用程序（例如某些特定数据库或者科学计算程序），内核引入<a href="https://www.kernel.org/doc/Documentation/vm/hugetlbpage.txt">hugetlbfs</a> 特性，该特性允许系统管理员通过配置让特定的应用程序使用大页。</p>
+<p><a href="https://www.kernel.org/doc/Documentation/vm/transhuge.txt">透明大页（简称“THP”）</a>，正如其名，旨在自动为应用程序提供大页支持，不需要特殊配置（译注：透明大页的透明，类似透明代理的透明）。透明大页通过在后台扫描（使用<code>khugepaged</code> 内核线程）内存映射，尝试找到或者创建（通过移动相邻的内存）总共2MB 的连续4KB 映射，用一个大页来替换这一段内存映射。</p>
+<h2>有什么问题？</h2>
+<p>透明大页运行良好时，特定的测试场景下，可以带来大约10% 的性能提升。然而，它也会造成至少两种非常严重的故障：</p>
+<h3>内存泄漏</h3>
+<p>THP 倾向于创建2MB 的内存映射。然而，这样做太贪心，即使必要的情况下，也不愿意把它们拆分回去。如果一个应用程序映射了一大段内存但是只访问前面几个字节，传统上只会消耗一个4KB 的物理内存页。THP 开启的情况下，<code>khugepaged</code>会将4KB 页扩张到2MB，内存占用量增大512倍（这份<a href="https://bugzilla.kernel.org/show_bug.cgi?id=93111">Bug 报告</a> 中的例子更糟糕，甚至超过512 倍！）。</p>
+<p>这种情况不是假设；Go 语言的GC 就有一个<a href="https://github.com/golang/go/issues/8832">明确的解决方法</a>，Digital Ocean 也<a href="https://blog.digitalocean.com/transparent-huge-pages-and-alternative-memory-allocators/">记录</a>了它们是如何处理Redis，THP 和<code>jemalloc</code>遇到的问题。 </p>
+<p>（译注：据说3.10 内核透明零页有泄漏问题，内核只释放2MB 中第一个4KB 的页面，剩余的页面泄漏）</p>
+<h3>卡顿和高CPU 使用率</h3>
+<p>应用程序都是分配相对静态的内存，稳定的状态下，<code>khugepaged</code> 的工作量是最小的。但是如果存在频繁映射内存的情况，或者存在生命周期很短的进程，<code>khugepaged</code> 会进行大量的拆分/合并内存区域的工作，毫无意义，存活时间很短。这会引起很高的CPU 使用率，以及较长的卡顿，因为内核被迫得先把2MB 的页拆分成4KB 的页，才能执行原本在单页上效率很高的操作。</p>
+<p>因为这些原因，启用了THP 之后，好几个应用程序都观察到30% 的性能下降，甚至更糟。</p>
+<h2>现在怎么办？</h2>
+<p>THP 作者们事先意识到了透明大页可能有潜在的问题（尽管如今看来，他们低估了问题的严重性），所以他们选择通过 <code>/sys/kernel/mm/transparent_hugepage/enabled</code> 系统文件配置透明大页。</p>
+<p>更重要的是，他们为透明大页实现了一种可选择的模式。将<code>/sys/kernel/mm/transparent_hugepage/enabled</code> 设置为<code>madvise</code>，<code>khugepaged</code> 默认情况下不会处理内存，除非应用程序使用<code>madvise</code> 系统调用，给特定范围的内存进行THP 处理。</p>
+<p>由于在大多数情况下，只有少数特定的应用程序能通过透明大页显著提升性能，所以这是一个两全其美的选项。这些少数的应用程序可以选择使用<code>madvise</code>，其余的应用程序不受影响。</p>
+<p>所以，我建议每个用户都把透明大页配置成<code>madvise</code>，如文章开头<a href="#tl;dr">tl;dr</a>所说的。同时我也希望说服主流的发行版默认禁用透明大页，让更多的系统管理员和开发者避免踩这些坑。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-12-05T00:00:00+08:00">
+      Tue 05 December 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/linux.html">linux </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

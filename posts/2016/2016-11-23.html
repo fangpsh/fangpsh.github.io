@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>关闭HPKP 和HSTS的方法 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/2016-11-23.html" rel="bookmark"
+         title="Permalink to 关闭HPKP 和HSTS的方法">关闭HPKP 和HSTS的方法</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>大家对于HSTS 一般都比较熟悉了，对HPKP 可能比较陌生,简单来说由于CA 的工作模式,导致别人有可能通过其他CA 签发你网站的证书,这个时候你就需要有一条头信息声明你网站的证书的指纹是什么。<br>
+关于HSTS 和HPKP 的介绍可以查看Jerry Qu 的这2篇文章:</p>
+<ul>
+<li><a href="https://imququ.com/post/sth-about-switch-to-https.html">关于启用 HTTPS 的一些经验分享（一）</a>:合理使用 HSTS</li>
+<li><a href="https://imququ.com/post/http-public-key-pinning.html">HTTP Public Key Pinning 介绍</a></li>
+</ul>
+<p>HSTS 和HPKP 都是通过头信息传递给浏览器，浏览器都会根据max-age 缓存起来，所以在添加了HSTS 和HPKP 了之后，想要回滚，就没有在服务端回滚程序那么方便了。</p>
+<p>有以下几种情况会遇到要关闭/移除：</p>
+<p>HSTS: 运维同学在刚刚做HTTPS 的时候，开启了HSTS，甚至加了includeSubDomains，某些老客户端访问HTTP的接口的时候跳到HTTS，由于SNI、加密套件兼容性等问题出现故障;</p>
+<p>HPKP: 无论是用根证书、中间证书还是站点证书签发了指纹，虽然HPKP有备份方案，即发送多个pin-sha，但是还是需要准备证书出现故障，要关闭HPKP。另外要记得添加report-uri，这样出错时，服务端能主动的发现上报的信息。</p>
+<p>个人觉得HPKP 和HSTS 在设计上实在太像了，如下例子：</p>
+<p>HSTS:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">Strict-Transport-Security</span><span class="o">:</span><span class="w"> </span><span class="nt">max-age</span><span class="o">=</span><span class="nt">31536000</span><span class="o">;</span><span class="w"> </span><span class="nt">includeSubDomains</span>
+</code></pre></div>
+
+<p>HPKP:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">Public-Key-Pins</span><span class="o">:</span>
+<span class="w">      </span><span class="nt">pin-sha256</span><span class="o">=</span><span class="s2">&quot;d6qzRu9zOECb90Uez27xWltNsj0e1Md7GkYYkVoZWmM=&quot;</span><span class="o">;</span>
+<span class="w">      </span><span class="nt">pin-sha256</span><span class="o">=</span><span class="s2">&quot;E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g=&quot;</span><span class="o">;</span>
+<span class="w">      </span><span class="nt">pin-sha256</span><span class="o">=</span><span class="s2">&quot;LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ=&quot;</span><span class="o">;</span>
+<span class="w">      </span><span class="nt">max-age</span><span class="o">=</span><span class="nt">10000</span><span class="o">;</span><span class="w"> </span><span class="nt">includeSubDomains</span>
+</code></pre></div>
+
+<p>所以在关闭，或者说移除HSTS或HPKP的方式上也是一样的。</p>
+<p><strong>即max-age 字段指定为0</strong>。</p>
+<p>看下RFC：</p>
+<p>HTST(<a href="https://tools.ietf.org/html/rfc6797#section-8.1">RFC6797</a>):</p>
+<div class="highlight"><pre><span></span><code><span class="nv">The</span><span class="w"> </span><span class="nv">max</span><span class="o">-</span><span class="nv">age</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">essentially</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="s2">&quot;time to live&quot;</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="nv">relative</span>
+<span class="nv">to</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">reception</span><span class="w"> </span><span class="nv">time</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">STS</span><span class="w"> </span><span class="nv">header</span><span class="w"> </span><span class="nv">field</span>.
+
+<span class="k">If</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">max</span><span class="o">-</span><span class="nv">age</span><span class="w"> </span><span class="nv">header</span><span class="w"> </span><span class="nv">field</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="nv">token</span><span class="w"> </span><span class="nv">has</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">zero</span>,<span class="w"> </span><span class="nv">the</span>
+<span class="nv">UA</span><span class="w"> </span><span class="nv">MUST</span><span class="w"> </span><span class="nv">remove</span><span class="w"> </span><span class="nv">its</span><span class="w"> </span><span class="nv">cached</span><span class="w"> </span><span class="nv">HSTS</span><span class="w"> </span><span class="nv">Policy</span><span class="w"> </span><span class="nv">information</span><span class="w"> </span><span class="ss">(</span><span class="nv">including</span><span class="w"> </span><span class="nv">the</span>
+<span class="nv">includeSubDomains</span><span class="w"> </span><span class="nv">directive</span>,<span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">asserted</span><span class="ss">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">HSTS</span><span class="w"> </span><span class="nv">Host</span><span class="w"> </span><span class="nv">is</span>
+<span class="nv">known</span>,<span class="w"> </span><span class="nv">or</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">UA</span><span class="w"> </span><span class="nv">MUST</span><span class="w"> </span><span class="nv">NOT</span><span class="w"> </span><span class="nv">note</span><span class="w"> </span><span class="nv">this</span><span class="w"> </span><span class="nv">HSTS</span><span class="w"> </span><span class="nv">Host</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">it</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="nv">yet</span>
+<span class="nv">known</span>.
+</code></pre></div>
+
+<p>HPKP(<a href="https://tools.ietf.org/html/rfc7469#section-2.3.1">RFC7469</a>):</p>
+<div class="highlight"><pre><span></span><code><span class="nv">The</span><span class="w"> </span><span class="nv">max</span><span class="o">-</span><span class="nv">age</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">essentially</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="s2">&quot;time to live&quot;</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="nv">relative</span><span class="w"> </span><span class="nv">to</span>
+<span class="nv">the</span><span class="w"> </span><span class="nv">time</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">most</span><span class="w"> </span><span class="nv">recent</span><span class="w"> </span><span class="nv">observation</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">PKP</span><span class="w"> </span><span class="nv">header</span><span class="w"> </span><span class="nv">field</span>.<span class="w">  </span><span class="k">If</span>
+<span class="nv">the</span><span class="w"> </span><span class="nv">max</span><span class="o">-</span><span class="nv">age</span><span class="w"> </span><span class="nv">header</span><span class="w"> </span><span class="nv">field</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="nv">token</span><span class="w"> </span><span class="nv">has</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="mi">0</span>,<span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">UA</span><span class="w"> </span><span class="nv">MUST</span>
+<span class="nv">remove</span><span class="w"> </span><span class="nv">its</span><span class="w"> </span><span class="nv">cached</span><span class="w"> </span><span class="nv">Pinning</span><span class="w"> </span><span class="nv">Policy</span><span class="w"> </span><span class="nv">information</span><span class="w"> </span><span class="ss">(</span><span class="nv">including</span><span class="w"> </span><span class="nv">the</span>
+<span class="nv">includeSubDomains</span><span class="w"> </span><span class="nv">directive</span>,<span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">asserted</span><span class="ss">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">Pinned</span><span class="w"> </span><span class="nv">Host</span><span class="w"> </span><span class="nv">is</span>
+<span class="nv">Known</span>,<span class="w"> </span><span class="nv">or</span>,<span class="w"> </span><span class="nv">MUST</span><span class="w"> </span><span class="nv">NOT</span><span class="w"> </span><span class="nv">note</span><span class="w"> </span><span class="nv">this</span><span class="w"> </span><span class="nv">Pinned</span><span class="w"> </span><span class="nv">Host</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">it</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="nv">yet</span><span class="w"> </span><span class="nv">Known</span>.
+</code></pre></div>
+
+<p>果然很像。。。居然照抄。<br>
+另外includeSubdomains 两者的定义也是一样的。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-11-23T11:11:30+08:00">
+      Wed 23 November 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/https.html">https </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

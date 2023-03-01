@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>面向网页工程师与网站管理员的Web缓存教程 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2015/2015-04-06.html" rel="bookmark"
+         title="Permalink to 面向网页工程师与网站管理员的Web缓存教程">面向网页工程师与网站管理员的Web缓存教程</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>这是一篇知识性的文档。尽管是技术性文章，但是本文试图让相关的概念更容易被理解，及更容易被应用到实际场景中去。正因如此，为了更加简明，某些原理方面的东西在文中被简化或省略了。如果你对这些细节部分感兴趣，请深入阅读文末的<a href="#11-参考文档和更多信息">参考文档和更多信息</a>。</p>
+<h2>1.什么是Web缓存？为什么人们使用它？</h2>
+<p>Web缓存位于一个或多个Web服务器（即源服务器）和一个或多个客户端之间，监视着进入的请求，保存着服务器响应的内容（例如HTML页面、图片和文件（统称为代表））的代表。然后，当下一个同样URL的请求到来时，它可以使用保存的内容响应请求，而不是向源服务器再次请求。</p>
+<p>使用Web缓存的两大主要理由：</p>
+<ul>
+<li><strong>降低响应延时</strong>：因为请求被缓存（离客户端更近）响应而不是源服务器，可以花更少的时间得到服务文件并渲染展示。这让网页看起来响应更迅速。</li>
+<li><strong>降低网络流量</strong>：因为代表文件被重用，这将降低客户端所用的带宽总量。这也将为按流量计费的客户端节省资费，和保持更低的带宽以及让带宽更容易管理。</li>
+</ul>
+<h2>2.Web缓存类型</h2>
+<h3>2.1 浏览器缓存</h3>
+<p>如果你查看任何一款现代浏览器（例如 Internet Explorer, Safari 或 Mozilla）的首选项，可能会注意到一项叫“缓存”的设置，它可以在你的计算机上设置一块硬盘空间用于存储你浏览器过的网页的代表文件。浏览器缓存依照非常简单的规则进行运作：在同一个用户会话中（即当前使用浏览器没有关闭前）会检查并确保存储的代表文件是最新的。  </p>
+<p>当用户单击浏览器的‘返回’按钮或者点击某个浏览过的页面链接时，浏览器缓存特别有用。另外，如果你在你的网站中使用相关的导航图片，这些图片的访问请求可以从用户浏览器缓存中及时得到响应。</p>
+<h3>2.2 代理缓存</h3>
+<p>Web代理缓存依据同样的原理工作，只是规模更大。代理服务器以同样的方式为成千上万的用户服务。大公司和网络服务提供商（ISP）们经常将代理服务器部署在它们的防火墙上，或者使用独立的设备（也称为中介服务器）。</p>
+<p>由于代理服务器既不是客户端也不是源服务器的一部分，但是它们位于网络中间，并且请求都必须经由它们发往别处。一种方式是手动设置你的浏览器，告诉它们使用哪些代理。另一种方式是使用拦截代理。拦截代理服务器自己会将所有网页请求转发给后台网络，客户端无需进行设置，甚至对于客户端来说代理服务器是透明的。</p>
+<p>代理缓存是共享缓存的一种：通常有大量的用户使用它而不是单个用户，多次请求的代表文件会被大量重复利用，所以使用代理缓存非常有利于降低响应延时和降低网络流量。</p>
+<h4>网关缓存</h4>
+<p>除了被称为“反向代理缓存”或“代理缓存”，网关缓存也是中介服务器，但是和网络管理员部署代理缓存用于节省带宽不同，网关缓存通常由网站管理员自己部署，为了使网站更容易扩展，有更加可靠和有更好的性能。</p>
+<p>请求可以通过多种方式路由到网关缓存，但是通常是使用某种类型的负载均衡器构建一个或多个网关缓存，从客户端看来就像访问源服务器。</p>
+<p>内容分发网络（Content delivery network，简称CDN）就是在整个或部分互联网上部署网关缓存服务器，并出售缓存服务给感兴趣的网站。<a href="http://www.speedera.com/">Speedera</a> 和<a href="http://www.akamai.com/">Akamai</a>就是典型的CDN服务提供商。</p>
+<p>这份教程主要还是关注浏览器缓存与代理缓存，虽然有部分内容适合对网关缓存有兴趣的朋友。</p>
+<h2>3.Web缓存对我无害吗？为什么要鼓励使用缓存？</h2>
+<p>Web缓存是互联网上最容易被误解的技术之一，尤其是网站管理员，他们害怕失去对网站的控制权，因为代理缓存可以“隐藏”网站的用户，让看到哪些用户在使用网站这件事变得困难。</p>
+<p>不幸的是，即使不存在Web缓存，互联网上也有太多因素导致网站管理员无法清晰的知晓用户是如何访问他们的网站。如果这对你来说也是一个大问题，那么本教程将会指导你如何在不需要使网站对缓存不友好的情况下，依然可以获得你需要的统计数据。</p>
+<p>另外一个值得让人担忧点是缓存可能会给用户提供过时陈旧的内容，不过本教程将向你展示如何配置你的服务器来控制缓存的内容。</p>
+<p>另一方面，如果你规划好你的网站，缓存可以帮你让网站加载速度更快，并降低服务器负载与网络链路负载。这种差异是惊人的：一个难以被缓存的网站可能得花费数秒加载，而一个利用了缓存特性的网站可以被瞬间加载。用户更享受一个加载迅速的网站，并且日后会更加频繁的访问。</p>
+<p>往这个角度想想：很多大公司花费数百万美元在世界各地建立服务器集群来存储它们的内容代表，为了使它们的用户访问更加迅速。缓存可以为你做同样的事，并且它们离终端用户更近。最重要的是，你不需要为缓存买单。</p>
+<p>事实上，无论你喜欢不喜欢，代理缓存和浏览器缓存都会被使用。如果你不配置你的网站使其被正确缓存，那么它们会默认按照缓存管理员的策略进行缓存。</p>
+<blockquote>
+<p>CDN（Content delivery network）是一种有趣的发展，因为不同于大多数代理缓存，CDN的网关缓存只缓存乐意被缓存的网站，所以不存在上文提到的问题。然而，当你使用CDN时还是不得不考虑下游的代理缓存与浏览器缓存的问题。</p>
+</blockquote>
+<h2>4.Web缓存是如何工作的</h2>
+<p>所有缓存都有一套规则用来判断什么时候使用缓存中的代表（如果代表可用的情况下）来响应请求。一些规则在（HTTP1.0 和HTTP1.1）协议中有定义，另外一些规则则由缓存的管理员（浏览器缓存的用户或者代理服务器的管理员）设置。  </p>
+<p>一般来说，缓存遵循常见的规则（不要担心你不理解细节，细节内容会在下文解释）：</p>
+<ol>
+<li>如果响应头信息告诉缓存不要进行保留，缓存即不会保留；</li>
+<li>如果请求是需要认证的或者加密的（HTTPs），也不会被缓存；</li>
+<li>一个缓存代表会被认为是新的（换言之，不检查源服务器，代表可以被直接发送给客户端），如果：</li>
+<li>头信息中设置了一个过期时间或寿命控制，并且代表根据设置是在新鲜期中；</li>
+<li>缓存近期访问过该代表，并且代表最近的修改时间是很久之前。  </li>
+</ol>
+<p>新鲜的代表将直接从缓存中取出用于响应请求，在没有检查源服务器的情况下。
+4. 如果代表过旧了，缓存将会请求源服务器校验代表，或者请求源服务器告知该代表是否仍旧可用；
+5. 在某些情况下，例如当断开网络连接时，缓存可以使用过期的代表响应请求而不需要检查源服务器。</p>
+<p>如果请求的响应中不存在验证器（ETag或Last-Modify头信息），并且它没有其他任何明确的更新信息，通常情况下，但不总是，该请求响应将被认为是不可缓存的。</p>
+<p>总之，<strong><em>新鲜度</em></strong>和<strong><em>校验</em></strong>是缓存管理内容的最要依据。一个缓存中的新鲜的代表是可用的，而一个缓存校验器也可以避免将一个没有变化的代表从源服务器传输一遍。</p>
+<h2>5.如何控制缓存文件或不缓存文件</h2>
+<p>网页设计师和网站管理员可以使用多种工具来使调整缓存对待网站的方式，这也许需要你亲手配置你的服务器，但取得的结果绝对值得你动手。关于如何使用这些工具配置你的服务器，请查看下文【实现注意事项】章节。</p>
+<h3>5.1 HTML Meta标签 vs. HTTP头信息</h3>
+<p>HTML编写者可以在文档的\&lt;HEAD&gt;区加入描述文档属性的标签。这些Meta标签常常用于标记一个文档不可缓存，或者在某个确定时刻过期。</p>
+<p>Meta标签很容易使用，但是效率不高。这是因为只有少数的浏览器缓存支持这些标签，代理缓存不支持（它们几乎不会读取文档中的HTML内容）。有时会为了让页面保持新鲜而在Web页面中放上'Pragma:no-cache'这个Meta标签，这是没有必要的。</p>
+<p>另外一方面，HTTP 头可以让你对浏览器缓存和代理缓存如何处理代表文件做更多的控制。在HTML文件见不到它们，通常由Web服务器自动生成。然而，根据使用的Web服务器不同，你可以做不同程度的控制。在下面的章节中，你将看到一些有趣的HTTP头信息，和如何在你的网站上进行应用它们。</p>
+<p>HTTP头信息由Web服务器在发送HTML之前发送，并且只能浏览器和每一个中间缓存服务器看到。典型的HTTP1.1 协议的响应头可能如下：</p>
+<div class="highlight"><pre><span></span><code>HTTP/1.1 200 OK
+Date: Fri, 30 Oct 1998 13:19:41 GMT
+Server: Apache/1.3.3 (Unix)
+Cache-Control: max-age=3600, must-revalidate
+Expires: Fri, 30 Oct 1998 14:19:41 GMT
+Last-Modified: Mon, 29 Jun 1998 02:28:12 GMT
+ETag: &quot;3e86-410-3596fbbc&quot;
+Content-Length: 1040
+Content-Type: text/html
+</code></pre></div>
+
+<p>在这些头信息之后，以一行空格分隔，紧跟着是HTML内容。关于如何设置HTTP头信息请查看【实现注意事项】章节。</p>
+<blockquote>
+<p>如果你的网站是托管在ISP机房中，它们不会允许你设置HTTP头信息（例如Expires和Cache-Control），大声的抱怨吧：它们是你工作的必要工具。</p>
+</blockquote>
+<h3>5.2 Pragma HTTP头信息（为何它们不起作用？）</h3>
+<p>许多人认为设置了一个 ‘Pragma: no-cache’的头信息可以让代表不被缓存。实际上这是不对的：HTTP规范中没有任何关于设置Pragma 响应头信息的指导；相反，对Pragma请求头（从浏览器发送给服务器的头信息）进行了讨论。虽然少数缓存会遵循这个头信息，大部分不会，但是也不会有任何效果。用下文的头信息来替代Pragma吧。</p>
+<h3>5.3 使用Expires HTTP头信息来控制更新</h3>
+<p>Exipres 头信息是管理缓存最基础的方式：它会告诉缓存代表文件在多长时间内是新鲜的。在这个时间之后，缓存将总会访问源服务器检查文件是否更改。几乎所有的缓存都支持Expires头信息。</p>
+<p>大多数Web服务器都允许你通过多种方式设置Expires响应头信息。通常，它们允许设置一个准确的过期时刻，基于客户端最近一次访问代表的时间，或者基于服务器上文档最后一次改变的时间（最新修改时间，last modification time）。</p>
+<p>Exipres 头信息对于设置静态图片缓存（例如导航栏或者按钮的图片）十分有用。因为这些文件不经常变动，你可以给它们设置一个特别长的过期时间，从而使你的网站更快得响应用户。它们对于控制规律变化的页面的缓存也非常有用。举个例子，如果你在每天早上六点更新一个页面，你可以设置对应代表的超时时间在这个点，从而让缓存知道什么时刻它们需要一份新的拷贝，而不必让用户点击“重载”按钮。</p>
+<p>Expires 头信息的值只能是HTTP格式的日期，其他的值都会被解析成‘过去的时刻’，以至于代表都会过期。另外记住HTTP的时间是格林威治时间（GMT），不是本地时间。<br>
+例如：  </p>
+<div class="highlight"><pre><span></span><code><span class="n">Expires</span><span class="o">:</span><span class="w"> </span><span class="n">Fri</span><span class="o">,</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="n">Oct</span><span class="w"> </span><span class="mi">1998</span><span class="w"> </span><span class="mi">14</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mi">41</span><span class="w"> </span><span class="n">GMT</span>
+</code></pre></div>
+
+<p>虽然Expires头信息非常有用，但是它也有一些限制。首先，因为涉及到日期，Web服务器上和缓存上的时钟必须同步。如果它们不同步，将达不到预期的结果，缓存可能错误的认为过期的内容是新鲜的。
+另外一个关于Expires的问题是非常容易忘记你曾经为某些内容设置了一个特定的过期时刻。如果你在返回内容时没有更新Expires 时间，那么每个请求都将发回源服务器，将增加负载和响应时间。</p>
+<blockquote>
+<p>如果你使用Expires 头信息，确保你的Web服务器的时钟是准确的将非常重要。一个方式是使用网络时间同步协议（NTP），可以向你的系统管理员咨询更多信息。</p>
+</blockquote>
+<h3>5.4 Cache-Control HTTP头信息</h3>
+<p>HTTP1.1 协议介绍了一组新的头信息，cache-control 响应头信息，让网站发布者可以更全面的控制他们的内容，并解决了Expires头信息的限制。<br>
+有用的cache-control响应头信息包括：  </p>
+<ul>
+<li><strong>max-age</strong>=[秒] - 指定代表被视为新鲜的最长时间。类似于Expires，这个参数是指相对于请求时刻的时间间隔，而不是绝对的时刻。[秒]是指从请求开始时刻到你希望缓存依旧保持新鲜的时刻之间的秒数。</li>
+<li><strong>s-maxage</strong>=[秒] - 类似于max-age，不过它只应用与共享缓存（例如代理服务器）。</li>
+<li><strong>public</strong> - 标记认证的请求也可以缓存。通常来说，如果需要HTTP认证，响应内容即为私有的。</li>
+<li><strong>private</strong> - 允许缓存指定一个用户（例如在浏览器中）存储响应内容。共享缓存（例如代理服务器）可能不可用。</li>
+<li><strong>no-cache</strong> - 强制缓存在每一次释放一个缓存代表前都向源服务器发起请求进行验证。这对确保请求得到认证（和public结合使用）或确保内容新鲜都是非常有用的，并且不需要牺牲使用缓存的所有好处。</li>
+<li><strong>no-store</strong> - 指示缓存在任何情况下都不要保留代表。</li>
+<li><strong>must-revalidate</strong> - 告知缓存遵循你给出的任何关于代表的新鲜度信息。HTTP协议允许缓存在某些特定情况下返回过期代表。通过指定这个头信息，你可以告知缓存严格遵守你的规则。</li>
+<li><strong>proxy-revalidate</strong> - 和 must-revalidate 类型，除了它只作用于代理缓存。</li>
+</ul>
+<p>例如：  </p>
+<div class="highlight"><pre><span></span><code>Cache-Control: max-age=3600, must-revalidate
+</code></pre></div>
+
+<p>当同时存在cache-control和Expires时，cache-control优先。如果你打算使用cache-control头信息，你应该看一下HTTP1.1协议的这篇不错的文档，见【参考文档和更多信息】节。</p>
+<h3>5.5 验证器与验证</h3>
+<p>在【Web缓存是如何工作的】一节中，我们说过验证是用于当代表变更后服务器和缓存之间的通讯。通过使用它，可以禁止缓存下载整个代表，当他们本地有一份拷贝但不确定拷贝是否新鲜时。</p>
+<p>验证器非常重要，如果有一个不存在，并且没有任何其他新鲜度信息（Expires或者Cache-Control）可用，那么缓存将不会保存任何代表。</p>
+<p>最常见的验证器是文档的最后修改时间，通过Last-Modified头信息传递。当一份缓存有一个包含Last-Modified头信息的代表时，它可以通过发送一个IfModified-Since请求，询问服务器这份缓存在上次浏览之后是否被修改了。</p>
+<p>HTTP1.1中介绍了另外一种称为Etag的验证器。Etag是服务器生成的唯一的标识符，并且每次代表改变时都会变动。因为服务器可以控制如何生成Etag，所以当缓存发送If-None-Match请求时，如果ETag是匹配的，缓存就可以确定代表是相同的。</p>
+<p>几乎所有缓存都使用Last-Modified时间作为验证器，ETag验证器也正在逐渐流行起来。<br>
+大部分现代的Web服务器会自动同时生成ETag和Last-Modified头信息来作为静态内容的验证器，你不需要做任何事。然而，它们对于动态内容并不知道如何生成Last-Modified和ETag头信息，见【编写支持缓存的脚本】一节。</p>
+<h2>6.搭建支持缓存的网站的技巧</h2>
+<p>除了使用新鲜读信息和验证器，这儿还有很多方法可以让你的网站对缓存更友好。</p>
+<ul>
+<li>使用统一的URL - 这是缓存的黄金守则。如果对于不同的用户或者来自不同的站点请求返回包含相同内容的不同页面，应该使用相同的URL。这是使你的网站对缓存友好的最简单、最有效的方法。例如，如果你在HTML页面中使用‘/index.html’作为一个引用，那么就始终使用这个URL。  </li>
+<li><strong>使用一个共用的</strong>图片或者其他元素的库，在不同的地方引用它们。</li>
+<li>通过设置一个cache-contrl：max-age为很大的值，<strong>让缓存服务器存储那些不常变动的图片和页面</strong>。</li>
+<li>通过指定一个合适的max-age或过期时间，<strong>让缓存服务器识别规律更新的页面</strong>。</li>
+<li><strong>如果一个资源（特别是下载文件）变动了，修改它的名称</strong>。通过这种方式，你可以使其在未来很长一段时间内不过期，并且仍然确保响应的是正确的版本。不过链接到下载文件的页面需要设置一个较短的过期时间。</li>
+<li><strong>非必要的情况下不要修改文件</strong>。如果你这么做了，所有的文件都会有一个不正确的新的Last-Modified日期。例如，当你更新你的网站时，不应该拷贝整个网站，只上传你修改过的文件。</li>
+<li><strong>只在必要的地方使用cookies</strong> - cookies非常难被缓存，并且在大部分情况下是不需要的。如果你一定要使用cookie，只限在动态页面中使用。</li>
+<li><strong>减少使用SSL </strong>- 因为加密的页面不能被共享缓存所存储，所以在不得已的时候再使用它们，并且减少在SSL 页面上使用图片。</li>
+<li><strong>使用<a href="https://redbot.org/">REDbot</a>检查你的页面</strong> - 它可以帮助你实践很多本教程内的概念。</li>
+</ul>
+<h2>7.编写支持缓存的脚本</h2>
+<p>默认情况下，大部分脚本不会返回验证器（Last-Modified 或ETag响应头信息）或者新鲜度信息（Expires或Cache-Control）。有些脚本确实是动态的（意味着每次请求它们都会返回不同的响应内容），但是大部分（像搜索引擎和数据引擎网站）可以从设置为缓存友好中获益。</p>
+<p>一般来说，如果一份脚本在一段时间内（无论是几分钟或者几天），对于同样的请求生成的输出是重复的，那么它就是可以被缓存的。如果脚本的输出内容只随URL变化而变化，那么它也是可以被缓存的，但如果输出内容依赖cookies，认证信息或者其他外部其他条件，那么可能不能被缓存。</p>
+<ul>
+<li>使一份脚本对缓存友好化的最好方式是（同时也改善性能）的方式是在内容改变时导出成静态文件。Web服务器可以对待这些静态文件例如其他Web页面，生成和使用验证器，会让你更加方便。记住只在变化时写文件，这样可让Last-Modified时间受保护。</li>
+<li>另外一种使脚本对缓存友好化的有局限性的方式是在对未来一段实际时间内设置一个相对寿命的头信息。虽然使用Expires可以实现，不过更容易的方式是使用Cache-Control：max-age，它会在请求之后让缓存在一段时间内保持新鲜。</li>
+<li>如果以上你都做不到，你将需要让脚本生成一个验证器，并响应If-Modified 和/或 If-None-Match请求。这些可以在解析HTTP头信息时完成，并在符合条件的情况下返回304 Not Modified。不幸的是，这不是一个简单的任务。</li>
+</ul>
+<p>其他技巧：</p>
+<ul>
+<li><strong>不要使用POST</strong>除非是适合的。POST方法请求的响应内容不会被大多数缓存保存；如果你通过路径或者查询（通过GET请求）发送信息，缓存服务器可以存储信息供日后使用。</li>
+<li><strong>不要在URL中嵌入用户特有的信息</strong>，除非生成的内容对用户是完全唯一的。</li>
+<li><strong>不要统计一个用户来着来自同一个主机的请求</strong>，因为缓存常常是共同工作的。</li>
+<li><strong>生成Conten-Length响应头信息</strong>。这很容易做到，并且这将允许你的脚本的响应内容用于持久连接。这将允许客户端可以在一个TCP/IP连接中请求多个代表，而不是每个请求都建立一个TCP/IP连接。这会使你的网站看起来更快。</li>
+</ul>
+<p>更多细节信息请看【实现注意事项】。</p>
+<h2>8.常见问题解答</h2>
+<h3>使网站可缓存的的重点是什么？</h3>
+<p>好的策略是找出那些最受欢迎的，且最大的代表文件（特别是图片），将它们事先缓存起来。</p>
+<h3>我如何才能使用缓存服务器让我的页面尽可能的快？</h3>
+<p>大多数缓存的代表文件会设置一个很长的新鲜时间。验证器可以帮助降低检查代表文件的时间，但是缓存还是得和源服务器通讯一次以确定它是新鲜的。如果缓存已知它是新鲜的，代表文件可以被直接服务。</p>
+<h3>我明白缓存是不错，但是我不得不统计有多少人访问我的页面！</h3>
+<p>如果你一定要知道一个页面的访问次数，选择页面上的「一个」小元素（或者页面本身），并通过给它设置一个合适的头信息，让它不被缓存。例如，你可以在每个页面上引用一个1x1 的透明的不会被缓存的图片。引用头信息会包含哪个个页面访问了它的信息。</p>
+<p>注意这并不会给予你真实和准确的用户统计信息，并且这对你的用户和网络都是不友好的。它不会消耗不必要的网络带宽，强迫人们等待不被缓存的内容下载完毕。更多信息，请查看【参考文档和更多信息】中的「关于非连续性访问的统计」。</p>
+<h3>我如何能看到一个代表的文件的HTTP头信息？</h3>
+<p>多数Web浏览器可以让你在‘页面信息’或者类似的界面看到Expires和last-Modified 头信息。如果可以的话，你会得到页面的菜单和页面相关的所有代表文件（像图片等），包括它们的详细信息。</p>
+<p>要查看一个代表文件的全部头信息，你可以使用Telnet 客户端手动连接Web服务器。</p>
+<p>要这样做，你可能需要在一个字段中指定端口（默认是80），或者你可能需要连接www.example.com:80 或www.example.com 80 (注意空格)。参考下你的Telnet客户端的文档。</p>
+<p>一旦你打开了网站的一个连接，输入一个代表文件的请求。例如，如果你想要看 http://www.example.com/foo.html 的头信息，连接 www.example.com，端口80，并输入：</p>
+<div class="highlight"><pre><span></span><code><span class="err">GET /foo.html HTTP/1.1 [回车]</span>
+<span class="err">Host: www.example.com [回车][回车]</span>
+</code></pre></div>
+
+<p>每次你看到「回车」按下回车键，确保在最后的时候你按了两次。将会打印头信息，接着是完整的页面文件。如果只想看到头信息，将<code>GET</code> 换成 <code>HEAD</code>。</p>
+<h3>我的页面是受密码保护的，代理缓存会如何处理它们？</h3>
+<p>默认情况下，受HTTP认证保护的页面都认为是私有的，它们不会被共享缓存保存。然而，你可以用一个Cache-Control：pbulic header 头信息使认证页面公开。HTTP1.1兼容的缓存会允许它们被缓存。</p>
+<p>如果你喜欢这类页面被缓存，但是对每个用户仍然要认证才能访问，可以结合Cache-Control：public 和no-cache头信息。这将会告知缓存在释放代表文件之前确认新的客户端必须提交认证信息给服务器。设置如下：</p>
+<div class="highlight"><pre><span></span><code>Cache-Control: public, no-cache
+</code></pre></div>
+
+<p>无论是否做到这点，最好减少认证的使用。例如，如果你的图片不是敏感信息，将它们放在一个单独的目录，并配置你的服务器不对它们进行强制认证。通过这种方式，这些图片将可以被正常缓存。</p>
+<h3>如果用户通过缓存访问我的网站我是否要担心安全性？</h3>
+<p>SSL 页面不会被代理缓存服务器所缓存（或解密），所以你不必担心这个问题。不过，因为缓存服务器会存储经过它们的非SSL请求和URL，你应该意识到对于不安全的站点，不道德的缓存服务器管理员可能收集它们用户的信息，特别是通过URL。</p>
+<p>实际上，在你的服务器和你的客户端之间的任何网络管理员都可以收集这类信息。特别是当CGI脚本把用户名和密码放在它的URL时，这会很容易让他人找到此类信息并利用从而登录。</p>
+<p>如果你了解一般的Web安全问题，你不会对代理缓存服务器感到惊奇。</p>
+<h3>我在寻找一个集成Web发布的解决方案。哪些是支持缓存的？</h3>
+<p>差异很大，一般来说，越复杂的解决方案，越难被缓存。最糟糕的方案是那些动态生成所有内容，并且不提供验证器的，它们可能完全不会被缓存。向你的供应商的技术人员了解一下，并参考下下文的「实现注意事项」。</p>
+<h3>我的图片是一个月后过期，但是我需要它们立刻更新！</h3>
+<p>Expires头信息无法避开，除非缓存（浏览器或者代理服务器）空间不足才会删除代表文件，缓存副本会一直被使用直到过期。</p>
+<p>最有效的方式是修改它们的链接。这样，完全新的代表文件会从源服务器被加载。记住，任何引用这些代表文件的页面也会被缓存。因此，最好让静态图片或者其他类似的代表文件被缓存，同时严格控制引用它们的HTML页面。</p>
+<p>如果你希望重载从指定缓存加载一个代表文件，你可以在使用缓存的时候强制重载（在FIrefox中，按住shirt键的时候按下‘重载’键可以做到，通过发起一个Pragma：no-cache头信息的请求）。或者，你可以让缓存服务器管理员在他们的节点中删除代表文件。</p>
+<h3>我运行一个Web托管服务，我怎么样才能让用户发布对缓存友好的页面？</h3>
+<p>如果你使用Apache，考虑允许他们使用.htaccess 文件并提供相应文档。</p>
+<p>另外，你可以在各个虚拟主机里预先创建缓存各类元素的缓存区。例如，你可以指定一个目录 /cache-1m 用于缓存访问之后的内容，缓存一个月。一个 /no-cache 区用于提供不会被缓存的，通过头信息告知缓存不存储代表文件。</p>
+<p>无论你是否能做到，最好让你最大的客户使用上缓存。对于大网站这可以大量节约成本（带宽和服务器负载方面）。</p>
+<h3>我已经标记了我的页面是可缓存的，但是我的浏览器每次都会向源服务器发起请求。我如何才能强制缓存保存这些页面的代表文件？</h3>
+<p>缓存不需要保存代表文件和重用它。它们只会被要求不要保存和使用代表文件，在某些情况下。所有的缓存都是基于代表文件的大小（例如图片和html页面），以及如果保存它们本地还能剩余多少磁盘空间等来做决定。你的页面相比更热门或者更大的代表文件，并不值得缓存。</p>
+<p>一些缓存服务器允许它们的管理员优先考虑哪些类型的代表文件被保存，一些代表文件会被永久缓存，所以它们总是可用的。</p>
+<h2>9.实现注意事项-Web服务器</h2>
+<p>一般来说，无论什么Web服务器，最好使用最新的版本来部署。它们不仅包含更多与缓存友好的特性，而且新版本通常在安全和性能方面也会有改善。</p>
+<h3>Apache HTTP Server</h3>
+<p><a href="http://www.apache.org/">Apache</a> 使用可选的模块来引入头信息，包括Expires和Cache-Control。这两个模块在1.2 或高的版本中都可用。</p>
+<p>这些模块需要内置到Apache；虽然它们已经包含在发布的版本中，但是默认没有启用。为了找出你服务器上启用了哪些模块，找到httpd二进制文件，运行 <code>httpd -l</code>；这应该能打印出可用模块的列表（注意这只列出了编译进apache的模块；在最新版本的apache上，使用<code>httpd -M</code>也包含动态加载的模块 ）。这些模块中我们要找的是expires_module 和 headers_module。</p>
+<ul>
+<li>如果它们是不可用的，并且你有管理员权限，你可以重新编译Apache来引入它们。这可以通过反注释Configuration文件中的对应行，或者使用编译选项<code>-enable-module=expires</code>和 <code>-enable-module=headers</code>(1.3或更高版本)配置做到。参考Apache发行版中的INSTALL 文件。</li>
+</ul>
+<p>一旦你有了一个有着合适模块的Apache，你可以在.htaccess 文件或者服务器的access.conf文件中使用mod_expires来指定代表文件什么时候过期，你可以指定从访问时间或者修改时间开始计算的的过期时间，应用到某个类型的文件或者按照默认设置。如果你遇到困难，可以阅读<a href="http://www.apache.org/docs/mod/mod_expires.html">模块文档</a>获取更多信息，或者和你附近的Apache大师聊一聊。</p>
+<p>为了使用Cache-Control 头信息，你将需要使用mod_headers模块，它可以使你为一个资源指定任意HTTP 头信息。参考 <a href="http://www.apache.org/docs/mod/mod_headers.html">mode_headers 文档</a>。</p>
+<p>这儿有一个例子，关于如何使用头信息的示范操作。</p>
+<ul>
+<li>.htaccess 文件允许网站发布者使用通常只能在配置文件中找到的命令。它们会影响到目录的内容和它们子目录的内容。和你的服务器管理员了解下它们是否被启用。</li>
+</ul>
+<div class="highlight"><pre><span></span><code>###<span class="w"> </span>激活<span class="w"> </span>mod_expires<span class="w"> </span>
+ExpiresActive<span class="w"> </span>On
+###<span class="w"> </span>.gif<span class="w"> </span>文件在访问一个月之后过期
+ExpiresByType<span class="w"> </span>image/gif<span class="w"> </span>A2592000
+###<span class="w"> </span>任何文件在最后一次修改的一天后过期
+###（此处使用了Alternative<span class="w"> </span>语法）
+ExpiresDefault<span class="w"> </span>&quot;modification<span class="w"> </span>plus<span class="w"> </span>1<span class="w"> </span>day&quot;
+###<span class="w"> </span>对<span class="w"> </span>index.html<span class="w"> </span>文件应用一个Cache-Control<span class="w"> </span>头信息
+<span class="nt">&lt;Files</span><span class="w"> </span><span class="err">index.html</span><span class="nt">&gt;</span>
+Header<span class="w"> </span>append<span class="w"> </span>Cache-Control<span class="w"> </span>&quot;public,<span class="w"> </span>must-revalidate&quot;
+<span class="nt">&lt;/Files&gt;</span>
+</code></pre></div>
+
+<ul>
+<li>注意：mod_expires会在合适的情况下自动生成和插入一个Cache-Control:max-age 头信息</li>
+</ul>
+<p>Apache 2的配置和1.3非常相似，参考 2.2<a href="http://httpd.apache.org/docs/2.2/mod/mod_expires.html">mod_expires</a>和<a href="http://httpd.apache.org/docs/2.2/mod/mod_headers.html">mod_headers</a>文档获取更多信息。</p>
+<h3>Microsoft IIS</h3>
+<p><a href="http://www.microsoft.com/">微软</a>的 IIS 可以通过非常灵活的方式，非常容易的设置头信息。注意这这在IIS 4或者更高版本可行，并且只能运行在NT服务器上。</p>
+<p>为一个网站的一块区域指定头信息，先在 <code>Administration Tools</code> 的界面中选中，然后设置它的属性。在选中<code>HTTP Headers</code>项之后，你应该可以看到两块有趣的区域：<code>Enable Content Expiration</code>和<code>Custom HTTP headers</code>。前者会自动配置，后者可以用于配置Cache-Control头信息。</p>
+<p>可以在<code>Active Server Pages</code>的ASP章节上参考关于设置头信息的内容，可能也可以通过ISAPI模块设置头信息，细节请参考MSDN。</p>
+<h3>Netscape/iPlanet Enterprise Server</h3>
+<p>随着3.6版本发布，Enterprise服务器不再提供任何明确的方式来设置Expires头信息。然而，它从3.0版本开始已经支持HTTP1.1协议的特性。这意味着 HTTP 1.1缓存（代理服务器或者浏览器）可以使用Cache-Control设置来实现。</p>
+<p>为使用Cache-Control 头信息，在管理员服务器上选择<code>Content Management | Cache Control Directives</code>。接着，使用<code>Resource Picker</code>，选择你想要设置头信息的目录。设置完头信息之后，点击<code>OK</code>。更多信息请参考<a href="http://www.redhat.com/docs/manuals/ent-server/">NES手册</a>。</p>
+<h2>10.实现注意事项-服务器端脚本</h2>
+<p>因为在服务器端的脚本强调的是动态内容，它们不会生成非常容易利于的页面，即使这些内容是可以被缓存的。如果你的内容经常变化，但是不是在每次页面被点击时，那么考虑设置一个Cache-Control: max-age头信息。大多数用户再次访问页面都是在一个较短的时间间隔之后。例如，当用户点击‘返回’按钮，如果没有认证或者更新的内容，他们不得不得等待页面从服务器上重新下载才能看到。</p>
+<blockquote>
+<p>有一点要记住的是，在你的Web服务器中设置HTTP头信息可能比在脚本语言中更容易。都尝试一下。</p>
+</blockquote>
+<h3>CGI</h3>
+<p>CGI 脚本是生成内容最流行的方式之一。你可以非常容易的添加HTTP响应头信息，在你发送内容之前。大多数CGI实现都要求你写 Content-Type 头信息。例如，在Perl中：</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/perl</span>
+<span class="k">print</span><span class="w"> </span><span class="s">&quot;Content-type: text/html\n&quot;</span><span class="p">;</span>
+<span class="k">print</span><span class="w"> </span><span class="s">&quot;Expires: Thu, 29 Oct 1998 17:04:19 GMT\n&quot;</span><span class="p">;</span>
+<span class="k">print</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">;</span>
+<span class="c1">### the content body follows...</span>
+</code></pre></div>
+
+<p>由于都是文本信息，你可以非常容易的使用内置函数生成Expires和其他日期相关的头信息。如果你使用Cache-Control: max-age甚至可以更简单：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">print</span><span class="w"> </span><span class="s2">&quot;Cache-Control: max-age=600\n&quot;</span><span class="o">;</span>
+</code></pre></div>
+
+<p>这会使脚本在请求之后可以被缓存10分钟，所以如果用户点击‘返回’按钮，他们不再会重新提交请求。</p>
+<p>在脚本环境中，CGI规范也允许客户端发送头信息的请求；每个头信息都有一个‘HTTP_’前缀和头信息名称。所以，如果一个客户端发起一个 If-Modified-Since请求，它会显示为<code>HTTP_IF_MODIFIED_SINCE</code>。</p>
+<p>参考<a href="https://www.mnot.net/cgi_buffer/">cgi_buffer</a>库，一个自动处理Etag生成和验证，Content-Length生成和对内容进行gzip压缩的库，在Perl和Python CGI 脚本中一行即可引入。Python版本的也可以用于包装任意CGI脚本。</p>
+<h3>Server Side Includes</h3>
+<p>SSI（经常使用.shtml扩展名）是网站发布者最早可以生成动态内容的方式之一。通过在页面中使用特别的标记，可以嵌入有限的HTML脚本。</p>
+<p>大部分SSI的实现无法设置验证器，也就无法被缓存。不过，Apache实现了可以通过对特定文件的组执行权限设置，实现允许用户设置哪些SSI可以被缓存，结合<code>XbitHack</code>调整整个目录。更多信息请参考<a href="http://www.apache.org/docs/mod/mod_include.html">mod_include</a>文档。</p>
+<h3>PHP</h3>
+<p><a href="http://www.php.net/">PHP</a>是一个内建在web服务器中的服务器端脚本语言，可以做为HTML嵌入式脚本，很像SSI，不过有更多的选项。PHP可以在各种Web服务器上设置为CGI脚本运行（Unix或Windows），或作为Apache的模块运行；</p>
+<p>默认情况下，PHP生成代表文件没有设置验证器，也就无法缓存。但是，开发者可以通过Header()函数来设置HTTP头信息。</p>
+<p>例如，这些代码会生成一个Cache-Control头信息，也会设置一个3天后过期的Expires头信息；</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+ <span class="nx">Header</span><span class="p">(</span><span class="s2">&quot;Cache-Control: must-revalidate&quot;</span><span class="p">);</span>
+
+ <span class="nv">$offset</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3</span><span class="p">;</span>
+ <span class="nv">$ExpStr</span> <span class="o">=</span> <span class="s2">&quot;Expires: &quot;</span> <span class="o">.</span> <span class="nb">gmdate</span><span class="p">(</span><span class="s2">&quot;D, d M Y H:i:s&quot;</span><span class="p">,</span> <span class="nb">time</span><span class="p">()</span> <span class="o">+</span> <span class="nv">$offset</span><span class="p">)</span> <span class="o">.</span> <span class="s2">&quot; GMT&quot;</span><span class="p">;</span>
+ <span class="nx">Header</span><span class="p">(</span><span class="nv">$ExpStr</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre></div>
+
+<p>记住，Header()的输出<strong>必须</strong>先于所有其他HTML的输出。</p>
+<p>正如你看到的，你可以手工为Expires头信息创建HTTP日期；PHP没有为此提供专门的函数（不过新版本已经让这个更容易了，请参考<a href="http://php.net/date"> PHP's date documentation</a>)。当然，最简单的还是设置Cache-Control: max-age头信息，对于大部分情况都比较适用；</p>
+<p>更多信息，请参考<a href="http://www.php.net/manual/function.header.php3">e manual entry for header</a>。</p>
+<p>也请参考一下<a href="https://www.mnot.net/cgi_buffer/">cgi_buffer</a>库，一个能够自动处理ETag的生成和验证，Content-Length生成和内容的gzip压缩的库，PHP脚本引用只需一行代码。</p>
+<h3>Cold Fusion</h3>
+<p><a href="http://www.macromedia.com/software/coldfusion/">Cold Fusion</a>由<a href="http://www.macromedia.com/">Macromedia</a>开发的一款商业服务端脚本引擎，支持多种Windows，Linux和多种Unix平台上的Web服务器。</p>
+<p>Cold Fusion让设置任意HTTP头信息相当容易，通过<a href="http://livedocs.macromedia.com/coldfusion/7/htmldocs/00000270.htm">CFHEADER</a>标签。可惜的是：以下设置Expires头信息的例子有些容易误导。</p>
+<div class="highlight"><pre><span></span><code>&lt;CFHEADER NAME=&quot;Expires&quot; VALUE=&quot;#Now()#&quot;&gt;
+</code></pre></div>
+
+<p>它不是像你认为你的那样生效，因为时间（这个例子中是请求发起的时间）并不会被转换成一个符合HTTP的时间；相反的，它只打印出代表文件的Cold fusion日期/时间对象。大多数客户端会忽略这样一个值，或者将其转换成默认值，例如1970年1月1日。</p>
+<p>然而，Cold Fusion提供了一套日期格式化函数来完成这项工作： <a href="http://livedocs.macromedia.com/coldfusion/7/htmldocs/00000483.htm">GetHttpTimeSTring</a>。 结合DateAdd函数，很容易设置Expires时间了.这里,我们设置一个头信息声明代表文件在1个月以后过期；</p>
+<div class="highlight"><pre><span></span><code>&lt;cfheader name=&quot;Expires&quot; 
+  value=&quot;#GetHttpTimeString(DateAdd(&#39;m&#39;, 1, Now()))#&quot;&gt;
+</code></pre></div>
+
+<p>你也可以使用CFHEADER标签来设置Cache-Control: max-age等其他头信息；</p>
+<p>记住Web服务器的头信息也会通过Cold Fusion的一些部署方式传递(例如CGI）；检查你的服务器设置，确定你是否可以使用它，并通过在Web服务器上设置头信息来代替Cold Fusion。 </p>
+<h3>ASP and ASP.NET</h3>
+<p>Active Server Pages，内置在IIS中，在其他Web服务器中也可用，也允许你设置HTTP头。例如，设置一个过期时间，你可以使用Response方法的属性：</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;%</span><span class="w"> </span><span class="no">Response</span><span class="o">.</span><span class="n">Expires</span><span class="o">=</span><span class="mi">1440</span><span class="w"> </span><span class="cp">%&gt;</span>
+</code></pre></div>
+
+<p>指定请求的代表文件在多少分钟后过期。Cache-Control头信息可以这样添加：</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;%</span><span class="w"> </span><span class="no">Response</span><span class="o">.</span><span class="n">CacheControl</span><span class="o">=</span><span class="s2">&quot;public&quot;</span><span class="w"> </span><span class="cp">%&gt;</span>
+</code></pre></div>
+
+<p>在ASP.NET中，Response.Expires已不推荐使用。正确的方法是通过Response.Cache设置cache相关的头信息；</p>
+<div class="highlight"><pre><span></span><code>Response.Cache.SetExpires ( DateTime.Now.AddMinutes ( 60 ) ) ;
+Response.Cache.SetCacheability ( HttpCacheability.Public ) ;
+</code></pre></div>
+
+<blockquote>
+<p>当在ASP中设置头信息时，确保你将Response方法放置在任何HTML生成之前，或者使用 Response.Buffer来缓冲输出内容。另外，注意有些版本的IIS默认设置一个 Cache-Control: private 的头信息，必须声明成public才能被共享缓存服务器缓存。</p>
+</blockquote>
+<h2>11.参考文档和更多信息</h2>
+<p><a href="http://www.ietf.org/rfc/rfc2616.txt">HTTP 1.1 Specification</a><br>
+The HTTP 1.1 spec has many extensions for making pages cacheable, and is the authoritative guide to implementing the protocol. See sections 13, 14.9, 14.21, and 14.25.</p>
+<p><a href="http://www.web-caching.com/">Web-Caching.com</a><br>
+An excellent introduction to caching concepts, with links to other online resources.</p>
+<p><a href="http://www.web-caching.com/">On Interpreting Access Statistics</a><br>
+Jeff Goldberg’s informative rant on why you shouldn’t rely on access statistics and hit counters.</p>
+<p><a href="https://redbot.org/">REDbot</a><br>
+Examines HTTP resources to determine how they will interact with Web caches, and generally how well they use the protocol.</p>
+<p><a href="https://www.mnot.net/cgi_buffer/">cgi_buffer Library</a>
+One-line include in Perl CGI, Python CGI and PHP scripts automatically handles ETag generation and validation, Content-Length generation and gzip Content-Encoding — correctly. The Python version can also be used as a wrapper around arbitrary CGI scripts.</p>
+<h2>12.关于本文档</h2>
+<p>This document is Copyright © 1998-2013 Mark Nottingham <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#110;&#111;&#116;&#64;&#109;&#110;&#111;&#116;&#46;&#110;&#101;&#116;">&#109;&#110;&#111;&#116;&#64;&#109;&#110;&#111;&#116;&#46;&#110;&#101;&#116;</a>. <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">This work is licensed under a Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 Unported License</a>.</p>
+<p>All trademarks within are property of their respective holders.</p>
+<p>Although the author believes the contents to be accurate at the time of publication, no liability is assumed for them, their application or any consequences thereof. If any misrepresentations, errors or other need for clarification is found, please contact the author immediately.</p>
+<p>The latest revision of this document can always be obtained from https://www.mnot.net/cache_docs/</p>
+<p>Translations are available in: Chinese, Czech, German, and French.</p>
+<blockquote>
+<p>译文，原文地址：<a href="https://www.mnot.net/cache_docs/">https://www.mnot.net/cache_docs/</a>，遵循原文的版本许可协议：<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Attribution-NonCommercial-NoDerivs 3.0 Unported</a>。</p>
+</blockquote>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2015-04-06T18:00:00+08:00">
+      Mon 06 April 2015
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2015.html">2015</a> Tagged <a href="https://fangpsh.github.io/tag/web.html">Web </a><a href="https://fangpsh.github.io/tag/cache.html">Cache </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

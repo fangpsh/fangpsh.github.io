@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Articles in DNS tag - fangpsh's blog</title>
+        <title> Articles in tcp tag - fangpsh's blog</title>
         <meta charset="utf-8" />
         <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
         <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
@@ -22,26 +22,15 @@
 				<h2 class="text-muted"></h2>
              </div>
 <section id="content" class="content">
-<h2>Articles with the DNS tag</h2>
+<h2>Articles with the tcp tag</h2>
 
         <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-11-04.html" rel="bookmark" title="Permalink to ANAME、CNAME、DNAME">ANAME、CNAME、DNAME</a></h2> </header>
-                <div class="entry-content"> <p><a href="https://en.wikipedia.org/wiki/CNAME_record">CNAME</a> 很常见，一般人都很熟悉，将一个域名映射到另外一个域名。但是CNAME 有个限制，顶级域名（apex domain）不建议设置CNAME，因为会和MX 记 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-11-3.html" rel="bookmark" title="Permalink to IPv6-Test DNS 测试">IPv6-Test DNS 测试</a></h2> </header>
-                <div class="entry-content"> <p><img alt="ipv6-test" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185431.png"></p>
-<p>最近在折腾办公室的IPv6 环境，通过<a href="http://ipv6-test.com/">ipv6-test.com</a>测试的时候，对页面内的“DNS”的测试结果有点疑问。  </p>
-<ol>
-<li>DNS4 + IP6<ul>
-<li>Connectivity to an IPv6 address served by an IPv4-only name server</li>
-</ul>
-</li>
-<li>DNS6 …</li></ol> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2017/2017-08-30.html" rel="bookmark" title="Permalink to 基于OpenResty 的whoami.akaimai.net 实现">基于OpenResty 的whoami.akaimai.net 实现</a></h2> </header>
-                <div class="entry-content"> <p>上次收集整理[[获取Local DNS 地址信息]]) 的时候看到akamai 的<code>whoami.akamai.net</code>，想起之前看到<a href="https://twitter.com/agentzh/status/767963492850601985">agentzh</a> 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现 …</p> </div><!-- entry-content -->
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="bookmark" title="Permalink to ip_local_port_range 小问题">ip_local_port_range 小问题</a></h2> </header>
+                <div class="entry-content"> <p>发现系统打印了一条日志，类似<a href="https://access.redhat.com/solutions/2887631">redhat solution:2887631</a>：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">Jan</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="mi">14</span>:<span class="mi">37</span>:<span class="mi">22</span><span class="w"> </span><span class="nv">localhost</span><span class="w"> </span><span class="nv">kernel</span>:<span class="w"> </span><span class="nv">ip_local_port_range</span>:<span class="w"> </span><span class="nv">prefer</span><span class="w"> </span><span class="nv">different</span><span class="w"> </span><span class="nv">parity</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">start</span><span class="o">/</span><span class="k">end</span><span class="w"> </span><span class="nv">values</span>.
+</code></pre></div>
+
+<p>意思是建议将<code>/proc/sys/net/ipv4/ip_local_port_range</code> 的两个数设置一个 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

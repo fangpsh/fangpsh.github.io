@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>图片优化笔记 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-06-08.html" rel="bookmark"
+         title="Permalink to 图片优化笔记">图片优化笔记</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>这里说的图片优化，目标是想尽可能降低图片大小，但又要保证质量不错，非常矛盾。不过降低图片大小，可以剩一大笔流量钱，降低负载，还能提升用户体验，值得花点功夫。</p>
+<p>前端方面有一些关于图片加载速度的优化，例如CSS 画图，CSS 合并素材，甚至用CSS 把图片Base64 编码（不推荐），和这份笔记关系不大。</p>
+<h2>格式选择</h2>
+<p>不同的需求选择不同的格式, JPEG 能够满足的需求没必要选择PNG。</p>
+<p><img alt="format-tree" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155951.png"></p>
+<p>图片来源：<a href="http://jixianqianduan.com/frontend-weboptimize/2015/11/17/front-end-image-optmize.html">《web前端图片极限优化策略》</a>，原图是Google 的<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization">Image Optimization</a>。</p>
+<h3>WebP、SharpP</h3>
+<p>目前对于WebP 的支持已经很好了，所以新业务能够选择WebP，就选WebP。<br>
+豆瓣的相册切到了WebP，另外提供了一个让图片变清晰的思路：把图片尺寸拉大到2倍，然后缩小成1倍。<br>
+图片清晰度大大提升，还降低了图片大小：<code>2x WebP(73k) &lt; 1x JPG(119k)</code>，效果如下图（图片来源 豆瓣 波希米亚的日记）。</p>
+<p><img alt="douban.jpg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160002.png"></p>
+<p>不过采用WebP 之后，用户“另存为”不太方便，毕竟大家对PNG和JPEG 比较熟悉。</p>
+<p>豆瓣的WebP 实践：</p>
+<ul>
+<li><a href="https://www.douban.com/note/613447642/">《这个世界又美好了一点点——相册篇》</a></li>
+<li><a href="https://www.douban.com/note/616303673/">《这个世界又美好了一点点——日记篇》</a></li>
+</ul>
+<p>有趣的是，WebP 基于<a href="https://zh.wikipedia.org/wiki/VP8">VP8</a>，VP8 的下一代是<a href="https://zh.wikipedia.org/wiki/VP9">VP9</a>，VP9 的对手是<a href="https://zh.wikipedia.org/zh/%E9%AB%98%E6%95%88%E7%8E%87%E8%A7%86%E9%A2%91%E7%BC%96%E7%A0%81">HEVC/H.265</a>，<a href="https://zh.wikipedia.org/wiki/BPG">BGP</a> 基于HEVC，据说表现比WebP 好很多，不知为啥应用不多，因为专利？</p>
+<p>腾讯基于HEVC 搞出了一个SharpP 格式，听说秒天秒地，目前已在腾讯云CDN 上应用，不过接入的大都是腾讯自家的产品：</p>
+<p><img alt="SharpP.jpg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160018.png"></p>
+<p>图片模煳的没办法:( ，<br>
+图片来源：<a href="https://www.qcloud.com/community/article/164816001481011868">《图片流量节省大杀器：基于 CDN 的 sharpP 自适应图片技术实践》</a></p>
+<p>看起来确实不错，听说在移动端解码速度也很快，不过如此大规模使用估计花了不少专利费。第三方用户使用也不方便，得使用<a href="https://x5.tencent.com/tbs/">X5内核</a>，且只能用腾讯云的CDN，这样被活活绑死的事情，愿意的人应该不多。另外腾讯还搞了一个<a href="http://www.ifanr.com/832678">TPG</a>。</p>
+<p>不过各种专利之争，只会导致推广受阻，我们还是想想怎么优化JPEG 和PNG 吧。</p>
+<p>各种格式的介绍可以参考：<a href="http://jixianqianduan.com/frontend-weboptimize/2015/11/17/front-end-image-optmize.html">《web前端图片极限优化策略》</a>。</p>
+<h2>Yelp 的图片优化经验</h2>
+<p>写这篇笔记，也是因为看到Yelp 的一篇博文：<a href="https://engineeringblog.yelp.com/2017/06/making-photos-smaller.html">Making Photos Smaller Without Quality Loss</a>，然后延伸看了一些东西。
+Yelp 的优化围绕JPEG 和PNG，而且看起来很通用，值得学习。</p>
+<h3>用Pillow 优化图片</h3>
+<p>Yelp 用<a href="https://python-pillow.org/">Pillow </a>来保存图片，Pillow 支持<a href="http://pillow.readthedocs.io/en/4.1.x/handbook/image-file-formats.html?highlight=optimize">optimize</a>的参数：</p>
+<blockquote>
+<p>optimize
+If present and true, indicates that the encoder should make an extra pass over the image in order to select optimal encoder settings.</p>
+</blockquote>
+<p>另外也还有其他优化方式，例如大名鼎鼎的<a href="https://tinypng.com/">Tinypng</a>，<a href="https://zhitu.isux.us/">智图</a> 等。推荐Pillow，Pillow 的效果不差，而且开源、免费。</p>
+<h3>选择渐进式（Progressive） JPEG</h3>
+<p>常见的JPEG 有2种，基本式（Baseline）和渐进式（Progressive），明显的区别是前者从上至下加载，后者加载过程从模煳到清晰。参考下图：
+<img alt="progressive" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160342.png"></p>
+<p>渐进式一般会比基本式小一些，而且加载速度更快。</p>
+<p><img alt="speed" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160125.png"></p>
+<p>图片来源：<a href="http://www.zhangxinxu.com/wordpress/2013/01/progressive-jpeg-image-and-so-on/">《渐进式jpeg(progressive jpeg)图片及其相关》</a>。</p>
+<p>而且从用户体验上来说，从模煳到清晰比从空白展开到全部，前者体验更好。</p>
+<p>关于为何渐进式会更小，需要从JPEG 的原理说起（对这一块也一知半解），JPEG被按照8x8，从坐标变换，DCT 变换，重排列，最后量化，得到的结果左上角是大量正数，右下角聚集大量0，然后再Zig-Zag 扫描，再用霍夫曼编码压缩。渐进式的情况下，相当于分层了，前面的扫描包含着大量正数，后面的扫描关注更多细节，包含大量的0，这样导致0 一起出现的概率增加，从而更易于压缩。</p>
+<p>对此一知半解，看到DCT 变换，涉及到傅里叶变换，感觉高数都忘记了，惭愧，有兴趣的同学请自行阅读以下两份资料：</p>
+<ul>
+<li><a href="http://twins.ee.nctu.edu.tw/courses/soclab_04/lab_hw_pdf/proj1_jpeg_introduction.pdf">台湾国立交通大学电子工程系的一份实验手册：JPEG 简介</a></li>
+<li><a href="http://www.codingnow.com/2000/download/jpeg.txt">云风：JPEG 简易文档 V2.15</a></li>
+</ul>
+<h3>大尺寸的PNG 判断，然后转换为JPEG</h3>
+<p>PNG 无损压缩，体积都很大，所以能不用PNG 就不用，不过如果像Yelp 这种，用户会上传PNG 的话，例如iPhone 的屏幕截图保存的格式就是PNG，完全可以转换为JPEG。Yelp 遇到的问题是如果用户传的是LOGO 之类的，需要无损，就不能转换成JPEG，所以他们想了一个办法：<br>
+生成一份PNG 的缩略图，如果大于300KiB，再检查这个缩略图是否包含超过2^16 种不同的色彩。一般来说LOGO 的色彩都比较少和单一。</p>
+<h3>动态设置JPEG 质量因子（Quality）</h3>
+<p>JPEG 有一个质量因子，从0到100，表示图片的质量从差到好。Yelp 做了一个实验，发现在quality 在80~85 之间的时候，图片效果肉眼看基本没差别，<a href="https://zh.wikipedia.org/wiki/%E7%B5%90%E6%A7%8B%E7%9B%B8%E4%BC%BC%E6%80%A7">SSIM</a> 在0.9~0.95。SSIM 中文名称：结构相似性，用来判断两张图片的相似程度，拿一张压缩后的图片和原图比较，相似越高，说明失真越小，数学原理可以看维基百科，Yelp 用<a href="https://github.com/jterrace/pyssim/">pyssim</a>来计算SSIM。</p>
+<p><img alt="ssims-strategies" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160134.png"></p>
+<p>质量设置为80~85 之间某一个值的时候，SSIM 还能保持在0.9到0.95，多奇妙啊。Yelp 提供了一段脚本来找出图片合适的quality 值：<a href="https://gist.github.com/thebostik/cfc9f059459cfefd1f61134b48291436">dynamic_quality.py</a>，用类似二分法猜数字的方法:P。</p>
+<p>不过个人觉得对于一些色彩比较单一的图片，可以激进一点，例如从20~85 开始找最合适的压缩比。为什么色彩单一的可以调低质量呢，因为肉眼看不出来啊。所以是不是可以延伸一下，用大量的训练数据，用AI 的方法找到最合适的quality ？想起来Google之前推出的<a href="https://www.blog.google/products/google-plus/saving-you-bandwidth-through-machine-learning/">RAISR</a>，非常厉害。</p>
+<p><img alt="RAISR" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160144.png"></p>
+<p>扯远了。</p>
+<p>Yelp 博客提到的其他两篇相关文章，类似的思路，并且文中都有成型的开源工具：</p>
+<ul>
+<li><a href="https://codeascraft.com/2017/05/30/reducing-image-file-size-at-etsy/">Reducing Image File Size at Etsy</a></li>
+<li><a href="https://medium.com/@duhroach/reducing-jpg-file-size-e5b27df3257c">Reducing JPG File size</a></li>
+</ul>
+<h3>其他</h3>
+<ul>
+<li>用Mozjpeg 替代libjpeg-turbo 或 libjpeg，性能提升明显。</li>
+<li><a href="https://en.wikipedia.org/wiki/Chroma_subsampling">Subsampling</a></li>
+<li>尝试有损的PNG 编码</li>
+<li>SVG</li>
+<li>。。。</li>
+</ul>
+<p>目前，工作上没有实践的机会，纸上谈兵，希望以后有机会练手、实践。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-06-08T15:11:11+08:00">
+      Thu 08 June 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/image.html">image </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
