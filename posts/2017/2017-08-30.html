@@ -32,7 +32,7 @@
   <div id="toc">
   </div>     
   <div id="article-content" class="entry-content">
-    <p>上次收集整理[[获取Local DNS 地址信息]]) 的时候看到akamai 的<code>whoami.akamai.net</code>，想起之前看到<a href="https://twitter.com/agentzh/status/767963492850601985">agentzh</a> 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现。</p>
+    <p>上次收集整理[[170822 获取Local DNS 地址信息]]) 的时候看到akamai 的<code>whoami.akamai.net</code>，想起之前看到<a href="https://twitter.com/agentzh/status/767963492850601985">agentzh</a> 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现。</p>
 <p>找到agentzh 当时的 <a href="https://gist.github.com/agentzh/6c50d37510daef792ed220fa0d970393">gist</a>，第一次学习OpenResty ，决定照猫画虎。看起来要在OpenResty 里面接受dns 数据包，并且返回，需要用到<a href="https://github.com/openresty/stream-lua-nginx-module">stream-lua-nginx-module</a>这个模块，这里要注意的时候，截至目前(2017-08-30) master 分支还不支持 <code>ngx.req.udp_socket</code> ，agentzh 当时hack 的代码都在 bloody-dns-server 分支下面。</p>
 <h2>编译OpenResty</h2>
 <p>说来惭愧，编译OpenResty费了好大一番工夫。先是没有看清stream-lua-nginx-modele 的分支，直接用master 分支的编译，测试代码的时候直接返回 <code>ngx.req.udp_socket</code> 是空。</p>

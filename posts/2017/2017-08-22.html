@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>获取Local DNS 地址信息 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-08-22.html" rel="bookmark"
+         title="Permalink to 获取Local DNS 地址信息">获取Local DNS 地址信息</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>在网页中获取local dns 不太方便，看看大家是怎么做的。  </p>
+<h2>阿里云CDN 诊断工具</h2>
+<p>阿里云CDN提供的<a href="https://cdn.dns-detect.alicdn.com/https/doc.html">阿里昆仑用户诊断工具</a>：<br>
+<img alt="alicdn_local_dns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171842.png">  </p>
+<p>获取到local dns 的这个请求：</p>
+<div class="highlight"><pre><span></span><code>https://123-66-35-57-122894414.dns-detect.alicdn.com/api/cdnDetectHttps?method=commitDetectHttps&amp;detectId=122894414&amp;cb=jQuery110102821084573750223_1503489263656&amp;_=1503489263658
+
+一个奇怪的域名，每次访问都不一样：
+123-66-35-57-122894414.dns-detect.alicdn.com
+设备ID ：
+detectId=122894414
+</code></pre></div>
+
+<p>用户访问一个域名，浏览器给按照分配的local dns 发起dns 迭代查询，最后向域名的权威服务器名查询，最后这一步的时候可以得到local dns 的地址。</p>
+<p>如下图：</p>
+<p><img alt="microsoft-offical-course-20410c07-18-638" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171853.png"><br>
+<strong>图片来源：<a href="https://www.slideshare.net/gameaxt/microsoft-offical-course-20410c07">Microsoft Offical Course 20410C_07</a></strong></p>
+<p>要怎么把local dns 地址和用户对应起来呢？这就是前面那个奇怪的域名的作用，每次的域名都不同，当浏览器访问的时候，我们就可以根据这个唯一域名再结合域名服务器的信息，把对应的local dns 返回给用户。</p>
+<h2>腾讯华佗</h2>
+<p>腾讯的华佗分析系统<a href="http://utp.qq.com/">utp.qq.com</a>或<a href="http://ping.huatuo.qq.com/">ping.huatuo.qq.com</a>：<br>
+<img alt="qq_ldns_1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171906.png">  </p>
+<p>腾讯这服务现在好像挂了。。不过不妨碍我们分析它的原理。</p>
+<div class="highlight"><pre><span></span><code>http://utp.qq.com/getldns.php?d=
+1503491352464.1724.sngdia.imtmp.net
+</code></pre></div>
+
+<p>这个<code>imtmp.net</code> 的域名看下whois 信息，属于腾讯：<br>
+<img alt="imtmp.net" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171920.png"></p>
+<p>前面这个数字看着像时间戳，做法应该和阿里的做法一样，那用户对这个域名的查询在哪里呢。</p>
+<p>翻下代码：<br>
+<img alt="qq_ldns_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171939.png"></p>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">getDNS</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;/getldns.php?d=&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">dns_domain</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">ldndsip</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">saveDns</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">              </span><span class="nx">saveDns</span><span class="p">(</span><span class="nx">ldndsip</span><span class="p">);</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">    </span><span class="p">});</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">ldnsIMG</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;IMG&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">img</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">img</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">;</span>
+<span class="w">            </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">img</span><span class="p">);</span>
+<span class="w">            </span><span class="nx">dns_domain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000000</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;.sngdia.imtmp.net&quot;</span><span class="p">;</span>
+
+<span class="w">           </span><span class="nx">img</span><span class="p">.</span><span class="nx">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;http://&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">dns_domain</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;/s&#39;</span><span class="p">;</span>
+<span class="w">       </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+
+<p>果然和时间戳有关。翻下前面，也找到了这个图片的请求：<br>
+<img alt="qq_ldns_3" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171950.png"></p>
+<p>多此一举？</p>
+<h2>网易DNS 检测工具</h2>
+<p>网易也有一个<a href="https://nstool.netease.com/">DNS检测工具</a>：</p>
+<p><img alt="netease_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172004.png"></p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;</span><span class="n">GET</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">only</span><span class="o">-</span><span class="mi">425945</span><span class="o">-</span><span class="mi">183</span><span class="o">-</span><span class="mi">240</span><span class="o">-</span><span class="mi">25</span><span class="o">-</span><span class="mf">249.</span><span class="n">nstool</span><span class="o">.</span><span class="n">netease</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
+<span class="o">&gt;</span><span class="n">Response</span><span class="p">:</span><span class="w"> </span><span class="err">您好，尊敬的网易用户</span><span class="o">&lt;</span><span class="n">br</span><span class="o">&gt;</span><span class="err">您的</span><span class="n">IP地址信息</span><span class="p">:</span><span class="w"> </span><span class="mf">183.240</span><span class="o">.</span><span class="mf">25.249</span><span class="w"> </span><span class="err">广东省广州市移动</span><span class="o">&lt;</span><span class="n">br</span><span class="o">&gt;</span><span class="err">您的</span><span class="n">DNS地址信息</span><span class="p">:</span><span class="w"> </span><span class="mf">211.136</span><span class="o">.</span><span class="mf">209.212</span><span class="w"> </span><span class="err">广东省广州市移动</span><span class="o">&lt;</span><span class="n">br</span><span class="o">&gt;</span><span class="err">您的</span><span class="n">DNS设置正确</span>
+</code></pre></div>
+
+<p>也是类似的做法。</p>
+<h2>豆瓣用户检测工具</h2>
+<p>发现豆瓣也有一个<a href="http://doctor.douban.com/">检测工具</a>:<br>
+<img alt="douban_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172015.png"></p>
+<p>居然直接用阿里的接口。</p>
+<h2>whoami.akamai.net</h2>
+<p>akamai 提供了一个域名，直接ping 或者dig 就可以获取local dns地址，这个很酷，直接把local dns 当作查询结果返回：</p>
+<p><img alt="akamai_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172035.png"></p>
+<h2>Anycast</h2>
+<p>使用以上工具多次检测，如果会发现检测到的地址不同，可能是由于local dns 做了<a href="https://en.wikipedia.org/wiki/Anycast">Anycast</a>，或者有出口IP 有多个造成。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-08-22T00:00:00+08:00">
+      Tue 22 August 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/dns.html">dns </a><a href="https://fangpsh.github.io/tag/web.html">web </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
