@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>监控角度 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2020/2020-02-22.html" rel="bookmark"
+         title="Permalink to 监控角度">监控角度</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>监控哪些指标，一般是研发拍脑袋决定，要么是指标太多抓不住重点，给监控系统和运维人员带来很大压力。
+要么是遗漏关键指标，不能提前感知异常，或在故障出现时提供线索。</p>
+<p>面试时偶尔会问的一道题，候选人对某服务进行监控的话要考虑哪些指标。希望听到的回答，不仅全面，而且有体系，但是答案通常都杂乱无章、想一个是一个。</p>
+<p>分享下个人的总结。</p>
+<h2>对象</h2>
+<ul>
+<li>系统监控</li>
+<li>Linux 系统状态，包括软件、硬件，例如CPU、内存、Raid卡、温度等</li>
+<li>进程监控</li>
+<li>进程状态，例如进程状态，进程Crash事件、JVM FULL GC次数和耗时，JVM 各类堆栈大小等。</li>
+<li>这里的进程，不一定绝对是进程，而是进程脱离具体业务的指标，例如nginx 丢弃连接数，框架例如tomcat会暴露出与业务无关的指标。</li>
+<li>业务监控</li>
+<li>和具体业务相关</li>
+<li>例如 各类http 请求占比、耗时</li>
+</ul>
+<p>系统监控，一般系统运维会做好。不过在云上，这块细节变少，至少没有那么多硬件要监控。
+业务监控的角度一般不会漏，但是进程监控角度常常被忽略，或者也是因为两者界限不是很强。
+是“进程”还是“业务”，具体情况具体分析，例如一个基础服务，那么它的一些基础指标就是业务，例如Redis集群。</p>
+<h2>黄金指标</h2>
+<ul>
+<li>延迟（请求处理时间、响应时间）<ul>
+<li>服务器处理某个请求所需要的时间</li>
+<li>剔除非正常请求（限流、错误请求）以免误导，既然要剔除，那就也需要监控</li>
+<li>例如 http 请求时间99值</li>
+</ul>
+</li>
+<li>流量（请求qps、带宽速率、io速率、iops）</li>
+<li>针对系统负载锁所进行度量的指标</li>
+<li>错误</li>
+<li>单位时间内的失败量。</li>
+<li>不仅包含协议层面的，例如http 500，也包含业务层面的，例如登录失败。</li>
+<li>饱和度</li>
+<li>针对系统内~~最为~~受限资源的度量指标</li>
+<li>可以是系统层面的，例如磁盘容量、带宽容量，也可以是业务层面的，例如并发拉流数，并发在线人数。</li>
+<li>书里面针对饱和度有“最为”2个字，但是我认为“最为”是比较难以衡量的，对于一个负载的系统来说，受限的资源方方面面，不同场景下触发的上限可能不同。这里的指标，我认为其实只是一种角度，我们要做的只是需要针对饱和度进行设置监控指标。</li>
+</ul>
+<p>延迟这个指标非常有用，除了发现异常，还可用于预报异常（饱含度），，当延迟变高，往往以为接近性能拐点，饱含度异常。
+延迟指标还可用于性能监控，例如更新版本之后，延迟（http 响应时间99值）的变化。
+所以，不要忘记针对延迟设计监控。</p>
+<p>参考：<a href="https://landing.google.com/sre/sre-book/chapters/monitoring-distributed-systems/">《Google SRE 第六章》</a>#The Four Golden Signals</p>
+<h2>示例</h2>
+<p>某Nginx 静态文件服务，按以上角度，设置的部分指标。</p>
+<h4>对象</h4>
+<ul>
+<li>系统监控</li>
+<li>CPU 利用率、磁盘占有率、带宽、全连接队列、半连接队列等</li>
+<li>进程监控</li>
+<li>Nginx status模块暴露的指标：丢弃连接数、并发连接数</li>
+<li></li>
+</ul>
+<div class="highlight"><pre><span></span><code>Active connections: 291
+server accepts handled requests
+16630948 16630948 31070465
+Reading: 6 Writing: 179 Waiting: 106    
+</code></pre></div>
+
+<ul>
+<li>nginx error.log </li>
+<li>业务监控</li>
+<li>访问日志分析，状态码、响应时间等</li>
+</ul>
+<h4>黄金指标</h4>
+<ul>
+<li>延迟</li>
+<li>2xx 请求响应时间99值</li>
+<li>流量</li>
+<li>当前活跃连接数，http 请求qps</li>
+<li>当前机器带宽</li>
+<li>错误</li>
+<li>5xx 请求qps，该服务下一般不会出现</li>
+<li>404 请求qps，可能意味着文件同步失败</li>
+<li>nginx 拒绝连接数</li>
+<li>周期检测error.log 新日志</li>
+<li>饱和度</li>
+<li>磁盘容量，静态文件较多</li>
+<li>当前活跃连接数，距离nginx 设置的最大连接数</li>
+</ul>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2020-02-22T00:00:00+08:00">
+      Sat 22 February 2020
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2020.html">2020</a> Tagged <a href="https://fangpsh.github.io/tag/monitor.html">monitor </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

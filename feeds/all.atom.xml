@@ -546,7 +546,84 @@ config dhcp &amp;#39;lan&amp;#39;
 &lt;/blockquote&gt;
 &lt;p&gt;客户端和服务端都开启debug 模式，发现OpenSSH 在匹配AuthorizedKeysCommand 返回的公钥列表时，只要一读到匹配的公钥，就不会继续读了，应该是这个时候发送了一个信号，导致脚本退出状态异常。
 注释掉&lt;code&gt;set -e&lt;/code&gt;就正常了。&lt;/p&gt;
-&lt;p&gt;至于为什么就这个区域的机器部分机器有问题，能力和精力都不足，搞不清楚了:(&lt;/p&gt;</content><category term="2020"></category><category term="OpenSSH"></category></entry><entry><title>第二届中国SD-WAN 广告峰会参会感想</title><link href="https://fangpsh.github.io/posts/2019/2019-11-16.html" rel="alternate"></link><published>2019-11-16T00:00:00+08:00</published><updated>2019-11-16T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-11-16:/posts/2019/2019-11-16.html</id><summary type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162425.png"&gt;&lt;/p&gt;
+&lt;p&gt;至于为什么就这个区域的机器部分机器有问题，能力和精力都不足，搞不清楚了:(&lt;/p&gt;</content><category term="2020"></category><category term="OpenSSH"></category></entry><entry><title>监控角度</title><link href="https://fangpsh.github.io/posts/2020/2020-02-22.html" rel="alternate"></link><published>2020-02-22T00:00:00+08:00</published><updated>2020-02-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-02-22:/posts/2020/2020-02-22.html</id><summary type="html">&lt;p&gt;监控哪些指标，一般是研发拍脑袋决定，要么是指标太多抓不住重点，给监控系统和运维人员带来很大压力。
+要么是遗漏关 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;监控哪些指标，一般是研发拍脑袋决定，要么是指标太多抓不住重点，给监控系统和运维人员带来很大压力。
+要么是遗漏关键指标，不能提前感知异常，或在故障出现时提供线索。&lt;/p&gt;
+&lt;p&gt;面试时偶尔会问的一道题，候选人对某服务进行监控的话要考虑哪些指标。希望听到的回答，不仅全面，而且有体系，但是答案通常都杂乱无章、想一个是一个。&lt;/p&gt;
+&lt;p&gt;分享下个人的总结。&lt;/p&gt;
+&lt;h2&gt;对象&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;系统监控&lt;/li&gt;
+&lt;li&gt;Linux 系统状态，包括软件、硬件，例如CPU、内存、Raid卡、温度等&lt;/li&gt;
+&lt;li&gt;进程监控&lt;/li&gt;
+&lt;li&gt;进程状态，例如进程状态，进程Crash事件、JVM FULL GC次数和耗时，JVM 各类堆栈大小等。&lt;/li&gt;
+&lt;li&gt;这里的进程，不一定绝对是进程，而是进程脱离具体业务的指标，例如nginx 丢弃连接数，框架例如tomcat会暴露出与业务无关的指标。&lt;/li&gt;
+&lt;li&gt;业务监控&lt;/li&gt;
+&lt;li&gt;和具体业务相关&lt;/li&gt;
+&lt;li&gt;例如 各类http 请求占比、耗时&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;系统监控，一般系统运维会做好。不过在云上，这块细节变少，至少没有那么多硬件要监控。
+业务监控的角度一般不会漏，但是进程监控角度常常被忽略，或者也是因为两者界限不是很强。
+是“进程”还是“业务”，具体情况具体分析，例如一个基础服务，那么它的一些基础指标就是业务，例如Redis集群。&lt;/p&gt;
+&lt;h2&gt;黄金指标&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;延迟（请求处理时间、响应时间）&lt;ul&gt;
+&lt;li&gt;服务器处理某个请求所需要的时间&lt;/li&gt;
+&lt;li&gt;剔除非正常请求（限流、错误请求）以免误导，既然要剔除，那就也需要监控&lt;/li&gt;
+&lt;li&gt;例如 http 请求时间99值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;流量（请求qps、带宽速率、io速率、iops）&lt;/li&gt;
+&lt;li&gt;针对系统负载锁所进行度量的指标&lt;/li&gt;
+&lt;li&gt;错误&lt;/li&gt;
+&lt;li&gt;单位时间内的失败量。&lt;/li&gt;
+&lt;li&gt;不仅包含协议层面的，例如http 500，也包含业务层面的，例如登录失败。&lt;/li&gt;
+&lt;li&gt;饱和度&lt;/li&gt;
+&lt;li&gt;针对系统内~~最为~~受限资源的度量指标&lt;/li&gt;
+&lt;li&gt;可以是系统层面的，例如磁盘容量、带宽容量，也可以是业务层面的，例如并发拉流数，并发在线人数。&lt;/li&gt;
+&lt;li&gt;书里面针对饱和度有“最为”2个字，但是我认为“最为”是比较难以衡量的，对于一个负载的系统来说，受限的资源方方面面，不同场景下触发的上限可能不同。这里的指标，我认为其实只是一种角度，我们要做的只是需要针对饱和度进行设置监控指标。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;延迟这个指标非常有用，除了发现异常，还可用于预报异常（饱含度），，当延迟变高，往往以为接近性能拐点，饱含度异常。
+延迟指标还可用于性能监控，例如更新版本之后，延迟（http 响应时间99值）的变化。
+所以，不要忘记针对延迟设计监控。&lt;/p&gt;
+&lt;p&gt;参考：&lt;a href="https://landing.google.com/sre/sre-book/chapters/monitoring-distributed-systems/"&gt;《Google SRE 第六章》&lt;/a&gt;#The Four Golden Signals&lt;/p&gt;
+&lt;h2&gt;示例&lt;/h2&gt;
+&lt;p&gt;某Nginx 静态文件服务，按以上角度，设置的部分指标。&lt;/p&gt;
+&lt;h4&gt;对象&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;系统监控&lt;/li&gt;
+&lt;li&gt;CPU 利用率、磁盘占有率、带宽、全连接队列、半连接队列等&lt;/li&gt;
+&lt;li&gt;进程监控&lt;/li&gt;
+&lt;li&gt;Nginx status模块暴露的指标：丢弃连接数、并发连接数&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Active connections: 291
+server accepts handled requests
+16630948 16630948 31070465
+Reading: 6 Writing: 179 Waiting: 106    
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;nginx error.log &lt;/li&gt;
+&lt;li&gt;业务监控&lt;/li&gt;
+&lt;li&gt;访问日志分析，状态码、响应时间等&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;黄金指标&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;延迟&lt;/li&gt;
+&lt;li&gt;2xx 请求响应时间99值&lt;/li&gt;
+&lt;li&gt;流量&lt;/li&gt;
+&lt;li&gt;当前活跃连接数，http 请求qps&lt;/li&gt;
+&lt;li&gt;当前机器带宽&lt;/li&gt;
+&lt;li&gt;错误&lt;/li&gt;
+&lt;li&gt;5xx 请求qps，该服务下一般不会出现&lt;/li&gt;
+&lt;li&gt;404 请求qps，可能意味着文件同步失败&lt;/li&gt;
+&lt;li&gt;nginx 拒绝连接数&lt;/li&gt;
+&lt;li&gt;周期检测error.log 新日志&lt;/li&gt;
+&lt;li&gt;饱和度&lt;/li&gt;
+&lt;li&gt;磁盘容量，静态文件较多&lt;/li&gt;
+&lt;li&gt;当前活跃连接数，距离nginx 设置的最大连接数&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2020"></category><category term="monitor"></category></entry><entry><title>第二届中国SD-WAN 广告峰会参会感想</title><link href="https://fangpsh.github.io/posts/2019/2019-11-16.html" rel="alternate"></link><published>2019-11-16T00:00:00+08:00</published><updated>2019-11-16T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-11-16:/posts/2019/2019-11-16.html</id><summary type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162425.png"&gt;&lt;/p&gt;
 &lt;p&gt;从&lt;a href="https://www.sdnlab.com/"&gt;SDNLAB&lt;/a&gt; 知道&lt;a href="https://www.bagevent.com/event/5443171/p/314542"&gt;第二届 2019 中国SD-WAN峰会&lt;/a&gt;，报名了会前的培训。&lt;/p&gt;
 &lt;p&gt;因为从事运维工作，一直和网络打交道，对BGP、骨干网、PoP、PE、SDN、SD-WAN等名称知道一些，但是终究因为 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162425.png"&gt;&lt;/p&gt;
 &lt;p&gt;从&lt;a href="https://www.sdnlab.com/"&gt;SDNLAB&lt;/a&gt; 知道&lt;a href="https://www.bagevent.com/event/5443171/p/314542"&gt;第二届 2019 中国SD-WAN峰会&lt;/a&gt;，报名了会前的培训。&lt;/p&gt;
