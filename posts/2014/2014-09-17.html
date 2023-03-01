@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Debian 8 升级相关信息 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2014/2014-09-17.html" rel="bookmark"
+         title="Permalink to Debian 8 升级相关信息">Debian 8 升级相关信息</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <h2>Debian7-8更新与变化</h2>
+<h3>Debian Installer Jessie Alpha 1 release</h3>
+<p>2014年3月19号，debian installer jessie alpha 1发布，摘录部分更新与变化如下：</p>
+<ul>
+<li>apt-setup: Avoid hang due to interactive apt-cdrom<a href="https://bugs.debian.org/740673">#740673</a></li>
+<li>grub-installer: Support menu selection of GRUB boot disk<a href="https://bugs.debian.org/706112">#706112</a></li>
+<li>The ia64 architecture has been removed from the archive, and is no longer supported.</li>
+<li>The Linux kernel has been updated from 3.2 to 3.13.(注：debian 8的内核版本将为3.16)</li>
+</ul>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://www.debian.org/devel/debian-installer/News/2014/20140319">Releae NEWS</a></li>
+<li><a href="https://lists.debian.org/debian-devel-announce/2014/03/msg00009.html">Debian Installer Jessie Alpha 1 release</a></li>
+</ul>
+<h3>Linux Knernel</h3>
+<p>Debian 8 默认内核版本将为3.16。</p>
+<ul>
+<li><a href="http://www.phoronix.com/scan.php?page=news_item&amp;px=MTc1MDg">Debian 8.0 Jessie Is Settling For Linux 3.16</a></li>
+<li><a href="https://lists.debian.org/debian-kernel/2014/07/msg00361.html">Kernel version for jessie</a></li>
+</ul>
+<h3>Systemd</h3>
+<p><a href="https://wiki.debian.org/ReleaseGoals/systemd">Add native systemd support to every package shipping a sysvinit script</a></p>
+<p>Debian 8将采用systemd作为默认init系统,同时systemd将兼容Debian仓库中的所有包含sysv脚本的软件包。</p>
+<blockquote>
+<p>Native systemd support for every Debian package that currently contains sysv scripts.</p>
+</blockquote>
+<h4>debian 8 sysvinit与systemd的切换</h4>
+<p>目前debian testing（2014-07-29）仍然采用sysv作为默认init系统，需手动安装软件包等切换至systemd。</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
+
+$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>systemd<span class="w"> </span>
+
+<span class="c1">#安装 systemd-sysv 后自动将systemd配置为默认init系统，</span>
+<span class="c1">#同时移除sysvinit-core</span>
+$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>systemd-sysv<span class="w"> </span>
+
+$<span class="w"> </span>sudo<span class="w"> </span>reboot
+</code></pre></div>
+
+<p>重启之后，查看PID=1的进程是<code>/sbin/init</code>，再查看 <code>/sbin/init</code>会发现是<code>/lib/systemd/systemd</code>的软链接，至此，系统默认initsystem已切换至systemd。在debian 8 正式版发布之后，将采用systemd作为默认init系统，可能不需要用户手动切换。</p>
+<h4>systemd兼容性与注意事项</h4>
+<p>systemd的SySV兼容性内容请查看 详细介绍-系统管理-SysV兼容性一节，包含init script的注意事项等。</p>
+<p>注意事项：</p>
+<ul>
+<li>systemd定义了一批配置文件，请查看详细介绍-系统管理-规范化的配置文件一节。</li>
+<li>systemd中runlevel的概念被target替代，telinit与init命令仍可使用。关于target与启动顺序内容，请查看详细介绍-系统管理-Target和Dependency based bootup 一节 与启动分析一节。<ul>
+<li>注：使用systemd之后/etc/initab被忽略，所以修改此文件中的runlevel并不能起效。</li>
+</ul>
+</li>
+<li>debian with systemd下，service命令依然可用，但是service实际上是调用systemctl命令，详情请查看详细介绍-系统管理-SysV兼容性一节。<ul>
+<li>注：<code>service foobar status</code>将返回systemctl类型的status内容，不再是<code>foobar is runing .</code>此类输出。</li>
+<li>建议使用systemctl命令或service命令，不建议使用<code>/etc/init.d/&lt;service&gt;</code>，因为后者无法处理sysv init文件被移除的状况。</li>
+</ul>
+</li>
+<li>service 单元执行的时候没有附带任何上下文环境,甚至没有进行 $HOME 目录的设置。对这些有依赖的启动脚本将无法正常工作。</li>
+<li><code>/etc/rc.local</code>依然可用，见<code>/lib/systemd/system/rc-local.service</code> 单元文件。</li>
+<li>update-rc.d 命令依旧可用，但是注意：start与stop选项不再被支持。查看<code>/usr/sbin/update-rc.d</code>文件，可发现其对/etc/init.d/的处理部分以及针对systemd的service的处理部分。<ul>
+<li><code>systemctl enable/disable</code>命令实际上调用update-rc.d命令。若不存在service单元文件，将对<code>/etc/init.d/&lt;service&gt;</code>下的脚本链接到<code>/etc/rcN.d/</code>目录下。若是service单元存在，将依照单元文件中[Install]中的内容将单元文件链接到对应的wants文件夹中。<blockquote>
+<p>update-rc.d(8) should enable/disable systemd services in addition to creating the sysvinit links. update-rc.d is usually called from maintscripts, but enable/disable is typically used by the system administrator.
+systemctl enable/disable should also call update-rc.d</p>
+</blockquote>
+</li>
+<li><a href="https://wiki.debian.org/systemd/Integration">systemd Integration</a></li>
+<li>注：update-rc.d中 default 等同于"start 2 3 4 5 . stop 0 1 6 ."，<code>update-rc.d foobar defaults</code> ，注意default是否与脚本中LSB部分指定的Start与Stop存在冲突。</li>
+</ul>
+</li>
+<li>注意：systemd不支持交互式启动脚本，例如Debian‘s X-Interactive in the LSB header。</li>
+<li>debian testing中的systemd的coredumpctl不可用，打包时候<code>--disable-coredump</code>,原因不明。</li>
+<li>默认情况下systemd的日志journal的磁盘存储需要手动创建目录，否则重启将丢失日志记录，请查看详细介绍日志管理-日志的记录等-日志存储一节。</li>
+</ul>
+<h4>本节参考链接</h4>
+<ul>
+<li><a href="http://www.phoronix.com/scan.php?page=news_item&amp;px=MTYwMDQ">Systemd Is The Future Of Debian</a></li>
+<li><a href="https://wiki.debian.org/Debate/initsystem/systemd">Debate initsystem systemd</a></li>
+<li><a href="https://wiki.debian.org/systemd">Debian Wiki:systemd</a></li>
+</ul>
+<h3>Clang</h3>
+<blockquote>
+<p>Clang support as a secondary compiler.</p>
+</blockquote>
+<p>goal:<a href="https://wiki.debian.org/ReleaseGoals/clang-secondary-compiler">Clang as a second compiler</a></p>
+<p>一方面由于Clang相对于GCC有更多特性（模块化设计、更快的编译速度、编译过程占用内存低、编译中间产物和最终链接产物大幅减少、编译错误提示友好等等），另一方面由于Clang目前已足够稳定与优秀，所以 Debian 8支持Clang作为辅助编译器。</p>
+<p>Debian 仓库中的软件包正被重新用Clang进行编译打包，进度与详情请查看 <a href="http://clang.debian.net/">clang.debian.net</a>。</p>
+<ul>
+<li><a href="http://clang.debian.net/">clang.debian.net</a></li>
+<li><a href="https://wiki.debian.org/llvm-clang">llvm-clang</a></li>
+<li><a href="http://www.phoronix.com/scan.php?page=news_item&amp;px=MTA2NjQ">LLVM's Clang Is Almost Good Enough For Debian</a></li>
+<li><a href="http://www.phoronix.com/scan.php?page=news_item&amp;px=MTI5ODc">Debian Is Still Being Made To Build With LLVM/Clang</a></li>
+</ul>
+<h3>Piuparts clean archive</h3>
+<p>Piuparts是一个deb打包的质量检测工具，在debian 8中要求所有软件包必须通过picparts的相关检测。</p>
+<p>Piuparts介绍：</p>
+<blockquote>
+<p>piuparts is a tool for automatic testing of whether a package can be installed, upgraded, and removed. Like [Lintian], it is useful to run in a centralized fashion, in addition to each package maintainer running it manually.</p>
+</blockquote>
+<p>Debian 8需要达到以下目标：</p>
+<blockquote>
+<p>All packages should pass the piuparts tests, IOW that installation (and upgrade) of a package (within the test setup on piuparts.d.o) works fine and also that it purges cleanly.</p>
+</blockquote>
+<ul>
+<li><a href="https://wiki.debian.org/piuparts">Debian wiki:piuparts</a></li>
+<li><a href="https://wiki.debian.org/ReleaseGoals/piuparts">ReleaseGoals piuparts</a></li>
+</ul>
+<h3>UTF-8 support</h3>
+<p><a href="https://wiki.debian.org/ReleaseGoals/utf-8">UTF-8 support</a></p>
+<p>four sub-goals:</p>
+<ul>
+<li>all programs should, in their default configuration, accept UTF-8 input and pass it through uncorrupted. Having to manually specify encoding is acceptable only in a programmatic interface, GUI/std{in,out,err}/ command line/plain files should work with nothing but LC_CTYPE.  </li>
+<li>all GUI/curses/etc programs should be able to display UTF-8 output where appropriate</li>
+<li>all file names in source and binary packages must be valid UTF-8</li>
+<li>all text files should be encoded in UTF-8 </li>
+</ul>
+<h3>SELinux support</h3>
+<p><a href="https://wiki.debian.org/ReleaseGoals/SELinux">Goal：</a></p>
+<p>Allow the users to enable SELinux enforcing mode on their machine without too much hassle.</p>
+<ul>
+<li>Improve the SELinux reference policy, this is currently being worked out with upstream.</li>
+<li>Be sure that when a init/maintainer script is creating a file/directory the label on disk is properly (re)set.</li>
+<li>Be sure that SELinux aware applications have SELinux support enabled and that's it's working properly</li>
+</ul>
+<p>debain 8只是将改进对SELinux的支持，目标如上。
+debian 8还不会默认启用SELinux，debian testing上目前默认未安装SELinux系统所需的软件包（除了libselinux1：SELinux runtime shared libraries）。</p>
+<h3>其他</h3>
+<p>请参考<a href="https://wiki.debian.org/ReleaseGoals">Release Goals</a></p>
+<ul>
+<li>Hardening of ELF binaries (carry over from Wheezy)</li>
+<li>Debian/rules to honor CC/CXX flags<ul>
+<li>This goal aims to make sure that any package in the archive could be rebuild with the command CC=foo CXX=bar dpkg-buildpackage.</li>
+</ul>
+</li>
+<li>Cross toolchains in the archive</li>
+<li>Make the base system cross-buildable</li>
+<li>注意：debian testing 默认关闭root用户ssh远程登录</li>
+<li>debian testing安装流程基本无变化。若不使用网络源，taskel仅有且默认选中Debian desktop environment与Standard systemd utilities；若使用网络源，taskel默认选中Debiandesktop 、print server与standard systemd utilities。</li>
+<li>注：由于debian jessie目前未冻结，关于软件包版本变化的调查未进行。</li>
+<li><a href="https://packages.debian.org/search?keywords=mysql-server">package mysql-server</a>：wheezy(stable):5.5.38-0,jessie(testing):5.5.37-1, </li>
+</ul>
+<h3>本节参考链接</h3>
+<ul>
+<li><a href="https://lists.debian.org/debian-devel-announce/2013/10/msg00004.html">Bits from the Release Team (Jessie freeze info)</a></li>
+<li><a href="http://www.phoronix.com/scan.php?page=news_item&amp;px=MTQ4NTA">Debian 8.0 To Be Frozen, Features Announced</a></li>
+</ul>
+<h2>Debian 8 升级注意事项</h2>
+<h3>rc.local拆分为service单元</h3>
+<p>目前<code>/etc/rc.local</code>文件依旧可用，systemd存在默认的rc-local.service单元。</p>
+<p>往rc.local文件中写入大量的启动初始化语句会导致rc.local难以维护与管理。参考systemd默认提供的rc-local.service单元，我们可以将原本写入的rc.local文件合理的拆分为多个文件，
+例如rc-route.local，rc-screensaveroff.local等，与rc.local同样，将这些local文件<code>chmod +x</code>。然后在<code>/etc/systemd/system</code>下创建类似<code>rc-local.service</code>的单元文件，
+例如<code>rc-route.service</code>,<code>rc-screensaveoff.service</code>等，service文件的编写请查看 详细介绍--进程管理--服务进程管理一节，以及参考<code>rc-local.service</code>文件。
+编写好service文件之后，重载systemd进程，然后<code>systemctl enable</code>这些service即可，后续若需要禁用或修改某些启动脚本，只需配置对应单元以及脚本即可。</p>
+<h3>Debian testing  systemd-208-6 CONFFLAGS</h3>
+<p>请关注systemd源码包下rules文件中 disable 的模块或功能，例如 coredump：</p>
+<div class="highlight"><pre><span></span><code><span class="err">...</span>
+<span class="nv">CONFFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--with-rootprefix<span class="o">=</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--with-rootlibdir<span class="o">=</span>/lib/<span class="k">$(</span>DEB_HOST_MULTIARCH<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--with-sysvinit-path<span class="o">=</span>/etc/init.d<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--with-sysvrcnd-path<span class="o">=</span>/etc<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--with-firmware-path<span class="o">=</span>/lib/firmware<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--with-debug-shell<span class="o">=</span>/bin/bash<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--with-telinit<span class="o">=</span>/lib/sysvinit/telinit<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--enable-tcpwrap<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--disable-coredump<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--disable-efi<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--disable-myhostname<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--disable-vconsole<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--disable-silent-rules
+<span class="cp">ifeq (,$(findstring stage1,$(DEB_BUILD_PROFILES)))</span>
+<span class="nv">CONFFLAGS</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span>--enable-libcryptsetup
+<span class="cp">endif</span>
+
+<span class="nv">CONFFLAGS_deb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--enable-selinux<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--enable-introspection<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--enable-gtk-doc
+<span class="err">...</span>
+</code></pre></div>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2014-09-17T17:42:30+08:00">
+      Wed 17 September 2014
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2014.html">2014</a> Tagged <a href="https://fangpsh.github.io/tag/systemd.html">Systemd </a><a href="https://fangpsh.github.io/tag/debian.html">Debian </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

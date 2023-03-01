@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>关闭服务器节能模式 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-09-20.html" rel="bookmark"
+         title="Permalink to 关闭服务器节能模式">关闭服务器节能模式</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>不少服务器出厂默认是开启节能模式，会有很多“坑”，例如意外宕机。我不清楚这些坑现在还是否存在，或者该怎样绕过去，也不想花费这个精力。
+反正都是租用的服务器，完全不用操心电费；租机柜托管的，好像也不会另外算电费。没有BAT 量级的机器，没必要花功夫研究细节，关了即可。</p>
+<p>让BIOS 接管电源管理，跑在最佳性能，整理下常见厂商的关闭步骤。</p>
+<h2>Dell</h2>
+<p>Dell 的iDrac：BIOS》System Profile Settings》Performance</p>
+<p>BIOS 中设置：
+<img alt="idrac_bios" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161317.png"></p>
+<p>iDrac Web 中设置：
+<img alt="idrac_web1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161326.png"></p>
+<p><img alt="idrac_web2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161338.png"></p>
+<p>参考资料：</p>
+<ul>
+<li><a href="http://jaseywang.me/2013/09/22/nix-下-cpu-的能耗控制/">《*NIX 下 CPU 的能耗控制》</a>  </li>
+<li>
+<p>说了这么多，其实完全没有必要这么做，前提的是你的机器数量在五位数以下，我估计大陆 p99 的互联网都是这个量级以下的，创业公司就更普遍了。<br>
+ 因此，最简单的办法是，将 BIOS 设置成 "Performance"(memory freq sets to max, memory patrol scrub sets to standard mode, memory fresh rate sets to 1x, memory operating voltage sets to auto, turbo boost enabled and C1E&amp;C-states disabled) 模式。</p>
+</li>
+<li><a href="http://crtech.tips/performance-mode-omsa/">PERFORMANCE MODE – OMSA</a></li>
+</ul>
+<h2>浪潮/华为</h2>
+<p>浪潮和华为的服务器大多用的<a href="https://ami.com/">AMI BIOS </a>，设置上差不多：
+<img alt="ami_bios1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161352.png"></p>
+<p><img alt="ami_bios2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161403.png"></p>
+<p>Power Techology 选中Performance ，或者选中 Custom，再手动调整。</p>
+<p>Power Policy Select 电源策略选择，菜单选项为：</p>
+<ul>
+<li>Efficiency（节能模式）：效率优先，启用后是低性能低功耗模式，此模式可确保降低系统的功耗。</li>
+<li>Performance（性能模式）：性能优先，启用后是高性能高功耗模式。</li>
+<li>Custom（自定义）：用户自定义模式，兼顾性能、延迟和能耗。建议配置CPU运行在标准频率。</li>
+</ul>
+<p>BIOS -&gt; chipset -&gt; Energy Performance Tunning</p>
+<ul>
+<li>Energy Performance Tunning 选中BIOS</li>
+<li>Energy PerformanceBIAS 选中Performance</li>
+<li>Workload Configuration 选中Balanced</li>
+</ul>
+<p>CPU P State Control</p>
+<ul>
+<li>EIST 选中Disabled</li>
+<li>Turbo Mode 选中Enable</li>
+</ul>
+<p>CPU C State Control</p>
+<ul>
+<li>Package C State limit 选中C0/C1 state</li>
+<li>CPU C3 report 选中Disabled</li>
+<li>CPU C6 report 选中Disabled</li>
+<li>Enhanced Halt State (C1E) 选中Disabled</li>
+</ul>
+<p>ACPI T-States 选中Disbaled</p>
+<p><img alt="bmc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161415.png"></p>
+<p>参考资料：</p>
+<ul>
+<li><a href="http://support.huawei.com/enterprise/zh/doc/EDOC1000039566?section=j014">华为服务器 Brickland平台 BIOS：Advanced Power Management Configuration</a></li>
+<li><a href="http://www.4008600011.com/archives/3542">SA5212M4 BIOS设置</a></li>
+<li><a href="http://www.4008600011.com/archives/12499#Advanced_Power_Management_Configuration">SA5212M5-BIOS设置</a></li>
+</ul>
+<h2>HP</h2>
+<p><img alt="hp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161426.png"></p>
+<p>System Profiles 选择：Maxium Performance（最高性能）</p>
+<p>iLo 设置：</p>
+<p><img alt="iLo_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161437.png"></p>
+<p>BIOS 设置：</p>
+<p><img alt="hp_bios" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161445.png"></p>
+<p><img alt="hp_bios2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161454.png"></p>
+<h2>IBM</h2>
+<p>IBM 的服务器没接触过，不过都差不多，IBM 的管理卡似乎叫<a href="https://www.ibm.com/support/knowledgecenter/TI0003N/p8hat/p8hat_partitioningwithanhmc.htm">HMC</a>：</p>
+<blockquote>
+<p>启用固定最大频率模式：使处理器频率设置为可以指定的固定值。此选项允许您设置处理器频率的最大限制和系统的功耗。</p>
+</blockquote>
+<p><img alt="hmc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161506.png"></p>
+<p>参考资料：</p>
+<ul>
+<li><a href="https://www.ibm.com/support/knowledgecenter/zh/POWER8/p8ha1/11powermanagementtask.htm">IBM Knowledge Center - 电源管理</a></li>
+<li><a href="https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Power%20Systems/page/POWER9%20EnergyScale%20-%20Configuration%20&amp;%20Management">POWER9 EnergyScale - Configuration &amp; Management</a></li>
+<li><a href="http://www-01.ibm.com/support/docview.wss?uid=isg3T1025318">Change Power Management settings</a></li>
+</ul>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-09-20T00:00:00+08:00">
+      Thu 20 September 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/fu-wu-qi.html">服务器 </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

@@ -86,20 +86,18 @@
 <li>DNS6 …</li></ol> </div><!-- entry-content -->
         </article>
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-09-20.html" rel="bookmark" title="Permalink to 关闭服务器节能模式">关闭服务器节能模式</a></h2> </header>
+                <div class="entry-content"> <p>不少服务器出厂默认是开启节能模式，会有很多“坑”，例如意外宕机。我不清楚这些坑现在还是否存在，或者该怎样绕过去，也 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="bookmark" title="Permalink to echo 输出导致SCP 失效的问题">echo 输出导致SCP 失效的问题</a></h2> </header>
                 <div class="entry-content"> <p>搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启<code>ForwardAgent</code>，跳板机上创建<code>SSH_AUTH_SOCK</code>，透传私钥。然而常常有用户在 …</p> </div><!-- entry-content -->
         </article>
         <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="bookmark" title="Permalink to 《HTTP/2 基础教程》读书笔记">《HTTP/2 基础教程》读书笔记</a></h2> </header>
-                <div class="entry-content"> <p><img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"></p>
-<p>最近拿到一本新书：<a href="https://book.douban.com/subject/27665112/">《HTTP/2 基础教程》</a>，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-01-25.html" rel="bookmark" title="Permalink to drop_caches">drop_caches</a></h2> </header>
-                <div class="entry-content"> <p><img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png">
-<a href="https://www.linuxatemyram.com">Don't Panic! Your ram is fine!</a></p>
-<h2>问题排查</h2>
-<p>一台机器的CPU iowait 非常高，perf 分析发现耗时都在<code>isolate_freepages_block</code> 函数，iostat 看系统盘的iops 也达到瓶颈，free 查看机器内 …</p> </div><!-- entry-content -->
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-05-07.html" rel="bookmark" title="Permalink to OpenLDAP 的SSHA">OpenLDAP 的SSHA</a></h2> </header>
+                <div class="entry-content"> <p><img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"></p>
+<p>最近折腾了一下<a href="https://www.openldap.org">OpenLDAP</a>，密码用的哈希算法是SSHA，SSHA 其实就是加盐的<a href="https://zh.wikipedia.org/zh/SHA-1">SHA1</a>：<code>salted SHA1</code>，加盐增加了利用彩虹表碰撞的难度。</p>
+<p>摘一段官网<a href="https://www.openldap.org/faq/data/cache/347.html">FAQ …</a></p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

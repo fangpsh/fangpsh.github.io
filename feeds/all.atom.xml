@@ -682,7 +682,82 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;/ol&gt;
 &lt;p&gt;所以，如果你是IPv4 网络的话，1、3 测试肯定是失败的，IPv6 不通嘛，但是2 可能能够成功，因为你的local dns 出口可能是能够访问IPv6 环境的，如果不行的话，换成&lt;code&gt;8.8.8.8&lt;/code&gt; 试一试？&lt;/p&gt;
 &lt;p&gt;我在电信的IPv6 环境下测试发现3 失败了，电信还没给IPv6 的DNS，默认的IPv4 的DNS 也不能访问到纯IPv6 环境的权威服务器，手动加个Google 的&lt;code&gt;2001:4860:4860::8888&lt;/code&gt; 就好了。&lt;/p&gt;
-&lt;p&gt;IPv6 要推广了，相关的一堆基础知识得抓紧补了，地址格式、SLAAC、DHCPv6、ICMPv6...想起大学计网老师居然自动跳过了IPv6 这一章！&lt;/p&gt;</content><category term="2018"></category><category term="ipv6"></category><category term="dns"></category><category term="network"></category></entry><entry><title>echo 输出导致SCP 失效的问题</title><link href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="alternate"></link><published>2018-08-11T00:00:00+08:00</published><updated>2018-08-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-11:/posts/2018/2018-08-11.html</id><summary type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在本地没有正确配置，导致上了跳板机之后，再SSH 就会失败，于是我在跳板机的&lt;code&gt;.bashrc&lt;/code&gt; 上写了一段检测脚本，如果变量&lt;code&gt;$SSH_AUTH_SOCK&lt;/code&gt; 不存在，就引导用户去看Wiki，不要烦我啦！&lt;/p&gt;
+&lt;p&gt;IPv6 要推广了，相关的一堆基础知识得抓紧补了，地址格式、SLAAC、DHCPv6、ICMPv6...想起大学计网老师居然自动跳过了IPv6 这一章！&lt;/p&gt;</content><category term="2018"></category><category term="ipv6"></category><category term="dns"></category><category term="network"></category></entry><entry><title>关闭服务器节能模式</title><link href="https://fangpsh.github.io/posts/2018/2018-09-20.html" rel="alternate"></link><published>2018-09-20T00:00:00+08:00</published><updated>2018-09-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-09-20:/posts/2018/2018-09-20.html</id><summary type="html">&lt;p&gt;不少服务器出厂默认是开启节能模式，会有很多“坑”，例如意外宕机。我不清楚这些坑现在还是否存在，或者该怎样绕过去，也 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;不少服务器出厂默认是开启节能模式，会有很多“坑”，例如意外宕机。我不清楚这些坑现在还是否存在，或者该怎样绕过去，也不想花费这个精力。
+反正都是租用的服务器，完全不用操心电费；租机柜托管的，好像也不会另外算电费。没有BAT 量级的机器，没必要花功夫研究细节，关了即可。&lt;/p&gt;
+&lt;p&gt;让BIOS 接管电源管理，跑在最佳性能，整理下常见厂商的关闭步骤。&lt;/p&gt;
+&lt;h2&gt;Dell&lt;/h2&gt;
+&lt;p&gt;Dell 的iDrac：BIOS》System Profile Settings》Performance&lt;/p&gt;
+&lt;p&gt;BIOS 中设置：
+&lt;img alt="idrac_bios" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161317.png"&gt;&lt;/p&gt;
+&lt;p&gt;iDrac Web 中设置：
+&lt;img alt="idrac_web1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161326.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="idrac_web2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161338.png"&gt;&lt;/p&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://jaseywang.me/2013/09/22/nix-下-cpu-的能耗控制/"&gt;《*NIX 下 CPU 的能耗控制》&lt;/a&gt;  &lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;说了这么多，其实完全没有必要这么做，前提的是你的机器数量在五位数以下，我估计大陆 p99 的互联网都是这个量级以下的，创业公司就更普遍了。&lt;br&gt;
+ 因此，最简单的办法是，将 BIOS 设置成 "Performance"(memory freq sets to max, memory patrol scrub sets to standard mode, memory fresh rate sets to 1x, memory operating voltage sets to auto, turbo boost enabled and C1E&amp;amp;C-states disabled) 模式。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://crtech.tips/performance-mode-omsa/"&gt;PERFORMANCE MODE – OMSA&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;浪潮/华为&lt;/h2&gt;
+&lt;p&gt;浪潮和华为的服务器大多用的&lt;a href="https://ami.com/"&gt;AMI BIOS &lt;/a&gt;，设置上差不多：
+&lt;img alt="ami_bios1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161352.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ami_bios2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161403.png"&gt;&lt;/p&gt;
+&lt;p&gt;Power Techology 选中Performance ，或者选中 Custom，再手动调整。&lt;/p&gt;
+&lt;p&gt;Power Policy Select 电源策略选择，菜单选项为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Efficiency（节能模式）：效率优先，启用后是低性能低功耗模式，此模式可确保降低系统的功耗。&lt;/li&gt;
+&lt;li&gt;Performance（性能模式）：性能优先，启用后是高性能高功耗模式。&lt;/li&gt;
+&lt;li&gt;Custom（自定义）：用户自定义模式，兼顾性能、延迟和能耗。建议配置CPU运行在标准频率。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BIOS -&amp;gt; chipset -&amp;gt; Energy Performance Tunning&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Energy Performance Tunning 选中BIOS&lt;/li&gt;
+&lt;li&gt;Energy PerformanceBIAS 选中Performance&lt;/li&gt;
+&lt;li&gt;Workload Configuration 选中Balanced&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CPU P State Control&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;EIST 选中Disabled&lt;/li&gt;
+&lt;li&gt;Turbo Mode 选中Enable&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CPU C State Control&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Package C State limit 选中C0/C1 state&lt;/li&gt;
+&lt;li&gt;CPU C3 report 选中Disabled&lt;/li&gt;
+&lt;li&gt;CPU C6 report 选中Disabled&lt;/li&gt;
+&lt;li&gt;Enhanced Halt State (C1E) 选中Disabled&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ACPI T-States 选中Disbaled&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161415.png"&gt;&lt;/p&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://support.huawei.com/enterprise/zh/doc/EDOC1000039566?section=j014"&gt;华为服务器 Brickland平台 BIOS：Advanced Power Management Configuration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.4008600011.com/archives/3542"&gt;SA5212M4 BIOS设置&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.4008600011.com/archives/12499#Advanced_Power_Management_Configuration"&gt;SA5212M5-BIOS设置&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;HP&lt;/h2&gt;
+&lt;p&gt;&lt;img alt="hp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161426.png"&gt;&lt;/p&gt;
+&lt;p&gt;System Profiles 选择：Maxium Performance（最高性能）&lt;/p&gt;
+&lt;p&gt;iLo 设置：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="iLo_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161437.png"&gt;&lt;/p&gt;
+&lt;p&gt;BIOS 设置：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="hp_bios" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161445.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="hp_bios2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161454.png"&gt;&lt;/p&gt;
+&lt;h2&gt;IBM&lt;/h2&gt;
+&lt;p&gt;IBM 的服务器没接触过，不过都差不多，IBM 的管理卡似乎叫&lt;a href="https://www.ibm.com/support/knowledgecenter/TI0003N/p8hat/p8hat_partitioningwithanhmc.htm"&gt;HMC&lt;/a&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;启用固定最大频率模式：使处理器频率设置为可以指定的固定值。此选项允许您设置处理器频率的最大限制和系统的功耗。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img alt="hmc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161506.png"&gt;&lt;/p&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.ibm.com/support/knowledgecenter/zh/POWER8/p8ha1/11powermanagementtask.htm"&gt;IBM Knowledge Center - 电源管理&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Power%20Systems/page/POWER9%20EnergyScale%20-%20Configuration%20&amp;amp;%20Management"&gt;POWER9 EnergyScale - Configuration &amp;amp; Management&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www-01.ibm.com/support/docview.wss?uid=isg3T1025318"&gt;Change Power Management settings&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="服务器"></category></entry><entry><title>echo 输出导致SCP 失效的问题</title><link href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="alternate"></link><published>2018-08-11T00:00:00+08:00</published><updated>2018-08-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-11:/posts/2018/2018-08-11.html</id><summary type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在本地没有正确配置，导致上了跳板机之后，再SSH 就会失败，于是我在跳板机的&lt;code&gt;.bashrc&lt;/code&gt; 上写了一段检测脚本，如果变量&lt;code&gt;$SSH_AUTH_SOCK&lt;/code&gt; 不存在，就引导用户去看Wiki，不要烦我啦！&lt;/p&gt;
 &lt;p&gt;用了一段时间，有用户发现scp 文件到跳板机时会失败，Google 一下：&lt;a href="https://stackoverflow.com/questions/12440287/scp-doesnt-work-when-echo-in-bashrc"&gt;SCP doesn't work when echo in .bashrc?&lt;/a&gt;，怎么判断当前会话是scp？：&lt;a href="https://superuser.com/questions/690735/can-i-tell-if-im-in-an-scp-session-in-my-bashrc"&gt;Can I tell if I'm in an scp session in my .bashrc?&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;改下脚本：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$PS1&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-z&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$SSH_AUTH_SOCK&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;then&lt;/span&gt;
@@ -695,7 +770,82 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;搞定！&lt;/p&gt;</content><category term="2018"></category><category term="SSH"></category><category term="linux"></category></entry><entry><title>《HTTP/2 基础教程》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="alternate"></link><published>2018-02-06T00:00:00+08:00</published><updated>2018-02-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-02-06:/posts/2018/2018-02-06.html</id><summary type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;搞定！&lt;/p&gt;</content><category term="2018"></category><category term="SSH"></category><category term="linux"></category></entry><entry><title>OpenLDAP 的SSHA</title><link href="https://fangpsh.github.io/posts/2018/2018-05-07.html" rel="alternate"></link><published>2018-05-07T00:00:00+08:00</published><updated>2018-05-07T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-05-07:/posts/2018/2018-05-07.html</id><summary type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"&gt;&lt;/p&gt;
+&lt;p&gt;最近折腾了一下&lt;a href="https://www.openldap.org"&gt;OpenLDAP&lt;/a&gt;，密码用的哈希算法是SSHA，SSHA 其实就是加盐的&lt;a href="https://zh.wikipedia.org/zh/SHA-1"&gt;SHA1&lt;/a&gt;：&lt;code&gt;salted SHA1&lt;/code&gt;，加盐增加了利用彩虹表碰撞的难度。&lt;/p&gt;
+&lt;p&gt;摘一段官网&lt;a href="https://www.openldap.org/faq/data/cache/347.html"&gt;FAQ …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"&gt;&lt;/p&gt;
+&lt;p&gt;最近折腾了一下&lt;a href="https://www.openldap.org"&gt;OpenLDAP&lt;/a&gt;，密码用的哈希算法是SSHA，SSHA 其实就是加盐的&lt;a href="https://zh.wikipedia.org/zh/SHA-1"&gt;SHA1&lt;/a&gt;：&lt;code&gt;salted SHA1&lt;/code&gt;，加盐增加了利用彩虹表碰撞的难度。&lt;/p&gt;
+&lt;p&gt;摘一段官网&lt;a href="https://www.openldap.org/faq/data/cache/347.html"&gt;FAQ&lt;/a&gt;的perl代码：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#! /usr/bin/perl&lt;/span&gt;
+&lt;span class="c1"&gt;#&lt;/span&gt;
+&lt;span class="c1"&gt;# This small script generates an Seeded SHA1 hash of &amp;#39;secret&amp;#39;&lt;/span&gt;
+&lt;span class="c1"&gt;# (using the seed &amp;quot;salt&amp;quot;) for use as a userPassword or rootpw value.&lt;/span&gt;
+&lt;span class="c1"&gt;#&lt;/span&gt;
+&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;Digest::SHA1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;MIME::Base64&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="nv"&gt;$ctx&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;Digest::SHA1&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="nv"&gt;$ctx&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;secret&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="nv"&gt;$ctx&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;salt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="nv"&gt;$hashedPasswd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#39;{SSHA}&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;encode_base64&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;$ctx&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;digest&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#39;salt&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#39;userPassword: &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;$hashedPasswd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;\n&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;过程很简单：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;#39;{SSHA}&amp;#39; + base64_encode( SHA1(password + salt) + salt )
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;也可以直接使用OpenLDAP 提供的&lt;code&gt;slappasswd&lt;/code&gt; 生成：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;slappasswd -h {SSHA} -s password
+
+&amp;#39;{SSHA}0c0blFTXXNuAMHECS4uxrj3ZieMoWImr&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;需要注意OpenLDAP SSHA 的salt 长度默认为4个字节。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Python 可以直接用PassLib 这个库，&lt;a href="http://passlib.readthedocs.io/en/stable/lib/passlib.hash.ldap_std.html#passlib.hash.ldap_salted_sha1"&gt;class passlib.hash.ldap_salted_sha1&lt;/a&gt;，简单快捷，也有对应的
+verify 函数。&lt;/p&gt;
+&lt;p&gt;🌰 ：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;passlib.hash&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ldap_salted_sha1&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;ssha&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;encrypt_password&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;ssha&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;encrypt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;salt_size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;verify_password&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;password_hash&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_user&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;password&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;ssha&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;verify&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;password_hash&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;hr&gt;
+&lt;p&gt;在给&lt;a href="http://walle-web.io"&gt;walle&lt;/a&gt; 添加LDAP 支持的时候，发现无论如何都是用户名和密码不一致，耐心看了下代码，发现作者&lt;a href="https://github.com/meolu/walle-web/blob/03a8d848f398103a097bb79a1c4004062ec83705/models/LdapUser.php#L82,L90"&gt;写错了&lt;/a&gt;，似乎是直接抄的phpldapadmin 的&lt;a href="https://github.com/leenooks/phpLDAPadmin/blob/708bc5ed83cc92f42ec10ae621b39a799c0e3a61/lib/functions.php#L2199,L2209"&gt;代码&lt;/a&gt;🌚🌝：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;function&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;validatePassword&lt;/span&gt;&lt;span class="o"&gt;($&lt;/span&gt;&lt;span class="nt"&gt;password&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;$encryptionType&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;strstr(substr($this-&amp;gt;_password,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;1),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;true&lt;/span&gt;&lt;span class="o"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;self&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;generate_password&lt;/span&gt;&lt;span class="o"&gt;($&lt;/span&gt;&lt;span class="nt"&gt;password&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="nt"&gt;encryptionType&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="nt"&gt;this-&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="nt"&gt;_password&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;generate_password&lt;/code&gt; 里面用随机的salt 生成了一个hash，来校验，怎么可能会一样嘛。自己改了本地的代码，提了一个&lt;a href="https://github.com/meolu/walle-web/issues/426"&gt;issue&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;正确的做法应该是取出userPassword 的salt，和用户输入的密码生成hash，再做对比，参考&lt;a href="https://github.com/leenooks/phpLDAPadmin/blob/708bc5ed83cc92f42ec10ae621b39a799c0e3a61/lib/functions.php#L2297,L2313"&gt;case ssha&lt;/a&gt;。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="x"&gt;case &amp;#39;ssha&amp;#39;:&lt;/span&gt;
+&lt;span class="x"&gt;   # Check php mhash support before using it&lt;/span&gt;
+&lt;span class="x"&gt;   if (function_exists(&amp;#39;mhash&amp;#39;)) {&lt;/span&gt;
+&lt;span class="x"&gt;       $hash = base64_decode($cryptedpassword);&lt;/span&gt;
+
+&lt;span class="x"&gt;       # OpenLDAP uses a 4 byte salt, SunDS uses an 8 byte salt - both from char 20.&lt;/span&gt;
+&lt;span class="x"&gt;       $salt = substr($hash,20);&lt;/span&gt;
+&lt;span class="x"&gt;       $new_hash = base64_encode(mhash(MHASH_SHA1,$plainpassword.$salt).$salt);&lt;/span&gt;
+
+&lt;span class="x"&gt;       if (strcmp($cryptedpassword,$new_hash) == 0)&lt;/span&gt;
+&lt;span class="x"&gt;           return true;&lt;/span&gt;
+&lt;span class="x"&gt;       else&lt;/span&gt;
+&lt;span class="x"&gt;           return false;&lt;/span&gt;
+&lt;span class="x"&gt;    } else {&lt;/span&gt;
+&lt;span class="x"&gt;        error(_(&amp;#39;Your PHP install does not have the mhash() function. Cannot do SHA hashes.&amp;#39;),&amp;#39;error&amp;#39;,&amp;#39;index.php&amp;#39;);&lt;/span&gt;
+&lt;span class="x"&gt;        }&lt;/span&gt;
+
+&lt;span class="x"&gt;break;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;hr&gt;
+&lt;p&gt;新的一周又开始咯😆 。&lt;/p&gt;</content><category term="2018"></category><category term="openldap"></category></entry><entry><title>《HTTP/2 基础教程》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="alternate"></link><published>2018-02-06T00:00:00+08:00</published><updated>2018-02-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-02-06:/posts/2018/2018-02-06.html</id><summary type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的个人公众号上推荐，读完却觉得作为基础教程还不错，翻译上觉得略生硬。作点简单的笔记，方便以后“按图索骥”。&lt;/p&gt;
 &lt;h2&gt;3.1.2 关键性能指标&lt;/h2&gt;
@@ -1362,8 +1512,7 @@ If present and true, indicates that the encoder should make an extra pass over t
 &lt;li&gt;用Mozjpeg 替代libjpeg-turbo 或 libjpeg，性能提升明显。&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Chroma_subsampling"&gt;Subsampling&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;尝试有损的PNG 编码&lt;/li&gt;
-&lt;li&gt;SVG&lt;/li&gt;
-&lt;li&gt;。。。&lt;/li&gt;
+&lt;li&gt;SVG 等&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;目前，工作上没有实践的机会，纸上谈兵，希望以后有机会练手、实践。&lt;/p&gt;</content><category term="2017"></category><category term="image"></category></entry><entry><title>htop 解释</title><link href="https://fangpsh.github.io/posts/2017/2017-04-05.html" rel="alternate"></link><published>2017-04-05T10:18:30+08:00</published><updated>2017-04-05T10:18:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-04-05:/posts/2017/2017-04-05.html</id><summary type="html">&lt;blockquote&gt;
 &lt;p&gt;"Explanation of everything you can see in htop/top on Linux"&lt;/p&gt;
@@ -3440,7 +3589,51 @@ substitution=&amp;quot;$(echo&lt;span class="w"&gt; &lt;/span&gt;&amp;quot;&lt;s
 &lt;p&gt;编程风格指南是为了提供一个通用的编程规范，以便人们可以集中精力在编码实现上，而不是考虑代码形式上。我们展示了整体上的风格规范，另外局部的风格也同样重要。如果你在一个文件
 中添加的代码的风格和原来的风格差异巨大，当阅读这份代码时，整体的韵味就被破坏了。请尽量避免这样做。&lt;/p&gt;
 &lt;p&gt;好了，关于编程风格指南写的够多了，代码本身更加有趣。尽情享受吧！&lt;/p&gt;
-&lt;/blockquote&gt;</content><category term="2016"></category><category term="Shell"></category></entry><entry><title>cronic脚本修正</title><link href="https://fangpsh.github.io/posts/2015/2015-07-13.html" rel="alternate"></link><published>2015-07-13T00:00:00+08:00</published><updated>2015-07-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-07-13:/posts/2015/2015-07-13.html</id><summary type="html">&lt;p&gt;实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出），都会发送邮件通知，并且还需要在每台机器上配置smtp，非常麻烦。所以想着就在前面直接套了个脚本，如果任务异常，用curl调一下远程服务的api发送邮件即可。&lt;/p&gt;
+&lt;/blockquote&gt;</content><category term="2016"></category><category term="Shell"></category></entry><entry><title>使用Systemd 的Linux 的启动过程</title><link href="https://fangpsh.github.io/posts/2016/2016-03-15.html" rel="alternate"></link><published>2016-03-15T11:55:30+08:00</published><updated>2016-03-15T11:55:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-03-15:/posts/2016/2016-03-15.html</id><summary type="html">&lt;p&gt;这篇文章是回答知乎上一个朋友的问题：&lt;a href="https://www.zhihu.com/question/20880224"&gt;Systemd 的详细启动过程是怎样的&lt;/a&gt; 。&lt;br&gt;
+回答这个问题前需要了解一下计算机的启动过程 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;这篇文章是回答知乎上一个朋友的问题：&lt;a href="https://www.zhihu.com/question/20880224"&gt;Systemd 的详细启动过程是怎样的&lt;/a&gt; 。&lt;br&gt;
+回答这个问题前需要了解一下计算机的启动过程和Linux 的启动过程，才能完整串起来。
+关于计算机的启动，可以先阅读一下阮一峰的文章：&lt;a href="http://www.ruanyifeng.com/blog/2013/02/booting.html"&gt;计算机是如何启动的？&lt;/a&gt;，这篇文章在系统启动部分，大概提到了Linux 系统的启动，
+不过不是十分详细，可以再看他的另一篇文章：&lt;a href="http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html"&gt;Linux 的启动过程&lt;/a&gt;，文章所介绍的Init 程序是传统的Sysv。
+而使用Systemd 的Linux 系统的差别就是在 Init 程序这一阶段。&lt;br&gt;
+在加载内核之前的阶段，这篇文章讲的挺细，可以顺便读一读：&lt;a href="http://chrinux.blog.51cto.com/6466723/1192004"&gt;详解linux系统的启动过程及系统初始化&lt;/a&gt;。  &lt;/p&gt;
+&lt;p&gt;然后可以读一下这篇文章，对Systemd 的基础介绍，非常不错：&lt;a href="http://www.ibm.com/developerworks/cn/linux/1407_liuming_init3/index.html"&gt;浅析 Linux 初始化 init 系统，第 3 部分: Systemd&lt;/a&gt;，感觉IBM developerworks 的文章质量都挺不错的。  &lt;/p&gt;
+&lt;p&gt;虚拟文件系统Initrd，启动到这一步之后，通过Switch-root 转到 Init 程序，即Systemd（也可以是Sysv 之类的），后面就是Systemd 如何启动服务进程的问题。&lt;br&gt;
+Initrd 这一步，Systemd 其实也可以接管，具体参考：&lt;a href="https://www.freedesktop.org/software/systemd/man/bootup.html#Bootup%20in%20the%20Initial%20RAM%20Disk%20(initrd)"&gt;initrd with systemd&lt;/a&gt;。  &lt;/p&gt;
+&lt;p&gt;在传统的Sysv 中，有Runlevel（启动级别）的概念，在Systemd 里面有Target 的概念，如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="runlevel" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161756.png"&gt;&lt;/p&gt;
+&lt;p&gt;Systemd 有个单元文件（Unit）的概念，可以理解成一个单元文件就是一个服务单元，有很多类型的单元文件，Mount、Device、Service、Path、Timer 等，最常见的就是Service 单元：&lt;/p&gt;
+&lt;p&gt;例：/usr/lib/systemd/system/named.service，具体的解释请看官方文档：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
+&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;Berkeley Internet Name Domain (DNS)&lt;/span&gt;
+&lt;span class="na"&gt;Wants&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;nss-lookup.target&lt;/span&gt;
+&lt;span class="na"&gt;Wants&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;named-setup-rndc.service&lt;/span&gt;
+&lt;span class="na"&gt;Before&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;nss-lookup.target&lt;/span&gt;
+&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
+&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;named-setup-rndc.service&lt;/span&gt;
+
+&lt;span class="k"&gt;[Service]&lt;/span&gt;
+&lt;span class="na"&gt;Type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;forking&lt;/span&gt;
+&lt;span class="na"&gt;EnvironmentFile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;-/etc/sysconfig/named&lt;/span&gt;
+&lt;span class="na"&gt;Environment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;KRB5_KTNAME=/etc/named.keytab&lt;/span&gt;
+&lt;span class="na"&gt;PIDFile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/run/named/named.pid&lt;/span&gt;
+
+&lt;span class="na"&gt;ExecStartPre&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/usr/sbin/named-checkconf -z /etc/named.conf&lt;/span&gt;
+&lt;span class="na"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/usr/sbin/named -u named $OPTIONS&lt;/span&gt;
+
+&lt;span class="na"&gt;ExecReload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/sh -c &amp;#39;/usr/sbin/rndc reload &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 || /bin/kill -HUP $MAINPID&amp;#39;&lt;/span&gt;
+
+&lt;span class="na"&gt;ExecStop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/sh -c &amp;#39;/usr/sbin/rndc stop &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 || /bin/kill -TERM $MAINPID&amp;#39;&lt;/span&gt;
+
+&lt;span class="na"&gt;PrivateTmp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;true&lt;/span&gt;
+
+&lt;span class="k"&gt;[Install]&lt;/span&gt;
+&lt;span class="na"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;multi-user.target&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Target 也是一种单元文件，但是它是引用和组织其他的单元文件，定义组织各种依赖关系。所以，Target 肯定可以实现Runlevel 的作用，只要定义六个Target 就可以了嘛。
+再看看下面这张图，就大致明白了启动的时候是怎么加载服务进程的：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bootup" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161805.png"&gt;&lt;/p&gt;
+&lt;p&gt;更多细节，以及关机的过程请参考：&lt;a href="https://www.freedesktop.org/software/systemd/man/bootup.html"&gt;bootup&lt;/a&gt;&lt;/p&gt;</content><category term="2016"></category><category term="Linux"></category><category term="Systemd"></category></entry><entry><title>cronic脚本修正</title><link href="https://fangpsh.github.io/posts/2015/2015-07-13.html" rel="alternate"></link><published>2015-07-13T00:00:00+08:00</published><updated>2015-07-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-07-13:/posts/2015/2015-07-13.html</id><summary type="html">&lt;p&gt;实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出），都会发送邮件通知，并且还需要在每台机器上配置smtp，非常麻烦。所以想着就在前面直接套了个脚本，如果任务异常，用curl调一下远程服务的api发送邮件即可。&lt;/p&gt;
 &lt;p&gt;找到这样一份shell脚本-- &lt;a href="http://habilis.net/cronic/"&gt;Cronic&lt;/a&gt;，不过这份脚本不满足一些需求，并在部署测试的时候遇到一些bug，修正如下。&lt;/p&gt;
 &lt;p&gt;上文脚本链接中的例子是：  &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="mf"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cronic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;backup&lt;/span&gt;
@@ -3812,4 +4005,185 @@ remove&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&l
 &lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;使用openSUSE + bash 的同学可以试一试，把&lt;a href="https://gist.github.com/fangpsh/86e13a771ccea24a206b"&gt;这份脚本&lt;/a&gt;拷贝至 &lt;code&gt;/etc/bash_completion.d/&lt;/code&gt; 下 。&lt;/p&gt;</content><category term="2014"></category><category term="opensuse"></category><category term="bash"></category></entry></feed>
+&lt;p&gt;使用openSUSE + bash 的同学可以试一试，把&lt;a href="https://gist.github.com/fangpsh/86e13a771ccea24a206b"&gt;这份脚本&lt;/a&gt;拷贝至 &lt;code&gt;/etc/bash_completion.d/&lt;/code&gt; 下 。&lt;/p&gt;</content><category term="2014"></category><category term="opensuse"></category><category term="bash"></category></entry><entry><title>Debian 8 升级相关信息</title><link href="https://fangpsh.github.io/posts/2014/2014-09-17.html" rel="alternate"></link><published>2014-09-17T17:42:30+08:00</published><updated>2014-09-17T17:42:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-09-17:/posts/2014/2014-09-17.html</id><summary type="html">&lt;h2&gt;Debian7-8更新与变化&lt;/h2&gt;
+&lt;h3&gt;Debian Installer Jessie Alpha 1 release&lt;/h3&gt;
+&lt;p&gt;2014年3月19号，debian installer jessie alpha 1发布，摘录部分更新与变化如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;apt-setup: Avoid hang due to interactive apt-cdrom&lt;a href="https://bugs.debian.org/740673"&gt;#740673&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;grub-installer: Support menu selection of GRUB boot disk&lt;a href="https://bugs.debian.org/706112"&gt;#706112&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The ia64 architecture has been removed from the archive …&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;h2&gt;Debian7-8更新与变化&lt;/h2&gt;
+&lt;h3&gt;Debian Installer Jessie Alpha 1 release&lt;/h3&gt;
+&lt;p&gt;2014年3月19号，debian installer jessie alpha 1发布，摘录部分更新与变化如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;apt-setup: Avoid hang due to interactive apt-cdrom&lt;a href="https://bugs.debian.org/740673"&gt;#740673&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;grub-installer: Support menu selection of GRUB boot disk&lt;a href="https://bugs.debian.org/706112"&gt;#706112&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The ia64 architecture has been removed from the archive, and is no longer supported.&lt;/li&gt;
+&lt;li&gt;The Linux kernel has been updated from 3.2 to 3.13.(注：debian 8的内核版本将为3.16)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考链接：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.debian.org/devel/debian-installer/News/2014/20140319"&gt;Releae NEWS&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://lists.debian.org/debian-devel-announce/2014/03/msg00009.html"&gt;Debian Installer Jessie Alpha 1 release&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Linux Knernel&lt;/h3&gt;
+&lt;p&gt;Debian 8 默认内核版本将为3.16。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.phoronix.com/scan.php?page=news_item&amp;amp;px=MTc1MDg"&gt;Debian 8.0 Jessie Is Settling For Linux 3.16&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://lists.debian.org/debian-kernel/2014/07/msg00361.html"&gt;Kernel version for jessie&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Systemd&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://wiki.debian.org/ReleaseGoals/systemd"&gt;Add native systemd support to every package shipping a sysvinit script&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Debian 8将采用systemd作为默认init系统,同时systemd将兼容Debian仓库中的所有包含sysv脚本的软件包。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Native systemd support for every Debian package that currently contains sysv scripts.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4&gt;debian 8 sysvinit与systemd的切换&lt;/h4&gt;
+&lt;p&gt;目前debian testing（2014-07-29）仍然采用sysv作为默认init系统，需手动安装软件包等切换至systemd。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt-get&lt;span class="w"&gt; &lt;/span&gt;update
+
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt-get&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;systemd&lt;span class="w"&gt; &lt;/span&gt;
+
+&lt;span class="c1"&gt;#安装 systemd-sysv 后自动将systemd配置为默认init系统，&lt;/span&gt;
+&lt;span class="c1"&gt;#同时移除sysvinit-core&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt-get&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;systemd-sysv&lt;span class="w"&gt; &lt;/span&gt;
+
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;reboot
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;重启之后，查看PID=1的进程是&lt;code&gt;/sbin/init&lt;/code&gt;，再查看 &lt;code&gt;/sbin/init&lt;/code&gt;会发现是&lt;code&gt;/lib/systemd/systemd&lt;/code&gt;的软链接，至此，系统默认initsystem已切换至systemd。在debian 8 正式版发布之后，将采用systemd作为默认init系统，可能不需要用户手动切换。&lt;/p&gt;
+&lt;h4&gt;systemd兼容性与注意事项&lt;/h4&gt;
+&lt;p&gt;systemd的SySV兼容性内容请查看 详细介绍-系统管理-SysV兼容性一节，包含init script的注意事项等。&lt;/p&gt;
+&lt;p&gt;注意事项：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;systemd定义了一批配置文件，请查看详细介绍-系统管理-规范化的配置文件一节。&lt;/li&gt;
+&lt;li&gt;systemd中runlevel的概念被target替代，telinit与init命令仍可使用。关于target与启动顺序内容，请查看详细介绍-系统管理-Target和Dependency based bootup 一节 与启动分析一节。&lt;ul&gt;
+&lt;li&gt;注：使用systemd之后/etc/initab被忽略，所以修改此文件中的runlevel并不能起效。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;debian with systemd下，service命令依然可用，但是service实际上是调用systemctl命令，详情请查看详细介绍-系统管理-SysV兼容性一节。&lt;ul&gt;
+&lt;li&gt;注：&lt;code&gt;service foobar status&lt;/code&gt;将返回systemctl类型的status内容，不再是&lt;code&gt;foobar is runing .&lt;/code&gt;此类输出。&lt;/li&gt;
+&lt;li&gt;建议使用systemctl命令或service命令，不建议使用&lt;code&gt;/etc/init.d/&amp;lt;service&amp;gt;&lt;/code&gt;，因为后者无法处理sysv init文件被移除的状况。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;service 单元执行的时候没有附带任何上下文环境,甚至没有进行 $HOME 目录的设置。对这些有依赖的启动脚本将无法正常工作。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;/etc/rc.local&lt;/code&gt;依然可用，见&lt;code&gt;/lib/systemd/system/rc-local.service&lt;/code&gt; 单元文件。&lt;/li&gt;
+&lt;li&gt;update-rc.d 命令依旧可用，但是注意：start与stop选项不再被支持。查看&lt;code&gt;/usr/sbin/update-rc.d&lt;/code&gt;文件，可发现其对/etc/init.d/的处理部分以及针对systemd的service的处理部分。&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;systemctl enable/disable&lt;/code&gt;命令实际上调用update-rc.d命令。若不存在service单元文件，将对&lt;code&gt;/etc/init.d/&amp;lt;service&amp;gt;&lt;/code&gt;下的脚本链接到&lt;code&gt;/etc/rcN.d/&lt;/code&gt;目录下。若是service单元存在，将依照单元文件中[Install]中的内容将单元文件链接到对应的wants文件夹中。&lt;blockquote&gt;
+&lt;p&gt;update-rc.d(8) should enable/disable systemd services in addition to creating the sysvinit links. update-rc.d is usually called from maintscripts, but enable/disable is typically used by the system administrator.
+systemctl enable/disable should also call update-rc.d&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wiki.debian.org/systemd/Integration"&gt;systemd Integration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;注：update-rc.d中 default 等同于"start 2 3 4 5 . stop 0 1 6 ."，&lt;code&gt;update-rc.d foobar defaults&lt;/code&gt; ，注意default是否与脚本中LSB部分指定的Start与Stop存在冲突。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;注意：systemd不支持交互式启动脚本，例如Debian‘s X-Interactive in the LSB header。&lt;/li&gt;
+&lt;li&gt;debian testing中的systemd的coredumpctl不可用，打包时候&lt;code&gt;--disable-coredump&lt;/code&gt;,原因不明。&lt;/li&gt;
+&lt;li&gt;默认情况下systemd的日志journal的磁盘存储需要手动创建目录，否则重启将丢失日志记录，请查看详细介绍日志管理-日志的记录等-日志存储一节。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;本节参考链接&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.phoronix.com/scan.php?page=news_item&amp;amp;px=MTYwMDQ"&gt;Systemd Is The Future Of Debian&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wiki.debian.org/Debate/initsystem/systemd"&gt;Debate initsystem systemd&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wiki.debian.org/systemd"&gt;Debian Wiki:systemd&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Clang&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Clang support as a secondary compiler.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;goal:&lt;a href="https://wiki.debian.org/ReleaseGoals/clang-secondary-compiler"&gt;Clang as a second compiler&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;一方面由于Clang相对于GCC有更多特性（模块化设计、更快的编译速度、编译过程占用内存低、编译中间产物和最终链接产物大幅减少、编译错误提示友好等等），另一方面由于Clang目前已足够稳定与优秀，所以 Debian 8支持Clang作为辅助编译器。&lt;/p&gt;
+&lt;p&gt;Debian 仓库中的软件包正被重新用Clang进行编译打包，进度与详情请查看 &lt;a href="http://clang.debian.net/"&gt;clang.debian.net&lt;/a&gt;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://clang.debian.net/"&gt;clang.debian.net&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wiki.debian.org/llvm-clang"&gt;llvm-clang&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.phoronix.com/scan.php?page=news_item&amp;amp;px=MTA2NjQ"&gt;LLVM's Clang Is Almost Good Enough For Debian&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.phoronix.com/scan.php?page=news_item&amp;amp;px=MTI5ODc"&gt;Debian Is Still Being Made To Build With LLVM/Clang&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Piuparts clean archive&lt;/h3&gt;
+&lt;p&gt;Piuparts是一个deb打包的质量检测工具，在debian 8中要求所有软件包必须通过picparts的相关检测。&lt;/p&gt;
+&lt;p&gt;Piuparts介绍：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;piuparts is a tool for automatic testing of whether a package can be installed, upgraded, and removed. Like [Lintian], it is useful to run in a centralized fashion, in addition to each package maintainer running it manually.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Debian 8需要达到以下目标：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;All packages should pass the piuparts tests, IOW that installation (and upgrade) of a package (within the test setup on piuparts.d.o) works fine and also that it purges cleanly.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://wiki.debian.org/piuparts"&gt;Debian wiki:piuparts&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wiki.debian.org/ReleaseGoals/piuparts"&gt;ReleaseGoals piuparts&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;UTF-8 support&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://wiki.debian.org/ReleaseGoals/utf-8"&gt;UTF-8 support&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;four sub-goals:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;all programs should, in their default configuration, accept UTF-8 input and pass it through uncorrupted. Having to manually specify encoding is acceptable only in a programmatic interface, GUI/std{in,out,err}/ command line/plain files should work with nothing but LC_CTYPE.  &lt;/li&gt;
+&lt;li&gt;all GUI/curses/etc programs should be able to display UTF-8 output where appropriate&lt;/li&gt;
+&lt;li&gt;all file names in source and binary packages must be valid UTF-8&lt;/li&gt;
+&lt;li&gt;all text files should be encoded in UTF-8 &lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;SELinux support&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://wiki.debian.org/ReleaseGoals/SELinux"&gt;Goal：&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Allow the users to enable SELinux enforcing mode on their machine without too much hassle.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Improve the SELinux reference policy, this is currently being worked out with upstream.&lt;/li&gt;
+&lt;li&gt;Be sure that when a init/maintainer script is creating a file/directory the label on disk is properly (re)set.&lt;/li&gt;
+&lt;li&gt;Be sure that SELinux aware applications have SELinux support enabled and that's it's working properly&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;debain 8只是将改进对SELinux的支持，目标如上。
+debian 8还不会默认启用SELinux，debian testing上目前默认未安装SELinux系统所需的软件包（除了libselinux1：SELinux runtime shared libraries）。&lt;/p&gt;
+&lt;h3&gt;其他&lt;/h3&gt;
+&lt;p&gt;请参考&lt;a href="https://wiki.debian.org/ReleaseGoals"&gt;Release Goals&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Hardening of ELF binaries (carry over from Wheezy)&lt;/li&gt;
+&lt;li&gt;Debian/rules to honor CC/CXX flags&lt;ul&gt;
+&lt;li&gt;This goal aims to make sure that any package in the archive could be rebuild with the command CC=foo CXX=bar dpkg-buildpackage.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Cross toolchains in the archive&lt;/li&gt;
+&lt;li&gt;Make the base system cross-buildable&lt;/li&gt;
+&lt;li&gt;注意：debian testing 默认关闭root用户ssh远程登录&lt;/li&gt;
+&lt;li&gt;debian testing安装流程基本无变化。若不使用网络源，taskel仅有且默认选中Debian desktop environment与Standard systemd utilities；若使用网络源，taskel默认选中Debiandesktop 、print server与standard systemd utilities。&lt;/li&gt;
+&lt;li&gt;注：由于debian jessie目前未冻结，关于软件包版本变化的调查未进行。&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://packages.debian.org/search?keywords=mysql-server"&gt;package mysql-server&lt;/a&gt;：wheezy(stable):5.5.38-0,jessie(testing):5.5.37-1, &lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;本节参考链接&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://lists.debian.org/debian-devel-announce/2013/10/msg00004.html"&gt;Bits from the Release Team (Jessie freeze info)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.phoronix.com/scan.php?page=news_item&amp;amp;px=MTQ4NTA"&gt;Debian 8.0 To Be Frozen, Features Announced&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Debian 8 升级注意事项&lt;/h2&gt;
+&lt;h3&gt;rc.local拆分为service单元&lt;/h3&gt;
+&lt;p&gt;目前&lt;code&gt;/etc/rc.local&lt;/code&gt;文件依旧可用，systemd存在默认的rc-local.service单元。&lt;/p&gt;
+&lt;p&gt;往rc.local文件中写入大量的启动初始化语句会导致rc.local难以维护与管理。参考systemd默认提供的rc-local.service单元，我们可以将原本写入的rc.local文件合理的拆分为多个文件，
+例如rc-route.local，rc-screensaveroff.local等，与rc.local同样，将这些local文件&lt;code&gt;chmod +x&lt;/code&gt;。然后在&lt;code&gt;/etc/systemd/system&lt;/code&gt;下创建类似&lt;code&gt;rc-local.service&lt;/code&gt;的单元文件，
+例如&lt;code&gt;rc-route.service&lt;/code&gt;,&lt;code&gt;rc-screensaveoff.service&lt;/code&gt;等，service文件的编写请查看 详细介绍--进程管理--服务进程管理一节，以及参考&lt;code&gt;rc-local.service&lt;/code&gt;文件。
+编写好service文件之后，重载systemd进程，然后&lt;code&gt;systemctl enable&lt;/code&gt;这些service即可，后续若需要禁用或修改某些启动脚本，只需配置对应单元以及脚本即可。&lt;/p&gt;
+&lt;h3&gt;Debian testing  systemd-208-6 CONFFLAGS&lt;/h3&gt;
+&lt;p&gt;请关注systemd源码包下rules文件中 disable 的模块或功能，例如 coredump：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;...&lt;/span&gt;
+&lt;span class="nv"&gt;CONFFLAGS&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--with-rootprefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--with-rootlibdir&lt;span class="o"&gt;=&lt;/span&gt;/lib/&lt;span class="k"&gt;$(&lt;/span&gt;DEB_HOST_MULTIARCH&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--with-sysvinit-path&lt;span class="o"&gt;=&lt;/span&gt;/etc/init.d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--with-sysvrcnd-path&lt;span class="o"&gt;=&lt;/span&gt;/etc&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--with-firmware-path&lt;span class="o"&gt;=&lt;/span&gt;/lib/firmware&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--with-debug-shell&lt;span class="o"&gt;=&lt;/span&gt;/bin/bash&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--with-telinit&lt;span class="o"&gt;=&lt;/span&gt;/lib/sysvinit/telinit&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--enable-tcpwrap&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--disable-coredump&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--disable-efi&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--disable-myhostname&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--disable-vconsole&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--disable-silent-rules
+&lt;span class="cp"&gt;ifeq (,$(findstring stage1,$(DEB_BUILD_PROFILES)))&lt;/span&gt;
+&lt;span class="nv"&gt;CONFFLAGS&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--enable-libcryptsetup
+&lt;span class="cp"&gt;endif&lt;/span&gt;
+
+&lt;span class="nv"&gt;CONFFLAGS_deb&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--enable-selinux&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--enable-introspection&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;--enable-gtk-doc
+&lt;span class="err"&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2014"></category><category term="Systemd"></category><category term="Debian"></category></entry></feed>
