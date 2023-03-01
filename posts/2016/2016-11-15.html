@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>写一个Pelican 插件：Read More Link - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/2016-11-15.html" rel="bookmark"
+         title="Permalink to 写一个Pelican 插件：Read More Link">写一个Pelican 插件：Read More Link</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="another_read_more_link_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165914.png"></p>
+<p>之前用<a href="http://octopress.org/">Octopress</a> 搭建博客的时候，用过一个很酷的功能，在文章中插入<code>&lt;!-- more --&gt;</code>之后，首页的文章列表只会显示这个标记之前的内容，然后添加一个类似继续阅读的链接。后来有一段时间切到Wordpress，也有类似的功能，但是在Pelican 上没见到。</p>
+<div class="highlight"><pre><span></span><code><span class="n">Inserting</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;!--</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="n">into</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">post</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">prevent</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">post</span><span class="w"> </span><span class="n">content</span>
+<span class="n">below</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">mark</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">being</span><span class="w"> </span><span class="n">displayed</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="nf">index</span><span class="w"> </span><span class="n">page</span><span class="w"> </span><span class="n">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">blog</span><span class="w"> </span><span class="n">posts</span><span class="p">,</span>
+<span class="n">a</span><span class="w"> </span><span class="s">&quot;Continue →&quot;</span><span class="w"> </span><span class="n">button</span><span class="w"> </span><span class="n">links</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="kr">full</span><span class="w"> </span><span class="n">post</span><span class="p">.</span><span class="w">  </span>
+<span class="o">--</span><span class="w"> </span><span class="n">http</span><span class="o">://</span><span class="n">octopress</span><span class="p">.</span><span class="n">org</span><span class="o">/</span><span class="n">docs</span><span class="o">/</span><span class="n">blogging</span><span class="o">/</span>
+</code></pre></div>
+
+<p>在<a href="https://github.com/getpelican/pelican-plugins">Pelica Plugins 列表</a>里翻了下:  </p>
+<ul>
+<li><a href="https://github.com/getpelican/pelican-plugins/tree/master/summary">summary</a>，需要添加添加首位2个标记（看了下源代码，只添加<code>&lt;!-- PELICAN_END_SUMMARY --&gt;</code> 也可以，就会从头开始算），不过也不能添加继续阅读的链接；</li>
+<li><a href="https://github.com/getpelican/pelican-plugins/tree/master/read_more_link">read_more_link</a>，不过这个插件是指定SUMMARY_MAX_LENGTH,也不符合需求。  </li>
+</ul>
+<p>所以觉得不如自己写一个，看了下官方教程<a href="http://docs.getpelican.com/en/3.6.3/plugins.html#how-to-create-plugins">How to create plugins</a> 和 read_more_link 这个插件的源代码，就能实现了。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#注册函数，当Pelican 发送all_generators_finalized 信号时候，调用插件</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">signals</span><span class="o">.</span><span class="n">all_generators_finalized</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">run_plugin</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">signals</span><span class="o">.</span><span class="n">content_object_init</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">insert_read_more_link</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Pelican 在首页其实显示的一篇文章的summary，即我们只需要检测文章中是否出现了<code>&lt;!-- more --&gt;</code>，如果出现了，就改写文章的summary，再加上继续阅读的链接即可。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#对生成的文章对象:article 循环处理</span>
+<span class="k">def</span> <span class="nf">run_plugin</span><span class="p">(</span><span class="n">generators</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">generator</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="n">ArticlesGenerator</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">generator</span><span class="o">.</span><span class="n">articles</span><span class="p">:</span>
+                <span class="n">insert_read_more_link</span><span class="p">(</span><span class="n">article</span><span class="p">)</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">insert_read_more_link</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
+<span class="o">....</span><span class="n">略</span>
+
+<span class="n">content</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_content</span>
+
+<span class="n">marker_location</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;&lt;!-- more --&gt;&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">marker_location</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+    <span class="c1">#如果找不到注释标记，先判断文章是否存在summary，如果没有的话，就将summary 设置为全文，然后退出插件</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;_summary&#39;</span><span class="p">):</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_summary</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">_summary</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_content</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">has_summary</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1">#按照检索到注释标记的位置，截取文章内容作为summary</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">marker_location</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">ANOTHER_READ_MORE_LINK</span><span class="p">:</span>
+    <span class="n">read_more_link</span> <span class="o">=</span>  <span class="n">ANOTHER_READ_MORE_LINK_FORMAT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">ANOTHER_READ_MORE_LINK</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span>  <span class="o">+</span> <span class="n">read_more_link</span>
+
+<span class="n">instance</span><span class="o">.</span><span class="n">_summary</span> <span class="o">=</span> <span class="n">summary</span>
+<span class="n">instance</span><span class="o">.</span><span class="n">has_summary</span> <span class="o">=</span> <span class="kc">True</span>
+</code></pre></div>
+
+<p>下载插件后，在pelicanconf.py 中配置：</p>
+<div class="highlight"><pre><span></span><code><span class="n">PLUGIN_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;/home/xxx/blog/xxx/&#39;</span><span class="p">]</span>
+<span class="n">PLUGINS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;other_plugin&#39;</span><span class="p">,</span><span class="s1">&#39;another_read_more_link&#39;</span><span class="p">]</span>
+<span class="n">ANOTHER_READ_MORE_LINK</span> <span class="o">=</span> <span class="s2">&quot;Continue -&gt;&quot;</span>
+</code></pre></div>
+
+<p>默认添加的链接带有一个<code>another-read-more-link</code>属性，用来自定义喜欢的样式： </p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;a</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;another-read-more-link&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;/{url}&quot;</span><span class="w"> </span><span class="nt">&gt;</span>{text}<span class="nt">&lt;/a&gt;</span>
+</code></pre></div>
+
+<p>例如：</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="nc">another-read-more-link</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="mh">#eee</span><span class="p">;</span>
+<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">inline-block</span><span class="p">;</span>
+<span class="w">    </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mf">.4</span><span class="kt">em</span><span class="w"> </span><span class="mf">.4</span><span class="kt">em</span><span class="p">;</span>
+<span class="w">    </span><span class="k">margin-right</span><span class="p">:</span><span class="w"> </span><span class="mf">.5</span><span class="kt">em</span><span class="p">;</span>
+<span class="w">    </span><span class="k">text-decoration</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
+<span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#737373</span><span class="p">;</span>
+<span class="w">    </span><span class="k">transition</span><span class="p">:</span><span class="w"> </span><span class="k">background-color</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">s</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>效果见上文图片。</p>
+<p>插件源码：<a href="https://github.com/fangpsh/another_read_more_link">another_read_more_link</a> ， <br>
+因为新手上路，源码上参考read_more_link，外加功能也类似，所以起了这么一个名字 :P</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-11-15T22:00:30+08:00">
+      Tue 15 November 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/pelican.html">pelican </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

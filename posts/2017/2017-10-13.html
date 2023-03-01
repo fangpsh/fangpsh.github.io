@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>写一个Terraform Provider - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-10-13.html" rel="bookmark"
+         title="Permalink to 写一个Terraform Provider">写一个Terraform Provider</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>上个月想给腾讯云写一个terraform provider，花了一周的时间入门Golang，参考现有的一些项目完成了<a href="https://cloud.tencent.com/product/clb">CLB</a> 的<a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a>。本来想做成和阿里云的provider 一样完善，但是腾讯云的API 错误百出，有些产品的API 返回参数不一致。算了，等以后遇到具体需求再继续做。把学习写provider 的过程简单记录一下。</p>
+<p>入门Golang，读了<a href="https://book.douban.com/subject/11577300/">《Go 语言编程》</a> 的1~4章, 重点看了下map 和interface 就够用了。goroutine、channel 啥的先不用看，写provider 用不到。</p>
+<p>官网的教程<a href="https://www.terraform.io/guides/writing-custom-terraform-providers.html">Writing Custom Providers</a> 比较简单，我是先看这个例子，了解大致的结构。再读<a href="https://github.com/alibaba/terraform-provider">alibaba/terraform-provider</a> 源码，照猫画虎。</p>
+<p>这篇教程写的也不错<a href="http://blog.jfabre.net/2017/01/22/writing-terraform-provider/">Writing a Terraform provider</a>，看完之后很受用，写邮件给作者表示希望能翻译，没理我:( 。</p>
+<p>代码目录：</p>
+<div class="highlight"><pre><span></span><code><span class="err">├──</span><span class="w"> </span><span class="n">README</span><span class="p">.</span><span class="n">md</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">api</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">clb</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">common</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">cvm</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="k">go</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">qcloud</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="k">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">data_source_qcloud_zones</span><span class="p">.</span><span class="k">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">provider</span><span class="p">.</span><span class="k">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">resource_qcloud_clb</span><span class="p">.</span><span class="k">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">resource_qcloud_clb_listener</span><span class="p">.</span><span class="k">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">resource_qcloud_eip</span><span class="p">.</span><span class="k">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">validators</span><span class="p">.</span><span class="k">go</span>
+<span class="p">....</span>
+</code></pre></div>
+
+<h2>main.go</h2>
+<p>main.go 每个provider 都差不多，包含一个main 函数，build 的时候生成一个二进制文件，照抄即可。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nx">main</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;github.com/hashicorp/terraform/plugin&quot;</span>
+<span class="w">    </span><span class="s">&quot;terraform-provider-qcloud/qcloud&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">(){</span>
+<span class="w">    </span><span class="nx">plugin</span><span class="p">.</span><span class="nx">Serve</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">plugin</span><span class="p">.</span><span class="nx">ServeOpts</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ProviderFunc</span><span class="p">:</span><span class="w"> </span><span class="nx">qcloud</span><span class="p">.</span><span class="nx">Provider</span><span class="p">,</span>
+<span class="w">    </span><span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2>api/</h2>
+<p>provider 是通过云产品的api 调用相关的接口对资源进行CRUD，不过腾讯云没有提供golang 的sdk，需要自己封装一下。我参考了阿里云的<a href="https://github.com/denverdino/aliyungo">denverdino/aliyungo</a>，阿里云的provider 也是使用的这个SDK。签名函数直接用了腾讯云的<a href="https://github.com/QcloudApi/qcloud_sign_golang">QcloudApi/qcloud_sign_golang</a>。</p>
+<div class="highlight"><pre><span></span><code><span class="o">.</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">clb</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">client</span><span class="o">.</span><span class="n">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">listener</span><span class="o">.</span><span class="n">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">load_balancer</span><span class="o">.</span><span class="n">go</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">common</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">client</span><span class="o">.</span><span class="n">go</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nb">sign</span><span class="o">.</span><span class="n">go</span>
+<span class="err">└──</span><span class="w"> </span><span class="n">cvm</span>
+</code></pre></div>
+
+<p>按照不同产品分成多个client，是因为不同产品的API 在参数上有一些区别，例如版本号，接口地址等。我放弃继续实现的主要原因就是腾讯云的API 文档错误百出，各个产品API 风格不统一，非常累。</p>
+<h2>provider.go</h2>
+<p>这个文件包含你实现的Provider 所提供的所有内容，具体可以看源码。Provider() 函数返回一个 terraform.ResourceProvider 对象，包含以下内容：</p>
+<ul>
+<li>Schema 是需要提供给你provider 的参数，例如访问API 的key 之类的。</li>
+<li>ResourceMap 是你provider 将提供的resources，例如腾讯云的CLB，CVM，CDN 之类的，每个resource 你需要实现特定的CRUD 接口。</li>
+<li>DataSourcesMap 是你provider 将提供的数据源，例如腾讯云CVM 都提供了哪些镜像，可以通过实现一个镜像的datasource 拿到，在操作resources 的时候使用，使用方法可以参考<a href="https://yq.aliyun.com/articles/137596?spm=5176.100239.0.0.Sztgba">Terraform中DataSource的深度分析</a>。</li>
+<li>ConfigureFunc 指向一个你实现的函数，用来做一些准备工作，例如初始化上文中出现各种Client，后续API 调用时使用 。</li>
+</ul>
+<p><a href="https://github.com/fangpeishi/terraform-provider-qcloud/blob/master/qcloud/provider.go">terraform-provider-qcloud/qcloud/provider.go</a></p>
+<h3>config.go</h3>
+<p>ConfigureFunc 指向的函数providerConfigure 中创建了一个 Config 对象，这个对象就来自config.go ，这里面会包含各类client 的init 代码。</p>
+<p><a href="https://github.com/fangpeishi/terraform-provider-qcloud/blob/master/qcloud/config.go">terraform-provider-qcloud/qcloud/config.go</a></p>
+<h3>validators.go</h3>
+<p>在实现Resource 或者DataSource 的时候，需要传一些参数给API，服务端对这类参数一般都有规定，除了基本的类型区别，比如Int，String 之类的，还会有必须大于几，小于几，字符串必须以什么结尾开头等等。</p>
+<p>例如阿里云provider 的这个<a href="https://github.com/alibaba/terraform-provider/blob/master/alicloud/resource_alicloud_slb.go#L32">片段</a>：</p>
+<div class="highlight"><pre><span></span><code><span class="n">func</span><span class="w"> </span><span class="n">resourceAliyunSlb</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="k">schema</span><span class="p">.</span><span class="n">Resource</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="k">schema</span><span class="p">.</span><span class="n">Resource</span><span class="err">{</span>
+<span class="w">        </span><span class="k">Create</span><span class="err">:</span><span class="w"> </span><span class="n">resourceAliyunSlbCreate</span><span class="p">,</span>
+<span class="w">        </span><span class="k">Read</span><span class="err">:</span><span class="w">   </span><span class="n">resourceAliyunSlbRead</span><span class="p">,</span>
+<span class="w">        </span><span class="k">Update</span><span class="err">:</span><span class="w"> </span><span class="n">resourceAliyunSlbUpdate</span><span class="p">,</span>
+<span class="w">        </span><span class="k">Delete</span><span class="err">:</span><span class="w"> </span><span class="n">resourceAliyunSlbDelete</span><span class="p">,</span>
+<span class="w">        </span><span class="nl">Importer</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="k">schema</span><span class="p">.</span><span class="n">ResourceImporter</span><span class="err">{</span>
+<span class="w">            </span><span class="k">State</span><span class="err">:</span><span class="w"> </span><span class="k">schema</span><span class="p">.</span><span class="n">ImportStatePassthrough</span><span class="p">,</span>
+<span class="w">        </span><span class="err">}</span><span class="p">,</span>
+
+<span class="w">        </span><span class="k">Schema</span><span class="err">:</span><span class="w"> </span><span class="k">map</span><span class="o">[</span><span class="n">string</span><span class="o">]*</span><span class="k">schema</span><span class="p">.</span><span class="k">Schema</span><span class="err">{</span>
+<span class="w">            </span><span class="ss">&quot;name&quot;</span><span class="err">:</span><span class="w"> </span><span class="o">&amp;</span><span class="k">schema</span><span class="p">.</span><span class="k">Schema</span><span class="err">{</span>
+<span class="w">            </span><span class="nl">Type</span><span class="p">:</span><span class="w">         </span><span class="k">schema</span><span class="p">.</span><span class="n">TypeString</span><span class="p">,</span>
+<span class="w">            </span><span class="nl">Optional</span><span class="p">:</span><span class="w">     </span><span class="k">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nl">ValidateFunc</span><span class="p">:</span><span class="w"> </span><span class="n">validateSlbName</span><span class="p">,</span>
+<span class="w">            </span><span class="nl">Computed</span><span class="p">:</span><span class="w">     </span><span class="k">true</span><span class="p">,</span>
+<span class="w">            </span><span class="err">}</span><span class="p">,</span>
+</code></pre></div>
+
+<p>ValidateFunc 调用的 <a href="https://github.com/alibaba/terraform-provider/blob/master/alicloud/validators.go#L305">validateSlbName</a> ：</p>
+<div class="highlight"><pre><span></span><code><span class="o">//</span><span class="w"> </span><span class="n">SLB</span>
+<span class="k">func</span><span class="w"> </span><span class="n">validateSlbName</span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="n">interface</span><span class="p">{},</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">ws</span><span class="w"> </span><span class="p">[]</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">errors</span><span class="w"> </span><span class="p">[]</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="o">.</span><span class="p">(</span><span class="n">string</span><span class="p">);</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">80</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">errors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">append</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span><span class="w"> </span><span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span>
+<span class="w">                    </span><span class="s2">&quot;%q must be a valid load balancer name characters between 1 and 80&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">k</span><span class="p">))</span>
+<span class="w">                </span><span class="k">return</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+
+<span class="w">    </span><span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>看看阿里云官网文档的<a href="https://help.aliyun.com/document_detail/27577.html?spm=5176.doc27566.2.4.K5ta6Q">要求</a>：</p>
+<div class="highlight"><pre><span></span><code>LoadBalancerName
+
+String
+
+负载均衡实例的显示名称。
+取值：用户自定义字符串。长度限制为1-80个字符，允许包含字母、数字、‘-’、‘/’、‘.’、‘_’这些字符。
+
+默认值：无。
+
+不指定该参数时，默认由系统分配一个实例名称。
+</code></pre></div>
+
+<p>在实现其他Provider 时，对着API 文档敲即可。</p>
+<h2>resource_*.go</h2>
+<p>provider 的resource 可以认为是云服务的各项产品了，例如腾讯云的CLB，CDN，CVM 等。按照要求实现增删改查的函数即可。</p>
+<div class="highlight"><pre><span></span><code><span class="k">func</span><span class="w"> </span><span class="n">resourceQcloudClb</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="n">schema</span><span class="o">.</span><span class="n">Resource</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">schema</span><span class="o">.</span><span class="n">Resource</span><span class="p">{</span>
+<span class="w">        </span><span class="n">Create</span><span class="p">:</span><span class="w"> </span><span class="n">resourceQcloudClbCreate</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Read</span><span class="p">:</span><span class="w">   </span><span class="n">resourceQcloudClbRead</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Update</span><span class="p">:</span><span class="w"> </span><span class="n">resourceQcloudClbUpdate</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Delete</span><span class="p">:</span><span class="w"> </span><span class="n">resourceQcloudClbDelete</span><span class="p">,</span>
+<span class="o">....</span>
+</code></pre></div>
+
+<h3>Create</h3>
+<p>Create 是创建时调用的函数，创建成功后需要调用一下func (*ResourceData) SetId：</p>
+<blockquote>
+<p>SetId sets the ID of the resource. If the value is blank, then the resource is destroyed.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>d.SetId(clb.UnLoadBalancerIds[clb.DealIds[0]][0])
+</code></pre></div>
+
+<p>这个ID 必须唯一。</p>
+<h3>Read</h3>
+<p>获取对应ID 资源的最新状态。如果有一些资源的属性在服务端可以修改的，拉取到最新的，得更新本地的状态，例如CLB 的名称。</p>
+<blockquote>
+<p>Set sets the value for the given key.</p>
+<p>If the key is invalid or the value is not a correct type, an error will be returned.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;load_balancer_type&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">clb</span><span class="o">.</span><span class="n">LoadBalancerSet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">LoadBalancerType</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">clb</span><span class="o">.</span><span class="n">LoadBalancerSet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">LoadBalancerName</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">clb</span><span class="o">.</span><span class="n">LoadBalancerSet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">LoadBalancerName</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;domain_prefix&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">clb</span><span class="o">.</span><span class="n">LoadBalancerSet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Domain</span><span class="p">)</span>
+</code></pre></div>
+
+<h3>Update</h3>
+<p>这个函数相对比较复杂，更新tf 文件中资源属性的时候，会调用这个函数，apply 到服务端。一般用 d.HasChange 来检测对应的属性是否改变：</p>
+<div class="highlight"><pre><span></span><code><span class="n">d</span><span class="o">.</span><span class="n">Partial</span><span class="p">(</span><span class="bp">true</span><span class="p">)</span>
+
+<span class="o">...</span>
+
+<span class="k">if</span><span class="w"> </span><span class="n">d</span><span class="o">.</span><span class="n">HasChange</span><span class="p">(</span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">args</span><span class="o">.</span><span class="n">LoadBalancerName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+<span class="w">    </span><span class="n">argList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">append</span><span class="p">(</span><span class="n">argList</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">conn</span><span class="o">.</span><span class="n">ModifyLoadBalancerAttributes</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">argList</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">err</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">d</span><span class="o">.</span><span class="n">SetPartial</span><span class="p">(</span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="o">...</span>
+
+<span class="n">d</span><span class="o">.</span><span class="n">Partial</span><span class="p">(</span><span class="bp">false</span><span class="p">)</span>
+<span class="k">return</span><span class="w"> </span><span class="n">resourceQcloudClbRead</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">meta</span><span class="p">)</span>
+</code></pre></div>
+
+<hr>
+<p><code>func (*ResourceData) HasChange</code></p>
+<blockquote>
+<p>HasChange returns whether or not the given key has been changed.</p>
+</blockquote>
+<hr>
+<p><code>func (*ResourceData) Partial</code></p>
+<blockquote>
+<p>Partial turns partial state mode on/off.</p>
+<p>When partial state mode is enabled, then only key prefixes specified by SetPartial will be in the final state. This allows providers to return partial states for partially applied resources (when errors occur).</p>
+</blockquote>
+<hr>
+<p><code>func (*ResourceData) SetPartial</code></p>
+<blockquote>
+<p>SetPartial adds the key to the final state output while in partial state mode. The key must be a root key in the schema (i.e. it cannot be "list.0").</p>
+<p>If partial state mode is disabled, then this has no effect. Additionally, whenever partial state mode is toggled, the partial data is cleared.</p>
+</blockquote>
+<p>Update 一般能用HasChange 应付，但是如果遇到出现子资源这种需求时，就比较麻烦。例如阿里云的一个SLB 后面会挂很多listener（监听器） ：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create a new load balancer for classic</span>
+<span class="n">resource</span><span class="w"> </span><span class="s2">&quot;alicloud_slb&quot;</span><span class="w"> </span><span class="s2">&quot;classic&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="n">name</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-slb-tf&quot;</span>
+<span class="n">internet</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span>
+<span class="n">internet_charge_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;paybybandwidth&quot;</span>
+<span class="n">bandwidth</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+
+<span class="n">listener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">&quot;instance_port&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;2111&quot;</span>
+<span class="w">        </span><span class="s2">&quot;lb_port&quot;</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;21&quot;</span>
+<span class="w">        </span><span class="s2">&quot;lb_protocol&quot;</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tcp&quot;</span>
+<span class="w">        </span><span class="s2">&quot;bandwidth&quot;</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;5&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">&quot;instance_port&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;8000&quot;</span>
+<span class="w">        </span><span class="s2">&quot;lb_port&quot;</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;80&quot;</span>
+<span class="w">        </span><span class="s2">&quot;lb_protocol&quot;</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;http&quot;</span>
+<span class="w">        </span><span class="s2">&quot;bandwidth&quot;</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;5&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">&quot;instance_port&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;1611&quot;</span>
+<span class="w">        </span><span class="s2">&quot;lb_port&quot;</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;161&quot;</span>
+<span class="w">        </span><span class="s2">&quot;lb_protocol&quot;</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;udp&quot;</span>
+<span class="w">        </span><span class="s2">&quot;bandwidth&quot;</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;5&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>这种在Update 时就比较尴尬，因为listener 就是一个list，没有唯一标识，修改一下端口啥的，总不能把所有listener 删除再添加一遍。</p>
+<p>阿里云的做法是通过<code>func (*ResourceData) GetChange</code> 难道新、旧的值，互相对比，把改变的listener 删除掉，修改后的listener 新增，<a href="https://github.com/terraform-providers/terraform-provider-alicloud/blob/974aa3101f94ab18099c1284274128c042a902bb/alicloud/resource_alicloud_slb.go#L335,#L362">HasChange("listener")</a>。</p>
+<p>不过我在实现腾讯云的CLB Listener 时候，采用的做法是用一个<code>load_balancer_id</code>  指向CLB 的资源ID，这样建立起对应关系：</p>
+<div class="highlight"><pre><span></span><code><span class="n">resource</span><span class="w"> </span><span class="s2">&quot;qcloud_clb_listener&quot;</span><span class="w"> </span><span class="s2">&quot;tcp1234&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">depends_on</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;qcloud_clb.example&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="n">load_balancer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;${qcloud_clb.example.id}&quot;</span>
+<span class="w">    </span><span class="n">listener_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;abcxxxxxsodo&quot;</span>
+<span class="w">    </span><span class="n">load_balancer_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1234</span>
+<span class="w">    </span><span class="n">instance_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4567</span>
+<span class="w">    </span><span class="n">protocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>不过我在给listener 加backend server 的时候，感觉还是得用阿里那种做法。</p>
+<p>参考资料：<a href="https://github.com/hashicorp/terraform/issues/2275">helper/schema feature: nestable resources #2275</a>。</p>
+<h3>Delete</h3>
+<p>把本地tf 文件对应的资源删除时，会调用这个函数，删除服务端的资源。</p>
+<h2>data_source_*.go</h2>
+<p>这个没实现过，不过看起来和resource 差不多，只是大量的属性是Computed，供resource 使用。可以参考阿里云的datasource 实现。</p>
+<hr>
+<p>最后，感觉腾讯云和AWS 之间，还差十个阿里云，手动再见。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-10-13T00:00:00+08:00">
+      Fri 13 October 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/terraform.html">terraform </a><a href="https://fangpsh.github.io/tag/golang.html">golang </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
