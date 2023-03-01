@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>搭建HTTP/2 代理 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-11-01.html" rel="bookmark"
+         title="Permalink to 搭建HTTP/2 代理">搭建HTTP/2 代理</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>这个月又抢到了内部的100元腾讯云代金券，听说最近流行HTTP/2 代理，快速折腾一下，主要内容都是参考这篇文章：<a href="https://wzyboy.im/post/1052.html">《使用 nghttpx 搭建 HTTP/2 代理》</a>。</p>
+<h2>证书</h2>
+<p>HTTP/2 代理其实也就是HTTPS 代理了，首先需要一个证书，可以自己签，太麻烦了。腾讯云和阿里云都提供了免费的DV 证书。搞一个。</p>
+<ul>
+<li><a href="http://www.qcloud.com/blog/?p=1237">腾讯云支持DV SSL证书免费申请</a></li>
+<li><a href="https://www.aliyun.com/product/cas">Alibaba Cloud Certificates Service</a></li>
+</ul>
+<p>因为域名托管在DNSPOD，在腾讯云申请都无需验证，挺快的，会给一个压缩包，打开里面Nginx 子目录，拿到crt 和key 备用。</p>
+<h2>nghttpx</h2>
+<p>nghttpx 可以对外提供HTTP/2 服务，将请求转换成HTTP/1.X 转发给后端，相当于一个中间人。</p>
+<p>安装</p>
+<div class="highlight"><pre><span></span><code>aptitude install nghttp2
+</code></pre></div>
+
+<p>不懂为啥ubuntu 的包名是<a href="https://packages.ubuntu.com/xenial/nghttp2">nghttp2</a>，然后包含三个包：</p>
+<div class="highlight"><pre><span></span><code>nghttp2-client
+nghttp2-proxy
+nghttp2-server
+</code></pre></div>
+
+<p>编辑配置文件 <code>/etc/nghttpx/nghttpx.conf</code>：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">frontend</span><span class="o">=</span><span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span>,<span class="mi">443</span>
+<span class="nv">backend</span><span class="o">=</span><span class="mi">127</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">1</span>,<span class="mi">3128</span>
+<span class="nv">private</span><span class="o">-</span><span class="nv">key</span><span class="o">-</span><span class="nv">file</span><span class="o">=/</span><span class="nv">root</span><span class="o">/</span><span class="nv">ssl</span><span class="o">/</span><span class="mi">2</span><span class="nv">_xxxxx</span>.<span class="nv">fangpeishi</span>.<span class="nv">com</span>.<span class="nv">key</span>
+<span class="nv">certificate</span><span class="o">-</span><span class="nv">file</span><span class="o">=/</span><span class="nv">root</span><span class="o">/</span><span class="nv">ssl</span><span class="o">/</span><span class="mi">1</span><span class="nv">_xxxxx</span>.<span class="nv">fangpeishi</span>.<span class="nv">com_bundle</span>.<span class="nv">crt</span>
+<span class="nv">http2</span><span class="o">-</span><span class="nv">proxy</span><span class="o">=</span><span class="nv">yes</span>
+<span class="nv">errorlog</span><span class="o">-</span><span class="nv">syslog</span><span class="o">=</span><span class="nv">yes</span>
+<span class="nv">workers</span><span class="o">=</span><span class="mi">1</span>
+
+<span class="nv">add</span><span class="o">-</span><span class="nv">x</span><span class="o">-</span><span class="nv">forwarded</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="nv">no</span>
+
+<span class="nv">no</span><span class="o">-</span><span class="nv">via</span><span class="o">=</span><span class="nv">yes</span>
+<span class="nv">no</span><span class="o">-</span><span class="nv">ocsp</span><span class="o">=</span><span class="nv">yes</span>
+<span class="nv">tls</span><span class="o">-</span><span class="nv">proto</span><span class="o">-</span><span class="nv">list</span><span class="o">=</span><span class="nv">TLSv1</span>.<span class="mi">2</span>
+<span class="nv">ciphers</span><span class="o">=</span><span class="nv">ECDHE</span><span class="o">+</span><span class="nv">AES128</span>
+</code></pre></div>
+
+<p>我是抄的上文文章中的配置，先跑起来再说。。</p>
+<div class="highlight"><pre><span></span><code>systemctl restart nghttpx
+</code></pre></div>
+
+<h2>squid</h2>
+<p>squid 作为nghttpx 后端的透明代理，不过记住要让它监听在本地，别暴露在公网上。</p>
+<div class="highlight"><pre><span></span><code>apt-get install squid
+</code></pre></div>
+
+<p>编辑配置文件<code>/etc/squid/squid.conf</code>:</p>
+<div class="highlight"><pre><span></span><code>http_port 127.0.0.1:3128
+
+cache deny all
+access_log none
+
+dns_v4_first on
+
+via off
+
+forwarded_for delete
+
+auth_param basic program /usr/lib/squid/basic_ncsa_auth  /etc/squid/passwd
+auth_param basic casesensitive off
+acl auth_user proxy_auth REQUIRED
+http_access allow auth_user
+</code></pre></div>
+
+<p>也是抄的教程中的配置。。先跑起来再说。鉴权那段下文说明。</p>
+<div class="highlight"><pre><span></span><code>systemctl restart squid
+</code></pre></div>
+
+<h2>鉴权</h2>
+<p>暴露在公网被其他人乱跑流量总不太好，在Squid 上加一个简单的HTTP Auth。</p>
+<p>安装 htpasswd 工具：</p>
+<div class="highlight"><pre><span></span><code>apt-get install apache2-utils
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>#-c 创建文件
+htpasswd  -c  /etc/squid/passwd [用户名]
+
+# 添加其他用户
+htpasswd /etc/squid/passwd [用户名]
+</code></pre></div>
+
+<p>在<code>/etc/squid/squid.conf</code> 添加配置，再重启即可：</p>
+<div class="highlight"><pre><span></span><code>auth_param basic program /usr/lib/squid/basic_ncsa_auth  /etc/squid/passwd
+auth_param basic casesensitive off
+acl auth_user proxy_auth REQUIRED
+http_access allow auth_user
+</code></pre></div>
+
+<p>更多关于squid 的配置需求，直接参考官方文档，应该没有啥是squid 做不到了。</p>
+<h2>BBR</h2>
+<p>再顺便升下内核，开启下 BBR，听说有奇效？不过我没有做对比。。直接开启了。</p>
+<p>参考文章：<a href="https://imtx.me/archives/2379.html">《使用标准方式在 Ubuntu 16.04 下启用 TCP 拥塞控制之 BBR》</a></p>
+<p>简明步骤，来着上面这篇文章：</p>
+<p>安装内核</p>
+<div class="highlight"><pre><span></span><code>apt-get install linux-generic-hwe-16.04
+</code></pre></div>
+
+<p>reboot 之后，检查内核是不是&gt; 4.9</p>
+<div class="highlight"><pre><span></span><code>uname -a 
+</code></pre></div>
+
+<p>加载模块，打开参数：</p>
+<div class="highlight"><pre><span></span><code><span class="n">modprobe</span><span class="w"> </span><span class="n">tcp_bbr</span>
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;tcp_bbr&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">tee</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">modules</span><span class="o">-</span><span class="nb">load</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">modules</span><span class="o">.</span><span class="n">conf</span>
+
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;net.core.default_qdisc=fq&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">tee</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysctl</span><span class="o">.</span><span class="n">conf</span>
+<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;net.ipv4.tcp_congestion_control=bbr&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">tee</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysctl</span><span class="o">.</span><span class="n">conf</span>
+<span class="n">sysctl</span><span class="w"> </span><span class="o">-</span><span class="n">p</span>
+</code></pre></div>
+
+<p>最后验证一下：</p>
+<div class="highlight"><pre><span></span><code>sysctl net.ipv4.tcp_congestion_control
+</code></pre></div>
+
+<p>返回结果必须是：</p>
+<div class="highlight"><pre><span></span><code>net.ipv4.tcp_congestion_control = bbr
+</code></pre></div>
+
+<h2>使用</h2>
+<p>搞完之后，验证一下，Chrome 安装<a href="https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en">SwitchyOmega</a> 插件，新建一份配置，协议选择HTTPS，记得填入HTTP Auth验证信息。然后选中启用，打开 <a href="https://www.whatismyip.com/">whatismyip</a> 看看IP 是不是变了。在不同的平台上要使用，找不同的客户端支持吧。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-11-01T00:00:00+08:00">
+      Wed 01 November 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/dai-li.html">代理 </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

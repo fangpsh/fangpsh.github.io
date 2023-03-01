@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>踩了Systemd 2个坑 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-08-10.html" rel="bookmark"
+         title="Permalink to 踩了Systemd 2个坑">踩了Systemd 2个坑</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>手写Systemd service 的经验不多，非常尴尬，踩了Systemd 2个坑，浪费了近1个小时，记录一下。</p>
+<p>Python项目部署使用了<a href="https://virtualenv.pypa.io/en/stable/">virtualenv</a>，添加一个Systemd service，发现启动失败，提示：</p>
+<div class="highlight"><pre><span></span><code>File &quot;/usr/lib64/python2.7/subprocess.py&quot;, line 1327, in _execute_child
+raise child_exception
+OSError: [Errno 2] No such file or directory
+</code></pre></div>
+
+<p>忘记设置环境了，<code>EnvironmentFile</code> 里设置<code>PATH</code>：</p>
+<div class="highlight"><pre><span></span><code>EXAMPLE_ENV=/home/www/example_env
+PATH=<span class="cp">${</span><span class="n">EXAMPLE_ENV</span><span class="cp">}</span>:<span class="nv">$PATH</span>
+</code></pre></div>
+
+<p>发现无论如何都无效，Google一下才发现傻了：<a href="https://stackoverflow.com/questions/35439123/systemd-environment-directive-to-set-path">systemd: “Environment” directive to set PATH</a>:</p>
+<blockquote>
+<p>You can't use EnvVars in Environment directives. The whole Environment= will be ignored.</p>
+</blockquote>
+<p>改成：</p>
+<div class="highlight"><pre><span></span><code>EXAMPLE_ENV=/home/www/example_env
+PATH=/home/www/example_env/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+</code></pre></div>
+
+<p>终于好了。不过又遇到一个问题，因为：</p>
+<div class="highlight"><pre><span></span><code>ExecStart=<span class="cp">${</span><span class="n">EXAMPLE_ENV</span><span class="cp">}</span>/bin/example<span class="w"> </span>....
+</code></pre></div>
+
+<p>Systemd 提示：</p>
+<blockquote>
+<p>Executable path is not absolute, ignoring:${EXAMPLE_ENV}/bin/example ...</p>
+</blockquote>
+<p>咦，变量怎么没解析。Google 了下，改成下面这样就好了：</p>
+<div class="highlight"><pre><span></span><code>ExecStart=/usr/bin/env<span class="w"> </span><span class="cp">${</span><span class="n">EXAMPLE_ENV</span><span class="cp">}</span>/bin/example
+</code></pre></div>
+
+<p><a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html">man/systemd.service</a></p>
+<blockquote>
+<p>For each of the specified commands, the first argument must be either an absolute path to an executable or a simple file name without any slashes.</p>
+</blockquote>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-08-10T00:00:00+08:00">
+      Fri 10 August 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/systemd.html">systemd </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

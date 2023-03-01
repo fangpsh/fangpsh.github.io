@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>什么是Bogon？ - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-09-19.html" rel="bookmark"
+         title="Permalink to 什么是Bogon？">什么是Bogon？</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>在<a href="https://bgp.he.net/">BGP.HE.NET</a> 上查询IP 信息的时候，Announced By <a href="https://bgp.he.net/AS4808">AS4808</a>：</p>
+<p><img alt="AS4808" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162304.png"></p>
+<p>提示：<a href="https://bgp.he.net/AS4808#_bogons">AS4808 announces bogons.</a></p>
+<p><img alt="AS4804_Bogon" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162311.png"></p>
+<p><img alt="202.94.1.0" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162324.png"></p>
+<p>意思这个段还在APNIC 手里，未被分配，但是联通的这个AS 域广播了这个段。</p>
+<p>继续查下：</p>
+<blockquote>
+<p>202/8    APNIC    1993-05    whois.apnic.net    https://rdap.apnic.net/    ALLOCATED</p>
+</blockquote>
+<p><code>202/8</code> 分配给了APNIC。既然是联通，那就到CNNIC 查下：</p>
+<p><img alt="CNNIC" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162337.png"></p>
+<p>看起来确实没分给联通，不过在<a href="https://www.ipip.net/ip.html">IPIP.NET</a>查询，这个IP 归属显示是联通。</p>
+<p>就像<code>10.0.0.0/8</code> 这类私网保留地址，广播出去，大家应该都会丢弃掉。估计得等以后APNIC 开始分配使用这段地址，联通就不能广播了吧。  </p>
+<p>Bogon<code>['bɔɡən]</code> 这个单词好多词典都查不到，据说起源于bogus<code>bəuɡəs</code>：假冒，伪造。</p>
+<blockquote>
+<p>A bogon route is a type of route which shouldn't exist on the global Internet. More specifically, "bogon" (derived from the word "bogus") refers to an advertisement for a prefix within a reserved or otherwise unallocated IP network.</p>
+</blockquote>
+<hr>
+<p>参考资料：</p>
+<ul>
+<li><a href="https://www.iana.org/assignments/ipv4-address-space/ipv4-address-space.xhtml">IANA IPv4 Address Space Registry</a></li>
+<li><a href="http://ipwhois.cnnic.cn/bns/query/Query/ipwhoisQuery.do?queryOption=ipv4&amp;txtquery=202.94.1.2&amp;x=46&amp;y=10">CNNIC</a></li>
+<li><a href="http://packetlife.net/blog/2009/jan/21/whats-bogon/">What's a bogon?</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Bogon_filtering">Bogon filtering</a></li>
+</ul>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-09-19T00:00:00+08:00">
+      Wed 19 September 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/bgp.html">BGP </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

@@ -459,7 +459,26 @@ config dhcp &amp;#39;lan&amp;#39;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;配置项解释，可参考&lt;a href="https://www.douban.com/note/618429634/"&gt;DHCPv6 over PPPoE on OpenWrt / LEDE&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;最后，感谢各位网友的教程:) 。&lt;/p&gt;</content><category term="2020"></category><category term="OpenWrt"></category><category term="IPv6"></category><category term="DNS64"></category><category term="NAT64"></category></entry><entry><title>夺回resolv.conf 的控制权</title><link href="https://fangpsh.github.io/posts/2019/2019-06-23.html" rel="alternate"></link><published>2019-06-23T00:00:00+08:00</published><updated>2019-06-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-06-23:/posts/2019/2019-06-23.html</id><summary type="html">&lt;p&gt;上周在线上修改了一批机器的hostname：&lt;/p&gt;
+&lt;p&gt;最后，感谢各位网友的教程:) 。&lt;/p&gt;</content><category term="2020"></category><category term="OpenWrt"></category><category term="IPv6"></category><category term="DNS64"></category><category term="NAT64"></category></entry><entry><title>第二届中国SD-WAN 广告峰会参会感想</title><link href="https://fangpsh.github.io/posts/2019/2019-11-16.html" rel="alternate"></link><published>2019-11-16T00:00:00+08:00</published><updated>2019-11-16T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-11-16:/posts/2019/2019-11-16.html</id><summary type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162425.png"&gt;&lt;/p&gt;
+&lt;p&gt;从&lt;a href="https://www.sdnlab.com/"&gt;SDNLAB&lt;/a&gt; 知道&lt;a href="https://www.bagevent.com/event/5443171/p/314542"&gt;第二届 2019 中国SD-WAN峰会&lt;/a&gt;，报名了会前的培训。&lt;/p&gt;
+&lt;p&gt;因为从事运维工作，一直和网络打交道，对BGP、骨干网、PoP、PE、SDN、SD-WAN等名称知道一些，但是终究因为 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162425.png"&gt;&lt;/p&gt;
+&lt;p&gt;从&lt;a href="https://www.sdnlab.com/"&gt;SDNLAB&lt;/a&gt; 知道&lt;a href="https://www.bagevent.com/event/5443171/p/314542"&gt;第二届 2019 中国SD-WAN峰会&lt;/a&gt;，报名了会前的培训。&lt;/p&gt;
+&lt;p&gt;因为从事运维工作，一直和网络打交道，对BGP、骨干网、PoP、PE、SDN、SD-WAN等名称知道一些，但是终究因为没有实操过，不太了解。
+底层网络应该属于通信，和计算机隔着一道门，借这次大会看看另外一个行业的人都在玩什么。&lt;/p&gt;
+&lt;p&gt;分享下培训幻灯片：&lt;a href="https://drive.google.com/file/d/1SjBeD5gkb6rfpFwAFK-7nTxWzKM7F2Uh/view?usp=share_link"&gt;2019 SD WAN技术与应用培训课件&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;来自未来网络创新研究院的张晨讲的确实不错，实实在在的干货，他的分享内容对我来说有深有浅，浅是因为熟悉，总的来说，听完能知道SD-WAN 的概念、现状、缺点、优势、应用场景等。
+其他两位，可忽略，纯粹的来打广告的。主办方太不要脸，1200元/天的培训，还插半天的广告。&lt;/p&gt;
+&lt;p&gt;SD-WAN 是一个容器，塞进了太多的东西。网络虚拟化，还是最后一个公里IPSec，有点新瓶旧酒的意思？。当然也不是没新的东西，只是在我一个外人看来，似乎没那么惊艳，也可能我理解不到。&lt;/p&gt;
+&lt;p&gt;非常期待的最后一公里解决方案，看起来也只不过是IPSec+白盒的玩法，如果是这样，为什么我们软件工程师不自己做呢？反而要在中间加一个“overlay”的运营商，把网络根基建在这群中小型的初创公司上。&lt;/p&gt;
+&lt;p&gt;非常认可SD-WAN 中大量的“软件化”、“虚拟化”，也非常认可讲师说的未来将“以云为中心”进行组网。&lt;/p&gt;
+&lt;p&gt;第二天的会场，有卖设备，有卖软件的，也有卖服务的，“甚至”有卖流量的。对于某些公司来说，网络可用性是根基，讲师也提到，上SD-WAN要非常谨慎，因为上车容易下车难，需评估的东西方方面面，涉及太多。
+然而现场的中国本土公司，规模似乎都不大（成立时间&amp;lt;=5年，员工&amp;lt;500人）。国外的那几个巨头，现场只有Versa 和Aryaka，售后服务服务不太好的样子。。。&lt;/p&gt;
+&lt;p&gt;最近两年做会议解决方案的厂商越来越多，在线会议需要解决实时性和可用性，如果一家这样的互联网公司是建立在外部的SD-WAN方案上，那么未来可能被掣肘，因为它对你来说是“underlay”。&lt;/p&gt;
+&lt;p&gt;当然，SD-WAN里面不仅仅只是组网和通信选路的事，还有大量底层的工作，而通信/网络这个行业是有比较高的壁垒，这可能是这些SD-WAN公司的大佬大都是来自这2个行业的原因，这些行业经验也是它们的价值之一。&lt;/p&gt;
+&lt;p&gt;我想要的其实是一个更强的&lt;a href="https://github.com/slackhq/nebula"&gt;slack/nebula&lt;/a&gt;、&lt;a href="https://www.tinc-vpn.org/"&gt;tinc&lt;/a&gt;、&lt;a href="https://github.com/zerotier"&gt;ZeroTier&lt;/a&gt;，
+除了组网，同时还能智能选路、线路容灾等高级功能，选路起码得如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="transport" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162504.png"&gt;&lt;/p&gt;
+&lt;p&gt;总结感受：广告真多，隔行如隔山，雾霾还是很厉害 😂&lt;/p&gt;</content><category term="2019"></category><category term="SD-WAN"></category></entry><entry><title>夺回resolv.conf 的控制权</title><link href="https://fangpsh.github.io/posts/2019/2019-06-23.html" rel="alternate"></link><published>2019-06-23T00:00:00+08:00</published><updated>2019-06-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-06-23:/posts/2019/2019-06-23.html</id><summary type="html">&lt;p&gt;上周在线上修改了一批机器的hostname：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;hostnamectl set-hostname xxx&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -524,7 +543,23 @@ config dhcp &amp;#39;lan&amp;#39;
 &lt;li&gt;systemd-resolved&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;对了，&lt;a href="https://www.cyberciti.biz/faq/dhclient-etcresolvconf-hooks/"&gt;DHCP 也可能会碰你的resolv.conf 哦&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;学无止境，坑外有坑。&lt;/p&gt;</content><category term="2019"></category><category term="linux"></category><category term="resolv.conf"></category></entry><entry><title>ip_local_port_range 小问题</title><link href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="alternate"></link><published>2019-03-01T00:00:00+08:00</published><updated>2019-03-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-03-01:/posts/2019/2019-03-01.html</id><summary type="html">&lt;p&gt;发现系统打印了一条日志，类似&lt;a href="https://access.redhat.com/solutions/2887631"&gt;redhat solution:2887631&lt;/a&gt;：&lt;/p&gt;
+&lt;p&gt;学无止境，坑外有坑。&lt;/p&gt;</content><category term="2019"></category><category term="linux"></category><category term="resolv.conf"></category></entry><entry><title>解决Mac OS 下Alt-f、Alt-b 失效的问题</title><link href="https://fangpsh.github.io/posts/2019/2019-04-14.html" rel="alternate"></link><published>2019-04-14T00:00:00+08:00</published><updated>2019-04-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-04-14:/posts/2019/2019-04-14.html</id><summary type="html">&lt;p&gt;我算是半个Emacs 用户，Mac OS 吸引我的一个地方是它几乎所有输入框都能使用基本的Emacs 行操作快捷键，因为GNU Redline。&lt;/p&gt;
+&lt;p&gt;最近看到&lt;a href="https://twitter.com/linuxtoy/status/957225197928525824"&gt;Linuxtoy …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;我算是半个Emacs 用户，Mac OS 吸引我的一个地方是它几乎所有输入框都能使用基本的Emacs 行操作快捷键，因为GNU Redline。&lt;/p&gt;
+&lt;p&gt;最近看到&lt;a href="https://twitter.com/linuxtoy/status/957225197928525824"&gt;Linuxtoy 推文&lt;/a&gt;里面的这张图：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="moving_cli" src="https://clementc.github.io/figures/moving_cli.png"&gt;&lt;/p&gt;
+&lt;p&gt;想起自从形成肌肉记忆之后，在浏览器地址栏等地方常常打&lt;code&gt;Alt-f&lt;/code&gt;,&lt;code&gt;Alt-b&lt;/code&gt; 这几个快捷键，会发现打出来的是奇怪的字符：&lt;code&gt;ƒ&lt;/code&gt;,&lt;code&gt;∫&lt;/code&gt;，如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ffffff" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162114.png"&gt;&lt;/p&gt;
+&lt;p&gt;以为是系统限制，忍受了很久。今天搜索下，翻到一篇文章：&lt;a href="https://blog.sensible.io/2012/10/19/mac-os-x-emacs-style-keybindings-everywhere.html"&gt;Mac OS X: Emacs-like keybindings everywhere&lt;/a&gt;， 找到解决方法。&lt;/p&gt;
+&lt;p&gt;创建配置文件：&lt;code&gt;~/Library/KeyBindings/DefaultKeyBinding.dict&lt;/code&gt; （如果不存在这个&lt;code&gt;KeyBindings&lt;/code&gt; 目录，就新建一个）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;&amp;quot;~d&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;&amp;quot;&lt;/span&gt;&lt;span class="n"&gt;deleteWordForward&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;;&lt;/span&gt;
+&lt;span class="s2"&gt;    &amp;quot;&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot; = &amp;quot;&lt;/span&gt;&lt;span class="n"&gt;moveWordForward&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;;&lt;/span&gt;
+&lt;span class="s2"&gt;    &amp;quot;&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot; = &amp;quot;&lt;/span&gt;&lt;span class="n"&gt;moveWordBackward&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="err"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;重启下相关App ，例如Chrome 浏览器，再试一试，发现OK了，居然这么简单！&lt;/p&gt;
+&lt;p&gt;随后在GitHub 发现一个很强大的项目&lt;a href="https://github.com/ttscoff/KeyBindings"&gt;ttscoff/KeyBindings&lt;/a&gt;，有空再折腾，其他键用的不多。&lt;/p&gt;</content><category term="2019"></category><category term="效率"></category><category term="MacOS"></category></entry><entry><title>ip_local_port_range 小问题</title><link href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="alternate"></link><published>2019-03-01T00:00:00+08:00</published><updated>2019-03-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-03-01:/posts/2019/2019-03-01.html</id><summary type="html">&lt;p&gt;发现系统打印了一条日志，类似&lt;a href="https://access.redhat.com/solutions/2887631"&gt;redhat solution:2887631&lt;/a&gt;：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;Jan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;23&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;:&lt;span class="mi"&gt;37&lt;/span&gt;:&lt;span class="mi"&gt;22&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;localhost&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kernel&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ip_local_port_range&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;prefer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;different&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;parity&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;start&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;values&lt;/span&gt;.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
@@ -757,7 +792,37 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;li&gt;&lt;a href="https://www.ibm.com/support/knowledgecenter/zh/POWER8/p8ha1/11powermanagementtask.htm"&gt;IBM Knowledge Center - 电源管理&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Power%20Systems/page/POWER9%20EnergyScale%20-%20Configuration%20&amp;amp;%20Management"&gt;POWER9 EnergyScale - Configuration &amp;amp; Management&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://www-01.ibm.com/support/docview.wss?uid=isg3T1025318"&gt;Change Power Management settings&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2018"></category><category term="服务器"></category></entry><entry><title>echo 输出导致SCP 失效的问题</title><link href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="alternate"></link><published>2018-08-11T00:00:00+08:00</published><updated>2018-08-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-11:/posts/2018/2018-08-11.html</id><summary type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在本地没有正确配置，导致上了跳板机之后，再SSH 就会失败，于是我在跳板机的&lt;code&gt;.bashrc&lt;/code&gt; 上写了一段检测脚本，如果变量&lt;code&gt;$SSH_AUTH_SOCK&lt;/code&gt; 不存在，就引导用户去看Wiki，不要烦我啦！&lt;/p&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="服务器"></category></entry><entry><title>什么是Bogon？</title><link href="https://fangpsh.github.io/posts/2018/2018-09-19.html" rel="alternate"></link><published>2018-09-19T00:00:00+08:00</published><updated>2018-09-19T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-09-19:/posts/2018/2018-09-19.html</id><summary type="html">&lt;p&gt;在&lt;a href="https://bgp.he.net/"&gt;BGP.HE.NET&lt;/a&gt; 上查询IP 信息的时候，Announced By &lt;a href="https://bgp.he.net/AS4808"&gt;AS4808&lt;/a&gt;：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AS4808" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162304.png"&gt;&lt;/p&gt;
+&lt;p&gt;提示：&lt;a href="https://bgp.he.net/AS4808#_bogons"&gt;AS4808 announces bogons.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AS4804_Bogon" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162311.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="202.94.1.0" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162324.png"&gt;&lt;/p&gt;
+&lt;p&gt;意思这个段还在APNIC 手里，未被分配，但是联通的这个AS 域广播了这个段 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;在&lt;a href="https://bgp.he.net/"&gt;BGP.HE.NET&lt;/a&gt; 上查询IP 信息的时候，Announced By &lt;a href="https://bgp.he.net/AS4808"&gt;AS4808&lt;/a&gt;：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AS4808" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162304.png"&gt;&lt;/p&gt;
+&lt;p&gt;提示：&lt;a href="https://bgp.he.net/AS4808#_bogons"&gt;AS4808 announces bogons.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AS4804_Bogon" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162311.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="202.94.1.0" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162324.png"&gt;&lt;/p&gt;
+&lt;p&gt;意思这个段还在APNIC 手里，未被分配，但是联通的这个AS 域广播了这个段。&lt;/p&gt;
+&lt;p&gt;继续查下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;202/8    APNIC    1993-05    whois.apnic.net    https://rdap.apnic.net/    ALLOCATED&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;202/8&lt;/code&gt; 分配给了APNIC。既然是联通，那就到CNNIC 查下：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="CNNIC" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162337.png"&gt;&lt;/p&gt;
+&lt;p&gt;看起来确实没分给联通，不过在&lt;a href="https://www.ipip.net/ip.html"&gt;IPIP.NET&lt;/a&gt;查询，这个IP 归属显示是联通。&lt;/p&gt;
+&lt;p&gt;就像&lt;code&gt;10.0.0.0/8&lt;/code&gt; 这类私网保留地址，广播出去，大家应该都会丢弃掉。估计得等以后APNIC 开始分配使用这段地址，联通就不能广播了吧。  &lt;/p&gt;
+&lt;p&gt;Bogon&lt;code&gt;['bɔɡən]&lt;/code&gt; 这个单词好多词典都查不到，据说起源于bogus&lt;code&gt;bəuɡəs&lt;/code&gt;：假冒，伪造。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A bogon route is a type of route which shouldn't exist on the global Internet. More specifically, "bogon" (derived from the word "bogus") refers to an advertisement for a prefix within a reserved or otherwise unallocated IP network.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.iana.org/assignments/ipv4-address-space/ipv4-address-space.xhtml"&gt;IANA IPv4 Address Space Registry&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://ipwhois.cnnic.cn/bns/query/Query/ipwhoisQuery.do?queryOption=ipv4&amp;amp;txtquery=202.94.1.2&amp;amp;x=46&amp;amp;y=10"&gt;CNNIC&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://packetlife.net/blog/2009/jan/21/whats-bogon/"&gt;What's a bogon?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Bogon_filtering"&gt;Bogon filtering&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="BGP"></category></entry><entry><title>echo 输出导致SCP 失效的问题</title><link href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="alternate"></link><published>2018-08-11T00:00:00+08:00</published><updated>2018-08-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-11:/posts/2018/2018-08-11.html</id><summary type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启&lt;code&gt;ForwardAgent&lt;/code&gt;，跳板机上创建&lt;code&gt;SSH_AUTH_SOCK&lt;/code&gt;，透传私钥。然而常常有用户在本地没有正确配置，导致上了跳板机之后，再SSH 就会失败，于是我在跳板机的&lt;code&gt;.bashrc&lt;/code&gt; 上写了一段检测脚本，如果变量&lt;code&gt;$SSH_AUTH_SOCK&lt;/code&gt; 不存在，就引导用户去看Wiki，不要烦我啦！&lt;/p&gt;
 &lt;p&gt;用了一段时间，有用户发现scp 文件到跳板机时会失败，Google 一下：&lt;a href="https://stackoverflow.com/questions/12440287/scp-doesnt-work-when-echo-in-bashrc"&gt;SCP doesn't work when echo in .bashrc?&lt;/a&gt;，怎么判断当前会话是scp？：&lt;a href="https://superuser.com/questions/690735/can-i-tell-if-im-in-an-scp-session-in-my-bashrc"&gt;Can I tell if I'm in an scp session in my .bashrc?&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;改下脚本：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$PS1&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-z&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$SSH_AUTH_SOCK&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;then&lt;/span&gt;
@@ -770,7 +835,45 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;搞定！&lt;/p&gt;</content><category term="2018"></category><category term="SSH"></category><category term="linux"></category></entry><entry><title>OpenLDAP 的SSHA</title><link href="https://fangpsh.github.io/posts/2018/2018-05-07.html" rel="alternate"></link><published>2018-05-07T00:00:00+08:00</published><updated>2018-05-07T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-05-07:/posts/2018/2018-05-07.html</id><summary type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"&gt;&lt;/p&gt;
+&lt;p&gt;搞定！&lt;/p&gt;</content><category term="2018"></category><category term="SSH"></category><category term="linux"></category></entry><entry><title>踩了Systemd 2个坑</title><link href="https://fangpsh.github.io/posts/2018/2018-08-10.html" rel="alternate"></link><published>2018-08-10T00:00:00+08:00</published><updated>2018-08-10T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-08-10:/posts/2018/2018-08-10.html</id><summary type="html">&lt;p&gt;手写Systemd service 的经验不多，非常尴尬，踩了Systemd 2个坑，浪费了近1个小时，记录一下。&lt;/p&gt;
+&lt;p&gt;Python项目部署使用了&lt;a href="https://virtualenv.pypa.io/en/stable/"&gt;virtualenv&lt;/a&gt;，添加一个Systemd service，发现启动失败，提示：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;File &amp;quot;/usr/lib64/python2.7/subprocess.py&amp;quot;, line …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;手写Systemd service 的经验不多，非常尴尬，踩了Systemd 2个坑，浪费了近1个小时，记录一下。&lt;/p&gt;
+&lt;p&gt;Python项目部署使用了&lt;a href="https://virtualenv.pypa.io/en/stable/"&gt;virtualenv&lt;/a&gt;，添加一个Systemd service，发现启动失败，提示：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;File &amp;quot;/usr/lib64/python2.7/subprocess.py&amp;quot;, line 1327, in _execute_child
+raise child_exception
+OSError: [Errno 2] No such file or directory
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;忘记设置环境了，&lt;code&gt;EnvironmentFile&lt;/code&gt; 里设置&lt;code&gt;PATH&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;EXAMPLE_ENV=/home/www/example_env
+PATH=&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;EXAMPLE_ENV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;:&lt;span class="nv"&gt;$PATH&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;发现无论如何都无效，Google一下才发现傻了：&lt;a href="https://stackoverflow.com/questions/35439123/systemd-environment-directive-to-set-path"&gt;systemd: “Environment” directive to set PATH&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;You can't use EnvVars in Environment directives. The whole Environment= will be ignored.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;改成：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;EXAMPLE_ENV=/home/www/example_env
+PATH=/home/www/example_env/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;终于好了。不过又遇到一个问题，因为：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;ExecStart=&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;EXAMPLE_ENV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/bin/example&lt;span class="w"&gt; &lt;/span&gt;....
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Systemd 提示：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Executable path is not absolute, ignoring:${EXAMPLE_ENV}/bin/example ...&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;咦，变量怎么没解析。Google 了下，改成下面这样就好了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;ExecStart=/usr/bin/env&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;EXAMPLE_ENV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/bin/example
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html"&gt;man/systemd.service&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For each of the specified commands, the first argument must be either an absolute path to an executable or a simple file name without any slashes.&lt;/p&gt;
+&lt;/blockquote&gt;</content><category term="2018"></category><category term="systemd"></category></entry><entry><title>OpenLDAP 的SSHA</title><link href="https://fangpsh.github.io/posts/2018/2018-05-07.html" rel="alternate"></link><published>2018-05-07T00:00:00+08:00</published><updated>2018-05-07T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-05-07:/posts/2018/2018-05-07.html</id><summary type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"&gt;&lt;/p&gt;
 &lt;p&gt;最近折腾了一下&lt;a href="https://www.openldap.org"&gt;OpenLDAP&lt;/a&gt;，密码用的哈希算法是SSHA，SSHA 其实就是加盐的&lt;a href="https://zh.wikipedia.org/zh/SHA-1"&gt;SHA1&lt;/a&gt;：&lt;code&gt;salted SHA1&lt;/code&gt;，加盐增加了利用彩虹表碰撞的难度。&lt;/p&gt;
 &lt;p&gt;摘一段官网&lt;a href="https://www.openldap.org/faq/data/cache/347.html"&gt;FAQ …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"&gt;&lt;/p&gt;
 &lt;p&gt;最近折腾了一下&lt;a href="https://www.openldap.org"&gt;OpenLDAP&lt;/a&gt;，密码用的哈希算法是SSHA，SSHA 其实就是加盐的&lt;a href="https://zh.wikipedia.org/zh/SHA-1"&gt;SHA1&lt;/a&gt;：&lt;code&gt;salted SHA1&lt;/code&gt;，加盐增加了利用彩虹表碰撞的难度。&lt;/p&gt;
@@ -1399,7 +1502,127 @@ cd !$:h
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;看到&lt;code&gt;HTTP2_SESSION_RECV_INVALID_HEADER&lt;/code&gt; 那行了吗？无效的header 就在它下面，在这个问题中，无效的header 是&lt;code&gt;referrer policy&lt;/code&gt;，用空格代替了破折号。HTTP/2 协议理的header 名称必须全小写，如果你发送一个&lt;code&gt;Referrer-Policy&lt;/code&gt;的header，浏览器会视为&lt;code&gt;referrer-policy&lt;/code&gt;。在这个问题中，被视为成无效的&lt;code&gt;referrer policy&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;在你浏览器的&lt;code&gt;chrome://net-internals/&lt;/code&gt;中，你能发现很多有趣的东西。这里有一些不会出现在开发者工具中的请求，例如浏览器扩展发出的请求。去试一试，说不定下次你debug 时能帮上忙。我在研究&lt;a href="https://www.michalspacek.com/opera-browsers-vpn-is-just-a-proxy"&gt;Opera browser “VPN” &lt;/a&gt;和&lt;a href="https://www.michalspacek.com/ur-browser-vpn-and-other-tales"&gt;“VPN” in UR browser&lt;/a&gt; 就用过它。&lt;/p&gt;</content><category term="2017"></category><category term="chrome"></category><category term="http2"></category></entry><entry><title>基于OpenResty 的whoami.akaimai.net 实现</title><link href="https://fangpsh.github.io/posts/2017/2017-08-30.html" rel="alternate"></link><published>2017-08-30T00:00:00+08:00</published><updated>2017-08-30T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-08-30:/posts/2017/2017-08-30.html</id><summary type="html">&lt;p&gt;上次收集整理[[获取Local DNS 地址信息]]) 的时候看到akamai 的&lt;code&gt;whoami.akamai.net&lt;/code&gt;，想起之前看到&lt;a href="https://twitter.com/agentzh/status/767963492850601985"&gt;agentzh&lt;/a&gt; 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;上次收集整理[[获取Local DNS 地址信息]]) 的时候看到akamai 的&lt;code&gt;whoami.akamai.net&lt;/code&gt;，想起之前看到&lt;a href="https://twitter.com/agentzh/status/767963492850601985"&gt;agentzh&lt;/a&gt; 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现。&lt;/p&gt;
+&lt;p&gt;在你浏览器的&lt;code&gt;chrome://net-internals/&lt;/code&gt;中，你能发现很多有趣的东西。这里有一些不会出现在开发者工具中的请求，例如浏览器扩展发出的请求。去试一试，说不定下次你debug 时能帮上忙。我在研究&lt;a href="https://www.michalspacek.com/opera-browsers-vpn-is-just-a-proxy"&gt;Opera browser “VPN” &lt;/a&gt;和&lt;a href="https://www.michalspacek.com/ur-browser-vpn-and-other-tales"&gt;“VPN” in UR browser&lt;/a&gt; 就用过它。&lt;/p&gt;</content><category term="2017"></category><category term="chrome"></category><category term="http2"></category></entry><entry><title>搭建HTTP/2 代理</title><link href="https://fangpsh.github.io/posts/2017/2017-11-01.html" rel="alternate"></link><published>2017-11-01T00:00:00+08:00</published><updated>2017-11-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-11-01:/posts/2017/2017-11-01.html</id><summary type="html">&lt;p&gt;这个月又抢到了内部的100元腾讯云代金券，听说最近流行HTTP/2 代理，快速折腾一下，主要内容都是参考这篇文章：&lt;a href="https://wzyboy.im/post/1052.html"&gt;《使用 nghttpx 搭建 HTTP/2 代理》&lt;/a&gt;。&lt;/p&gt;
+&lt;h2&gt;证书 …&lt;/h2&gt;</summary><content type="html">&lt;p&gt;这个月又抢到了内部的100元腾讯云代金券，听说最近流行HTTP/2 代理，快速折腾一下，主要内容都是参考这篇文章：&lt;a href="https://wzyboy.im/post/1052.html"&gt;《使用 nghttpx 搭建 HTTP/2 代理》&lt;/a&gt;。&lt;/p&gt;
+&lt;h2&gt;证书&lt;/h2&gt;
+&lt;p&gt;HTTP/2 代理其实也就是HTTPS 代理了，首先需要一个证书，可以自己签，太麻烦了。腾讯云和阿里云都提供了免费的DV 证书。搞一个。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.qcloud.com/blog/?p=1237"&gt;腾讯云支持DV SSL证书免费申请&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.aliyun.com/product/cas"&gt;Alibaba Cloud Certificates Service&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因为域名托管在DNSPOD，在腾讯云申请都无需验证，挺快的，会给一个压缩包，打开里面Nginx 子目录，拿到crt 和key 备用。&lt;/p&gt;
+&lt;h2&gt;nghttpx&lt;/h2&gt;
+&lt;p&gt;nghttpx 可以对外提供HTTP/2 服务，将请求转换成HTTP/1.X 转发给后端，相当于一个中间人。&lt;/p&gt;
+&lt;p&gt;安装&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;aptitude install nghttp2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;不懂为啥ubuntu 的包名是&lt;a href="https://packages.ubuntu.com/xenial/nghttp2"&gt;nghttp2&lt;/a&gt;，然后包含三个包：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;nghttp2-client
+nghttp2-proxy
+nghttp2-server
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;编辑配置文件 &lt;code&gt;/etc/nghttpx/nghttpx.conf&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;frontend&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;,&lt;span class="mi"&gt;443&lt;/span&gt;
+&lt;span class="nv"&gt;backend&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;127&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;1&lt;/span&gt;,&lt;span class="mi"&gt;3128&lt;/span&gt;
+&lt;span class="nv"&gt;private&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;key&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;file&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nv"&gt;_xxxxx&lt;/span&gt;.&lt;span class="nv"&gt;fangpeishi&lt;/span&gt;.&lt;span class="nv"&gt;com&lt;/span&gt;.&lt;span class="nv"&gt;key&lt;/span&gt;
+&lt;span class="nv"&gt;certificate&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;file&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="nv"&gt;_xxxxx&lt;/span&gt;.&lt;span class="nv"&gt;fangpeishi&lt;/span&gt;.&lt;span class="nv"&gt;com_bundle&lt;/span&gt;.&lt;span class="nv"&gt;crt&lt;/span&gt;
+&lt;span class="nv"&gt;http2&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;proxy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;yes&lt;/span&gt;
+&lt;span class="nv"&gt;errorlog&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;syslog&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;yes&lt;/span&gt;
+&lt;span class="nv"&gt;workers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+
+&lt;span class="nv"&gt;add&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;x&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;forwarded&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;no&lt;/span&gt;
+
+&lt;span class="nv"&gt;no&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;via&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;yes&lt;/span&gt;
+&lt;span class="nv"&gt;no&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;ocsp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;yes&lt;/span&gt;
+&lt;span class="nv"&gt;tls&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;proto&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;list&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;TLSv1&lt;/span&gt;.&lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="nv"&gt;ciphers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;ECDHE&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="nv"&gt;AES128&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我是抄的上文文章中的配置，先跑起来再说。。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;systemctl restart nghttpx
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;squid&lt;/h2&gt;
+&lt;p&gt;squid 作为nghttpx 后端的透明代理，不过记住要让它监听在本地，别暴露在公网上。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;apt-get install squid
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;编辑配置文件&lt;code&gt;/etc/squid/squid.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;http_port 127.0.0.1:3128
+
+cache deny all
+access_log none
+
+dns_v4_first on
+
+via off
+
+forwarded_for delete
+
+auth_param basic program /usr/lib/squid/basic_ncsa_auth  /etc/squid/passwd
+auth_param basic casesensitive off
+acl auth_user proxy_auth REQUIRED
+http_access allow auth_user
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;也是抄的教程中的配置。。先跑起来再说。鉴权那段下文说明。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;systemctl restart squid
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;鉴权&lt;/h2&gt;
+&lt;p&gt;暴露在公网被其他人乱跑流量总不太好，在Squid 上加一个简单的HTTP Auth。&lt;/p&gt;
+&lt;p&gt;安装 htpasswd 工具：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;apt-get install apache2-utils
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#-c 创建文件
+htpasswd  -c  /etc/squid/passwd [用户名]
+
+# 添加其他用户
+htpasswd /etc/squid/passwd [用户名]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;在&lt;code&gt;/etc/squid/squid.conf&lt;/code&gt; 添加配置，再重启即可：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;auth_param basic program /usr/lib/squid/basic_ncsa_auth  /etc/squid/passwd
+auth_param basic casesensitive off
+acl auth_user proxy_auth REQUIRED
+http_access allow auth_user
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;更多关于squid 的配置需求，直接参考官方文档，应该没有啥是squid 做不到了。&lt;/p&gt;
+&lt;h2&gt;BBR&lt;/h2&gt;
+&lt;p&gt;再顺便升下内核，开启下 BBR，听说有奇效？不过我没有做对比。。直接开启了。&lt;/p&gt;
+&lt;p&gt;参考文章：&lt;a href="https://imtx.me/archives/2379.html"&gt;《使用标准方式在 Ubuntu 16.04 下启用 TCP 拥塞控制之 BBR》&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;简明步骤，来着上面这篇文章：&lt;/p&gt;
+&lt;p&gt;安装内核&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;apt-get install linux-generic-hwe-16.04
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;reboot 之后，检查内核是不是&amp;gt; 4.9&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;uname -a 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;加载模块，打开参数：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;modprobe&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tcp_bbr&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;tcp_bbr&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tee&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;etc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;modules&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;modules&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;conf&lt;/span&gt;
+
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;net.core.default_qdisc=fq&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tee&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;etc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sysctl&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;conf&lt;/span&gt;
+&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;net.ipv4.tcp_congestion_control=bbr&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tee&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;etc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sysctl&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;conf&lt;/span&gt;
+&lt;span class="n"&gt;sysctl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;最后验证一下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;sysctl net.ipv4.tcp_congestion_control
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;返回结果必须是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;net.ipv4.tcp_congestion_control = bbr
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;使用&lt;/h2&gt;
+&lt;p&gt;搞完之后，验证一下，Chrome 安装&lt;a href="https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en"&gt;SwitchyOmega&lt;/a&gt; 插件，新建一份配置，协议选择HTTPS，记得填入HTTP Auth验证信息。然后选中启用，打开 &lt;a href="https://www.whatismyip.com/"&gt;whatismyip&lt;/a&gt; 看看IP 是不是变了。在不同的平台上要使用，找不同的客户端支持吧。&lt;/p&gt;</content><category term="2017"></category><category term="代理"></category></entry><entry><title>基于OpenResty 的whoami.akaimai.net 实现</title><link href="https://fangpsh.github.io/posts/2017/2017-08-30.html" rel="alternate"></link><published>2017-08-30T00:00:00+08:00</published><updated>2017-08-30T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-08-30:/posts/2017/2017-08-30.html</id><summary type="html">&lt;p&gt;上次收集整理[[获取Local DNS 地址信息]]) 的时候看到akamai 的&lt;code&gt;whoami.akamai.net&lt;/code&gt;，想起之前看到&lt;a href="https://twitter.com/agentzh/status/767963492850601985"&gt;agentzh&lt;/a&gt; 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;上次收集整理[[获取Local DNS 地址信息]]) 的时候看到akamai 的&lt;code&gt;whoami.akamai.net&lt;/code&gt;，想起之前看到&lt;a href="https://twitter.com/agentzh/status/767963492850601985"&gt;agentzh&lt;/a&gt; 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现。&lt;/p&gt;
 &lt;p&gt;找到agentzh 当时的 &lt;a href="https://gist.github.com/agentzh/6c50d37510daef792ed220fa0d970393"&gt;gist&lt;/a&gt;，第一次学习OpenResty ，决定照猫画虎。看起来要在OpenResty 里面接受dns 数据包，并且返回，需要用到&lt;a href="https://github.com/openresty/stream-lua-nginx-module"&gt;stream-lua-nginx-module&lt;/a&gt;这个模块，这里要注意的时候，截至目前(2017-08-30) master 分支还不支持 &lt;code&gt;ngx.req.udp_socket&lt;/code&gt; ，agentzh 当时hack 的代码都在 bloody-dns-server 分支下面。&lt;/p&gt;
 &lt;h2&gt;编译OpenResty&lt;/h2&gt;
 &lt;p&gt;说来惭愧，编译OpenResty费了好大一番工夫。先是没有看清stream-lua-nginx-modele 的分支，直接用master 分支的编译，测试代码的时候直接返回 &lt;code&gt;ngx.req.udp_socket&lt;/code&gt; 是空。&lt;/p&gt;

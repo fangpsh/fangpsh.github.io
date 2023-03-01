@@ -24,6 +24,31 @@
 <section id="content" class="content">
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-09-19.html" rel="bookmark" title="Permalink to 什么是Bogon？">什么是Bogon？</a></h2> </header>
+                <div class="entry-content"> <p>在<a href="https://bgp.he.net/">BGP.HE.NET</a> 上查询IP 信息的时候，Announced By <a href="https://bgp.he.net/AS4808">AS4808</a>：</p>
+<p><img alt="AS4808" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162304.png"></p>
+<p>提示：<a href="https://bgp.he.net/AS4808#_bogons">AS4808 announces bogons.</a></p>
+<p><img alt="AS4804_Bogon" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162311.png"></p>
+<p><img alt="202.94.1.0" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162324.png"></p>
+<p>意思这个段还在APNIC 手里，未被分配，但是联通的这个AS 域广播了这个段 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-08-11.html" rel="bookmark" title="Permalink to echo 输出导致SCP 失效的问题">echo 输出导致SCP 失效的问题</a></h2> </header>
+                <div class="entry-content"> <p>搭建了一个跳板机，强制使用密钥对登陆机器，同时需要用户在本地开启<code>ForwardAgent</code>，跳板机上创建<code>SSH_AUTH_SOCK</code>，透传私钥。然而常常有用户在 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-08-10.html" rel="bookmark" title="Permalink to 踩了Systemd 2个坑">踩了Systemd 2个坑</a></h2> </header>
+                <div class="entry-content"> <p>手写Systemd service 的经验不多，非常尴尬，踩了Systemd 2个坑，浪费了近1个小时，记录一下。</p>
+<p>Python项目部署使用了<a href="https://virtualenv.pypa.io/en/stable/">virtualenv</a>，添加一个Systemd service，发现启动失败，提示：</p>
+<div class="highlight"><pre><span></span><code>File &quot;/usr/lib64/python2.7/subprocess.py&quot;, line …</code></pre></div> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-05-07.html" rel="bookmark" title="Permalink to OpenLDAP 的SSHA">OpenLDAP 的SSHA</a></h2> </header>
+                <div class="entry-content"> <p><img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"></p>
+<p>最近折腾了一下<a href="https://www.openldap.org">OpenLDAP</a>，密码用的哈希算法是SSHA，SSHA 其实就是加盐的<a href="https://zh.wikipedia.org/zh/SHA-1">SHA1</a>：<code>salted SHA1</code>，加盐增加了利用彩虹表碰撞的难度。</p>
+<p>摘一段官网<a href="https://www.openldap.org/faq/data/cache/347.html">FAQ …</a></p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="bookmark" title="Permalink to 《HTTP/2 基础教程》读书笔记">《HTTP/2 基础教程》读书笔记</a></h2> </header>
                 <div class="entry-content"> <p><img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"></p>
 <p>最近拿到一本新书：<a href="https://book.douban.com/subject/27665112/">《HTTP/2 基础教程》</a>，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的 …</p> </div><!-- entry-content -->
@@ -61,36 +86,9 @@
 <p>当你把网站迁移到性能更好的HTTP/2 协议时，可能会出现Chrome 没法加载 …</p> </div><!-- entry-content -->
         </article>
         <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2017/2017-08-30.html" rel="bookmark" title="Permalink to 基于OpenResty 的whoami.akaimai.net 实现">基于OpenResty 的whoami.akaimai.net 实现</a></h2> </header>
-                <div class="entry-content"> <p>上次收集整理[[获取Local DNS 地址信息]]) 的时候看到akamai 的<code>whoami.akamai.net</code>，想起之前看到<a href="https://twitter.com/agentzh/status/767963492850601985">agentzh</a> 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实现 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2017/2017-06-08.html" rel="bookmark" title="Permalink to 图片优化笔记">图片优化笔记</a></h2> </header>
-                <div class="entry-content"> <p>这里说的图片优化，目标是想尽可能降低图片大小，但又要保证质量不错，非常矛盾。不过降低图片大小，可以剩一大笔流量 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2017/2017-04-05.html" rel="bookmark" title="Permalink to htop 解释">htop 解释</a></h2> </header>
-                <div class="entry-content"> <blockquote>
-<p>"Explanation of everything you can see in htop/top on Linux"</p>
-<p>“解释你在Linux 上htop/top 中看到的所有内容”</p>
-</blockquote>
-<ul>
-<li><a href="https://peteris.rocks/blog/htop/">原文地址</a>：<ul>
-<li>https://peteris.rocks/blog/htop/</li>
-</ul>
-</li>
-<li>遵循原文许可协议：<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 license</a></li>
-<li>作者 …</li></ul> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-11-23.html" rel="bookmark" title="Permalink to 关闭HPKP 和HSTS的方法">关闭HPKP 和HSTS的方法</a></h2> </header>
-                <div class="entry-content"> <p>大家对于HSTS 一般都比较熟悉了，对HPKP 可能比较陌生,简单来说由于CA 的工作模式,导致别人有可能通过其他CA 签发你网站 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-11-01.html" rel="bookmark" title="Permalink to 《Web 性能权威指南》读书笔记">《Web 性能权威指南》读书笔记</a></h2> </header>
-                <div class="entry-content"> <p><img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"></p>
-<p>看<a href="https://book.douban.com/subject/25856314/">《Web 性能权威指南》</a>的起因是在看<a href="https://book.douban.com/subject/26869219/">《HTTPS 权威指南》</a>的时候，看到优化相关的，然后就延伸到想看一下这本书。<br>
-这本书，作者提供了 …</p> </div><!-- entry-content -->
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2017/2017-11-01.html" rel="bookmark" title="Permalink to 搭建HTTP/2 代理">搭建HTTP/2 代理</a></h2> </header>
+                <div class="entry-content"> <p>这个月又抢到了内部的100元腾讯云代金券，听说最近流行HTTP/2 代理，快速折腾一下，主要内容都是参考这篇文章：<a href="https://wzyboy.im/post/1052.html">《使用 nghttpx 搭建 HTTP/2 代理》</a>。</p>
+<h2>证书 …</h2> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>
