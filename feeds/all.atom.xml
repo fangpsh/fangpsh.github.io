@@ -5832,7 +5832,62 @@ One-line include in Perl CGI, Python CGI and PHP scripts automatically handles E
 &lt;p&gt;Translations are available in: Chinese, Czech, German, and French.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;译文，原文地址：&lt;a href="https://www.mnot.net/cache_docs/"&gt;https://www.mnot.net/cache_docs/&lt;/a&gt;，遵循原文的版本许可协议：&lt;a href="http://creativecommons.org/licenses/by-nc-nd/3.0/"&gt;Attribution-NonCommercial-NoDerivs 3.0 Unported&lt;/a&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;</content><category term="2015"></category><category term="Web"></category><category term="Cache"></category></entry><entry><title>尝试解决openSUSE下zypper软件包名称自动补全的问题</title><link href="https://fangpsh.github.io/posts/2014/141216.html" rel="alternate"></link><published>2014-12-16T11:13:19+08:00</published><updated>2014-12-16T11:13:19+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-12-16:/posts/2014/141216.html</id><summary type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外顺带修了一个小bug，当本地repo超过10条时，原来脚本生成的自动补全列表不全的问题。&lt;/p&gt;
+&lt;/blockquote&gt;</content><category term="2015"></category><category term="Web"></category><category term="Cache"></category></entry><entry><title>OpenSSH的AuthorizedKeysCommand选项</title><link href="https://fangpsh.github.io/posts/2015/2015-01-05.html" rel="alternate"></link><published>2015-01-05T00:00:00+08:00</published><updated>2015-01-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-01-05:/posts/2015/2015-01-05.html</id><summary type="html">&lt;p&gt;&lt;img alt="openssh" src="https://www.openssh.com/images/openssh.gif"&gt;&lt;/p&gt;
+&lt;p&gt;Debian jessie 冻结了，今年就要release，openssh-server 包也从6.0 升到6.7，AuthorizedKeysCommand 和AuthorizedKeysCommandUser 这两个配置选项是在6.2的时候引入的，所以也能用上了。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;wheezy (stable)：1:6.0p1-4+deb7u2&lt;/li&gt;
+&lt;li&gt;wheezy-backports： 1:6 …&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="openssh" src="https://www.openssh.com/images/openssh.gif"&gt;&lt;/p&gt;
+&lt;p&gt;Debian jessie 冻结了，今年就要release，openssh-server 包也从6.0 升到6.7，AuthorizedKeysCommand 和AuthorizedKeysCommandUser 这两个配置选项是在6.2的时候引入的，所以也能用上了。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;wheezy (stable)：1:6.0p1-4+deb7u2&lt;/li&gt;
+&lt;li&gt;wheezy-backports： 1:6.6p1-4~bpo70+1&lt;/li&gt;
+&lt;li&gt;jessie (testing) ： 1:6.7p1-3&lt;/li&gt;
+&lt;li&gt;sid (unstable) ： 1:6.7p1-3&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;AuthorizedKeysCommand 可以指定运行一个脚本，而这个脚本主要是寻找登录用户的publickey，默认传参为登录用户名，若未认证成功，将继续使用AuthorizedKeysFile文件来做认证。AuthorizedKeysCommandUser就是指定以什么用户来运行这个脚本。
+这两个配置选项的一个用处就是在用户管理上可以不再依靠本地管理，而可以通过脚本读取远程数据库系统中的用户的publickey进行认证，例如MySQL或者LDAP，这样的话，更便于用户的集中管理。&lt;/p&gt;
+&lt;p&gt;更多参考 &lt;a href="https://web.archive.org/web/20170106015909mp_/http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man5/sshd_config.5?query=sshd_config&amp;amp;sec=5&amp;amp;arch=i386"&gt;SSHD_CONFIG(5) File Formats Manual&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;MySQL&lt;/h3&gt;
+&lt;p&gt;下面这个例子取自OpenSSH 6.2 で追加された機能を試す¶. 如果是Debian的系统需要确保服务器上的openssh-server版本在6.2之上。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mysql创建数据表：
+mysql&amp;gt; create database authorizedkeys;
+mysql&amp;gt; use authorizedkeys;
+mysql&amp;gt; create table authorizedkeys(username text , publickey text);
+mysql&amp;gt; insert into authorizedkeys values(&amp;#39;fps&amp;#39;,&amp;#39;ssh-rsa AAA....xOr+WVPFsH/npVrvz/w== fangpeishi&amp;#39;); #添加用户的publickey到数据表中
+
+AuthorizedKeysCommand调用的脚本：/etc/key.sh
+#!/bin/sh
+/usr/bin/mysql -uroot authorizedkeys -sNe &amp;quot;select publickey from authorizedkeys where username=&amp;#39;$1&amp;#39;&amp;quot;
+
+/etc/ssh/sshd_config配置文件：
+...
+AuthorizedKeysCommand /etc/key.sh
+AuthorizedKeysCommandUser root #以root用户调用脚本
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;测试一下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;  # service ssh stop 停止服务
+  # /usr/sbin/ssh -ddd 进行debug，运行之后尝试远程登录，查看日志信息如下
+  ...
+  ...
+  debug1: temporarily_use_uid: 0/0 (e=0/0)
+  debug3: Running AuthorizedKeysCommand: &amp;quot;/etc/ssh/key.sh fps&amp;quot; as &amp;quot;root&amp;quot;
+  debug1: restore_uid: 0/0
+  debug1: temporarily_use_uid: 0/0 (e=0/0)
+  debug1: matching key found: file /etc/ssh/key.sh, line 1 RSA 00:11:26:ba:28:bc:fc:9c:da:f7:d0:ff:ee:64:fa:e2
+  debug1: restore_uid: 0/0
+  debug3: mm_answer_keyallowed: key 0x7fb2576727c0 is allowed
+  ...
+  ...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;LDAP&lt;/h3&gt;
+&lt;p&gt;这东西没折腾过，不熟悉，看两个例子吧：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20170106015909mp_/http://jmorano.moretrix.com/2013/09/openssh-6-2-x-ldap-authentication/"&gt;OpenSSH 6.2.x and LDAP authentication&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20170106015909mp_/http://www.sysadmin.org.au/index.php/2012/12/authorizedkeyscommand/"&gt;sshd AuthorizedKeysCommand&lt;/a&gt; 意思都差不多，都是执行脚本，从server上远程拿到key然后做认证。&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2015"></category><category term="openssh"></category></entry><entry><title>尝试解决openSUSE下zypper软件包名称自动补全的问题</title><link href="https://fangpsh.github.io/posts/2014/141216.html" rel="alternate"></link><published>2014-12-16T11:13:19+08:00</published><updated>2014-12-16T11:13:19+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-12-16:/posts/2014/141216.html</id><summary type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外顺带修了一个小bug，当本地repo超过10条时，原来脚本生成的自动补全列表不全的问题。&lt;/p&gt;
 &lt;p&gt;bash自带补全功能，要达到更好的补全效果需要安装bash-completion这个软件包，然后编写对应的补全脚本。关于bash-completion的内容，可以参考以下两个链接：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://kodango.com/bash-competion-programming"&gt;编写 Bash 补全脚本&lt;/a&gt;&lt;/li&gt;
