@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Articles in nginx tag - fangpsh's blog</title>
+        <title> Articles in haproxy tag - fangpsh's blog</title>
         <meta charset="utf-8" />
         <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
         <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
@@ -22,23 +22,18 @@
 				<h2 class="text-muted"></h2>
              </div>
 <section id="content" class="content">
-<h2>Articles with the nginx tag</h2>
+<h2>Articles with the haproxy tag</h2>
 
         <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-10-14.html" rel="bookmark" title="Permalink to Nginx 加载配置的顺序分析">Nginx 加载配置的顺序分析</a></h2> </header>
-                <div class="entry-content"> <h2>问题背景</h2>
-<p>在部署HTTPS 的时候，2台Nginx 下都部署了多个域名的证书，即NginxA 部署了证书a.com 和b.com 的证书，NginxB 也部署了证书a.com 和b …</p> </div><!-- entry-content -->
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-12-09.html" rel="bookmark" title="Permalink to HAProxy 最佳实践笔记">HAProxy 最佳实践笔记</a></h2> </header>
+                <div class="entry-content"> <p><img alt="haproxy_best_practice" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164657.png">  </p>
+<p>这篇笔记内容主要来自Haproxy官方团队分享的一个幻灯片:<a href="http://www.slideshare.net/haproxytech/haproxy-best-practice">《Haproxy best practice》</a>，介绍了一些常规的配置方式和优化手段。</p>
+<p><strong>不要盲目使用文中出现的所有技巧。</strong>  </p>
+<h2>Haproxy 是如何 …</h2> </div><!-- entry-content -->
         </article>
         <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-10-10.html" rel="bookmark" title="Permalink to TLS Record Size 优化笔记">TLS Record Size 优化笔记</a></h2> </header>
-                <div class="entry-content"> <h2>从淘宝说起</h2>
-<p>从<a href="http://velocity.oreilly.com.cn/2015/ppts/lizhenyu.pdf">《淘宝全站HTTPS实践》</a>开始说：  </p>
-<p><img alt="taobao-https" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160434.png"></p>
-<p>怎么优化呢，调大还是调小。<br>
-视频：17min分钟左右:  </p>
-<p><embed src='http://player.youku.com/player.php/sid/XMTM0MTUzMTk1Mg==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'></embed></p>
-<p>提到Google 动态调，然后一般设置4k，恩,到底怎样。</p>
-<p>看看野狗 …</p> </div><!-- entry-content -->
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-07-27.html" rel="bookmark" title="Permalink to Haproxy 作为Shadowsocks 中继遇到的一个问题">Haproxy 作为Shadowsocks 中继遇到的一个问题</a></h2> </header>
+                <div class="entry-content"> <p>之前用Haproxy 来转发Shadowsocks 的流量时遇到一个问题，现象是在使用Slack 的时候（聊天使用了Websocket），频繁重连。凭直觉是由于Haproxy 的某一项timeout …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>集群的NTP 对时问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/2016-04-03.html" rel="bookmark"
+         title="Permalink to 集群的NTP 对时问题">集群的NTP 对时问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <h2>NTP 简单介绍</h2>
+<p>NTP 是互联网上设备之间进行对时的协议，如下图所表示，有多层NTP 服务器，下游服务器向上游进行对时（可以了解一下stratum 值）。<br>
+<img alt="NTP" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163444.png"></p>
+<p>我们假设上游的服务器时间是可靠的，我们所要做的就是尽量使本地计算机时间和上游服务器时间一致，原理如下图（图片来自wikipedia）：</p>
+<p><img alt="NTP-Algorithm" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163455.png"></p>
+<ul>
+<li>t0 是客户端发送请求包时的客户端时间戳；</li>
+<li>t1 是服务端收到请求包时的服务端时间戳；</li>
+<li>t2 是服务端发送响应包时的服务端时间戳；</li>
+<li>t3 是客户端收到响应包时的客户端时间戳。</li>
+</ul>
+<p>如果我们假设数据包传输来回所花的时间一样（注意：这是主要的误差原因），并且客户端和服务端处理数据包的时间一致，
+那么客户端和服务端的时间差就是：</p>
+<div class="highlight"><pre><span></span><code>(t1-t0)+(t2-t3)/2
+</code></pre></div>
+
+<p>简单推导下公式：</p>
+<div class="highlight"><pre><span></span><code>设服务端-客户端时间差为：offset
+设请求包在网络上的传输时间为：s0
+设响应包在网络上的传输时间为: s1
+
+按条件得：
+t0 + s0 = t1 - offset  =&gt; offset = t0 + s0 -t1
+t2 + s1 = t3 + offset  =&gt; offset = t3 - t2 -s1
+
+=&gt; offset = (t0 - t1 + t3 - t2 + s0 - s1)/2
+</code></pre></div>
+
+<p>如果s0 - s1 = 0，即来回传输包所话的时间相等，那么对时的误差会相对来说小一点，但是在一些糟糕的网络环境下，例如移动网络，这个传输时间差常常很大，几百毫秒都有可能，所以在选择
+移动端对时的方案时需注意这个问题。  </p>
+<p>服务端和客户端传输来回所花的时间为：<code>( t3 - t0 ) - (t2 - t1)</code>。<br>
+这个时间在ntpd server 选择上游ntpd 服务器的算法中可作为重要的考察指标。我们知道如果来回传输总的延时增大，来回传输数据包所花时间差值增大的概率也随之增加。<br>
+关于NTP 协议的详细介绍可以参考：</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Network_Time_Protocol">Wikipedia:NTP</a></li>
+<li><a href="https://www.eecis.udel.edu/~mills/ntp/html/warp.html">How NTP Works</a></li>
+</ul>
+<h2>服务器对时设置</h2>
+<p>首先需要考虑的是服务器整个集群时间一致性的问题，然后才是服务器时间和标准时间误差的问题。  </p>
+<p>我们知道集群内网的环境一般都比较好，即可以减少上文中的 （s1 -s0） 的差，所以最好的选择是在内网搭建NTP Server，供集群内的所有服务器使用，这样可以保证整个集群内的时间一致。<br>
+<strong>注意：NTP Server 没必要情况下不要暴露在外网，如果需要给外网访问，做好授权，避免被作为NTP 反射攻击的工具。</strong>  </p>
+<p>这台NTP Server 也需要上游同步时间。这里有一个<strong>坑</strong>，Linux 常用的ntpd 程序只会在ntpd 启动时去解析上游服务器的域名，如果这些上游的服务器宕机了，或者更改IP 了，下游是无法主动发现的。<br>
+对于这个问题，首先是配置多几个<strong>优质</strong>的上游服务器，ntpd 本身对于上游服务器有一个选择策略，可以避免某几个上游宕机而同步不到时间。对于上游的这些服务器最好选择ntp.org 官方的，或者知名厂商或者组织的，总之就是求稳定和可靠，恶意的NTP 数据包影响不是小事。土豪可以自己上硬件授时的工具了，23333。  <br>
+国内常见的NTP 服务器：</p>
+<div class="highlight"><pre><span></span><code>阿里：
+time1~7.aliyun.com
+分别位于阿里北上深杭青不同的机房，上游据说是GPS 还是北斗授时，相对可靠。
+
+ntp.org:
+cn.pool.ntp.org, 0.asia.pool.ntp.org, 1.asia.pool.ntp.org
+更多请查看 http://www.pool.ntp.org
+
+上海交大：
+ntp.sjtu.edu.cn
+</code></pre></div>
+
+<p>另外一个措施是<strong>定期重启内网NTP Server 的进程</strong>。<br>
+集群内的其他机器的ntp 进程，ntp.conf 设置优先从内网NTP Server 对时。另外需要设置为开机启动，并对进程状态做好监控，同时也记得控制好这些ntp 进程的安全，禁止外网的查询请求。这些机器的ntp.conf 内的上游服务器可以配置成和内网NTP Server 一致，防止内网NTP Server 长时间宕机。。。  </p>
+<p>其他参考质料：</p>
+<ul>
+<li><a href="http://linux.die.net/man/5/ntp.conf">man:ntp.conf</a></li>
+<li><a href="http://haibing.org/64/%e7%94%9f%e4%ba%a7%e4%b8%8a%e7%9a%84ntp%e9%85%8d%e7%bd%aentp-conf/">生产上的NTP配置ntp.conf</a> </li>
+</ul>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-04-03T22:55:30+08:00">
+      Sun 03 April 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/linux.html">linux </a><a href="https://fangpsh.github.io/tag/ntp.html">ntp </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

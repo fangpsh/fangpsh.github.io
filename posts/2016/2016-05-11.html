@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bind DLZ With MySQL - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/2016-05-11.html" rel="bookmark"
+         title="Permalink to Bind DLZ With MySQL">Bind DLZ With MySQL</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <h2>前言</h2>
+<p>要做好运维自动化，内网域名的自动化管理不可少，得提供丰富的API 供其他内部系统调用。<br>
+之前在网易杭研实习，见过他们管理内部的域名，还是手工编辑bind 的zone 文件，苦不堪言，改一个得反复检查和找人Review，因为zone 如果出现一丝错误，会导致大量域名解析出错。一个方式是用DNSPod，CloudXNS等，这些服务商一般都有完善的API 支持，但是这样内网域名就暴露在公网，可被人暴力遍历，为渗透之类的提供信息，所以内网自己搭建一个权威DNS 服务器是更好的选择。  </p>
+<p>Name server 的选择上，有很多选择，如<a href="https://www.isc.org/downloads/bind/">Bind</a>, <a href="https://www.powerdns.com">PowerDNS</a>, <a href="http://www.nlnetlabs.nl/projects/nsd/">NSD</a> 等。PowerDNS 对MySQL 有原生支持，
+性能上相对<a href="http://bind-dlz.sourceforge.net">Bind DLZ</a> MySQL 会强很多，并且有非常多开源的<a href="https://github.com/PowerDNS/pdns/wiki/WebFrontends">WebFrontend</a> 支持。不过我最终还是选择了Bind DLZ，性能的问题可以通过后文提到的架构解决掉，并且还可以省去对
+MySQL 之类的优化工作，另外自己写一个对数据库的CRUD 操作的Web 界面并不困难，工作量也并不大。  </p>
+<h2>性能与架构</h2>
+<p>Bind DLZ 官方提供了一份<a href="http://bind-dlz.sourceforge.net/perf_tests.html">Performance Tests</a>，虽然是比较老的测试了，但是还是有不少参考价值。<br>
+<img alt="bind-dlz-perf-tests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163634.png"></p>
+<p>我自己使用queryperf 压测，结果与上图中类似，基本来说Bind DLZ MySQL 相比Bind 原生的方式，QPS 差20倍左右，因为MySQL 只能跑在单线程下。由于这个原因，建议采用Bind DLZ 作为Master，Bind 作为Slave的方式。多个Slave 结合LVS 做高可用和负载均衡，
+Master可以另外针对Bind DLZ 和MySQL 做高可用，这样的设计，可以发挥Bind 原生的高性能，也可以利用Bind DLZ 的灵活性。<br>
+<strong>但是这样会带来一个问题，在Master 上修改完记录之后，可能不会立即同步到Slave，会带来不一致的问题。不过这个问题可以通过自动发送Notify 来解决掉。</strong><br>
+<img alt="bind-dlz" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163644.png">  </p>
+<p>另外可参考：</p>
+<ul>
+<li><a href="http://bind-dlz.sourceforge.net/best_practices.html">Best Practices</a></li>
+<li><a href="http://bind-dlz.sourceforge.net/worst_practices.html">Worst Practices</a></li>
+</ul>
+<p>DNS 查询走UDP 协议，前端转发这块一般用LVS + Keepalived 之类的做高可用，当然用最近出的<a href="http://nginx.org/en/docs/stream/ngx_stream_core_module.html">Nginx UDP Stream</a> 也可以，不过性能上差很多。<br>
+同时也需要优化一下服务器网络UDP 相关的参数。  </p>
+<!-- more -->
+
+<h3>pnotify.pl</h3>
+<blockquote>
+<p><a href="https://github.com/jodrell/pnotify">pnotify</a> - A simple, portable Perl script for sending DNS NOTIFY packets with TSIG support.</p>
+</blockquote>
+<p>使用<a href="https://github.com/jodrell/pnotify">这个脚本</a>，在每次对域名记录做更改之后都对几台Slave发送一下notify 请求。</p>
+<h3>/etc/resolv.conf</h3>
+<p>把内网NS 加入到<code>/etc/resolv.conf</code> 之前需要注意一些事情，一般来说resolv.conf 会有多个nameserver，默认情况下会从上到下发送域名解析请求，当然可以配置成轮询（options:rotate)。建议是多个ns slave 为一组，一组有一个lvs 做高可用，将多个lvs的vip 分成多行写到resolv.conf 中，然后配置options: rotate，开启轮询。<br>
+另外需要设置一下一次查询的超时时间，默认是5s。如果某个服务处理过程中涉及到大量的域名查询，如果resolv.conf 中某一个nameserver 异常，默认的30s 超时将会导致请求大量堆积。建议改小timeout 的值，特别NS 在同一个内网的情况下。<br>
+更多配置细节请参考：<a href="http://man7.org/linux/man-pages/man5/resolv.conf.5.html">resolv.conf - resolver configuration file</a>  </p>
+<h2>安装配置</h2>
+<p>Bind 的版本选择上，建议使用官方推荐的stable 版本。DLZ 需要自行编译安装，官方的Bind 源码包里已带DLZ 的相关代码，编译时开启对应选项即可。MySQL 的表设计直接参考<a href="http://bind-dlz.sourceforge.net/mysql_driver.html">官网内容</a>，和<a href="http://bind-dlz.sourceforge.net/mysql_example.html">MySQL_Example</a>。<br>
+建议设置一下MySQL 的trigger，自动更新SOA 记录的serial 字段的值。  </p>
+<p>作为Slave 的Bind 强烈建议使用包管理系统直接安装。如果出现安全问题，Slave 是直接对外提供服务的，需要快速修复，直接 aptitude|yum 更新会方便和快速很多（相信上游仓库打包者的速度）。  </p>
+<p>另外在投入使用之前，搭建者应该已经阅读过官方的手册，<a href="https://kb.isc.org/article/AA-01031">BIND 9 Documentation</a>。  </p>
+<p>安装配置好之后，如果NS 要开放在公网访问，推荐使用<a href="http://www.intodns.com">intoDNS</a> 进行检测，可以发现一些细节问题。另外还可以使用<a href="https://dnsspy.io">DNS Spy</a> 对安全性做一番检查。</p>
+<p>开发的Web 前端在数据输入上必须做好校验，空格和异常字符等要检测和处理掉，域名需要符合规范（只能包含数字，字母，连接符，点号等，细节可以Google下），不然某条记录出错，依然可能导致大量域名无法解析。</p>
+<h3>安全</h3>
+<ul>
+<li>关注官方的<a href="https://kb.isc.org/category/74"> Security Advisories</a>，RSS订阅；</li>
+<li>隐藏版本：options 中自定义 version；</li>
+<li>chroot，另外使用非root 账户跑bind 服务；</li>
+<li>限制请求，利用ACL 限制查询来源，如果开放在公网最好关闭递归查询，防止被用于DNS 放大攻击；</li>
+<li>控制好域传送，配置allow-transfer；</li>
+<li>控制好allow-notify；</li>
+<li>控制好allow-update；</li>
+<li>使用DNSSEC；</li>
+<li>等等等。</li>
+</ul>
+<h3>备份</h3>
+<ul>
+<li>MySQL 备份；</li>
+<li>Slave 的zone 文件备份，方便快速恢复；</li>
+<li>全部域名记录可以选择定期备份到DNSPod 或者CloudXN 之类的，以防万一。</li>
+</ul>
+<h3>监控</h3>
+<ul>
+<li>Bind 进程监控；</li>
+<li>Bind 端口监控；</li>
+<li>Bind 解析功能监控；</li>
+<li>Bind 各类请求量和响应监控等。</li>
+</ul>
+<p>Nagios 有一个开源的插件可以使用：<a href="https://exchange.nagios.org/directory/Plugins/Network-Protocols/DNS/check_bind-2Esh/details">check_bind.sh</a>，不过很老了，可能需要自己改改，使用rndc 这个命令来获取Bind 的状态，采点绘图。<br>
+上面的脚本简单改改，可用于OpenFalcon，Bind9.9 版本：</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env bash</span>
+
+<span class="c1">#check bind status for falcon agent</span>
+<span class="c1">#fork from https://exchange.nagios.org/directory/Plugins/Network-Protocols/DNS/check_bind-2Esh/details</span>
+<span class="c1">#author: fangpeishi</span>
+
+<span class="nv">ST_OK</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">ST_WR</span><span class="o">=</span><span class="m">1</span>
+<span class="nv">ST_CR</span><span class="o">=</span><span class="m">2</span>
+<span class="nv">ST_UK</span><span class="o">=</span><span class="m">3</span>
+<span class="nv">path_pid</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+<span class="nv">name_pid</span><span class="o">=</span><span class="s2">&quot;named.pid&quot;</span>
+<span class="nv">path_rndc</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+<span class="nv">path_stats</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+<span class="nv">path_tmp</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+<span class="nv">pid_check</span><span class="o">=</span><span class="m">1</span>
+<span class="nv">HOST</span><span class="o">=</span><span class="sb">`</span>hostname<span class="sb">`</span>
+<span class="nv">DATE</span><span class="o">=</span><span class="sb">`</span>date<span class="w"> </span>+%s<span class="sb">`</span>
+
+
+check_pid<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$path_pid</span><span class="s2">/</span><span class="nv">$name_pid</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">retval</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">retval</span><span class="o">=</span><span class="m">1</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="o">}</span>
+
+trigger_stats<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$path_chroot</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span>sudo<span class="w"> </span>chroot<span class="w"> </span><span class="nv">$path_chroot</span><span class="w"> </span><span class="nv">$path_rndc</span>/rndc<span class="w"> </span>stats
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span>sudo<span class="w"> </span><span class="nv">$path_rndc</span>/rndc<span class="w"> </span>-c<span class="w"> </span>/named/etc/rndc.conf<span class="w"> </span>stats
+<span class="w">    </span><span class="k">fi</span>
+<span class="o">}</span>
+
+copy_to_tmp<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>tac<span class="w"> </span><span class="nv">$path_stats</span>/named_stats.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/--- \([0-9]*\)/{p=1} p{print} /\+\+\+ \([0-9]*\)/{p=0;if (count++==1) exit}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp
+<span class="w">    </span><span class="o">}</span>
+
+get_vals<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nv">succ_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in successful answer&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">succ_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in successful answer&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">ref_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in referral&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">ref_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in referral&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">nxrr_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in nxrrset&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">nxrr_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in nxrrset&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">nxdom_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in NXDOMAIN&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">nxdom_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in NXDOMAIN&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">rec_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;caused recursion&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">rec_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;caused recursion&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">fail_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in SERVFAIL&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">fail_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in SERVFAIL&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">dup_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;duplicate queries received&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+<span class="w">    </span><span class="nv">dup_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;duplicate queries received&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$succ_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">success</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">success</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$succ_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$succ_2nd</span><span class="sb">`</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ref_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">referral</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">referral</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$ref_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$ref_2nd</span><span class="sb">`</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$nxrr_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">nxrrset</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">nxrrset</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$nxrr_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$nxrr_2nd</span><span class="sb">`</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$nxdom_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">nxdomain</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">nxdomain</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$nxdom_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$nxdom_2nd</span><span class="sb">`</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$rec_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">recursion</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">recursion</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$rec_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$rec_2nd</span><span class="sb">`</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$fail_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">failure</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">failure</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$fail_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$fail_2nd</span><span class="sb">`</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dup_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">duplicate</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">duplicate</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$dup_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$dup_2nd</span><span class="sb">`</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$drop_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nv">dropped</span><span class="o">=</span><span class="m">0</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="nv">dropped</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$drop_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$drop_2nd</span><span class="sb">`</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="o">}</span>
+
+falcon<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;{\&quot;metric\&quot;: \&quot;</span><span class="nv">$1</span><span class="s2">\&quot;, \&quot;endpoint\&quot;: \&quot;</span><span class="nv">$HOST</span><span class="s2">\&quot;, \&quot;tags\&quot;: \&quot;\&quot;, &quot;</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;\&quot;value\&quot;: </span><span class="nv">$2</span><span class="s2">,&quot;</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot; \&quot;timestamp\&quot;: </span><span class="nv">$DATE</span><span class="s2">, \&quot;counterType\&quot;: \&quot;GAUGE\&quot;, \&quot;step\&quot;: 60}&quot;</span>
+<span class="o">}</span>
+
+get_perfdata<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;[&quot;</span>
+<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;caused_recursion&quot;</span><span class="w"> </span><span class="nv">$recursion</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
+<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;duplicate_queries_received&quot;</span><span class="w"> </span><span class="nv">$duplicate</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
+<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;failure_responses&quot;</span><span class="w"> </span><span class="nv">$failure</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
+<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;nxdomain_responses&quot;</span><span class="w"> </span><span class="nv">$nxdomain</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
+<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;nxrrset_responses&quot;</span><span class="w"> </span><span class="nv">$nxrrset</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
+<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;referral_responses&quot;</span><span class="w"> </span><span class="nv">$referral</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
+<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;success_responses&quot;</span><span class="w"> </span><span class="nv">$success</span>
+<span class="o">}</span>
+
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="si">${</span><span class="nv">pid_check</span><span class="si">}</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span>
+<span class="k">then</span>
+<span class="w">    </span>check_pid
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$retval</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="k">then</span>
+<span class="w">        </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;[&quot;</span>
+<span class="w">        </span>falcon<span class="w"> </span><span class="s2">&quot;check_bind&quot;</span><span class="w"> </span><span class="m">1</span>
+<span class="w">        </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;]&quot;</span>
+<span class="w">        </span><span class="nb">exit</span><span class="w"> </span><span class="nv">$ST_CR</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="k">fi</span>
+
+trigger_stats
+copy_to_tmp
+get_vals
+get_perfdata
+
+<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
+falcon<span class="w"> </span><span class="s2">&quot;check_bind&quot;</span><span class="w"> </span><span class="m">0</span>
+<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;]&quot;</span>
+
+Exit<span class="w"> </span><span class="nv">$ST_OK</span>
+</code></pre></div>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-05-11T10:49:30+08:00">
+      Wed 11 May 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/dns.html">dns </a><a href="https://fangpsh.github.io/tag/bind.html">bind </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

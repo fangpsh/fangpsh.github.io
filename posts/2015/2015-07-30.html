@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>一键连接VPN - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2015/2015-07-30.html" rel="bookmark"
+         title="Permalink to 一键连接VPN">一键连接VPN</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>公司安全的同事最近给OpenVPN加上了基于Google Authenticator的二步验证，密码是「常用密码」+「每次变化的Token」，每次在外边想做事都得打开手机查看Token，输入密码串，安全是安全了，可是不能忍！</p>
+<h2>OSX 生成Token</h2>
+<p>首先想到的是不要每次都打开手机，所以开始寻找Google Authenticator 生成工具的桌面版，果然有很多解决方案<a href="http://superuser.com/questions/462478/is-there-a-google-authenticator-desktop-client">Is there a Google Authenticator desktop client?</a>, 有Web版的、Java版的，不过最高效的当然是命令行版<a href="http://www.nongnu.org/oath-toolkit/">oathtool</a>:</p>
+<p>安装oath-toolkit:</p>
+<div class="highlight"><pre><span></span><code><span class="n">brew</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">oath</span><span class="o">-</span><span class="n">toolkit</span>
+</code></pre></div>
+
+<p>一个shell脚本，拷贝到 /usr/local/bin/，加上可执行权限:</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1">#fork from http://superuser.com/questions/462478/is-there-a-google-authenticator-desktop-client , by Peter Beckman</span>
+
+<span class="nv">scriptname</span><span class="o">=</span><span class="sb">`</span>basename<span class="w"> </span><span class="nv">$0</span><span class="sb">`</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="o">]</span>
+<span class="k">then</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$scriptname</span><span class="s2">: Service Name Req&#39;d&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Usage:&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;   otp google&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Configuration: </span><span class="nv">$HOME</span><span class="s2">/.otpkeys&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Format: name=key&quot;</span>
+<span class="nb">exit</span>
+<span class="k">fi</span>
+<span class="nv">otpkey</span><span class="o">=</span><span class="sb">`</span><span class="w"> </span>grep<span class="w"> </span>^<span class="nv">$1</span><span class="w"> </span><span class="nv">$HOME</span>/.otpkeys<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="s2">&quot;=&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s2">&quot;s/ //g&quot;</span><span class="w"> </span><span class="sb">`</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="nv">$otpkey</span><span class="w"> </span><span class="o">]</span>
+<span class="k">then</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$scriptname</span><span class="s2">: Bad Service Name&quot;</span>
+<span class="nb">exit</span>
+<span class="k">fi</span>
+<span class="nv">token</span><span class="o">=</span><span class="sb">`</span>/usr/local/bin/oathtool<span class="w"> </span>--totp<span class="w"> </span>-b<span class="w"> </span><span class="nv">$otpkey</span><span class="sb">`</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$token</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$token</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>/usr/bin/pbcopy<span class="w"> </span><span class="c1">#自动拷贝至剪贴板</span>
+</code></pre></div>
+
+<!-- more -->
+<p>创建$HOME/.otpkeys 文件，输入Token生成码，格式：</p>
+<div class="highlight"><pre><span></span><code>格式：「名称」=「生成码」
+例：google=UKPPIDEALLKPYTT9
+</code></pre></div>
+
+<p>好了，打开终端，执行 <code>[脚本名] [名称]</code> 试一试,例：</p>
+<div class="highlight"><pre><span></span><code> ~  which oath
+/usr/local/bin/oath
+ ~  cat ~/.otpkeys
+google=UKPPIDEALLKPYTT9
+ ~  oath google
+123456
+</code></pre></div>
+
+<p>另外按下 Command键+V 试一试，爽到不行，pbcopy真是个伟大的命令。</p>
+<h2>自动连接VPN</h2>
+<p>自动生成Token复制到剪贴板是方便了一点，不过想着每次还得自己打开客户端--「Tunnelblick」手动输入太烦。
+安装OpenVPN：</p>
+<div class="highlight"><pre><span></span><code>brew install Caskroom/cask/tuntap #先安装这货
+brew install openvpn
+</code></pre></div>
+
+<p>安装完成后拷贝OpenVPN的配置文件至 <code>/usr/local/etc/openvpn</code>目录（不放这个目录也行。。反正是手动指定的），
+例： </p>
+<div class="highlight"><pre><span></span><code>#/usr/local/etc/openvpn/client.ovpn
+...
+remote vpn.google.com 1234
+...
+ca /usr/local/etc/openvpn/ca.crt
+cert /usr/local/etc/openvpn/client1.crt
+key /usr/local/etc/openvpn/client1.key
+...
+</code></pre></div>
+
+<p>记得上面的<code>ca</code>，<code>key</code>，<code>cert</code>几个要写绝对路径，即使和openvpn的配置文件在同一目录下。<br>
+好了，执行</p>
+<div class="highlight"><pre><span></span><code>sudo /usr/local/sbin/openvpn  --config /usr/local/etc/openvpn/client.ovpn
+</code></pre></div>
+
+<p>试一试，输入帐号和密码，没问题的话会看到连接成功，下发的路由等等。  </p>
+<p>连接成功之后尝试把前面几步输入的操作用脚本搞定，祭出老牌神器--[expect]。</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/expect</span>
+
+<span class="nb">set</span><span class="w"> </span>username<span class="w"> </span>「你的用户名」
+<span class="nb">set</span><span class="w"> </span>passwd<span class="w"> </span><span class="o">[</span><span class="nb">exec</span><span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="o">{</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;「你的密码」&quot;</span><span class="sb">`</span>「上面一步生成Token你的脚本的绝对路径」<span class="w"> </span>「<span class="nv">$HOME</span>/.otpkeys中对应的条目名称」<span class="sb">`</span><span class="o">}]</span>
+<span class="c1">#例：set passwd [exec sh -c {echo &quot;helloworld&quot;`/usr/local/bin/oath google`}]</span>
+spawn<span class="w"> </span>sudo<span class="w"> </span>/usr/local/sbin/openvpn<span class="w">  </span>--config<span class="w"> </span>/usr/local/etc/openvpn/「OpenVPN配置文件」
+<span class="c1">#例：spawn sudo /usr/local/sbin/openvpn  --config /usr/local/etc/openvpn/client.ovpn</span>
+expect<span class="w">  </span><span class="s2">&quot;Enter Auth Username:&quot;</span><span class="w"> </span><span class="o">{</span>send<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">\n&quot;</span><span class="o">}</span>
+expect<span class="w"> </span><span class="s2">&quot;Enter Auth Password:&quot;</span><span class="w"> </span><span class="o">{</span>send<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$passwd</span><span class="s2">\n&quot;</span><span class="o">}</span>
+
+interact
+</code></pre></div>
+
+<p>保存上面的脚本到一个你觉得方便运行的地方，爽到不行不行的。不喜欢expect脚本的，可以用openvpn的 'auth-user-pass-verify' 选项来达到同样的目的。</p>
+<h3>openconnect</h3>
+<p>如果用的是OpenConnect的话，使用下列命令：</p>
+<div class="highlight"><pre><span></span><code>brew install Caskroom/cask/tuntap
+brew install openconnect
+echo &quot;Password&quot;`oath google`  |sudo openconnect --user=USERNAME --passwd-on-stdin   vpn.google.com
+</code></pre></div>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2015-07-30T22:00:00+08:00">
+      Thu 30 July 2015
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2015.html">2015</a> Tagged <a href="https://fangpsh.github.io/tag/shell.html">shell </a><a href="https://fangpsh.github.io/tag/openvpn.html">openvpn </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

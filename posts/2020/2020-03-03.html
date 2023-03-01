@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>关于OpenSSH AuthorizedKeysCommand 的几个小问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2020/2020-03-03.html" rel="bookmark"
+         title="Permalink to 关于OpenSSH AuthorizedKeysCommand 的几个小问题">关于OpenSSH AuthorizedKeysCommand 的几个小问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>分享几个使用AuthorizedKeysCommand 遇到的问题。</p>
+<h1>关闭SELinux</h1>
+<div class="highlight"><pre><span></span><code>... error: AuthorizedKeysCommand ...  returned status 126
+</code></pre></div>
+
+<p>如果没有关闭，可能会遇到奇怪的问题，手动调用脚本能成功，实际sshd 日志报error status 126。
+如果安装了<a href="https://docs.pagure.org/setroubleshoot/SETroubleShootOverview.html">setroubleshoot</a>，可以看到详细的信息。</p>
+<h1>公钥列表似乎有大小限制？</h1>
+<p>应该是四五年前了，在之前公司一开始脚本里面通过<code>curl</code> 拿到结果直接输出到标准输出。有一天某些同学反应登录不上某台机器，登录其他机器正常。
+开始了漫长的排查过程，后来搜索到一封邮件<a href="https://groups.google.com/forum/#!topic/mailing.unix.openssh-dev/0kYCFOyla3w">AuthorizedKeysCommand size issue?</a>，上异常机器执行了下脚本，输出的公钥列表确实很长。
+改下脚本，下把curl 拿到的公钥列表先存到临时文件中(mktemp)，再cat，果然好了。。。</p>
+<h1>status 141</h1>
+<p>写shell 脚本，开头我一般都会加<code>set -e</code>，这个脚本也不例外。发现一个诧异的问题，在某云商某可用区，某些同学登录机器会间歇性失败。
+日志显示：</p>
+<div class="highlight"><pre><span></span><code>...error: AuthorizedKeysCommand ... failed, status 141
+</code></pre></div>
+
+<p>141 的意思是：<code>141 is SIGPIPE (128 indicating signal + SIGPIPE)</code></p>
+<p>搜到一个相关的链接:</p>
+<p><a href="https://lists.pld-linux.org/mailman/pipermail/pld-cvs-commit/Week-of-Mon-20131028/380095.html">packages/openssh  ignore SIGPIPE from ldap-helper. ssh server does not read whole input if matching key is found</a>。</p>
+<blockquote>
+<p>"ignore SIGPIPE from ldap-helper. ssh server does not read whole input if matching key is found"</p>
+</blockquote>
+<p>客户端和服务端都开启debug 模式，发现OpenSSH 在匹配AuthorizedKeysCommand 返回的公钥列表时，只要一读到匹配的公钥，就不会继续读了，应该是这个时候发送了一个信号，导致脚本退出状态异常。
+注释掉<code>set -e</code>就正常了。</p>
+<p>至于为什么就这个区域的机器部分机器有问题，能力和精力都不足，搞不清楚了:(</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2020-03-03T00:00:00+08:00">
+      Tue 03 March 2020
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2020.html">2020</a> Tagged <a href="https://fangpsh.github.io/tag/openssh.html">OpenSSH </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

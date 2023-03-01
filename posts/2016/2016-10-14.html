@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Nginx 加载配置的顺序分析 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/2016-10-14.html" rel="bookmark"
+         title="Permalink to Nginx 加载配置的顺序分析">Nginx 加载配置的顺序分析</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <h2>问题背景</h2>
+<p>在部署HTTPS 的时候，2台Nginx 下都部署了多个域名的证书，即NginxA 部署了证书a.com 和b.com 的证书，NginxB 也部署了证书a.com 和b.com ，域名a.com 指向NginxA，域名b.com 指向NginxB。<br>
+在用<a href="https://www.ssllabs.com">SSL LABS</a> 检测的时候，发现b.com 会出现“This site works only in browsers with SNI support.”，而a.com 不会。<br>
+<img alt="SNI" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164029.png">  </p>
+<h3>SNI 介绍</h3>
+<p>关于<a href="https://en.wikipedia.org/wiki/Server_Name_Indication">SNI</a> 的简单介绍：</p>
+<blockquote>
+<p>在 Nginx 中可以通过指定不同的 server_name 来配置多个站点。HTTP/1.1 协议请求头中的 Host 字段可以标识出当前请求属于哪个站点。但是对于 HTTPS 网站来说，要想发送 HTTP 数据，必须等待 SSL 握手完成，而在握手阶段服务端就必须提供网站证书。对于在同一个 IP 部署不同 HTTPS 站点，并且还使用了不同证书的情况下，服务端怎么知道该发送哪个证书？<br>
+Server Name Indication，简称为 SNI，是 TLS 的一个扩展，为解决这个问题应运而生。有了 SNI，服务端可以通过 Client Hello 中的 SNI 扩展拿到用户要访问网站的 Server Name，进而发送与之匹配的证书，顺利完成 SSL 握手。</p>
+<p><em>引用来源：<a href="https://imququ.com/post/sth-about-switch-to-https-2.html">关于启用 HTTPS 的一些经验分享（二）</a>。</em></p>
+</blockquote>
+<p>使用OpenSSL 测试NginxA，NginxB，不指定Host 头，NginxA 返回的是a.com 的证书，NginxB 返回的也是a.com 的证书。  </p>
+<div class="highlight"><pre><span></span><code><span class="nv">openssl</span><span class="w"> </span><span class="nv">s_client</span><span class="w"> </span><span class="o">-</span><span class="k">connect</span><span class="w"> </span><span class="nv">nginx_ip</span>:<span class="mi">443</span><span class="w"> </span><span class="o">-</span><span class="nv">showcerts</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">/</span><span class="nv">dev</span><span class="o">/</span><span class="nv">null</span><span class="w"> </span>
+</code></pre></div>
+
+<h2>Nginx 源码分析</h2>
+<p>基本确定是配置加载的顺序问题。在NginxA 和NginxB 中先加载的都是a.com。
+在nginx.conf 中，我用 include 指令 引入了 某目录下的所有conf 结尾的配置:  </p>
+<div class="highlight"><pre><span></span><code><span class="k">include</span><span class="w"> </span><span class="o">/</span><span class="nv">home</span><span class="o">/</span><span class="nv">xxxxx</span><span class="cm">/*.conf;</span>
+</code></pre></div>
+
+<p>怀疑Nginx include 是按照字典顺序，即a-z 的顺序。看下源代码，参考的Nginx 代码版本是1.11.0。<br>
+先找到include 指定相关的函数:  </p>
+<h3>ngx_conf_file.c</h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#/src/core/ngx_conf_file.c</span>
+<span class="k">static</span><span class="w"> </span><span class="n">ngx_command_t</span><span class="w">  </span><span class="n">ngx_conf_commands</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="n">ngx_string</span><span class="p">(</span><span class="s">&quot;include&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">NGX_ANY_CONF</span><span class="o">|</span><span class="n">NGX_CONF_TAKE1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ngx_conf_include</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nb">NULL</span><span class="w"> </span><span class="p">},</span>
+
+<span class="w">    </span><span class="n">ngx_null_command</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<p>继续查看<code>ngx_conf_include</code> 函数，略去部分片段:  </p>
+<div class="highlight"><pre><span></span><code><span class="cp">#/src/core/ngx_config_file.c</span>
+
+<span class="kt">char</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">ngx_conf_include</span><span class="p">(</span><span class="n">ngx_conf_t</span><span class="w"> </span><span class="o">*</span><span class="n">cf</span><span class="p">,</span><span class="w"> </span><span class="n">ngx_command_t</span><span class="w"> </span><span class="o">*</span><span class="n">cmd</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">conf</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">ngx_glob_t</span><span class="w">   </span><span class="n">gl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="p">....</span>
+
+<span class="w">    </span><span class="n">gl</span><span class="p">.</span><span class="n">pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">file</span><span class="p">.</span><span class="n">data</span><span class="p">;</span>
+<span class="w">    </span><span class="n">gl</span><span class="p">.</span><span class="n">log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cf</span><span class="o">-&gt;</span><span class="n">log</span><span class="p">;</span>
+<span class="w">    </span><span class="n">gl</span><span class="p">.</span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ngx_open_glob</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gl</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">NGX_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ngx_conf_log_error</span><span class="p">(</span><span class="n">NGX_LOG_EMERG</span><span class="p">,</span><span class="w"> </span><span class="n">cf</span><span class="p">,</span><span class="w"> </span><span class="n">ngx_errno</span><span class="p">,</span>
+<span class="w">        </span><span class="n">ngx_open_glob_n</span><span class="w"> </span><span class="s">&quot; </span><span class="se">\&quot;</span><span class="s">%s</span><span class="se">\&quot;</span><span class="s"> failed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="p">.</span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NGX_CONF_ERROR</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">rv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NGX_CONF_OK</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">;;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ngx_read_glob</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gl</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
+<span class="w">        </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">ngx_close_glob</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gl</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">rv</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><code>ngx_open_glob</code> 这个函数有点眼熟，glob 是一个熟悉的名字，在Python 和其他语言中常常看到相关的库，用来做文件路径搜索和匹配。继续找<code>ngx_open_glob</code> 这个函数：  </p>
+<div class="highlight"><pre><span></span><code><span class="cp">#/src/os/unix/ngx_files.c</span>
+
+<span class="n">ngx_int_t</span>
+<span class="nf">ngx_open_glob</span><span class="p">(</span><span class="n">ngx_glob_t</span><span class="w"> </span><span class="o">*</span><span class="n">gl</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w">  </span><span class="n">n</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glob</span><span class="p">((</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">gl</span><span class="o">-&gt;</span><span class="n">pattern</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">gl</span><span class="o">-&gt;</span><span class="n">pglob</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NGX_OK</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="cp">#ifdef GLOB_NOMATCH</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GLOB_NOMATCH</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">gl</span><span class="o">-&gt;</span><span class="n">test</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NGX_OK</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cp">#endif</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">NGX_ERROR</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><code>ngx_conf_include</code> 在后续拿到匹配的文件路径，循环调用<code>ngx_read_glob</code> 进行读取解析。<br>
+<code>ngx_open_glob</code> 中调用了系统的<code>glob.h</code> 中的<code>glob</code> 函数进行路径匹配。  </p>
+<blockquote>
+<p>glob, globfree - find pathnames matching a pattern, free memory from glob()</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;glob.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">glob</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">pattern</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">errfunc</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">epath</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">eerrno</span><span class="p">),</span>
+<span class="w">        </span><span class="n">glob_t</span><span class="w"> </span><span class="o">*</span><span class="n">pglob</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">globfree</span><span class="p">(</span><span class="n">glob_t</span><span class="w"> </span><span class="o">*</span><span class="n">pglob</span><span class="p">);</span>
+</code></pre></div>
+
+<p>继续搞清楚返回顺序的问题，<code>glob</code> 函数的传参第二个是flags。<br>
+flags 可以设置为<code>GLOB_NOSORT</code>，要求对返回的结果不进行排序，也就是说默认是排序的。  </p>
+<div class="highlight"><pre><span></span><code><span class="nv">GLOB_NOSORT</span>
+<span class="nv">Don</span><span class="err">&#39;t sort the returned pathnames.  The only reason to do this</span>
+<span class="err">is to save processing time.  By default, the returned</span>
+<span class="err">pathnames are sorted.</span>
+</code></pre></div>
+
+<p>在<code>ngx_open_glob</code> 中调用<code>glob</code>是传的<code>flags</code> 是<code>int 0</code>。在GLOB 的手册中没找到关于flags 设置为0 的说明。继续翻代码。  </p>
+<p>参考<a href="http://man7.org/linux/man-pages/man3/glob.3.html">glob(3) </a>  </p>
+<h3>glob.c</h3>
+<p>上github 搜了下posix 的glob 实现，  </p>
+<div class="highlight"><pre><span></span><code><span class="cp">#https:</span><span class="c1">//github.com/lattera/glibc/blob/master/posix/glob.h</span>
+
+<span class="cm">/* Bits set in the FLAGS argument to `glob&#39;.  */</span>
+<span class="cp">#define    GLOB_ERR    (1 &lt;&lt; 0)</span><span class="cm">/* Return on read errors.  */</span>
+<span class="cp">#define    GLOB_MARK    (1 &lt;&lt; 1)</span><span class="cm">/* Append a slash to each name.  */</span>
+<span class="cp">#define    GLOB_NOSORT    (1 &lt;&lt; 2)</span><span class="cm">/* Don&#39;t sort the names.  */</span>
+<span class="cp">#define    GLOB_DOOFFS    (1 &lt;&lt; 3)</span><span class="cm">/* Insert PGLOB-&gt;gl_offs NULLs.  */</span>
+<span class="cp">#define    GLOB_NOCHECK    (1 &lt;&lt; 4)</span><span class="cm">/* If nothing matches, return the pattern.  */</span>
+<span class="cp">#define    GLOB_APPEND    (1 &lt;&lt; 5)</span><span class="cm">/* Append to results of a previous call.  */</span>
+<span class="cp">#define    GLOB_NOESCAPE    (1 &lt;&lt; 6)</span><span class="cm">/* Backslashes don&#39;t quote metacharacters.  */</span>
+<span class="cp">#define    GLOB_PERIOD    (1 &lt;&lt; 7)</span><span class="cm">/* Leading `.&#39; can be matched by metachars.  */</span>
+</code></pre></div>
+
+<p>GLOB 的手册中有一句话：  </p>
+<blockquote>
+<p>The argument flags is made up of the bitwise OR of zero or more the following symbolic constants.</p>
+</blockquote>
+<p>也就是说可以flag 可以设置为多个，例如:<code>GLOB_APPEND|GLOB_NOSORT</code>。  </p>
+<p>在<code>glob.c</code> 中 不少<code>if(!(flags &amp; GLOB_DOOFFS))</code> 这样的语句，就明白了，通过与操作，可以在flags 这样一个变量上存储和提取多个组合配置。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#https:</span><span class="c1">//github.com/lattera/glibc/blob/master/posix/glob.c#L1243</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">flags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">GLOB_NOSORT</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/* Sort the vector.  */</span>
+<span class="w">        </span><span class="n">qsort</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">pglob</span><span class="o">-&gt;</span><span class="n">gl_pathv</span><span class="p">[</span><span class="n">oldcount</span><span class="p">],</span>
+<span class="w">              </span><span class="n">pglob</span><span class="o">-&gt;</span><span class="n">gl_pathc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">pglob</span><span class="o">-&gt;</span><span class="n">gl_offs</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">oldcount</span><span class="p">,</span>
+<span class="w">              </span><span class="k">sizeof</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">),</span><span class="w"> </span><span class="n">collated_compare</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+
+<p><code>ngx_open_glob</code>中的flags 是<code>int 0</code>，即<code>(!(flags &amp; GLOB_NOSORT))</code>的结果为<code>True</code>，即默认进行排序，<code>qsort</code> 的比较函数是<code>collated_compare</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#https:</span><span class="c1">//github.com/lattera/glibc/blob/a2f34833b1042d5d8eeb263b4cf4caaea138c4ad/posix/glob.c#L1283</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span>
+<span class="nf">collated_compare</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">s1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="p">)</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="p">)</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">s2</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">strcoll</span><span class="w"> </span><span class="p">(</span><span class="n">s1</span><span class="p">,</span><span class="w"> </span><span class="n">s2</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><code>strcoll</code> 函数会根据本地环境变量LC_COLLATE 的设置，来进行对比,细节不太清楚。不过一般的英文环境下，按照ASCII 表，如果s1 大于 s2，则返回值大于0，反之小于0，一样的话返回值为0。
+<code>collated_compare</code> 函数比较结果中，如果小于0，<code>qsort</code> 会把第一个参数s1 排在s2 前面。在ASCII表中，0~9，a-Z的值是从小到大。  </p>
+<p>参考资料: <a href="https://www.tutorialspoint.com/c_standard_library/c_function_strcoll.htm">C library function - strcoll()</a></p>
+<p>所以，<code>glob</code> 函数在默认情况下，返回的结果是按照字母表排序的。即同时存在a.com.conf 和b.com.conf 两份配置，在同时include 的话，a.com.conf 会比b.com.conf 先加载。  </p>
+<p>最后，我把NginxA上的a.com.conf 改成 00-a.com.conf ，把NginxB 上的b.com.conf 改成 00-b.com.conf ，控制了他们的加载顺序。  </p>
+<p>题外话，想起了在用SySV Init 的时候，/etc/rcX.d 下那些 S01XXX，K02XXX 之类的文件，用来控制服务的起停顺序。  </p>
+<p><img alt="sysv_init_rcx.d" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164044.png"></p>
+<p>图片<a href="http://www.jianshu.com/p/b4c38f44c4ea">来源网络</a> ，现在手头已经找不到用SySV 做Init 的机器了，冏。</p>
+<h2>Changeset 4943:1e2d5d3f9f6b</h2>
+<p><a href="https://trac.nginx.org/nginx/changeset/4943/nginx">Changeset 4943:1e2d5d3f9f6b in nginx</a>。</p>
+<div class="highlight"><pre><span></span><code><span class="n">Message</span><span class="o">:</span>
+<span class="n">Core</span><span class="o">:</span><span class="w"> </span><span class="n">removed</span><span class="w"> </span><span class="n">GLOB_NOSORT</span><span class="w"> </span><span class="n">glob</span><span class="w"> </span><span class="n">option</span><span class="o">.</span>
+<span class="n">This</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">alphabetical</span><span class="w"> </span><span class="n">sorting</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">included</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="k">if</span>
+<span class="n">the</span><span class="w"> </span><span class="s2">&quot;include&quot;</span><span class="w"> </span><span class="n">directive</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">wildcards</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">used</span><span class="o">.</span>
+
+<span class="n">Note</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">behaviour</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="n">different</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">Windows</span><span class="o">,</span><span class="w"> </span><span class="n">where</span>
+<span class="n">alphabetical</span><span class="w"> </span><span class="n">sorting</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">guaranteed</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">FindFirsFile</span><span class="o">?()/</span><span class="n">FindNextFile</span><span class="o">?()</span>
+<span class="o">(</span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">alphabetical</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">NTFS</span><span class="o">,</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">FAT</span><span class="o">).</span>
+
+<span class="n">Approved</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">Igor</span><span class="w"> </span><span class="n">Sysoev</span><span class="o">,</span><span class="w"> </span><span class="n">prodded</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">many</span><span class="o">.</span>
+</code></pre></div>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-10-14T13:59:30+08:00">
+      Fri 14 October 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/nginx.html">nginx </a><a href="https://fangpsh.github.io/tag/glob.html">glob </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

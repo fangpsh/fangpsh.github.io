@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Salt Minion ID 变为FQDN 记录的问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-01-09.html" rel="bookmark"
+         title="Permalink to Salt Minion ID 变为FQDN 记录的问题">Salt Minion ID 变为FQDN 记录的问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>最近在一台外网机器上起了salt minion ，但是同事发现<code>/etc/salt/minion_id</code> 不对，之前自动生成的minion_id 都是机器的<code>/etc/hostname</code>,这回变成了一个奇怪的域名：<code>cncXXXX.XXX.ln.cn</code>，并且这个域名和使用 <code>hostname --all-fqdns</code> 返回的结果相同。先查下minion_id 是怎么生成的。</p>
+<p><a href="https://github.com/saltstack/salt/blob/a380c12159a3a6691081d30e33c16e6f534c4482/doc/topics/tutorials/walkthrough.rst">Github:saltstack/salt/doc/topics/tutorials/walkthrough.rst</a>:</p>
+<blockquote>
+<p>When the minion is started, it will generate an id value, unless it has been generated on a previous run and cached (in /etc/salt/minion_id by default). This is the name by which the minion will attempt to authenticate to the master. The following steps are attempted, in order to try to find a value that is not localhost:</p>
+<ol>
+<li>The Python function socket.getfqdn() is run</li>
+<li>/etc/hostname is checked (non-Windows only)</li>
+<li>/etc/hosts (%WINDIR%\system32\drivers\etc\hosts on Windows hosts) is checked for hostnames that map to anything within 127.0.0.0/8.</li>
+</ol>
+<p>If none of the above are able to produce an id which is not localhost, then a sorted list of IP addresses on the minion (excluding any within 127.0.0.0/8) is inspected. The first publicly-routable IP address is used, if there is one. Otherwise, the first privately-routable IP address is used.</p>
+<p>If all else fails, then localhost is used as a fallback.</p>
+</blockquote>
+<p>应该是第一点，通过<code>socket.getfqdn</code> 拿到的结果，也验证了和上文提到的<code>hostname --all-fqdns</code> 拿到的结果一样。</p>
+<h2>FQDN是什么?</h2>
+<!-- more -->
+
+<p><a href="https://en.wikipedia.org/wiki/Fully_qualified_domain_name">FQDN</a>全称是"Fully qualified domain name",中文叫<a href="https://zh.wikipedia.org/wiki/%E5%AE%8C%E6%95%B4%E7%B6%B2%E5%9F%9F%E5%90%8D%E7%A8%B1">完整网域名称</a>,更细致的介绍看鸟哥的解释<a href="http://linux.vbird.org/linux_server/0350dns.php#fqdn">完整主机名称： Fully Qualified Domain Name (FQDN)</a>。</p>
+<h2>socket.getfqdn()</h2>
+<p>看下这个函数的实现, <a href="https://svn.python.org/projects/python/trunk/Lib/socket.py">socket.py</a>：</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">getfqdn</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get fully qualified domain name from name.</span>
+
+<span class="sd">    An empty argument is interpreted as meaning the local host.</span>
+
+<span class="sd">    First the hostname returned by gethostbyaddr() is checked, then</span>
+<span class="sd">    possibly existing aliases. In case no FQDN is available, hostname</span>
+<span class="sd">    from gethostname() is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">gethostname</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">hostname</span><span class="p">,</span> <span class="n">aliases</span><span class="p">,</span> <span class="n">ipaddrs</span> <span class="o">=</span> <span class="n">gethostbyaddr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">error</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">aliases</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">hostname</span>
+    <span class="k">return</span> <span class="n">name</span>
+</code></pre></div>
+
+<p>返回结果应该是gethostbyaddr() 这个函数返回的，这个函数的介绍如下：</p>
+<blockquote>
+<p>gethostbyaddr() -- map an IP number or hostname to DNS info.</p>
+</blockquote>
+<p>拿到的结果应该就是一个反查IP的时候拿到的<a href="https://en.wikipedia.org/wiki/Reverse_DNS_lookup">PTR记录</a>。证实一下：</p>
+<p><img alt="salt-minion-id-dig-x" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164133.png"></p>
+<p>看来这个IP 之前有人用过，然后添加了一条PTR 记录，也没办法删了，再继续看看这个gethostbyaddr 的实现和工作原理，看看能怎么解决。</p>
+<p>关于这个函数更详细的介绍，来自<a href="https://docs.python.org/2/library/socket.html#socket.gethostbyaddr">python.org/2/library/socket</a>：</p>
+<blockquote>
+<p>socket.gethostbyaddr(ip_address)</p>
+<p>Return a triple (hostname, aliaslist, ipaddrlist) where hostname is the primary host name responding to the given ip_address, aliaslist is a (possibly empty) list of alternative host names for the same address, and ipaddrlist is a list of IPv4/v6 addresses for the same interface on the same host (most likely containing only a single address). To findthe fully qualified domain name, use the function getfqdn(). gethostbyaddr() supports both IPv4 and IPv6.</p>
+</blockquote>
+<p>这个函数的实现：<a href="https://github.com/python/cpython/blob/29ac8f827d040faa37cfbd5b41f3a9891056d7c1/Modules/socketmodule.c">cpython/socketmodule.c</a>, 应该是调用了系统的gethostbyaddr_r，不过也有一个自己实现的<a href="https://github.com/python/cpython/blob/c30098c8c6014f3340a369a31df9c74bdbacc269/Modules/getaddrinfo.c">cpython/getaddrinfo.c)</a>，Linux 系统提供的gethostbyaddr 的介绍，实现上应该是类似的, <a href="http://man7.org/linux/man-pages/man3/gethostbyaddr.3.html">GETHOSTBYNAME(3)</a>, 这个函数依赖了下列三个配置文件：</p>
+<div class="highlight"><pre><span></span><code>/etc/host.conf
+  resolver configuration file
+
+/etc/hosts
+  host database file
+
+/etc/nsswitch.conf
+  name service switch configuration
+</code></pre></div>
+
+<p>其中<a href="http://man7.org/linux/man-pages/man5/nsswitch.conf.5.html">nsswitch.conf</a> 定义了一些C 函数库进行操作搜索的动作，先后顺序。  </p>
+<blockquote>
+<p><a href="https://en.wikipedia.org/wiki/Name_Service_Switch">Name Service Switch</a></p>
+<p>The Name Service Switch (NSS) is a facility in Unix-like operating systems that provides a variety of sources for
+common configuration databases and name resolution mechanisms. These sources include local operating system files
+(such as /etc/passwd, /etc/group, and /etc/hosts), the Domain Name System (DNS), the Network Information Service (NIS), and LDAP.</p>
+</blockquote>
+<p><code>nsswith.conf</code> 文件中指定了hosts 查询的先后顺序：</p>
+<blockquote>
+<p>hosts       Host names and numbers, used by gethostbyname(3) and  related functions.</p>
+</blockquote>
+<p>目前的配置如下：</p>
+<div class="highlight"><pre><span></span><code>#       dns                     Use DNS (Domain Name Service)
+#       files                   Use the local files
+
+#hosts:     db files nisplus nis dns
+hosts:      files dns myhostname
+</code></pre></div>
+
+<p>参考手册，按照配置的定义，关于hosts，会先查files，而对于hosts，对应的files 是/etc/hosts，然后是dns 查询，最后是看<code>/etc/hostname</code>。
+做下实验，把配置改为：</p>
+<div class="highlight"><pre><span></span><code><span class="n">hosts</span><span class="o">:</span><span class="w">      </span><span class="n">files</span><span class="w"> </span>
+</code></pre></div>
+
+<p><code>socket.getfqdn()</code> 返回结果为空。</p>
+<p>配置改成：</p>
+<div class="highlight"><pre><span></span><code><span class="n">hosts</span><span class="o">:</span><span class="w">  </span><span class="n">myhostname</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">dns</span>
+</code></pre></div>
+
+<p><code>socket.getfqdn()</code> 返回结果为<code>/etc/hostname</code> 的内容。</p>
+<p>到这里可以找到解决方法了，把文章开头出问题的这台机器的<code>nsswitch.conf</code> 如上配置，myhostname 放到前面即可解决问题。</p>
+<h2>hostname --all-fqdns</h2>
+<p>在返回来看看，一开始<code>hostname --all-fqdns</code> 的结果和<code>socket.getfqdn()</code> 一样，并再上文更改<code>nsswithc.conf</code> 的配置过程中，插件结果表现也是一致的。
+找Hostname 的<a href="https://packages.debian.org/source/stable/hostname">源代码</a>看下，<br>
+<img alt="hostname-getnameinfo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164145.png"></p>
+<blockquote>
+<p>getnameinfo  -  address-to-name  translation  in protocol-independent  manner</p>
+</blockquote>
+<p>getnameinfo() 的功能和 gethostbyaddr() 类似，具体见:<a href="http://man7.org/linux/man-pages/man3/getnameinfo.3.html">GETNAMEINFO(3) </a>，也可以通过<code>nsswitch.conf</code> 配置hosts 的查询顺序。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-01-09T18:31:30+08:00">
+      Mon 09 January 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/saltstack.html">saltstack </a><a href="https://fangpsh.github.io/tag/fqdn.html">fqdn </a><a href="https://fangpsh.github.io/tag/dns.html">dns </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
