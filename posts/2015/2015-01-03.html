@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Markdown 制作幻灯片与编写文档 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2015/2015-01-03.html" rel="bookmark"
+         title="Permalink to Markdown 制作幻灯片与编写文档">Markdown 制作幻灯片与编写文档</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>从使用markdown一开始，编辑器一直在换（还动手写过一个简单的实时预览编辑器。。用正则做渲染处理，效果不是很好），<br>
+从windows下的markdownpad，到linux下的retext，haroopad，以及在线的stackedit.io，dillinger.io等，后来选择使用emacs+本地监控和渲染工具（例如nodejs写的markdown server之类的），到目前选择编辑器（emacs）+pandoc，还是十分舒服和便捷的。另外mac下的大名鼎鼎mou一直没有机会使用:(</p>
+<p>pandoc的强大就不多说了，大家有兴趣看看官网那张转换图：<a href="">http://johnmacfarlane.net/pandoc/</a><br>
+pandoc的安装啥的也就略过了，有需要的话可以看看阳志平老师的：<br>
+<a href="http://www.yangzhiping.com/tech/pandoc.html">Markdown写作进阶：Pandoc入门浅谈</a> ,里边也有一些基础的使用教程。<br>
+另外建议过一遍 pandoc的markdown的语法：<a href="http://pages.tzengyuxio.me/pandoc/">Pandoc’s Markdown 语法中文翻译</a>  </p>
+<h2>制作幻灯片</h2>
+<p>基本可以参考这两篇文章：  </p>
+<ul>
+<li><a href="http://www.soimort.org/posts/165/">Markdown+Pandoc→HTML幻灯片速成</a></li>
+<li><a href="http://johnmacfarlane.net/pandoc/demo/example9/producing-slide-shows-with-pandoc.html">Producing slide shows with Pandoc</a></li>
+</ul>
+<p>另外需要补充两点，  </p>
+<ul>
+<li>如果幻灯片中有代码，而需要代码高亮时，可以看看<a href="http://martin-thoma.com/how-to-print-source-code-with-latex/">How to print Source Code with LaTeX</a>，基本里边提到的语言大都是支持的，到时候在代码块处指明即可。</li>
+<li>如果输出为beamer的时候可能会遇到中文字体的问题，解决的方法也就是使用自定义的模板，并在其中指定中文字体了，网络上有很多不错的中文的beamer模板可以采用，也可以直接修改pandoc默认的beamer模板，这里贴一份，不知是从何处参考的，忘记了出处：https://gist.github.com/fangpsh/6822e5fc6a21f21a5a51 ，大家可以根据自己本机的情况修改其中的中文字体选项等。</li>
+</ul>
+<h2>编写文档</h2>
+<p>一开始选择使用pandoc转换为pdf，主要是因为它支持目录索引，在XX游戏实习那会，编写的文档超过一百页了，没有目录实在不方便，找了一圈用了pandoc，而且配合latex模板，可以做比较好的排版，（latex这种复杂的东西没毅力学，所以也是拿网友共享的模板）。  </p>
+<p>具体可以参考这两篇：  </p>
+<ul>
+<li><a href="http://readus.org/2014/07/02/pandoc-convert-chinese-pdf/">pandoc转换中文pdf攻略</a></li>
+<li><a href="http://afoo.me/posts/2013-07-10-how-to-transform-chinese-pdf-with-pandoc.html">pandoc中文pdf转换攻略</a></li>
+</ul>
+<p>中文字体相关的问题以上两个链接中都有提到了，按照对应的流程解决即可，不过注意第二个链接中LiHei Pro好像对简体支持有问题，所以大家可以看看本机上安装的中文字体，然后选项一个合适的指定即可。这里也贴一份模板，也是直接使用一份网友的模板（出处找不到）:<br>
+https://gist.github.com/fangpsh/5cc11fa503f1e9eda2c1  </p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2015-01-03T23:00:41+08:00">
+      Sat 03 January 2015
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2015.html">2015</a> Tagged <a href="https://fangpsh.github.io/tag/markdown.html">markdown </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

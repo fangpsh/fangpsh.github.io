@@ -7090,7 +7090,69 @@ One-line include in Perl CGI, Python CGI and PHP scripts automatically handles E
 &lt;p&gt;Translations are available in: Chinese, Czech, German, and French.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;译文，原文地址：&lt;a href="https://www.mnot.net/cache_docs/"&gt;https://www.mnot.net/cache_docs/&lt;/a&gt;，遵循原文的版本许可协议：&lt;a href="http://creativecommons.org/licenses/by-nc-nd/3.0/"&gt;Attribution-NonCommercial-NoDerivs 3.0 Unported&lt;/a&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;</content><category term="2015"></category><category term="Web"></category><category term="Cache"></category></entry><entry><title>OpenSSH的AuthorizedKeysCommand选项</title><link href="https://fangpsh.github.io/posts/2015/2015-01-05.html" rel="alternate"></link><published>2015-01-05T00:00:00+08:00</published><updated>2015-01-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-01-05:/posts/2015/2015-01-05.html</id><summary type="html">&lt;p&gt;&lt;img alt="openssh" src="https://www.openssh.com/images/openssh.gif"&gt;&lt;/p&gt;
+&lt;/blockquote&gt;</content><category term="2015"></category><category term="Web"></category><category term="Cache"></category></entry><entry><title>14年下半年的奇葩经历</title><link href="https://fangpsh.github.io/posts/2015/2015-01-21.html" rel="alternate"></link><published>2015-01-21T00:00:00+08:00</published><updated>2015-01-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-01-21:/posts/2015/2015-01-21.html</id><summary type="html">&lt;p&gt;回家两天了，想着该整理下下半年来的经历，从深圳回到学校待了一段时间后，因为一位师兄的推荐，收到网易HR的电话让过去实习，工资虽然 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;回家两天了，想着该整理下下半年来的经历，从深圳回到学校待了一段时间后，因为一位师兄的推荐，收到网易HR的电话让过去实习，工资虽然少的可怜，不过想想学校这边校招基本都结束了不如先回去了，反正快年底了也要回家，顺便也看看网易杭州研究院是个什么样子，起了个这么牛逼的名字，笑。
+实习的过程不算愉快，后面慢慢吐槽，一天看某招聘网站，投了百姓网和另外一家北京公司的SA岗，拿到两家offer的时候，也就离职回家了，北京公司的电话面试较快捷舒服，没太多好说的，百姓网的面试经历还是十分有趣的，有让人赞的点也有让人不舒服的地方。&lt;/p&gt;
+&lt;h3&gt;网易杭州研究院实习经历&lt;/h3&gt;
+&lt;p&gt;&lt;img alt="听说这是伞哥" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302150939.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;最早听说网易研究院是在&lt;a href="http://teahour.fm/2014/03/17/interview-with-binghe.html"&gt;teahour听冰河的访谈&lt;/a&gt;，想这地方应该不错，至少在实习期间是可以学到点东西。本来不应该在离职之后说“坏话”，为了各种各样的顾忌，不过我不觉得我说的是所谓的坏话，以下只是基于我自身经历的实话，而且也是对事不对人。当然也没有全部表述，有些事情只是我主观的猜想，还是不说了。  &lt;/p&gt;
+&lt;p&gt;这边部门易主，部门调整，进的系统运维组，五个在职员工，一开始就我一个实习生。听说是小组原本七人，开了一个人，转岗一个人，又接了一堆乱七八糟的业务，难怪大家都忙成狗。先说说做了哪些事情，学习了内部的基础文档，写了几份内部需求的shell脚本，练手了一些主机的基础操作，这些两三天就做好的事情，经历了一个月，说白了，还是没人管我，带我的导师忙的很，我也就管自己查阅和吸收内部能够看到的文档资料（能吸收的就吸收，虽然日后要走的，不能吸收也没复制留存，职业道德还是要有的），看的没有东西看了，就开始看毕业设计相关的文档了。  &lt;/p&gt;
+&lt;p&gt;后面看实在太没趣了，也不能吃白饭嘛，就要求值班，即当客服。。一开始还挺有新鲜劲，每当QA妹子找我的时候，都激动不已，细心服务，最喜欢一些非技术部门的妹子，上班无聊的时候聊聊天也是极好的。不过偶尔也会遇到不少傻逼开发人员（当然都是男的，女的那叫蠢萌蠢萌）上来问怎么ssh登陆、nginx规则怎么配置等等问题。想想自己如果在这种地方入职，要做值班客服至少一、两年，还好当初没有直接给我发offer让我签三方，谢天谢地。在这种大公司，还是业务为先，KPI为先，他们好像就是喜欢让工作变的无趣，同时因为一些历史原因、历史包袱，很多明摆着的问题没人愿意去推动解决。  &lt;/p&gt;
+&lt;p&gt;拿到其他offer，萌发离职回家过年的意愿，恰好总监大人说我和后面来实习的妹子对比态度不够好（每天6点准时下班太早了，在杭研，12点前的加班都不算是加班你们造吗）不想再看到我，于是马上走人。  &lt;/p&gt;
+&lt;p&gt;另外在这边也遇到一个醉人的部门秘书，见下图：
+&lt;img alt="实习生真的很无辜。。" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302151026.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;实习期间还收到阿里淘宝技术保障部的面试，走了几轮，前后历时2个多月，最后再三催校照客服，一分钟内给了我个拒信，要原因，先是说第二批招聘薪资审核下不来（审批不下来你招个啥子人嘛），再问，改口说综合评定我能力问题，他说不行就不行吧，20多岁也不着急往阿里这个红色大熔炉跳，倒是浪费了我很多电话费。HR面的HR姐姐来擦屁股做了很多工作，不想给她再添麻烦，其他细节就不说了。
+&lt;img alt="话说有同学面的轮数比我多吗" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302151051.jpg"&gt;&lt;/p&gt;
+&lt;h3&gt;百姓网面试经历&lt;/h3&gt;
+&lt;p&gt;最早了解到百姓网是因为v2ex上的一些招聘帖子，看起来氛围还挺不错的，本身也比较喜欢这种规模的和氛围的公司，让人向往。&lt;br&gt;
+在某招聘网站上投了简历，HR发来笔试题，笔试题目如下，感觉相比某些公司的智力题出的还是不错的。  &lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果让你搭一个百姓网,你会需要哪些用途的服务器,各多少台,什么样的配
+置,运行什么软件?如果需要用到第三方服务的也请一并列出。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;百姓网是LAMP架构，另外在infoq上有个演讲，在slide中可以一窥百姓网的架构，感觉中规中矩，没什么特别。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;有用户反映说他不能访问我们网站,而你是系统工程师,你准备分哪几步来找
+到问题?&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;常见的问题，按照经验和思维习惯回答。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;列举你最喜欢的一个开源软件并说明理由。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;略&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;现有web服务的访问日志webaccess.log,形式如下:
+&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="mf"&gt;200&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;123.190.216.50&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;shanghai&lt;/span&gt;&lt;span class="mf"&gt;.&lt;/span&gt;&lt;span class="n"&gt;baixing&lt;/span&gt;&lt;span class="mf"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;[&lt;/span&gt;&lt;span class="mf"&gt;03&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Mar&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;2013&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mf"&gt;03&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mf"&gt;59&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mf"&gt;59&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mf"&gt;0800&lt;/span&gt;&lt;span class="err"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;GET&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;menpiao&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;a250632202&lt;/span&gt;&lt;span class="mf"&gt;.&lt;/span&gt;&lt;span class="n"&gt;html&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;1.1&lt;/span&gt;&lt;span class="s"&gt;&amp;quot; &amp;quot;&lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;shanghai&lt;/span&gt;&lt;span class="mf"&gt;.&lt;/span&gt;&lt;span class="n"&gt;baixing&lt;/span&gt;&lt;span class="mf"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;menpiao&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="err"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="s"&gt;&amp;quot;Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;9175&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;384&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;54237......&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;现需要从中分别提取所有包含“Googlebot”和“Baiduspider”,且非404打头的行,分别保存到以访问日
+期分割的文件中并压缩,如googlebot.2013-03-03.log.bz2和baiduspider.2013-03-03.log.bz2。请用bash shell,并以最优的方式实现这段脚本。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-ne&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Usage: &lt;/span&gt;&lt;span class="nv"&gt;$0&lt;/span&gt;&lt;span class="s2"&gt; logfile_name spiders_user_agent&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+
+&lt;span class="nv"&gt;LOG_FILE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$1&lt;/span&gt;
+&lt;span class="nv"&gt;UA&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$2&lt;/span&gt;
+&lt;span class="nv"&gt;lowUA&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$UA&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;tr&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;A-Z&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;a-z&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;
+grep&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;^404&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$LOG_FILE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$UA&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;-F&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;[:[]&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;{ outFile=&amp;quot;&amp;#39;&lt;/span&gt;&lt;span class="nv"&gt;$lowUA&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.&amp;quot;$2&amp;quot;.log&amp;quot;; gsub(/\//, &amp;quot; &amp;quot;, outFile); print $0 &amp;gt;&amp;gt; outFile}&amp;#39;&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;file&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$lowUA&lt;/span&gt;.*.log&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;bzip2&lt;span class="w"&gt; &lt;/span&gt;-z&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$file&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;newname&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$lowUA&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$file&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;xargs&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;date&lt;span class="w"&gt; &lt;/span&gt;+&lt;span class="s2"&gt;&amp;quot;%Y-%m- %d&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{}&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;.log.bz2&amp;quot;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;mv&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$file&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;.bz2&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$newname&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;
+&lt;span class="k"&gt;done&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我是这样直接打到文件里，写起来方便点，另外为了考虑脚本的通用性，没有把Googlebot 和Baiduspider放到一个脚本里判断，写成这样通用的脚本更方便点吧，方便以后处理什么搜狗，360，Bing，搜搜啥的。不过这样频繁IO带来的代价肯定很大，还要优化的话，就把中间的临时文件放到 /dev/shm/ 一个对应的目录下吧。  &lt;/p&gt;
+&lt;p&gt;发了笔试答卷的当天下午HR就约了面试时间。&lt;br&gt;
+几天后的一个早晨赶到上海交大某校区旁边的大厦接受面试。第一个面试官很Nice，聊得很轻松。第二个面试官聊的也还开心，居然问我是不是处女座=。=。第三个面试官让人很不舒服，说的过分点，甚至觉得有点不尊重人，他抓住一个问题死磕到底，可能这是他的面试风格，不过也学到了，面试者在面试中应该更加主动一些，对不好的状态应该及时打断切换转移，防止一直处于比较被动的局势。第三面下来吃饭的心情都没了，坐在一角休息、喝水。过了很久，快睡着的时候PP姐过来，给了offer，聊了薪资（计算很麻烦，没记住），坦白对于薪资不太能接受，想回去考虑。  &lt;/p&gt;
+&lt;p&gt;回来的路上收到北京公司的offer。  &lt;/p&gt;
+&lt;p&gt;后来选择不接受百姓网的offer时，较纠结，百姓网的公司氛围确实是不错的，相信也是适合我毕业后工作和学习的，整个面试流程还算舒服，薪资上其实还行（后来电话过来重新谈了薪资），只是我那一颗北漂的心。。。还是挺建议愿在上海发展的同学选择这家公司。  &lt;/p&gt;
+&lt;p&gt;14年就这样马不停蹄的远去了。  &lt;/p&gt;</content><category term="2015"></category><category term="career"></category></entry><entry><title>OpenSSH的AuthorizedKeysCommand选项</title><link href="https://fangpsh.github.io/posts/2015/2015-01-05.html" rel="alternate"></link><published>2015-01-05T00:00:00+08:00</published><updated>2015-01-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-01-05:/posts/2015/2015-01-05.html</id><summary type="html">&lt;p&gt;&lt;img alt="openssh" src="https://www.openssh.com/images/openssh.gif"&gt;&lt;/p&gt;
 &lt;p&gt;Debian jessie 冻结了，今年就要release，openssh-server 包也从6.0 升到6.7，AuthorizedKeysCommand 和AuthorizedKeysCommandUser 这两个配置选项是在6.2的时候引入的，所以也能用上了。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;wheezy (stable)：1:6.0p1-4+deb7u2&lt;/li&gt;
@@ -7145,7 +7207,33 @@ AuthorizedKeysCommandUser root #以root用户调用脚本
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://web.archive.org/web/20170106015909mp_/http://jmorano.moretrix.com/2013/09/openssh-6-2-x-ldap-authentication/"&gt;OpenSSH 6.2.x and LDAP authentication&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://web.archive.org/web/20170106015909mp_/http://www.sysadmin.org.au/index.php/2012/12/authorizedkeyscommand/"&gt;sshd AuthorizedKeysCommand&lt;/a&gt; 意思都差不多，都是执行脚本，从server上远程拿到key然后做认证。&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2015"></category><category term="openssh"></category></entry><entry><title>尝试解决openSUSE下zypper软件包名称自动补全的问题</title><link href="https://fangpsh.github.io/posts/2014/141216.html" rel="alternate"></link><published>2014-12-16T11:13:19+08:00</published><updated>2014-12-16T11:13:19+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-12-16:/posts/2014/141216.html</id><summary type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外顺带修了一个小bug，当本地repo超过10条时，原来脚本生成的自动补全列表不全的问题。&lt;/p&gt;
+&lt;/ul&gt;</content><category term="2015"></category><category term="openssh"></category></entry><entry><title>Markdown 制作幻灯片与编写文档</title><link href="https://fangpsh.github.io/posts/2015/2015-01-03.html" rel="alternate"></link><published>2015-01-03T23:00:41+08:00</published><updated>2015-01-03T23:00:41+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-01-03:/posts/2015/2015-01-03.html</id><summary type="html">&lt;p&gt;从使用markdown一开始，编辑器一直在换（还动手写过一个简单的实时预览编辑器。。用正则做渲染处理，效果不是很好），&lt;br&gt;
+从windows下的markdownpad，到linux下的retext，haroopad，以及在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;从使用markdown一开始，编辑器一直在换（还动手写过一个简单的实时预览编辑器。。用正则做渲染处理，效果不是很好），&lt;br&gt;
+从windows下的markdownpad，到linux下的retext，haroopad，以及在线的stackedit.io，dillinger.io等，后来选择使用emacs+本地监控和渲染工具（例如nodejs写的markdown server之类的），到目前选择编辑器（emacs）+pandoc，还是十分舒服和便捷的。另外mac下的大名鼎鼎mou一直没有机会使用:(&lt;/p&gt;
+&lt;p&gt;pandoc的强大就不多说了，大家有兴趣看看官网那张转换图：&lt;a href=""&gt;http://johnmacfarlane.net/pandoc/&lt;/a&gt;&lt;br&gt;
+pandoc的安装啥的也就略过了，有需要的话可以看看阳志平老师的：&lt;br&gt;
+&lt;a href="http://www.yangzhiping.com/tech/pandoc.html"&gt;Markdown写作进阶：Pandoc入门浅谈&lt;/a&gt; ,里边也有一些基础的使用教程。&lt;br&gt;
+另外建议过一遍 pandoc的markdown的语法：&lt;a href="http://pages.tzengyuxio.me/pandoc/"&gt;Pandoc’s Markdown 语法中文翻译&lt;/a&gt;  &lt;/p&gt;
+&lt;h2&gt;制作幻灯片&lt;/h2&gt;
+&lt;p&gt;基本可以参考这两篇文章：  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.soimort.org/posts/165/"&gt;Markdown+Pandoc→HTML幻灯片速成&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://johnmacfarlane.net/pandoc/demo/example9/producing-slide-shows-with-pandoc.html"&gt;Producing slide shows with Pandoc&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;另外需要补充两点，  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果幻灯片中有代码，而需要代码高亮时，可以看看&lt;a href="http://martin-thoma.com/how-to-print-source-code-with-latex/"&gt;How to print Source Code with LaTeX&lt;/a&gt;，基本里边提到的语言大都是支持的，到时候在代码块处指明即可。&lt;/li&gt;
+&lt;li&gt;如果输出为beamer的时候可能会遇到中文字体的问题，解决的方法也就是使用自定义的模板，并在其中指定中文字体了，网络上有很多不错的中文的beamer模板可以采用，也可以直接修改pandoc默认的beamer模板，这里贴一份，不知是从何处参考的，忘记了出处：https://gist.github.com/fangpsh/6822e5fc6a21f21a5a51 ，大家可以根据自己本机的情况修改其中的中文字体选项等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;编写文档&lt;/h2&gt;
+&lt;p&gt;一开始选择使用pandoc转换为pdf，主要是因为它支持目录索引，在XX游戏实习那会，编写的文档超过一百页了，没有目录实在不方便，找了一圈用了pandoc，而且配合latex模板，可以做比较好的排版，（latex这种复杂的东西没毅力学，所以也是拿网友共享的模板）。  &lt;/p&gt;
+&lt;p&gt;具体可以参考这两篇：  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://readus.org/2014/07/02/pandoc-convert-chinese-pdf/"&gt;pandoc转换中文pdf攻略&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://afoo.me/posts/2013-07-10-how-to-transform-chinese-pdf-with-pandoc.html"&gt;pandoc中文pdf转换攻略&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;中文字体相关的问题以上两个链接中都有提到了，按照对应的流程解决即可，不过注意第二个链接中LiHei Pro好像对简体支持有问题，所以大家可以看看本机上安装的中文字体，然后选项一个合适的指定即可。这里也贴一份模板，也是直接使用一份网友的模板（出处找不到）:&lt;br&gt;
+https://gist.github.com/fangpsh/5cc11fa503f1e9eda2c1  &lt;/p&gt;</content><category term="2015"></category><category term="markdown"></category></entry><entry><title>尝试解决openSUSE下zypper软件包名称自动补全的问题</title><link href="https://fangpsh.github.io/posts/2014/141216.html" rel="alternate"></link><published>2014-12-16T11:13:19+08:00</published><updated>2014-12-16T11:13:19+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-12-16:/posts/2014/141216.html</id><summary type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外顺带修了一个小bug，当本地repo超过10条时，原来脚本生成的自动补全列表不全的问题。&lt;/p&gt;
 &lt;p&gt;bash自带补全功能，要达到更好的补全效果需要安装bash-completion这个软件包，然后编写对应的补全脚本。关于bash-completion的内容，可以参考以下两个链接：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://kodango.com/bash-competion-programming"&gt;编写 Bash 补全脚本&lt;/a&gt;&lt;/li&gt;
