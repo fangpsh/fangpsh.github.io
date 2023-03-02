@@ -5,14 +5,21 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>https://fangpsh.github.io/</loc>
-<lastmod>2023-03-01T18:50:49-00:00</lastmod>
+<lastmod>2023-03-02T14:04:23-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>https://fangpsh.github.io/pages/about.html</loc>
-<lastmod>2023-03-01T18:50:49-00:00</lastmod>
+<lastmod>2023-03-02T14:04:23-00:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>https://fangpsh.github.io/pages/tweet.html</loc>
+<lastmod>2023-03-02T14:04:23-00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -291,6 +298,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>https://fangpsh.github.io/posts/2016/2016-11-24.html</loc>
+<lastmod>2016-11-24T14:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>https://fangpsh.github.io/posts/2016/2016-11-23.html</loc>
 <lastmod>2016-11-23T11:11:30+08:00</lastmod>
 <changefreq>monthly</changefreq>
@@ -342,6 +356,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://fangpsh.github.io/posts/2016/2016-07-27.html</loc>
 <lastmod>2016-07-27T14:57:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>https://fangpsh.github.io/posts/2016/elasticsearch-for-logging_zh.html</loc>
+<lastmod>2016-06-15T11:40:00+08:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>

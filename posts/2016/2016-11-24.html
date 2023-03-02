@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>高流量负载下Nginx 调优 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/2016-11-24.html" rel="bookmark"
+         title="Permalink to 高流量负载下Nginx 调优">高流量负载下Nginx 调优</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <ul>
+<li>原文地址: <a href="https://blog.martinfjordvald.com/2011/04/optimizing-nginx-for-high-traffic-loads/">Martin Fjordvald</a></li>
+<li>已获得原文作者翻译许可，本文遵循原文许可协议</li>
+<li>原文发表时间：April 27，2011</li>
+</ul>
+<p>我曾经讨论过一些Nginx 最常见的问题，毫无疑问，其中一个问题就是关于如何优化nginx 获得高性能。不必惊讶，因为大多数nginx 新用户都是从Apache 迁移过来，所以他们习惯于调整配置和使用巫术来尽可能让服务器达到最佳性能。</p>
+<p>恩，我得告诉你一些坏消息，你并不能<em>真的</em>显着优化nginx。没有什么配置能让你的负载降低一半，或让PHP 运行速度快2 倍。谢天谢地，好消息是nginx 不需要任何调优，因为直接使用它时就已经被优化过了。最大的优化发生在当你决定运行通过ape-get install ，yum install 或 make install 安装的nginx。（请注意这些仓库内容常常过期。<a href="https://nginx.org/en/docs/install.html">Wiki 的安装页面</a>上通常有最新的仓库。）  </p>
+<p>也就是说，有很多选项会影响nginx 的行为，但是这些选项的默认值并不全都为高流量的情况优化过。另外我们也需要考虑nginx 运行的平台，优化我们的操作系统，因为它们某些地方也会有瓶颈。</p>
+<p>总之，我们没法优化单个连接的加载时间，但是可以确保nginx 处理高流量的情况时有优化过的理想的环境。当然，我所说的高流量是指每秒几百个请求，绝大多数人不需要为这种情况费心思，不过如果你有兴趣或者准备处理这种情况，请继续往下读吧。</p>
+<p>首先我们需要考虑要使用的平台，因为nginx 可以运行在Linux，MacOS，FreeBSD，Solaris，Windows 以及其他专业的系统。他们都实现了高性能的基于事件的轮询方法，可惜的是，nginx 只支持了其中4个。我倾向于喜欢4个中的FreeBSD，但是没什么大的区别，相对于选择最优的系统，选择你最熟悉的系统更加重要。 </p>
+<p>如果你没有猜到，那个不同的系统就是Windows。真的没有任何理由把运行在Windows 上的Nginx 投入生产环境使用。Windows 采用一个不同的处理事件轮询的方法，nginx 的作者选择不支持它。它默认采用低性能的select()，结果性能非常糟糕。  </p>
+<p>大多数人遇到的第二个最大的瓶颈也与你的操作系统有关。打开一个shell，su 到运行nginx 的用户，然后运行这个命令:<code>ulimit -a</code>。这些数值都是nginx 运行时的瓶颈。大多数系统下的打开文件数默认被限制得很小，我现在检查的这个系统它的值设置为1024。如果nginx运行在这种情况下，当它达到限制的时会记录错误日志（24: Too many open files）和返回一个错误给客户端。nginx 当然可以处理大大超过1024 个文件描述符，你的操作系统同样也可以。所以你可以放心的提高这个值。  </p>
+<p>为此，你可以通过ulimit 设置这个限制，也可以使用<a href="https://nginx.org/en/docs/ngx_core_module.html#worker_rlimit_nofile">worker rlimit nofile</a> 来定义你需要的打开文件描述符的限制。（这需要以root 启动nginx，在它dropping  privileges 之前）（译注：nginx 以root 启动之后，会再启动多个worker 进程，worker 进程工作在你配置中<a href="https://nginx.org/en/docs/ngx_core_module.html#user">user</a> 指定的普通用户，实现参考<a href="https://github.com/nginx/nginx/blob/b072a6957c97ca7c33a64b1a34f7b66c6e209acf/src/os/unix/ngx_process_cycle.c#L831_L850">nginx_src/os/unix/ngx_process_cycle.c</a> </p>
+<h2>Nginx 瓶颈</h2>
+<p>关注了OS 的瓶颈之后，是时候深入nginx 自身，看看一些我们可以调整的指标和方法。  </p>
+<h3>Worker 进程</h3>
+<p><a href="https://nginx.org/en/docs/ngx_core_module.html#worker_processes">worker 进程</a> 是nginx 的基础，一旦master 进程绑定了指定的IP/端口，它就会根据复制出指定用户的worker 进程，然后它们会处理所有任务。Worker 不是多线程的，所以它们不能在CPU之间分摊每个连接。所以这让运行多个worker 进程有意义，通常一个CPU 核心配一个worker。2-4 个worker 可以应付大多数负载情况，因为在CPU 成为问题之前，nginx 会遇到其他瓶颈，通常情况下你的进程只会处于空闲状态。如果你的nginx 实例在设置4 个worker 之后是CPU Bound（译注：只占用大量CPU资源，相对应的有I/O Bound），希望不需要我告诉你需要怎么做。（译注：作者意指升级CPU 配置即可。）  </p>
+<p>当你在处理有很多阻塞的磁盘IO 的情况时，可以创建更多worker 进程。你需要测试特定的配置下加载静态文件的等待时间，如果这个时间很大的话，尝试增加worker 进程。</p>
+<h3>Worker 连接数</h3>
+<p><a href="https://nginx.org/en/docs/ngx_core_module.html#worker_connections">Worker 连接数</a>能有效地限制任一worker 在某一刻可以处理的连接数。这个选项极有可能是设计用来防止失控的进程，万一你的系统配置成允许处理超出硬件能力的负载。正如nginx 开发者Valentine 在<a href="http://mailman.nginx.org/pipermail/nginx/2015-May/047460.html">邮件列表</a>中指出，如果达到worker_connections 的限制，nginx 可以关闭keep-alive 连接，所以在这里我们不需要担心keep-alive 值。相反，我们应该关心nginx 可以处理的当前活跃连接的总数。我们可以处理的最大连接数公式如下：  </p>
+<div class="highlight"><pre><span></span><code>worker_processes * worker_connections * (K / average $request_time)
+</code></pre></div>
+
+<p>其中K 是当前活跃的连接总数。另外，对于K值，我们也需要考虑反向代理，它会多打开一个到你后端服务的连接。  </p>
+<p>在默认的配置文件中<code>worker_connections</code>  是设置为1024，如果我们考虑浏览器通常会打开2个连接来进行站点资源的管道传输，那么导致我们最多能同时处理512个用户。使用反向代理的情况下，同时能处理的用户数会更低，即使你的后端服务能够尽可能快的响应来释放连接。  </p>
+<p>所有关于worker 连接数的事情应该都搞清楚了，如果你的流量在增长，你最终都需要增加每个worker 的总连接数。2048 对于大多数人来说都适用了，说实话，如果你有这种量级的流量，你应该已经很清楚的知道这个指标得设多高。</p>
+<h3>CPU 亲缘性</h3>
+<p>设置CPU 亲缘性实际上是告诉每个worker 使用哪个CPU 核心，并且他们只会使用那个核心。我不想说太多涉及这部分的内容，除了说明你做这个时候必须<strong>非常</strong>小心。你操作系统的CPU调度器极有可能比你更擅长处理负载均衡。如果你认为你在CPU 负载方面遇到了问题，想在调度器级别做优化，有可能找到一个可替代的调度器。除非你清晰的知道你在做什么，不然别碰这个。</p>
+<h3>Keep Alive</h3>
+<p><a href="https://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_timeout">Keep alive</a> 是HTTP 的一个特性，它允许用户客户端和你的服务器保持连接来发送若干请求，直到达到设定的超时时间。实际上这个指标不会大大改善我们的nginx，因为nginx 自身也能处理大量的空闲连接。nginx 的作者声称nginx 处理10,000 个空闲连接只会使用2.5MB内存，在我看来确实如此。</p>
+<p>我在性能指南中设计这点的理由非常简单。Keep alive 能大大改善终端用户感受到的加载时间。这是你能优化的最重要的指标，因为如果你的网站对用户来说加载很快，他们会很开心。Amazon 和其他大型在线零售商研究表明，感官上的加载时间和销量存在直接的关系。</p>
+<p>这可能有一点奇怪，为什么保持持久的连接影响这么大，即你要避免创建所有HTTP 连接，这样影响很大。你可能不需要keep alived 超时时间为65，但是还是很推荐设置为10~20 ，正如前面说的，nginx 处理空闲的请求非常轻松。</p>
+<h3>tcp_nodelay 和 tcp_nopush</h3>
+<p>这两个指标可能是最难理解的，它们在非常底层的网络方面影响着nginx。最简短和浅显的解释是，这些指标决定操作系统如何处理网络缓存和何时刷新缓存传给终端用户。我只能建议你，如果不了解就别乱动。它们不会显着的改善或者改变任何什么，所以最好是让它们保持默认值。</p>
+<h2>硬件瓶颈</h2>
+<p>目前为止我们已经处理了所有源于nginx 可能的瓶颈，是时候弄明白如何最大限度的榨干我们的服务器了。要做到这个我们着眼馀硬件层面，因为这是最有可能找到瓶颈的地方。</p>
+<p>服务器主要三个方面有潜在的瓶颈。CPU，内存和IO层面。nginx 对于CPU使用非常高效，所以我可以直接了当的告诉你，这方面不会成为你的瓶颈。同样地，nginx 在内存使用方面也非常高效，所以也不太可能成为瓶颈。剩馀的IO 是我们服务器瓶颈的罪魁祸首。</p>
+<p>如果你曾经处理过服务器，那么你对这块可能非常熟悉。磁盘驱动器<strong>非常，非常慢</strong>。从磁盘驱动器中读取内容可能是你在服务器中成本最高的操作了，所以，自然为了避免IO 瓶颈，我们需要减少nginx 对磁盘的读写。</p>
+<p>要做到这个，我们可以更改nginx 的行为，尽可能减少写磁盘，以及确保nginx 的内存限制，来避免对磁盘的访问。</p>
+<h3>访问日志</h3>
+<p>默认情况下，为了日志记录，nginx会往磁盘上的一个文件写入每条请求的记录，你可以依靠它来进行统计分析，安全检查等，但是这会带来很大的IO 开销。所以如果你不需要任何访问日志，你可以直接关闭日志记录，避免写磁盘。然而，如果你需要访问日志，那么考虑把日志保存到内存吧（译注：使用RAM Disk）。这会比写入磁盘快很多，而且可以显着降低IO 开销。（译注：还可以采用memory buffer，以及ratio 之类的参数来优化nginx写日志。）  </p>
+<p>如果你只是使用访问日志来做统计分析，那么可以考虑使用类似Google Analytics 来代替，或只记录请求中的一部分即可。</p>
+<h3>错误日志</h3>
+<p>我内心也在犹豫我是否应该包含这个指标，因为你真的不想要禁用错误日志记录，特别是考虑到实际上错误日志占的存储空间很少。也就是说，关于这个指标有困惑的地方，错误日志等级的参数是你可以指定的，如果设置的太低，它会记录404 错误和其他可能的debug 信息。在生产环境中设置为warn 等级就够了，并且能保持较低的IO。</p>
+<h3>Open File Cache</h3>
+<p>文件系统中的一个读请求包含打开和关闭文件，考虑到这是一个阻塞的操作，这是一个不能忽略的方面。所以，对我们来说缓存打开文件描述符非常有益，这就是<a href="https://nginx.org/en/docs/http/ngx_http_core_module.html#open_file_cache">open file cache</a>的作用。链接的wiki 对于如何启用和配置有非常详细说明，我建议你读一读。</p>
+<h3>Buffers</h3>
+<p>你需要调优的最重要的一件事是你允许nginx 使用的buffer 大小。如果buffer 设置的太小，nginx 将不得不存储上游(upstreams)的响应到一个临时文件中，这会导致IO 读写增加。流量越大问题越严重。</p>
+<p><a href="https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_buffer_size">client_body_buffer_size</a> 指令用来处理客户端<strong>请求</strong>的buffer 大小，也就是外部进入的请求体。它被用来处理POST 数据，也就是一些表单提交，文件上传之类的。如果你要处理很多大容量的POST 数据提交，你需要确保这个buffer 足够大。</p>
+<p><a href="https://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffer_size">fastcgi_buffers</a> 和<a href="https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering">proxy_buffers</a> 指令用来处理你上游服务器的响应，也就是PHP，Apache 或者其他。意思和上文差不多，如果这些buffer 不够大，数据在返回给用户之前会被缓存到磁盘中。注意，在同步传输数据给客户端之前，nginx 能缓存的大小有一个上限，即使是在磁盘上。这个限制是由<code>fastcgi_max_temp_file_size</code> 和<code>proxy_max_temp_file_size</code> 指定的。另外你也可以关闭代理连接的缓存，即把<code>proxy_buffering</code> 设置为<code>off</code>。（通常不是一个好主意！）</p>
+<h3>彻底去除磁盘IO</h3>
+<p>去除磁盘IO 最好的方法自然是不用磁盘，如果你只有少量数据，你可以把它们都放入内存，然后完全摆脱磁盘IO 的限制。你的操作系统默认会缓存频繁访问过的磁盘扇区，所以你有越多的内存，IO 就越少。也就是说你可以通过买更多的内存来突破这个限制。当然，你的数据越多，需要的内存越大。</p>
+<h3>Network IO</h3>
+<p>为了好玩，我们假设你有足够的内存来缓存你所有的数据，这意味着理论上你读的IO 速度能达到3-6gbps。然而，你并且没有这么快的网络通道。很遗憾，对于我们传输数据需要的网络带宽，能够优化的有限。唯一有用的优化方式就是减少传输的数据，或者压缩数据。</p>
+<p>感谢nginx 有一个<a href="https://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip">gzip 模块</a>，它可以让我们在传给用户之前压缩数据，这可以显着的降低数据大小。通常来说<code>gzip_comp_level</code>设置为4~5 就足够了。没有必要进一步增加压缩等级，那样只会消耗CPU 时间。</p>
+<p>你也可以使用各种javascript 和css 压缩器来压缩数据。这些和nginx 无关，我相信你通过Google 可以找到更多信息。</p>
+<h2>Phew</h2>
+<p>到此，这个主题就结束了。如果你还要更多的优化，是时候考虑增加额外的服务器来扩大你的服务规模，而不是把时间浪费在进一步优化nginx 上，这是另外一个话题，我已经研究了一段时间。如果你对这篇文章只有2400 个字感到奇怪，那么请休息一下，进一步探索我的博客吧！</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-11-24T14:00:00+08:00">
+      Thu 24 November 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/nginx.html">nginx </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

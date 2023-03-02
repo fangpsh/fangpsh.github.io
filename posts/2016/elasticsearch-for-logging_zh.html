@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ElasticSearch 用于日志记录 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2016/elasticsearch-for-logging_zh.html" rel="bookmark"
+         title="Permalink to ElasticSearch 用于日志记录">ElasticSearch 用于日志记录</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="EdgeofSanity" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302133726.png"></p>
+<ul>
+<li><a href="http://edgeofsanity.net/article/2012/12/26/elasticsearch-for-logging.html">原文地址</a>：<ul>
+<li>http://edgeofsanity.net/article/2012/12/26/elasticsearch-for-logging.html</li>
+</ul>
+</li>
+<li>已获得原文作者翻译许可，本文遵循原文许可协议。</li>
+<li>原文发表时间：2012-12-26</li>
+</ul>
+<p>在我工作中，我们在Web 前端搜索上使用<a href="http://elasticsearch.org/">ElasticSearch</a>。性能至关重要，对我们而言，大多数的数据是静态的。<br>
+我们每天更新搜索索引，不过用旧的索引跑几个星期也没问题。这个集群大部分的流量是搜索；这是一个“重读”的集群。一开始的时候我们有一些性能上的小问题，<br>
+不过我们通过和ElasticSearch 的Shay Bannon 密切合作解决了这些问题。现在我们的前端集群非常可靠，灵活，和快速。  </p>
+<p>我目前的工作是部署一个符合规范，同时也非常有用的中心化的日志基础服务。这个日志基础服务的目标是尽可能的实现Splunk 的功能。我<a href="http://edgeofsanity.net/article/2012/06/17/central-logging-with-open-source-software.html">之前写的一篇关于日志记录的文章</a>解释了我们为什么决定不用<a href="http://splunk.com/">Splunk</a>。  </p>
+<p>评估了一些选择之后，我决定使用ElasticSearch 作为这个系统的后端存储。这个集群的类型和我们之前部署的用于大量搜索的集群<em>非常不同</em>。  </p>
+<p>译文<br>
+由<a href="http://www.everycloudtech.com">EveryCloud</a> 贡献的一篇<a href="http://www.everycloudtech.com/elasticsearch-for-logging">俄语译文</a>。  </p>
+<h2>索引设计</h2>
+<p>两个流行的开源日志分发系统是<a href="http://graylog2.org/">Graylog2</a> 和<a href="http://logstash.net/">LogStash</a>。在写这篇文章的时候，<em>稳定</em>版本的Graylog2 只支持从单一的索引读/写。正如送之前文章中指出的，Graylog2 存在<em>很多</em>严重的问题。0.10.0 版的Graylog2 将包含联合多个索引的能力。然而，我已经在LogStash 的索引上有了一些经验，因为之前它是唯一的选择。  </p>
+<p>为了尽可能得充分利用ElasticSearch 用来做日志记录，你需要使用多个索引。当你滚动更新索引的时候有非常多种方式，不过LogStash 默认的每天滚动更新的方式是最合理的。这样，你会看到下列内容：  </p>
+<ul>
+<li>logstash-2012.12.19</li>
+<li>logstash-2012.12.20</li>
+<li>logstash-2012.12.21</li>
+<li>logstash-THE_WORLD_HAS_ENDED</li>
+</ul>
+<p>你可以跟踪每个索引中有多少个文本。在百万或者千万个文本之后滚动更新，或者其他你随意设定的数值之后，但是这样你会给你自己以后带来更多的工作内容。在某些少见的情况下其他的索引方式可能会更高效，但是对于大多数用户来说，一天一个索引是最简单的，也能最有效的利用你的资源。  </p>
+<!-- more -->
+
+<h2>认真点，不然就回家待着</h2>
+<p>LogStash 和Graylog2 都附带内置的ElasticSearch。这对示范演示和开发来说非常方便。<em>用于真正用途的时候不要使用内置的服务器！</em>我非常惊奇有大量的LogStash 和Graylog2 用户使用了内置的ElasticSearch 存储引擎，最后在irc.freenode.org 的 #elasticsearch 频道里对服务崩溃感到奇怪。  </p>
+<p><em>请运行一个独立的ElasticSearch 集群！</em>  </p>
+<p>你将需要为集群划划分硬件。像LogStash和ElasticSearch 这样的Java 应用是内存和磁盘缓存密集型的。保证一批硬件是用来作为日志处理的箱子，然后划分这些箱子给ElasticSearch 集群。Java 有一些奇怪的内存问题。我们发现你不会想把超过32GB内存给ElasticSearch，预留至少8GB 给操作系统的文件系统缓存。  </p>
+<p>在我的开发环境中，我的集群每天处理大约60GB 的日志资料，集群一共有三个搜索节点，每个节点24GB 内存，毫无压力。这引发下一个问题，<strong>我的集群需要多少台服务器？</strong>开始先在你的ElasticSearch 集群中部署3台服务器。这样你可以灵活的关闭一台服务器，维持你的集群能充分得被使用。你可以随时添加更多的硬件！  </p>
+<h2>安装ElasticSearch</h2>
+<p>我不打算覆盖安装ElasticSearch 的所有内容，你可以在文档站点上<a href="http://www.elasticsearch.org/guide/reference/setup/installation.html">读到更多关于这方面的内容</a>。你可能决定通过<a href="https://github.com/Aethylred/puppet-elasticsearch">Puppet</a> 或<a href="https://github.com/karmi/cookbook-elasticsearch">Chef</a> 利用 .deb 包或<a href="https://github.com/tavisto/elasticsearch-rpms">rpm</a> 包的方式创建一份ElasticSearch 的部署脚本。关于安装我会说的唯一一件事是，无论有多不爽，最好还是用<a href="http://www.java.com/en/download/index.jsp">Sun JVM</a> 运行ElasticSearch。这是ElasticSearch 的开发人员运行ElasticSearch 的方式，所以你也应该这样。  </p>
+<h2>ElasticSearch 配置：OS 和 Java</h2>
+<p>主机系统上有一些地方你<strong>真的</strong>需要配置一下。我假定你的主机系统上运行的是Linux 系统。你应该使用非特权用户来运行ElasticSearch。我们的集群是用'elasticsearch' 用户来运行的，另外我们调整了<code>/etc/security/limits.conf</code>中内核对进程和内存上的限制：  </p>
+<div class="highlight"><pre><span></span><code># Ensure ElasticSearch can open files and lock memory!
+elasticsearch   soft    nofile          65536
+elasticsearch   hard    nofile          65536
+elasticsearch   -       memlock         unlimited
+</code></pre></div>
+
+<p>你也应该把ElasticSearch 最小和最大的内存池设置为<strong>一样的值</strong>。这样使得启动时就能分配到总内存，这样线程需要更多的内存的时候不需要等待内核分配。我在一个RedHat 系统上部署了ElasticSearch，<code>/etc/sysconfig/elasticsearch</code>中的配置会在daemon 进程启动时设置好环境变量：  </p>
+<div class="highlight"><pre><span></span><code># Allocate 14 Gigs of RAM
+ES_MIN_MEM=14g
+ES_MAX_MEM=&quot;$ES_MIN_MEM&quot;
+</code></pre></div>
+
+<p>这份文件由Puppet 管理，并设置内存大小等于50% 的RAM 大小，写2遍。这没什么难的，在<em>每份</em>ElasticSearch 优化指南中都会提到。  </p>
+<h2>ElasticSearch 配置：elasticsearch.yml</h2>
+<p>在<code>elasticsearch.yml</code> 文件中有一些调优的事情我们可以做，可以极大的改进重写的节点的性能。首先是设置<code>bootstrap.mlockall</code> 为 true。这会强制JVM 立即分配所有的<code>ES_MIN_MEM</code>。这意味着Java 在启动时就有了所有所需的内存！重写的集群的另外一个让人担心的点是indexing/bulk 引擎分配内存时不均衡的问题。  </p>
+<p>ElasticSearch 是假定你将大量使用搜索，所以分配了大部分的内存用于保障搜索。这不是我的集群的使用情况，所以调整<code>indices.memory.index_buffer_size</code>到50%，从而恢复在我们使用方式下内存分配的平衡。在我的设置里，我还提高了刷新间隔和日志刷新的传输总数。否则，ElasticSearch 将需要接近每分钟都刷新传输日志。  </p>
+<p>另外一个需要我们调整以避免灾难性的失败的地方是线程池的设置。ElasticSearch 会做它认为能获得最好性能的事情。我们发现，在生产环境中，这意味着生成成千上万的线程来处理传入的请求。在高负载下，你的集群很快会被压垮。为了避免这种情况，我们分别设置了search,index 和bulk 线程池的最大值。我们主要的操作是bulk，所以给bulk 设置了60个线程，其他的操作设置了20个线程。我们也设置了bulk 队列能处理的最大请求数为200，其他的各为100。这样一来，如果集群过载，它会拒绝新的请求，不过它会留给你足够的文件描述数和PID 来ssh 到主机中找出问题所在。  </p>
+<p>总结以上内容，这是我的<a href="https://gist.github.com/reyjrar/4364063#file-elasticsearch-yml">配置文件</a>：  </p>
+<div class="highlight"><pre><span></span><code><span class="c1">##################################################################</span>
+<span class="c1"># /etc/elasticsearch/elasticsearch.yml</span>
+<span class="c1">#</span>
+<span class="c1"># Base configuration for a write heavy cluster</span>
+<span class="c1">#</span>
+
+<span class="c1"># Cluster / Node Basics</span>
+<span class="nt">cluster.name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logng</span>
+
+<span class="c1"># Node can have abritrary attributes we can use for routing</span>
+<span class="nt">node.name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logsearch-01</span>
+<span class="nt">node.datacenter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">amsterdam</span>
+
+<span class="c1"># Force all memory to be locked, forcing the JVM to never swap</span>
+<span class="nt">bootstrap.mlockall</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="c1">## Threadpool Settings ##</span>
+
+<span class="c1"># Search pool</span>
+<span class="nt">threadpool.search.type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fixed</span>
+<span class="nt">threadpool.search.size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="nt">threadpool.search.queue_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+
+<span class="c1"># Bulk pool</span>
+<span class="nt">threadpool.bulk.type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fixed</span>
+<span class="nt">threadpool.bulk.size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="nt">threadpool.bulk.queue_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
+
+<span class="c1"># Index pool</span>
+<span class="nt">threadpool.index.type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fixed</span>
+<span class="nt">threadpool.index.size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="nt">threadpool.index.queue_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+
+<span class="c1"># Indices settings</span>
+<span class="nt">indices.memory.index_buffer_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30%</span>
+<span class="nt">indices.memory.min_shard_index_buffer_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12mb</span>
+<span class="nt">indices.memory.min_index_buffer_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">96mb</span>
+
+<span class="c1"># Cache Sizes</span>
+<span class="nt">indices.fielddata.cache.size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15%</span>
+<span class="nt">indices.fielddata.cache.expire</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6h</span>
+<span class="nt">indices.cache.filter.size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15%</span>
+<span class="nt">indices.cache.filter.expire</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6h</span>
+
+<span class="c1"># Indexing Settings for Writes</span>
+<span class="nt">index.refresh_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30s</span>
+<span class="nt">index.translog.flush_threshold_ops</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50000</span>
+
+<span class="c1"># Minimum nodes alive to constitute an operational cluster</span>
+<span class="nt">discovery.zen.minimum_master_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+
+<span class="c1"># Unicast Discovery (disable multicast)</span>
+<span class="nt">discovery.zen.ping.multicast.enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="nt">discovery.zen.ping.unicast.hosts</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;logsearch-01&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;logsearch-02&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;logsearch-03&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+</code></pre></div>
+
+<h2>ElasticSearch 配置: 索引模板</h2>
+<p>一开始的时候，我是基于LogStash 来部署集群，由于那时Graylog2 部署上的缺点。这一节内容主要关于“logstash”，但同样也适用于Graylog2 或其他自定义的索引映射（译注：<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html">Mapping</a>）。  </p>
+<p>因为我们决定一天创建一个索引，这就有两种方式配置每个索引的映射和特性。我们可以按照我们的需求配置明确得生成索引，也可以使用一个包含我们需要的配置和特性的模板来生成每个索引！模板在这种情况下最方便，我们可以在运行的集群上创建它们！  </p>
+<p>我的<a href="https://gist.github.com/reyjrar/4364225#file-logstash-template-json">模板配置</a>如下：</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;template&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;logstash-*&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;settings&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;index.number_of_shards&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;index.number_of_replicas&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;index.query.default_field&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@message&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;index.routing.allocation.total_shards_per_node&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;index.auto_expand_replicas&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;_default_&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;_all&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;compress&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;dynamic_templates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;fields_template&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_analyzed&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                    </span><span class="nt">&quot;path_match&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@fields.*&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;tags_template&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_analyzed&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                    </span><span class="nt">&quot;path_match&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@tags.*&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;properties&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;@fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;dynamic&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;@source&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_analyzed&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;@source_host&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_analyzed&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;@source_path&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_analyzed&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;@timestamp&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_analyzed&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;@type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_analyzed&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;@message&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;analyzer&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;whitespace&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>要在集群上应用配置，我们可以通过一个PUT 来创建和更新模板：  </p>
+<div class="highlight"><pre><span></span><code><span class="n">curl</span><span class="w"> </span><span class="o">-</span><span class="n">XPUT</span><span class="w"> </span><span class="s1">&#39;http://localhost:9200/_template/template_logstash/&#39;</span><span class="w"> </span><span class="o">-</span><span class="n">d</span><span class="w"> </span><span class="nv">@logstash</span><span class="o">-</span><span class="n">template</span><span class="p">.</span><span class="n">json</span>
+</code></pre></div>
+
+<p>将模板设置为<code>logstash-*</code> ，意味着配置将应用到所以'logstash-' 开头新建的索引。我通过禁用对<code>_all</code> 字段进行搜索并将默认的属性修改为<code>@message</code>，覆盖了原来的默认搜索行为（译注：默认会对全部字段进行搜索，作者禁用了这种行为，修改为只对message 字段进行搜索）。这个字段（译注：指message 字段）将包含原生的syslog 消息。这也是唯一一个禁止分析的字段。不要不安。这能节省空间和建立索引的时间。这意味着搜索文档中其他字段时只能使用精确搜索，而不能使用模糊搜索，不过这是OK 的。我们依然可以对<code>@message</code> 字段进行模糊搜索！这将极大的降低存储空间。  </p>
+<p>在之前的文章中，ElasticSearch 0.19 之前，你可能见过设置了<code>"_source": { "compress": true }</code> 。这对日志类的数据是不推荐的。这个属性决定了每份文档（日志消息）是否进行压缩存储。由于这些文件往往非常小，压缩并不能真正的节省很多的空间。在进行索引和检索的时，这会带来额外的时间成本。对记录日志的集群来说最好禁用压缩。我们<code>elasticsearch.yml</code>中启用的压缩是使用块级别的压缩方式，更加高效。</p>
+<h3>索引配置</h3>
+<p>这份索引的配置是为一个3个节点的集群调优的。我们可以修改配置中的任何项，但是如果我们需要扩容或者缩容时，<code>index.number_of_shards</code>需要立即修改。这份配置不是绝对完美的，因为我们有时最后会有一些孤儿（未分配）的分片。通过<a href="http://www.elasticsearch.org/guide/reference/api/admin-cluster-reroute.html">ElasticSearch API</a> 来移动分片可以很方便的纠正这些错误。  </p>
+<p>我们随着添加节点而提升存储能力，而不是复制整个索引到整个集群。这样我们有一个类似“RAID” 的分配分片的设置。我有一个三个节点的集群，每个索引我创建3个分片。这意味着主分片或者“写”分片可以分摊到每一个节点。为了冗余，我设置副本数为一。这意味着每个索引有6个分片。每个节点只需要有每个索引的2个分片。  </p>
+<p>你需要进行实验来找到你需要的配置。在失去功能前，考虑一下损失多少个节点是你能够承受的。你需要基于这个调整副本数量。我采用了一个简单的做法，即用1个分片备份。这意味着我一次只能从集群中下掉一个节点。到目前为止，我发现<code>number_of_replicas</code> 等于 (2/3 * 节点数) -1 是一个不错的数字，每个人的情况可能不同。  </p>
+<h3>自动扩充副本</h3>
+<p>最好也禁用ElasticSearch 默认会基于集群中有多少节点就扩充多少个副本的行为。我们假定手工管理这个能提高性能，特别是当我们需要停止或重启一个集群中的节点时。自动扩充是一个很不错的特性，对于重搜索的、有着小到中量的数据的索引来说。无需配置，添加一个几点就能提高性能。然而，如果你的索引有着大量的数据，并启用了这个特性，当一个节点重启时，将会发生下列事情：  </p>
+<ul>
+<li>一切正常。副本(replica)数 = 1</li>
+<li>节点A 关闭</li>
+<li>集群注意到节点下线，状态变成黄色（译注：elasticsearch 集群健康状态用三种颜色表示，红、黄、绿，具体可参考<a href="http://chrissimpson.co.uk/elasticsearch-yellow-cluster-status-explained.html">Elasticsearch "Yellow" cluster status explained</a>）  <ul>
+<li>副本数 = 0, 期望值为1</li>
+<li>目前节点数为1</li>
+<li>目前副本数期望 = 0</li>
+</ul>
+</li>
+<li>集群健康状态上升为绿色，一切完美</li>
+<li>节点A 重新上线</li>
+<li>集群发送期望的副本数和实际的索引个数</li>
+<li>节点A 它的副本是不必要的，于是删除了数据</li>
+<li>集群增加了节点数，期望的副本数 = 1，实际 = 0</li>
+<li>节点A 被通知它的副本数不满足要求</li>
+<li>节点A 通过网络复制所有副本加到它的索引中</li>
+</ul>
+<p>正如你看到的，这不太理想，特别是在一个非常繁忙的集群里。请小心你的生产环境中的操作，当你从集群中添加/删除节点时请注意你的网络设备监控图。如果你看到尖峰，你可能需要手动进行处理。你失去了一些魔法，不过你可能发现这些是黑魔法。禁用副本的自动扩充，会出现下列情况：  </p>
+<ul>
+<li>一切正常</li>
+<li>节点A 关闭</li>
+<li>集群注意到节点下线，状态变成黄色</li>
+<li>集群健康状态未恢复，期望的副本数 != 实际副本数</li>
+<li>节点A 重新上线</li>
+<li>集群发送期望的副本数和实际上所有的索引个数</li>
+<li>节点A 通知集群它有分片的拷贝</li>
+<li>集群期望和实际上的副本数相等，健康状态变绿</li>
+<li>集群校验分片，和复制任何过期的分片给节点A</li>
+</ul>
+<p>这才是大多数人民期望集群默认该做的，但是判定集群状态之间的逻辑关系让这很难实现。再说一次，<code>auto_expand_replicas</code>的魔法动作在大多数情况下是有用的，不过不适用与我们的情况。  </p>
+<h2>维护和监控</h2>
+<p>我为工作在生产环境中的ElasticSearch写了<a href="https://github.com/reyjrar/es-utils">一些脚本</a> 。它包含传送标准值给Graphite 和Cacti。这儿也有一份Nagios 的监控检测脚本，非常容易配置。我们使用这些工具来跟踪我们多个集群的性能和健康状态，包括日志记录集群。过几天，我会更新一下，将包含我们logstash 索引维护的脚本。  </p>
+<p>当你将数据写入日志集群时，ElasticSearch 同时在后台创建Lucence 索引。收到的文档有一个缓冲区，基于你的设置，数据会被刷新到一个Lucene 索引。Lucene 索引新建/更新 的成本非常高，但是搜索非常<em>快</em>。这意味这单个分片可能包含上百个Lucence 索引，常常被称为段。这些段可以被很快速的搜索，但是每个段只能被一个线程处理。这可能对性能有负面影响。我们已经观察到20多个段的索引，有10%的性能下降。  </p>
+<p>幸运的是，ElasticSearch 提供了<a href="http://www.elasticsearch.org/guide/reference/api/admin-indices-optimize.html">一个API 优化Lucene段</a>。你不应该优化一个正在索引数据的索引。在这些分片上，新数据将会生成更多的段。那么我们如何知道已经写完一个索引了呢？如果你还记得，我建议按天建立索引。这意味着，你可以运行一个每天的cron 任务（或每小时）来检查昨天或者更久之前的索引，确保他们已经被优化（或<code>max_num_segments = 1</code>）。如果你已经为创建索引的名字选择了一些其他模式，那么你刚刚给自己增加加了很多工作。</p>
+<h2>未来的探索</h2>
+<p>这篇文章比我想象的长很多。我只是对设计和实践用于日志记录的ElasticSearch 集群做了表面的研究。我的集群很快会从开发环境迁移到生产环境（尽管它正在提供生产环境的功能）。当我这样做的时候，我将面对更多的挑战，我有一个笔记本写满了关于如何构建索引的方法，关于集群如何处理负载，和其他当你突然提供简单、快速的访问大量的数据时候出现的一些隐私相关的问题。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2016-06-15T11:40:00+08:00">
+      Wed 15 June 2016
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2016.html">2016</a> Tagged <a href="https://fangpsh.github.io/tag/elasticsearch.html">elasticsearch </a><a href="https://fangpsh.github.io/tag/graylog.html">graylog </a><a href="https://fangpsh.github.io/tag/logstash.html">logstash </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
