@@ -1207,7 +1207,65 @@ verify 函数。&lt;/p&gt;
 &lt;p&gt;&lt;img alt="tongshi-tk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165416.png"&gt;&lt;/p&gt;
 &lt;p&gt;试验一下想法，过三天这台机器就到期，关了。&lt;/p&gt;
 &lt;p&gt;总结一下思路，通过办公网出口IP 做注册限制，较宽松的员工认证手段，又保证了一定的匿名性。&lt;/p&gt;
-&lt;p&gt;当然如果公司自己愿意做的话，在内网搭就非常简单了。然而这东西对于公司来说是洪水猛兽，审查还来不及。腾讯内网的乐问有匿名发帖功能，然而又有几个人信任匿名的安全性呢。&lt;/p&gt;</content><category term="2018"></category><category term="flarum"></category></entry><entry><title>《HTTP/2 基础教程》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="alternate"></link><published>2018-02-06T00:00:00+08:00</published><updated>2018-02-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-02-06:/posts/2018/2018-02-06.html</id><summary type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;当然如果公司自己愿意做的话，在内网搭就非常简单了。然而这东西对于公司来说是洪水猛兽，审查还来不及。腾讯内网的乐问有匿名发帖功能，然而又有几个人信任匿名的安全性呢。&lt;/p&gt;</content><category term="2018"></category><category term="flarum"></category></entry><entry><title>记一次无比心累的个税申报过程</title><link href="https://fangpsh.github.io/posts/2018/2018-03-20.html" rel="alternate"></link><published>2018-03-20T00:00:00+08:00</published><updated>2018-03-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-03-20:/posts/2018/2018-03-20.html</id><summary type="html">&lt;blockquote&gt;
+&lt;p&gt;自2006年1月1日起，在一个纳税年度内取得个人所得税法中规定的“工资、薪金所得”、“个体工商户的生产、经营所得”、“对企事业单位的承包经 …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;blockquote&gt;
+&lt;p&gt;自2006年1月1日起，在一个纳税年度内取得个人所得税法中规定的“工资、薪金所得”、“个体工商户的生产、经营所得”、“对企事业单位的承包经营、承租经营所得”、“劳务报酬所得”等11项应税所得合计数额达到12万元以上的纳税人，应在纳税年度终了后三个月内，向主管税务机关办理自行纳税申报的相关事宜。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;城市服务-深圳地税服务&lt;/h2&gt;
+&lt;p&gt;腾讯的HR 每日催着我们申报个税，一开始说是可以在微信钱包-城市服务-深圳地税服务 中进行申报，可是输入身份证和姓名之后，总是提示实名验证不通过，查询内网论坛发现大家都这样，行政同学解释：由于招行的接口问题，返回的信息没身份证信息，所以实名认证不通过，需要微信钱包绑定非招行卡才行。&lt;/p&gt;
+&lt;p&gt;然后开始倒腾了，解绑招行卡，留建行、中行，也还是不行。怒！&lt;/p&gt;
+&lt;h2&gt;深圳地税公众号-自助办税&lt;/h2&gt;
+&lt;p&gt;逛逛内网，发现有同事说可以关注：“深圳地税” 公众号，点击“自助办税”-“个人中心” 进行操作。跳转到开户绑定，填写完信息之后，提示我的身份证信息已经登记在册。。。无法绑定，吐血！&lt;/p&gt;
+&lt;h2&gt;电子税务局&lt;/h2&gt;
+&lt;p&gt;最后只能试一试地税官网-&lt;a href="https://dzswj.szds.gov.cn/dzswj/"&gt;电子税务局&lt;/a&gt;，IE 10 打开这网站，页面卡死，屡试不爽，启用兼容视图，还是一打开就卡死，给跪！内网逛逛，发现有同事说QQ 浏览器好使，遂怒下安装，打开，果然好使！然而好戏才刚刚开始。。&lt;/p&gt;
+&lt;p&gt;选择自然人用户标签，点击“我要开通”，填写信息，弹出页面，跳转到“深圳金融电子结算中心”的认证网关，输入银行的预留手机号，170xxxx，咦，收不到验证码，拔插拔插一下，还是不行？奇怪。。换一个手机号，185xxxx，咦，可以了收到验证码了！可是这个手机号不是我预留的，只是一张“流量卡”。&lt;br&gt;
+打12366 客服，描述问题，“甩锅”，让我添加他们的技术QQ：“800012366”。&lt;br&gt;
+工号1014 为我服务，描述问题，“甩锅”，“这不是地税的问题，是深圳金融电子结算中心”的问题，听起来没毛病，“能帮我反馈一下这个问题吗”，“不能，不是地税的问题”，mmp。  &lt;/p&gt;
+&lt;p&gt;打阿里通信的客服电话10029，描述问题，
+“阿里通信只支持淘宝、微博，还有个啥，三个平台，其他平台不保证支持”。。。。&lt;br&gt;
+上了贼床了。&lt;/p&gt;
+&lt;p&gt;自己研究一下请求：&lt;br&gt;
+&lt;img alt="szfesc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302151313.png"&gt;&lt;/p&gt;
+&lt;p&gt;猜测发送验证码接口的短信网关，170 等虚拟运营商的发送失败。地税局的网站跳转到认证网关的时候，会带一个merChikBillSn 号，认证网关这边对这个merChikBillSn 进行认证通过之后，才能在地税局那边进行开通。这个认证的接口：&lt;br&gt;
+&lt;code&gt;wyzf-gateway/RealNameVerification/checkConfim&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;merChkBillSn
+acctID
+phoneNm
+smsCodeId
+smsCodeValue
+banType
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;认证网关会校验银行卡和预留的手机号（phoneNm）是否一致，同时会校验smsCodeId 和 smsCodeValue 是否匹配正确，嘿嘿，它不会校验smsCodeId 对应的手机号是否和phoneNm 一致，所以可以简单的绕过，用一个三大运营商的手机号，得到一个smsCodeId 和验证码，然后再构造请求即可。&lt;/p&gt;
+&lt;p&gt;可惜乌云不在了，不然还能去报个漏洞。&lt;/p&gt;
+&lt;p&gt;兴高采烈，认证通过，回去填写开通信息，然而我还是太年轻。&lt;/p&gt;
+&lt;p&gt;填写电话，地址，点击开通！ &lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“身份证号码对应的自然人登记信息已存在”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;无法开通。。。。和前面在公众号里面开通绑定的提示一样，吐血。&lt;/p&gt;
+&lt;p&gt;再怒打客服电话，又被甩到技术客服QQ，描述问题，建议我找回密码。  &lt;/p&gt;
+&lt;p&gt;去页面上找回密码，输入信息，提示“还没有开通自然人电子税务局”，什么鬼。  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;“提供一下你的姓名和身份证”。   &lt;/li&gt;
+&lt;li&gt;“你的信息企业登记错误”，我的名字被打错了。。。 &lt;/li&gt;
+&lt;li&gt;“去前台更正信息，开通吧”  ，吐血。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;南山地税局&lt;/h2&gt;
+&lt;p&gt;取号，A类，前面还有23人，领表，填写。&lt;br&gt;
+等吧，逛逛： 那个女的怎么在玩手机，不叫号， 那个胖子在干嘛，怎么不叫号。&lt;/p&gt;
+&lt;p&gt;和咨询台小妹吐槽，怎么这么慢，被反问怎么不在微信里操作，答没操作成功，你们做的问题太多，被反怼：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“那个是你们腾讯做的” （上班路上，戴着工牌）&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;半小时后，终于等到了，16号小姐姐，了解清楚情况之后，先把个税申报做了，然后帮我开通电子税务局，操作几次，失败。
+以为170 手机号不行，换185，也不行。
+小姐姐呼叫另外一个小姐姐支援，还是不行，几番电话联系后台服务人员，说我的信息录入错误，需要更正。让我留一个手机号，回去等消息，回去等，流程很慢。&lt;/p&gt;
+&lt;p&gt;怒怼：不行，请马上处理。
+声调有点高，引来一个男的，一个女阿姨，和我对战：“你们腾讯自己的问题，信息录错了”。
+拒绝，不想再跑一趟，另外一个小姐姐打了几个电话，提交工单，做信息更正。十分钟后，搞定！&lt;/p&gt;
+&lt;p&gt;联系HR8008，反应+吐槽，HR 小姐姐说检查了，没发现登记有误。。算了。&lt;/p&gt;
+&lt;p&gt;到公司，已经快11点。耗费2小时，orz。&lt;/p&gt;</content><category term="2018"></category><category term="hack"></category></entry><entry><title>《HTTP/2 基础教程》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="alternate"></link><published>2018-02-06T00:00:00+08:00</published><updated>2018-02-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-02-06:/posts/2018/2018-02-06.html</id><summary type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的个人公众号上推荐，读完却觉得作为基础教程还不错，翻译上觉得略生硬。作点简单的笔记，方便以后“按图索骥”。&lt;/p&gt;
 &lt;h2&gt;3.1.2 关键性能指标&lt;/h2&gt;
@@ -7233,7 +7291,55 @@ pandoc的安装啥的也就略过了，有需要的话可以看看阳志平老�
 &lt;li&gt;&lt;a href="http://afoo.me/posts/2013-07-10-how-to-transform-chinese-pdf-with-pandoc.html"&gt;pandoc中文pdf转换攻略&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;中文字体相关的问题以上两个链接中都有提到了，按照对应的流程解决即可，不过注意第二个链接中LiHei Pro好像对简体支持有问题，所以大家可以看看本机上安装的中文字体，然后选项一个合适的指定即可。这里也贴一份模板，也是直接使用一份网友的模板（出处找不到）:&lt;br&gt;
-https://gist.github.com/fangpsh/5cc11fa503f1e9eda2c1  &lt;/p&gt;</content><category term="2015"></category><category term="markdown"></category></entry><entry><title>尝试解决openSUSE下zypper软件包名称自动补全的问题</title><link href="https://fangpsh.github.io/posts/2014/141216.html" rel="alternate"></link><published>2014-12-16T11:13:19+08:00</published><updated>2014-12-16T11:13:19+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-12-16:/posts/2014/141216.html</id><summary type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外顺带修了一个小bug，当本地repo超过10条时，原来脚本生成的自动补全列表不全的问题。&lt;/p&gt;
+https://gist.github.com/fangpsh/5cc11fa503f1e9eda2c1  &lt;/p&gt;</content><category term="2015"></category><category term="markdown"></category></entry><entry><title>运维笔记片段</title><link href="https://fangpsh.github.io/posts/2015/2015-01-01.html" rel="alternate"></link><published>2015-01-01T00:00:00+08:00</published><updated>2015-01-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-01-01:/posts/2015/2015-01-01.html</id><summary type="html">&lt;p&gt;帮同事迁移一个N年前的wordpress站（ http://52ml.net ），迁移后数据库使用mariadb，mariadb的socket默认监听在  0.0.0.0:3306上，但是wp无法连接（本地和远程测试连接没问题），需要在/etc/my.cnf中添加：bind-address=localhost。另 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;帮同事迁移一个N年前的wordpress站（ http://52ml.net ），迁移后数据库使用mariadb，mariadb的socket默认监听在  0.0.0.0:3306上，但是wp无法连接（本地和远程测试连接没问题），需要在/etc/my.cnf中添加：bind-address=localhost。另外  老版本的wp迁移，建议放弃整体迁移，导数据，备份配置文件和图片，然后重安装主题和插件。    &lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Testlink迁移，修改数据库配置项目，除了更新自定义配置项中的custom_config.inc.php中的$tlCfg-&amp;gt;log_path 与$g_repositoryPath等自定义配置，另外需要修改php.ini中 session.auto_start = 0，否则无法登录。  &lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;为apache 添加spdy支持，如果是2.2，使用官方模块，如果是2.4+，放弃折腾，github上个人fork的支持2.4的模块有不少bug。  &lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;nginx做前端反向代理需设置client_max_body_size ，以便传大文件。另外Nginx的配置，"nginx仅仅检查请求的“Host”头以决定该请求应由哪个虚拟主机来处理。如果Host头没有匹配任意一个虚拟主机，或者请求中根本没有包含Host头，那nginx会将请求分发到定义在此端口上的默认虚拟主机。"  &lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Centos 7如果使用仓库中的nginx包，需要注意sytemd的对应service文件中指定的pid路径与nginx.conf中指定的路径是否相同，如果不同需要修改为相同，曾经在sysytemd的邮件列表中看过这个问题，没想到半年后自己也遇到了。  &lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Nginx配置：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;Server&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;listen&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;80&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;server_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;a.foo.com&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="err"&gt;b.foo.com&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="err"&gt;c.foo.com&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;301&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;server_name&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;request_uri&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="err"&gt;#return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;301&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;request_uri&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;无论访问a.foo.com还是b.foo.com，c.foo.com，都将转到 https://a.foo.com/ ，server_name只取第一个，另外如果用正则的话例如：server_name ~^(a|b|c).foo.com，那转向居然是 https://~^(a|b|c).foo.com  。。。。。
+server_name是一个变量，它存储的是配置中设置的第一条server_name的配置项，应该改用$host。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$host
+    in this order of precedence: host name from the request line, or host name from the “Host” request header field, or the server name matching a request 
+$server_name
+    name of the server which accepted a request 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;hr&gt;
+&lt;p&gt;迁移LDAP，phpldapamin显示 &lt;code&gt;This base cannot be created with PLA&lt;/code&gt;，于是手动创建base，可是ldapadd 时候提示&lt;code&gt;ldap_bind: Invalid credentials (49)&lt;/code&gt;，仔细检查并google了半天，最后根据同事发来的脚本，发现是没有指定主机和端口造成的。。orz。&lt;/p&gt;
+&lt;p&gt;base.ldif&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;dn&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dc&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;lol&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="n"&gt;dc&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;
+&lt;span class="n"&gt;objectclass&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dcObject&lt;/span&gt;
+&lt;span class="n"&gt;objectclass&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;organization&lt;/span&gt;
+&lt;span class="n"&gt;dc&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;lol&lt;/span&gt;
+&lt;span class="n"&gt;o&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;lol&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;ldapadd -h ldap.lol.com -p 389 -D &amp;quot;cn=admin,dc=lol,dc=com&amp;quot; -W -x -a  -c -f base.ldif
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;hr&gt;
+&lt;p&gt;ganglia 单播模式下，一些图片显示不全，这是由于ganglia安装好后默认是组播，为了降低网络负担，默认的send_metadata_interval为0（3.1.x版本之后），然而单播模式下，如果send_memta_interval设置为0（默认为0）gmod只会在启动的时候向接收的gmod发送元数据（包含的度量信息，不是监控的数据包）。
+所以需要将send_memta_interval设置为非0，例如30。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Ganglia的度量指标从他的元数据间隔发送得到的。元数据包含诸如度量分组，类型等等。假如你重启了接收的gmond主机，那么元数据就会丢失，gmond就不知道如何处理度量数据，因此会把他们抛弃。这会导致生成空白的图表。在组播模式下，gmonds可以和其他任意一台主机通信，在元数据丢失情况请求重新获取。但这在单播模式下是不可能的，因此你需要命令gmond定期的发送元数据。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;</content><category term="2015"></category><category term="linux"></category></entry><entry><title>尝试解决openSUSE下zypper软件包名称自动补全的问题</title><link href="https://fangpsh.github.io/posts/2014/141216.html" rel="alternate"></link><published>2014-12-16T11:13:19+08:00</published><updated>2014-12-16T11:13:19+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-12-16:/posts/2014/141216.html</id><summary type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外顺带修了一个小bug，当本地repo超过10条时，原来脚本生成的自动补全列表不全的问题。&lt;/p&gt;
 &lt;p&gt;bash自带补全功能，要达到更好的补全效果需要安装bash-completion这个软件包，然后编写对应的补全脚本。关于bash-completion的内容，可以参考以下两个链接：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://kodango.com/bash-competion-programming"&gt;编写 Bash 补全脚本&lt;/a&gt;&lt;/li&gt;

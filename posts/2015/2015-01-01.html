@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>运维笔记片段 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2015/2015-01-01.html" rel="bookmark"
+         title="Permalink to 运维笔记片段">运维笔记片段</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>帮同事迁移一个N年前的wordpress站（ http://52ml.net ），迁移后数据库使用mariadb，mariadb的socket默认监听在  0.0.0.0:3306上，但是wp无法连接（本地和远程测试连接没问题），需要在/etc/my.cnf中添加：bind-address=localhost。另外  老版本的wp迁移，建议放弃整体迁移，导数据，备份配置文件和图片，然后重安装主题和插件。    </p>
+<hr>
+<p>Testlink迁移，修改数据库配置项目，除了更新自定义配置项中的custom_config.inc.php中的$tlCfg-&gt;log_path 与$g_repositoryPath等自定义配置，另外需要修改php.ini中 session.auto_start = 0，否则无法登录。  </p>
+<hr>
+<p>为apache 添加spdy支持，如果是2.2，使用官方模块，如果是2.4+，放弃折腾，github上个人fork的支持2.4的模块有不少bug。  </p>
+<hr>
+<p>nginx做前端反向代理需设置client_max_body_size ，以便传大文件。另外Nginx的配置，"nginx仅仅检查请求的“Host”头以决定该请求应由哪个虚拟主机来处理。如果Host头没有匹配任意一个虚拟主机，或者请求中根本没有包含Host头，那nginx会将请求分发到定义在此端口上的默认虚拟主机。"  </p>
+<hr>
+<p>Centos 7如果使用仓库中的nginx包，需要注意sytemd的对应service文件中指定的pid路径与nginx.conf中指定的路径是否相同，如果不同需要修改为相同，曾经在sysytemd的邮件列表中看过这个问题，没想到半年后自己也遇到了。  </p>
+<hr>
+<p>Nginx配置：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">Server</span><span class="p">{</span>
+<span class="w">    </span><span class="err">listen</span><span class="w"> </span><span class="err">80</span><span class="p">;</span>
+<span class="w">    </span><span class="err">server_name</span><span class="w"> </span><span class="err">a.foo.com</span>
+<span class="w">                </span><span class="err">b.foo.com</span>
+<span class="w">                </span><span class="err">c.foo.com</span>
+<span class="w">    </span><span class="err">return</span><span class="w"> </span><span class="err">301</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="err">$</span><span class="n">server_name</span><span class="o">/</span><span class="err">$</span><span class="n">request_uri</span><span class="p">;</span>
+<span class="w">   </span><span class="err">#return</span><span class="w"> </span><span class="err">301</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="err">$</span><span class="n">host</span><span class="o">/</span><span class="err">$</span><span class="n">request_uri</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>无论访问a.foo.com还是b.foo.com，c.foo.com，都将转到 https://a.foo.com/ ，server_name只取第一个，另外如果用正则的话例如：server_name ~^(a|b|c).foo.com，那转向居然是 https://~^(a|b|c).foo.com  。。。。。
+server_name是一个变量，它存储的是配置中设置的第一条server_name的配置项，应该改用$host。  </p>
+<div class="highlight"><pre><span></span><code>$host
+    in this order of precedence: host name from the request line, or host name from the “Host” request header field, or the server name matching a request 
+$server_name
+    name of the server which accepted a request 
+</code></pre></div>
+
+<hr>
+<p>迁移LDAP，phpldapamin显示 <code>This base cannot be created with PLA</code>，于是手动创建base，可是ldapadd 时候提示<code>ldap_bind: Invalid credentials (49)</code>，仔细检查并google了半天，最后根据同事发来的脚本，发现是没有指定主机和端口造成的。。orz。</p>
+<p>base.ldif</p>
+<div class="highlight"><pre><span></span><code><span class="n">dn</span><span class="o">:</span><span class="w"> </span><span class="n">dc</span><span class="o">=</span><span class="n">lol</span><span class="o">,</span><span class="n">dc</span><span class="o">=</span><span class="n">com</span>
+<span class="n">objectclass</span><span class="o">:</span><span class="w"> </span><span class="n">dcObject</span>
+<span class="n">objectclass</span><span class="o">:</span><span class="w"> </span><span class="n">organization</span>
+<span class="n">dc</span><span class="o">:</span><span class="w"> </span><span class="n">lol</span>
+<span class="n">o</span><span class="o">:</span><span class="w"> </span><span class="n">lol</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>ldapadd -h ldap.lol.com -p 389 -D &quot;cn=admin,dc=lol,dc=com&quot; -W -x -a  -c -f base.ldif
+</code></pre></div>
+
+<hr>
+<p>ganglia 单播模式下，一些图片显示不全，这是由于ganglia安装好后默认是组播，为了降低网络负担，默认的send_metadata_interval为0（3.1.x版本之后），然而单播模式下，如果send_memta_interval设置为0（默认为0）gmod只会在启动的时候向接收的gmod发送元数据（包含的度量信息，不是监控的数据包）。
+所以需要将send_memta_interval设置为非0，例如30。</p>
+<blockquote>
+<p>Ganglia的度量指标从他的元数据间隔发送得到的。元数据包含诸如度量分组，类型等等。假如你重启了接收的gmond主机，那么元数据就会丢失，gmond就不知道如何处理度量数据，因此会把他们抛弃。这会导致生成空白的图表。在组播模式下，gmonds可以和其他任意一台主机通信，在元数据丢失情况请求重新获取。但这在单播模式下是不可能的，因此你需要命令gmond定期的发送元数据。</p>
+</blockquote>
+<hr>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2015-01-01T00:00:00+08:00">
+      Thu 01 January 2015
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2015.html">2015</a> Tagged <a href="https://fangpsh.github.io/tag/linux.html">linux </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

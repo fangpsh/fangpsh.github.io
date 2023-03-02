@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>记一次无比心累的个税申报过程 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/tweet.html">Tweet</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-03-20.html" rel="bookmark"
+         title="Permalink to 记一次无比心累的个税申报过程">记一次无比心累的个税申报过程</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <blockquote>
+<p>自2006年1月1日起，在一个纳税年度内取得个人所得税法中规定的“工资、薪金所得”、“个体工商户的生产、经营所得”、“对企事业单位的承包经营、承租经营所得”、“劳务报酬所得”等11项应税所得合计数额达到12万元以上的纳税人，应在纳税年度终了后三个月内，向主管税务机关办理自行纳税申报的相关事宜。</p>
+</blockquote>
+<h2>城市服务-深圳地税服务</h2>
+<p>腾讯的HR 每日催着我们申报个税，一开始说是可以在微信钱包-城市服务-深圳地税服务 中进行申报，可是输入身份证和姓名之后，总是提示实名验证不通过，查询内网论坛发现大家都这样，行政同学解释：由于招行的接口问题，返回的信息没身份证信息，所以实名认证不通过，需要微信钱包绑定非招行卡才行。</p>
+<p>然后开始倒腾了，解绑招行卡，留建行、中行，也还是不行。怒！</p>
+<h2>深圳地税公众号-自助办税</h2>
+<p>逛逛内网，发现有同事说可以关注：“深圳地税” 公众号，点击“自助办税”-“个人中心” 进行操作。跳转到开户绑定，填写完信息之后，提示我的身份证信息已经登记在册。。。无法绑定，吐血！</p>
+<h2>电子税务局</h2>
+<p>最后只能试一试地税官网-<a href="https://dzswj.szds.gov.cn/dzswj/">电子税务局</a>，IE 10 打开这网站，页面卡死，屡试不爽，启用兼容视图，还是一打开就卡死，给跪！内网逛逛，发现有同事说QQ 浏览器好使，遂怒下安装，打开，果然好使！然而好戏才刚刚开始。。</p>
+<p>选择自然人用户标签，点击“我要开通”，填写信息，弹出页面，跳转到“深圳金融电子结算中心”的认证网关，输入银行的预留手机号，170xxxx，咦，收不到验证码，拔插拔插一下，还是不行？奇怪。。换一个手机号，185xxxx，咦，可以了收到验证码了！可是这个手机号不是我预留的，只是一张“流量卡”。<br>
+打12366 客服，描述问题，“甩锅”，让我添加他们的技术QQ：“800012366”。<br>
+工号1014 为我服务，描述问题，“甩锅”，“这不是地税的问题，是深圳金融电子结算中心”的问题，听起来没毛病，“能帮我反馈一下这个问题吗”，“不能，不是地税的问题”，mmp。  </p>
+<p>打阿里通信的客服电话10029，描述问题，
+“阿里通信只支持淘宝、微博，还有个啥，三个平台，其他平台不保证支持”。。。。<br>
+上了贼床了。</p>
+<p>自己研究一下请求：<br>
+<img alt="szfesc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302151313.png"></p>
+<p>猜测发送验证码接口的短信网关，170 等虚拟运营商的发送失败。地税局的网站跳转到认证网关的时候，会带一个merChikBillSn 号，认证网关这边对这个merChikBillSn 进行认证通过之后，才能在地税局那边进行开通。这个认证的接口：<br>
+<code>wyzf-gateway/RealNameVerification/checkConfim</code></p>
+<div class="highlight"><pre><span></span><code>merChkBillSn
+acctID
+phoneNm
+smsCodeId
+smsCodeValue
+banType
+</code></pre></div>
+
+<p>认证网关会校验银行卡和预留的手机号（phoneNm）是否一致，同时会校验smsCodeId 和 smsCodeValue 是否匹配正确，嘿嘿，它不会校验smsCodeId 对应的手机号是否和phoneNm 一致，所以可以简单的绕过，用一个三大运营商的手机号，得到一个smsCodeId 和验证码，然后再构造请求即可。</p>
+<p>可惜乌云不在了，不然还能去报个漏洞。</p>
+<p>兴高采烈，认证通过，回去填写开通信息，然而我还是太年轻。</p>
+<p>填写电话，地址，点击开通！ </p>
+<blockquote>
+<p>“身份证号码对应的自然人登记信息已存在”</p>
+</blockquote>
+<p>无法开通。。。。和前面在公众号里面开通绑定的提示一样，吐血。</p>
+<p>再怒打客服电话，又被甩到技术客服QQ，描述问题，建议我找回密码。  </p>
+<p>去页面上找回密码，输入信息，提示“还没有开通自然人电子税务局”，什么鬼。  </p>
+<ul>
+<li>“提供一下你的姓名和身份证”。   </li>
+<li>“你的信息企业登记错误”，我的名字被打错了。。。 </li>
+<li>“去前台更正信息，开通吧”  ，吐血。</li>
+</ul>
+<h2>南山地税局</h2>
+<p>取号，A类，前面还有23人，领表，填写。<br>
+等吧，逛逛： 那个女的怎么在玩手机，不叫号， 那个胖子在干嘛，怎么不叫号。</p>
+<p>和咨询台小妹吐槽，怎么这么慢，被反问怎么不在微信里操作，答没操作成功，你们做的问题太多，被反怼：</p>
+<blockquote>
+<p>“那个是你们腾讯做的” （上班路上，戴着工牌）</p>
+</blockquote>
+<p>半小时后，终于等到了，16号小姐姐，了解清楚情况之后，先把个税申报做了，然后帮我开通电子税务局，操作几次，失败。
+以为170 手机号不行，换185，也不行。
+小姐姐呼叫另外一个小姐姐支援，还是不行，几番电话联系后台服务人员，说我的信息录入错误，需要更正。让我留一个手机号，回去等消息，回去等，流程很慢。</p>
+<p>怒怼：不行，请马上处理。
+声调有点高，引来一个男的，一个女阿姨，和我对战：“你们腾讯自己的问题，信息录错了”。
+拒绝，不想再跑一趟，另外一个小姐姐打了几个电话，提交工单，做信息更正。十分钟后，搞定！</p>
+<p>联系HR8008，反应+吐槽，HR 小姐姐说检查了，没发现登记有误。。算了。</p>
+<p>到公司，已经快11点。耗费2小时，orz。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-03-20T00:00:00+08:00">
+      Tue 20 March 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/hack.html">hack </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
