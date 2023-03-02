@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HAProxy in 2018 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2018/2018-01-17.html" rel="bookmark"
+         title="Permalink to HAProxy in 2018">HAProxy in 2018</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="haproxy_in_2018" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302145902.jpg">  </p>
+<p>之前在Twitter 上有看到HAProxy 官方号发<a href="https://twitter.com/haproxy_tech/status/925760917614354434">tweet</a>，说新版支持HTTP/2 了，当时没在意，人家Nginx 一年前就支持了好吧，你才来。最近看到一篇文章，<a href="https://certsimple.com/blog/haproxy-http2-dynamic-load-balancing-ssl">CertSimple: HAProxy in 2018</a>，吹了一发HAProxy。</p>
+<ul>
+<li><a href="https://www.mail-archive.com/haproxy@formilux.org/msg28004.html">ANNOUNCE haproxy-1.8.0</a></li>
+<li><a href="https://www.haproxy.com/blog/whats-new-haproxy-1-8/">What’s New in HAProxy 1.8</a></li>
+<li><a href="https://www.haproxy.com/blog/multithreading-in-haproxy/">Multithreading in HAProxy</a></li>
+</ul>
+<p>1.8 提供了完整的 HTTP/2 支持，不知道bug 多不多，记得Nginx 刚刚支持HTTP/2 时修了很多bug。<br>
+另外一个重大的变化是Multithreading，多线程支持。HAProxy 支持多进程（nbproc），有几个问题，监控检查是每个进程自己做的，统计页面也不准确，maxconn 参数也只能限制单个进程。在前公司用到HAProxy 的时候，就因为这些问题，把多进程关了。多线程就好了，没了这些问题，依然能充分利用CPU。  </p>
+<p>1.8 还加了一个Master/Worker Mode，类似Nginx 的进程模型，一个Master + 多个 Worker。</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>ps<span class="w"> </span>axf<span class="w"> </span>-o<span class="w"> </span>pid,command
+<span class="m">15012</span><span class="w">      </span><span class="se">\_</span><span class="w"> </span>haproxy<span class="w"> </span>-f<span class="w"> </span>./master.cfg<span class="w"> </span>-d
+<span class="m">15013</span><span class="w">          </span><span class="se">\_</span><span class="w"> </span>haproxy<span class="w"> </span>-f<span class="w"> </span>./master.cfg<span class="w"> </span>-d
+<span class="m">15014</span><span class="w">          </span><span class="se">\_</span><span class="w"> </span>haproxy<span class="w"> </span>-f<span class="w"> </span>./master.cfg<span class="w"> </span>-d
+</code></pre></div>
+
+<p>据说是为了解决：</p>
+<blockquote>
+<p>But this wasn’t really convenient in cases where 3rd party software was monitoring and controlling the HAProxy processes (e.g. needing to reload them) as it had to be aware of HAProxy’s individual processes and control each one separately. One of the examples in this category was certainly systemd.</p>
+</blockquote>
+<p>管理进程的时候能方便点。</p>
+<p>CertSimple 那篇文章对比HAProxy 和Nginx，吐槽Nginx 默认的status 页面太简单，这个倒是真的。HAProxy 的统计页面确实非常详细。
+<img alt="haproxy_stats" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302145934.png"><br>
+图片来源<a href="https://www.datadoghq.com/blog/how-to-collect-haproxy-metrics/#stats-page">datadoghq.com</a></p>
+<p>HAProxy 提供了api 来动态的管理、配置机器，Nginx 的动态Upstream 还得用插件搞半天，参考<a href="http://haproxy.tech-notes.net/9-2-unix-socket-commands/">9.2. Unix Socket commands</a>。</p>
+<p>关于Haproxy 监控的另外一篇文章：<a href="https://www.datadoghq.com/blog/how-to-collect-haproxy-metrics/">How to collect HAProxy metrics</a></p>
+<blockquote>
+<p>echo "show stat" | nc -U /var/run/haproxy.sock</p>
+</blockquote>
+<p>HAProxy 日志输出也比Nginx 详细很多，并非常精简，每次分析HAProxy 的日志，都得打开它的文档，一个字符一个字符的查看对比，特别是那一堆Flag，非常有用，CC、CD、cD、sQ 等，因为Haproxy 在后端和客户中间，出现问题的时候，到底是前端还是后端的问题，通过这些标志非常方便，参考<a href="https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#8.5">Session state at disconnection</a>。</p>
+<p>HAProxy 作为一个纯粹的前端负载均衡器，可能比Nginx 出色很多，不过在Web Server 方面，HAProxy 难以望其项背。</p>
+<p>有机会一定要试一试HAProxy 1.8。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2018-01-17T00:00:00+08:00">
+      Wed 17 January 2018
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2018.html">2018</a> Tagged <a href="https://fangpsh.github.io/tag/haproxy.html">haproxy </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
