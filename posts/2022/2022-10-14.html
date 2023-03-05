@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>顺着网线找供应商 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2022/2022-10-14.html" rel="bookmark"
+         title="Permalink to 顺着网线找供应商">顺着网线找供应商</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>公司在逐渐开展国际业务，某些国家覆盖需要补点，涉及到找供应商。
+国际供应商在交流和商务方式和和国内供应商都有比较大的区别，比较理想的是能找到国内去国外做出海的供应商。
+常见的来源：
+  - 供应商找上门
+  - 圈内朋友介绍-
+  - 快出海之类平台筛选厂商-
+  - 注册脉脉或其他平台散布采购信息-
+  - 还有其他野路子。</p>
+<p>我常用的一种方式是通过网线找，咱们拿埃及举例。</p>
+<h2>第一步：目标国家的主流运营商</h2>
+<p>埃及：TE（埃及电信），沃达丰vodafone等。
+主流运营商，你可以Google，或者看国家的AS ，然后按网段排序，IP 约多一般市场份额越大：
+http://whois.ipip.net/countries/EG</p>
+<p><img alt="埃及IP地址" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230305202935.png"></p>
+<p>埃及电信No.1
+ </p>
+<h2>第二步：以某个主流运营商找到关键AS 号</h2>
+<p>例如埃及电信是AS8452 ，点进去：
+http://whois.ipip.net/AS8452
+我一般更喜欢看cidr-report
+https://www.cidr-report.org/cgi-bin/as-report?as=AS8452&amp;view=2.0
+ </p>
+<h2>第三步：按AS 查询 Downstream，一般以.HK .US 结尾的国别</h2>
+<p>downstream 就是得买transit，在一个国家正常开展业务，一般也绕不开topN 的运营商。
+不过一些情况是发现不了的，例如只能用运营商的IP ，像中国三大运营商的情况，那就通过其他路子了。</p>
+<p>国内出海的公司，一般都有个美国、香港、新加坡之类的主体，所以重点看downstream 里面是这类国别的AS。 </p>
+<p><img alt="downstream " src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230305203530.png">
+以TE AS8452 为例，眼熟的老朋友有：
+ - AS138915 KAOPU-HK Kaopu Cloud HK Limited, HK：靠谱云
+ - AS54994 QUANTILNETWORKS, US：网宿海外
+ - AS21859  ZEN-ECN, US：层峰</p>
+<h2>第四步：顺藤摸瓜</h2>
+<p>按照第三步的AS 线索，浏览下AS 的注册domain，Google 名称，企查查，找找联系方式、官网等，一般都能找到了。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2022-10-14T00:00:00+08:00">
+      Fri 14 October 2022
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2022.html">2022</a> Tagged <a href="https://fangpsh.github.io/tag/bgp.html">BGP </a><a href="https://fangpsh.github.io/tag/idc.html">IDC </a>
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
