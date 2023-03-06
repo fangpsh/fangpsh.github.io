@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>搭建开源镜像站 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2014/2014-01-01.html" rel="bookmark"
+         title="Permalink to 搭建开源镜像站">搭建开源镜像站</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="SYSU Mirror" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160359.jpg"></p>
+<p>根据2013 SFD 广州聚会上的演讲《简单介绍如何搭建一个开源镜像站》幻灯片补充整理而成。
+内容：</p>
+<ol>
+<li>简介中山大学镜像站</li>
+<li>搭建开源镜像站流程</li>
+</ol>
+<h2>简介中山大学镜像站</h2>
+<ul>
+<li>服务器：<blockquote>
+<p>戴尔(dell ) PowerEdge1850 ,3.xGHz 4 cores CPU,8GB Memory,One 300GB Hard disk(default as raid 1,Space available 300GB),Bandwidth 100M(教育网,cernet),服务器用光纤连接存储,分配了一个1T的存储卷给服务器. Support:HTTP (Nginx) IPv4:202.116.65.189 (Unfortunately,No IPv6)</p>
+</blockquote>
+</li>
+<li>Domain:mirror.sysu.edu.cn</li>
+<li>System:Debian Wheezy AMD64</li>
+<li>Team: 匿名略</li>
+<li>Thanks:中山大学网络与信息技术中心提供的资源支持</li>
+<li>源列表:<ul>
+<li>ArchLinux</li>
+<li>ArchLinuxARM</li>
+<li>Cygwin</li>
+<li>PyPI</li>
+<li>Raspbian</li>
+<li>RubyGems</li>
+<li>Slackware</li>
+<li>Others(提供给校内用户和周边教育网用户的加速服务,陆续添加新出的发行版系统镜像等)</li>
+<li>———————-plan ——-2013-9-21——————–</li>
+<li>Ubuntu (校内用户需求大,希望空间够的时候能加上,原因稍后说明)</li>
+<li>npm (Come Soon)</li>
+<li>他小众的发行版或用户有较大需求的发行版(前提是服务器存储空间够。。囧。我们只有1T)</li>
+</ul>
+</li>
+</ul>
+<p>搭建开源镜像站流程</p>
+<h2>基本流程</h2>
+<ol>
+<li>服务器&amp;带宽&amp;存储</li>
+<li>同步源选择 ,架构选择</li>
+<li>提供的服务:ftp | http | rsync 3.官网获取同步方法或工具,源列表(选择上游源)</li>
+<li>配置同步工具</li>
+<li>定时同步 (crontable)</li>
+<li>备份工作,监控与报警,日常维护,优化</li>
+<li>文档编写(Wiki),Submit MirrorsList</li>
+<li>其他</li>
+</ol>
+<h3>0/8.服务器&amp;带宽&amp;存储</h3>
+<ul>
+<li>服务器: Linux ,maybe windows ?..orz</li>
+<li>带宽: 越大越好(上行带宽太小无法提供更好的服务,下行太小无法及时同步完整(按网络情况分时段同步,同时尽量避开负载高峰))。 如果要对外服务,需要一个公网IP,有域名更好。</li>
+<li>储存: 越大越好(如果是对外提供大量服务,家用的硬盘估计撑不了一年)。可考虑用SSD作为cache。</li>
+</ul>
+<h3>1/8.同步源选择 ,架构选择</h3>
+<p>同步源选择:</p>
+<p>按需求选择需要的发行版,稳定性第一,多样性第二,满足需求即可。同时也要注意”性价比“(自用镜像无需考虑),例如 OpenBSD之类的性价比可能很低 ,消耗大量的同步流量和磁盘空间可能性价比不是很大,同时例如大学中的镜像站需要网络中心的支持,所以需要考虑到校内用户的支持和热度(学生支持度不 够,nc的支持可能也会下降),同时校内有一定热度才好传承,所以如果添加类似Ubuntu的发行版”性价比“会很高。
+慎重选择上线的发行版(自身资源估计),上线尽量保持稳定。切勿随意更换服务。注意预留足够空间!</p>
+<p>感谢中大IGI师兄以上给出的建议。推荐:<a href="http://www.igigo.net/archives/65">《搭建linux mirror镜像》</a></p>
+<p>架构选择:</p>
+<p>一个发行版可能保护多种架构,(例如debian :alpha、amd64、arm、armel、hppa、hurd-i386、i386、ia64、m68k、mipsel、mips、powerpc、s390、sh and sparc,source,debian现有oldstable,stable ,testing,unstable,还有experimental版本),所以需要按需求选择需要同步的架构(因为磁盘空间不是无限的),一般来说就选择i386,amd64,外加source。</p>
+<h3>2/8.提供的服务:ftp | http | rsync</h3>
+<ul>
+<li>FTP:vsftpd ?还有很多,不太了解,囧。</li>
+<li>HTTP:
+Webserver建议选择nginx或lighttpd,因为镜像包含大量的静态文件,这两者据说比Apache更有优势, 记得cn99挂掉后,将Apache换到nginx了?
+建议 :nginx， lighttpd</li>
+<li>Rsync:为下游提供,例如清华,中科大有开放某些发行版,国内提供rsync的镜像站不多,主要是提供rsync会有很高的IO负载,一般承受不起。如果有意愿提供rsync,google即可。</li>
+</ul>
+<h3>3/8.官网获取同步方法或工具,源列表(选择上游源)</h3>
+<p>同步方法或工具:
+一般就是Rsync,然后从上游拉东西,可以自己写脚本,也可以用官方提供的工具,例如debian的ftpsync等。
+切勿使用wget 等工具!不能保证文件link等属性,也无法做到增量同步,浪费资源!</p>
+<ul>
+<li>清华的同步脚本:http://git.tuna.tsinghua.edu.cn/</li>
+<li>北交Ideal的Mirror工具:https://github.com/ideal/mirror<blockquote>
+<p>(感谢ideal曾经提供的帮助,有意愿搭建镜像站的同学遇到 问题可在Twitter上找到他)Rubygems,PyPI,npm也是同样找寻或自己编写同步脚本后工具,或做反向代理。除了主动拉的,还有是官方主镜像推送到官方其他镜像,例如ArchlinuxARM。</p>
+</blockquote>
+</li>
+<li>ubuntu还有个同步工具 apt-mirror</li>
+</ul>
+<p>上游源:</p>
+<p>上发行版官网获取MirrorsList,然后找寻提供rsync服务的镜像,选择上游源,一般选择国内,日本,新加坡,台湾等亚太地区的源。
+注意:官方rsync可能只对指定IP开放(负载问题)</p>
+<h3>4/8.配置同步工具</h3>
+<ul>
+<li>自己写同步脚本 :<ul>
+<li>失败邮件报警,同步锁控制,两步同步,其他rsync参数。</li>
+<li>Rsync教程:读 igi的同步脚本: http://www.igigo.net/archives/65</li>
+</ul>
+</li>
+<li>使用同步工具:<ul>
+<li>清华的同步脚本:http://git.tuna.tsinghua.edu.cn/</li>
+<li>北交Ideal的Mirror工具:https://github.com/ideal/mirror/</li>
+</ul>
+</li>
+</ul>
+<p>PyPI,Rubygems,npm:</p>
+<ul>
+<li>读Rubygems和PyPI同步简单教程 : http://fangpeishi.com/post/da-jian-pypiji-rubygemsjing-xiang</li>
+<li>读npm同步教程 :http://maskray.me/blog/2012-11-21-tuna-npm-mirror</li>
+</ul>
+<p>注意:
+添加同步锁，debian系需要两步同步(先同步pool目录)。</p>
+<h3>5/8.定时同步 (crontable)</h3>
+<p>定时同步: 把写好的cron脚本丢进 /etc/cron.d/
+《定时自动任务crontab使用教程》
+注意:</p>
+<ul>
+<li>/etc/cron.d the file names must conform to the filename requirements of run-parts: they must be entirely made up of let‐ters, digits and can only contain the special signs underscores (‘‘) and hyphens (‘-’). Any file that does not conform to theserequirements will not be executed by run-parts. For example, any file containing dots will be ignored. This is done to prevent cron from running any of the files that are left by the Debian package management system when han‐ dling files in /etc/cron.d/ as configuration files (i.e. files ending in .dpkg-dist, .dpkg-orig, and .dpkg-new).
+(特殊字符只可以使用’‘和’-’,另外以’.’开头的文件会被忽略)</li>
+<li>crontab脚本中注意path的配置,例如使用rubygems的同步工具碰到rake abort等问题。</li>
+</ul>
+<h3>6/8.备份工作,监控与报警,日常维护,优化</h3>
+<p>备份:</p>
+<p>当配置文件发生变化时候利用脚本将其备份到Dropbox.
+监控与报警:</p>
+<ol>
+<li>用awk等工具对同步日记进行分析。</li>
+<li>配置邮件服务程序,例如exim4,在之前的脚本中添加出现异常时候发邮件。(移动139邮箱有短信通知功能)。</li>
+<li>部署监控程序,例如MUNIN,对磁盘情况,网络情况,负载情况等进行监控,以图表的形式直观呈现出来。</li>
+</ol>
+<p>日常维护:</p>
+<p>当出现同步异常失败时(例如:上游down掉了,和上游的网络异常了,磁盘异常等等),需要更换上游或者其他方法。</p>
+<p>优化:
+主要是针对镜像站大量的静态文件进行的优化.以及观察监控对流量和负载进行合理分配。</p>
+<h3>7/8.文档编写(Wiki),Submit MirrorsList</h3>
+<p>文档编写:
+一个是为了将经验积累,方便传承,同时也是为了方便其他搭建镜像站的朋友。例如建个wiki。</p>
+<p>Submit your mirror to mirrorslist:</p>
+<ol>
+<li>当镜像站足够稳定时,可考虑提交到官方mirrorslist,让更多的朋友知道,有小小的成就感也容易鼓励自身和传承。内网的镜像可在内部交流平台公开分享。</li>
+<li>若是校园镜像站需要注意宣传,以得到更多师生的支持,同时方便传承。</li>
+</ol>
+<h3>8/8.其他</h3>
+<p>如果是在大学内要搭建一个镜像站,需要获取网络中心的支持,可能需要:</p>
+<ol>
+<li>一颗“耐”心;</li>
+<li>注意传承问题 (校内热度将影响nc对镜像站的支持程度,做好文档,发展好师弟师妹,如果有个Linux协会啥的平台组织最好不过了);</li>
+<li>找靠谱老师支持(镜像快死掉了的时候,老师可能能救活它),熟悉nc里的老师或领导(解决问题更方便),记得镜像站要帮助宣传nc,记得感谢提供帮助的同学,老师和组织;</li>
+<li>稳定为先。</li>
+</ol>
+<blockquote>
+<p>“把它当一个服务于别人的事情来做“ -- 中大软件学院Arber老师</p>
+</blockquote>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2014-01-01T00:00:00+08:00">
+      Wed 01 January 2014
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2014.html">2014</a> Tagged <a href="https://fangpsh.github.io/tag/linux.html">linux </a>
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>抓取微博，同步到Twitter - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2017/2017-12-21.html" rel="bookmark"
+         title="Permalink to 抓取微博，同步到Twitter">抓取微博，同步到Twitter</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="zelda" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161433.jpg"></p>
+<p>前几个月买了<a href="https://www.nintendo.co.jp/hardware/switch/">NintendoSwitch</a>，沉迷于“塞尔达-荒野之息”不能自拔，同时也关注着NS 新游戏的资讯。
+微博上有几个帐号会发布各种NS 游戏信息，不过微博做的和💩 一样，完全不想用。联系了那几个微博博主，询问是否考虑也同步发在Twitter，没理我，那就自己动手吧。</p>
+<h2>爬取微博</h2>
+<p>本来还以为得手动解析网页，偶尔发现移动版居然有现成的API 可以用，十分酸爽。</p>
+<p>例如：</p>
+<div class="highlight"><pre><span></span><code>https://m.weibo.cn/u/5084965647
+</code></pre></div>
+
+<p><img alt="weibo1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161502.jpg"></p>
+<div class="highlight"><pre><span></span><code>https://m.weibo.cn/api/container/getIndex?containerid=1076035084965647&amp;page=2
+</code></pre></div>
+
+<p><img alt="weibo2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161516.jpg"></p>
+<p>结构挺清晰的，data-cards 就是每一条微博，不过会有不同的card-type，选出card-type=9 的即可。</p>
+<p>每一个card 里面，主要关注：</p>
+<ul>
+<li>itemid： 微博的唯一ID</li>
+<li>text： 文本内容</li>
+<li>pics： 图片</li>
+<li>page_info: 如果带视频，会有一个page_info，其中包含视频信息</li>
+</ul>
+<p>这些接口应该有频率限制，不过我只想抓最新的，几十分钟访问一次即可。</p>
+<h2>发布到Twitter</h2>
+<p>创建一个帐号，然后再在这个帐号下创建一个 apps.twitter.com，直接生成一堆token，这样最方便。</p>
+<p>关于Twitter 的认证可以参考：<a href="http://isouth.org/archives/286.html">OAuth 认证步骤</a></p>
+<p>重点得到这四个东西即可：</p>
+<div class="highlight"><pre><span></span><code><span class="n">CONSUMER_KEY</span> <span class="o">=</span> <span class="s1">&#39;your-consumer-key&#39;</span>
+<span class="n">CONSUMER_SECRET</span> <span class="o">=</span> <span class="s1">&#39;your-consumer-secret&#39;</span>
+<span class="n">ACCESS_TOKEN</span> <span class="o">=</span> <span class="s1">&#39;your-access-token&#39;</span>
+<span class="n">ACCESS_TOKEN_SECRET</span> <span class="o">=</span> <span class="s1">&#39;your-access-secret&#39;</span>
+</code></pre></div>
+
+<p>关于图片和视频上传可以参考：<a href="https://github.com/twitterdev/large-video-upload-python">twitterdev/large-video-upload-python</a></p>
+<p>微博的text 中带了大量的链接，需要处理一下，用re.sub 替换掉即可。<br>
+微博的话题是<code>#话题#</code>，而Twitter 是<code>#话题</code>，也需要处理一下。  </p>
+<div class="highlight"><pre><span></span><code><span class="n">t</span> <span class="o">=</span> <span class="n">card</span><span class="p">[</span><span class="s2">&quot;mblog&quot;</span><span class="p">][</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;data-url=\&quot;([^\&quot; ]+)\&quot;&#39;</span><span class="p">,</span>
+           <span class="sa">r</span><span class="s1">&#39;&gt; \1 &lt;&#39;</span><span class="p">,</span>
+           <span class="n">t</span><span class="p">,</span>
+           <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&lt;[^&lt;]*&gt;&#39;</span><span class="p">,</span>
+           <span class="sa">r</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+           <span class="n">t</span><span class="p">,</span>
+           <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;#([^#]+)#&#39;</span><span class="p">,</span>
+           <span class="sa">r</span><span class="s1">&#39;#\1&#39;</span><span class="p">,</span>
+           <span class="n">t</span><span class="p">,</span>
+           <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+
+<p>关于图片、视频的几个问题：</p>
+<ul>
+<li>Twitter 的图片（除GIF 之外）限制一条tweet 只能发4张，微博可以有多张，需要注意拆分，然后把第一条tweet 的ID 作为第二条的 <code>in_reply_to_status_id</code>，就能串成所谓的“主题帖”；</li>
+<li>Twitter 的视频有一大堆限制，允许的视频时长也很短。索性不传视频了，直接保留微博原来的秒拍跳转链接；</li>
+<li>GIF 图片，Twitter 一条tweet 也只能传一张，还不能是动图，懒得判断，直接丢弃GIF 图了。</li>
+<li>传图片和视频时，记得带上<code>media_category</code>，图片是<code>tweet_image</code>，视频是<code>tweet_video</code>。</li>
+</ul>
+<p>写好之后，丢到VPS 上，15分钟运行一次即可。</p>
+<p><strong><a href="https://twitter.com/NinSwitch_News">@NinSwitch_News</a></strong><br>
+<img alt="ns_news" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161552.jpg"></p>
+<p>代码就不发了，写得很快很糙，也没啥难度。  </p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2017-12-21T00:00:00+08:00">
+      Thu 21 December 2017
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2017.html">2017</a> Tagged <a href="https://fangpsh.github.io/tag/spider.html">spider </a>
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>

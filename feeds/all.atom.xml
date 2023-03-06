@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2022-10-14T00:00:00+08:00</updated><entry><title>顺着网线找供应商</title><link href="https://fangpsh.github.io/posts/2022/2022-10-14.html" rel="alternate"></link><published>2022-10-14T00:00:00+08:00</published><updated>2022-10-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2022-10-14:/posts/2022/2022-10-14.html</id><summary type="html">&lt;p&gt;公司在逐渐开展国际业务，某些国家覆盖需要补点，涉及到找供应商。
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-03-06T00:00:00+08:00</updated><entry><title>innerHTML 不自动渲染特殊字符</title><link href="https://fangpsh.github.io/posts/2023/2023-03-06.html" rel="alternate"></link><published>2023-03-06T00:00:00+08:00</published><updated>2023-03-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-03-06:/posts/2023/2023-03-06.html</id><summary type="html">&lt;p&gt;我在内网部署了一个 &lt;a href="http://json.parser.online.fr/beta"&gt;json.parser.online.fr&lt;/a&gt; 的破解版：&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled"&gt;Json-Parser-Online-Nulled&lt;/a&gt;，今天有同事反馈，格式化后的文本发生了变化，发现是将&lt;code&gt;&amp;amp;region&lt;/code&gt; 变成了&lt;code&gt;®ion&lt;/code&gt;
+复现一下 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;我在内网部署了一个 &lt;a href="http://json.parser.online.fr/beta"&gt;json.parser.online.fr&lt;/a&gt; 的破解版：&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled"&gt;Json-Parser-Online-Nulled&lt;/a&gt;，今天有同事反馈，格式化后的文本发生了变化，发现是将&lt;code&gt;&amp;amp;region&lt;/code&gt; 变成了&lt;code&gt;®ion&lt;/code&gt;
+复现一下：
+&lt;img alt="reg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306184830.png"&gt;&lt;/p&gt;
+&lt;p&gt;看起来是一个特殊字符：&lt;a href="https://toolstud.io/web/charmap.php?encoded=reg"&gt;HTML character: ® = &amp;reg;&lt;/a&gt;，那是哪里引入的呢？&lt;/p&gt;
+&lt;p&gt;走读了一遍代码，外加&lt;code&gt;console.log&lt;/code&gt; 大法，&lt;code&gt;parse()&lt;/code&gt;函数最后返回的地方：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
+&lt;span class="w"&gt;                    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;                    &lt;/span&gt;&lt;span class="nx"&gt;html&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;parseObject&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;snatch&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nx"&gt;toString&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;&lt;span class="nx"&gt;valid&lt;/span&gt;&lt;span class="o"&gt;:!&lt;/span&gt;&lt;span class="nx"&gt;hasError&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;打印&lt;code&gt;result&lt;/code&gt;一切正常，
+接着是&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled/blob/master/script.js#L493,L494"&gt;$result.innerHTML&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nx"&gt;setTimeout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sr"&gt;/&amp;lt;/g&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;amp;lt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sr"&gt;/&amp;gt;/g&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;parse&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nx"&gt;$result&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;innerHTML&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;html&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;valid&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="nx"&gt;changeFavicon&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;valid&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;问题就出在这里，innerHTML 赋值的时候，自动对&lt;a href="https://toolstud.io/web/charmap.php?filter=*"&gt;特殊字符&lt;/a&gt;进行了渲染：&lt;/p&gt;
+&lt;p&gt;这个机制似乎无法绕过，我的解决办法是对在最后&lt;code&gt;&amp;amp;&lt;/code&gt; 字符进行提前替换，将&lt;code&gt;&amp;amp;&lt;/code&gt;字符替换为&lt;code&gt;&amp;amp;amp;&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;html&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;parseObject&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;snatch&lt;/span&gt;&lt;span class="o"&gt;).&lt;/span&gt;&lt;span class="n"&gt;toString&lt;/span&gt;&lt;span class="o"&gt;().&lt;/span&gt;&lt;span class="n"&gt;replaceAll&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;amp;&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;amp;amp;&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;valid&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;hasError&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;效果如下
+&lt;img alt="reg01" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306190041.png"&gt;&lt;/p&gt;
+&lt;p&gt;另外发现如果输入&lt;code&gt;&amp;lt;&lt;/code&gt;和&lt;code&gt;&amp;gt;&lt;/code&gt; 也会被转换为&lt;code&gt;&amp;amp;lt;&lt;/code&gt; 和&lt;code&gt;&amp;amp;gt;&lt;/code&gt;，是由于作者的&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled/blob/master/script.js#L491,L492"&gt;转换&lt;/a&gt;，不过我不太理解这个目的，注释掉这2行也一切正常。&lt;/p&gt;
+&lt;p&gt;提个&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled/pull/1"&gt;PR&lt;/a&gt;，下班回家。&lt;/p&gt;</content><category term="2023"></category><category term="html"></category></entry><entry><title>顺着网线找供应商</title><link href="https://fangpsh.github.io/posts/2022/2022-10-14.html" rel="alternate"></link><published>2022-10-14T00:00:00+08:00</published><updated>2022-10-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2022-10-14:/posts/2022/2022-10-14.html</id><summary type="html">&lt;p&gt;公司在逐渐开展国际业务，某些国家覆盖需要补点，涉及到找供应商。
 国际供应商在交流和商务方式和和国内供应商都有 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;公司在逐渐开展国际业务，某些国家覆盖需要补点，涉及到找供应商。
 国际供应商在交流和商务方式和和国内供应商都有比较大的区别，比较理想的是能找到国内去国外做出海的供应商。&lt;/p&gt;
 &lt;p&gt;我常用的一种方式是通过网线找，咱们拿埃及举例。&lt;/p&gt;
@@ -671,7 +705,61 @@ Reading: 6 Writing: 179 Waiting: 106
 &lt;p&gt;我想要的其实是一个更强的&lt;a href="https://github.com/slackhq/nebula"&gt;slack/nebula&lt;/a&gt;、&lt;a href="https://www.tinc-vpn.org/"&gt;tinc&lt;/a&gt;、&lt;a href="https://github.com/zerotier"&gt;ZeroTier&lt;/a&gt;，
 除了组网，同时还能智能选路、线路容灾等高级功能，选路起码得如下图：&lt;/p&gt;
 &lt;p&gt;&lt;img alt="transport" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162504.png"&gt;&lt;/p&gt;
-&lt;p&gt;总结感受：广告真多，隔行如隔山，雾霾还是很厉害 😂&lt;/p&gt;</content><category term="2019"></category><category term="SD-WAN"></category></entry><entry><title>夺回resolv.conf 的控制权</title><link href="https://fangpsh.github.io/posts/2019/2019-06-23.html" rel="alternate"></link><published>2019-06-23T00:00:00+08:00</published><updated>2019-06-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-06-23:/posts/2019/2019-06-23.html</id><summary type="html">&lt;p&gt;上周在线上修改了一批机器的hostname：&lt;/p&gt;
+&lt;p&gt;总结感受：广告真多，隔行如隔山，雾霾还是很厉害 😂&lt;/p&gt;</content><category term="2019"></category><category term="SD-WAN"></category></entry><entry><title>第一台NAS</title><link href="https://fangpsh.github.io/posts/2019/di-yi-tai-nas.html" rel="alternate"></link><published>2019-09-22T00:00:00+08:00</published><updated>2019-09-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-09-22:/posts/2019/di-yi-tai-nas.html</id><summary type="html">&lt;p&gt;&lt;img alt="qnap" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162325.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;两年前在腾讯的时候，内部福利领取了一年的微云会员，就将女友旧电脑的一百多G的资源全部上传备份，然后处理掉了旧电脑。
+虽然当时知道 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="qnap" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162325.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;两年前在腾讯的时候，内部福利领取了一年的微云会员，就将女友旧电脑的一百多G的资源全部上传备份，然后处理掉了旧电脑。
+虽然当时知道日后会离职会员会过期，不过看了产品协议记得是会员过期存储空间不回收，只是无法再上传罢了，类似Dropbox。&lt;/p&gt;
+&lt;p&gt;月初却收到了如下&lt;a href="https://www.weiyun.com/2019-announcement.html"&gt;通知&lt;/a&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;自2019年10月24日零时起，微云将上线超额存储管理规则。已用容量超出可用额度的用户，需要在180天内升级存储空间或对容量超额部分进行清理。若超期未作处理，帐号将被冻结，冻结期间微云保留清理超额空间的权利。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;好吧，没法“白嫖”了，也长个记性，国内这些云存储的厂商，大多数不靠谱，还是买台NAS吧，也长草很久了。&lt;/p&gt;
+&lt;h2&gt;自己组还是买成品？&lt;/h2&gt;
+&lt;p&gt;买万由或者蜗牛星际，或者自己买机箱、配件组装，刷FreeNAS 或黑群晖，如果是五年前我估计还是会自己折腾，现在直接考虑买成品了，少了折腾的热情，数据重要，选专业的方案吧。&lt;/p&gt;
+&lt;h2&gt;群晖还是威联通？&lt;/h2&gt;
+&lt;p&gt;&lt;img alt="qnap-web" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162404.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;公司在用威联通，登录后台体验过，UI感觉是有点挫。在群晖官网体验了群晖的控制台，看起来确实高大上一些。可是相同配置，群晖价格是威联通的两倍左右，
+两家充分竞争，在存储的功能上差别不会太大。威联通带有HDMI 输出，可以充当HTPC 的角色，这个功能我非常需要，不考虑了，选威联通，以后第二台再买群晖玩。  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="QNAP-HybridDesk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162425.jpg"&gt;&lt;/p&gt;
+&lt;h2&gt;TS-453Bmini 还是 TS-551？&lt;/h2&gt;
+&lt;p&gt;威联通的型号，对于普通玩家，TS-453Bmini 是性价比最高的选择，在官方旗舰店，这款的销量也甩其他型号几条街。
+不过我感觉TS-453Bmini 有点丑，所以一直在找相近的型号，看到了TS-551。
+官方可以快捷&lt;a href="https://www.qnap.com/zh-cn/product/compare?products=ts-453bmini,ts-551&amp;amp;ref=product_overview"&gt;对比&lt;/a&gt;，最显著的差别是CPU：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Intel® Celeron® J3455 四核心 1.5 GHz 处理器 (可高达 2.3 GHz)&lt;/li&gt;
+&lt;li&gt;Intel® Celeron® J3355 双核心 2.0 GHz 处理器 (可高达 2.5 GHz)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;另外TS-551的售价比TS-453Bmini 大概低400元。板载CPU没法更换，因为我有HTPC 的功能需求，并且这台NAS 预计使用3年+，551 的5盘位有点鸡肋，选择了453Bmini。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;TS-453Bmini 参考价格：1999&lt;/li&gt;
+&lt;li&gt;TS-551 参考价格：1599&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;高于这个价格，都不算好价，淘宝购买JD E卡，外加Plus 优惠券，可以做到1900，如果遇上双11 之类活动应该能更低。&lt;/p&gt;
+&lt;p&gt;不过购买之后一段时间，出了新闻：&lt;a href="https://news.mydrivers.com/1/645/645646.htm"&gt;Intel低功耗奔腾/赛扬“变砖”：紧急退市、升级&lt;/a&gt;，QNAP和群晖都有五年售后质保，我认为够用了，
+真出事了，再找售后。&lt;/p&gt;
+&lt;h2&gt;酷狼还是红盘？&lt;/h2&gt;
+&lt;p&gt;买好了NAS，接下来就是买盘了。淘宝上买NAS 的商家标配都是希捷酷狼4T盘，逛了一圈，发现还是这款合适，西数的NAS专用红盘口碑非常糟糕，还不如酷鹰。
+单盘4T 是比较合适的规格。&lt;/p&gt;
+&lt;h2&gt;内存16G 还是10G？&lt;/h2&gt;
+&lt;p&gt;453Bmini 出厂2G*2，双通道。实际最大支持8G*2，不过感觉日常10G 应该够用了，所以买了一条8G，2G+8G，应该是比较高性价比的方案，换下的2G还能出掉。
+内存条的选择上，考虑性价比可以选十铨和光威，或者可以选英睿达，协德还是别买了，最后为了稳定和稳定性（心安），买了条金士顿骇客神条，289元。&lt;/p&gt;
+&lt;h2&gt;Raid 还是RTRR？&lt;/h2&gt;
+&lt;p&gt;本来想买2*4T酷狼，做Raid1，然后再加一个便宜的4T酷鹰做仓库盘。后来看到QNAP 有RTRR功能，而且Raid 1 单盘损坏之后的重建也有风险，这么大容量。
+2个4T盘直接独立使用，通过RTRR 功能实时备份重要文件夹，对于家庭用户来说，是更具性价比和可靠的方案。
+又再买了一块便宜的闪迪SSD 240GB，230元，用来做系统盘。&lt;/p&gt;
+&lt;p&gt;最后的方案是，盘1 240GB SSD，盘2 4T酷狼，盘3 4T酷狼，盘4 空余机动。盘1 和盘2，Qtier。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="qnap-disk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162511.jpg"&gt;&lt;/p&gt;
+&lt;h2&gt;Transmission 还是Rtorrent？&lt;/h2&gt;
+&lt;p&gt;有一个很重要的需求，就是挂PT。之前看帖子发现QTS 4.3 移除了Trasnmission，虽然在qnapclub.eu 可以下到，不过使用体验上真是十分糟糕。
+相比rtorrent 强大很多，毕竟收费。
+&lt;img alt="qnap-rtorrent" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162540.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;另外还可以在Container Station 里安装&lt;a href="https://hub.docker.com/r/oldiy/rrshare64"&gt;人人影视客户端&lt;/a&gt;，非常赞。
+依靠Docker，有非常多的玩法，参考&lt;a href="https://odcn.top/2019/02/13/2509/%E6%95%B4%E7%90%86%E6%B1%87%E6%80%BB%E4%B8%80%E4%B8%8B%E6%9C%80%E8%BF%91%E6%9B%B4%E6%96%B0%E7%9A%84%E4%B8%80%E4%BA%9Bdocker%E9%95%9C%E5%83%8F/"&gt;这位网友的分享&lt;/a&gt;。&lt;/p&gt;
+&lt;h2&gt;END&lt;/h2&gt;
+&lt;p&gt;花了挺大的功夫从微云上下载了曾经“备份”上去的文件，导入NAS。配置好手机客户端，配置好Plex，配置好PhotoStation。目前来说还挺满意，也挺安静。
+偶尔CPU 会吃紧，看来我的使用场景下买4核心是对的，至于硬盘不能休眠的问题，无所谓了，开了HybridDesk 和一堆功能，想休眠都难。&lt;br&gt;
+最近推了4.4 系统，再观望一下，新系统最好别第一时间升。&lt;/p&gt;</content><category term="[Life]"></category><category term="nas"></category><category term="qnap"></category></entry><entry><title>夺回resolv.conf 的控制权</title><link href="https://fangpsh.github.io/posts/2019/2019-06-23.html" rel="alternate"></link><published>2019-06-23T00:00:00+08:00</published><updated>2019-06-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-06-23:/posts/2019/2019-06-23.html</id><summary type="html">&lt;p&gt;上周在线上修改了一批机器的hostname：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;hostnamectl set-hostname xxx&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -858,7 +946,7 @@ remaining 为偶数为奇数好像都不影响逻辑，只差一个而已，一�
 &lt;span class="o"&gt;+&lt;/span&gt;       &lt;span class="p"&gt;}[&lt;/span&gt;&lt;span class="n"&gt;provider&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="p"&gt;]()&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;原来如此，lambda 定义一个匿名函数，这个对象指向具体函数对象的地址，类似&lt;a href="https://en.wikipedia.org/wiki/Branch_table"&gt;jump table&lt;/a&gt;。
+&lt;p&gt;原来如此，lambda 定义一个匿名函数，这个对象指向具体函数对象的地址，类似&lt;a href="https://en.wikipedia.org/wiki/Branch_table"&gt;jump table&lt;/a&gt;。&lt;br&gt;
 又一次面向Stack Overflow 编程 :P。&lt;/p&gt;</content><category term="2019"></category><category term="python"></category></entry><entry><title>ANAME、CNAME、DNAME</title><link href="https://fangpsh.github.io/posts/2018/2018-11-04.html" rel="alternate"></link><published>2018-11-04T00:00:00+08:00</published><updated>2018-11-04T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-11-04:/posts/2018/2018-11-04.html</id><summary type="html">&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/CNAME_record"&gt;CNAME&lt;/a&gt; 很常见，一般人都很熟悉，将一个域名映射到另外一个域名。但是CNAME 有个限制，顶级域名（apex domain）不建议设置CNAME，因为会和MX 记 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/CNAME_record"&gt;CNAME&lt;/a&gt; 很常见，一般人都很熟悉，将一个域名映射到另外一个域名。但是CNAME 有个限制，顶级域名（apex domain）不建议设置CNAME，因为会和MX 记录冲突，详细解释：&lt;a href="https://www.v2ex.com/t/204489#26"&gt;为什么裸域名不可以设置 CNAME？#26&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://www.ietf.org/rfc/rfc1912.txt"&gt;RFC1912:2.4 CNAME records&lt;/a&gt;&lt;/p&gt;
 &lt;blockquote&gt;
@@ -1108,7 +1196,28 @@ PATH=/home/www/example_env/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 &lt;p&gt;&lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html"&gt;man/systemd.service&lt;/a&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;For each of the specified commands, the first argument must be either an absolute path to an executable or a simple file name without any slashes.&lt;/p&gt;
-&lt;/blockquote&gt;</content><category term="2018"></category><category term="systemd"></category></entry><entry><title>《时间管理--给系统管理员》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-06-04.html" rel="alternate"></link><published>2018-06-04T00:00:00+08:00</published><updated>2018-06-04T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-06-04:/posts/2018/2018-06-04.html</id><summary type="html">&lt;p&gt;&lt;img alt="s2917003" src="https://img2.doubanio.com/view/subject/s/public/s2917003.jpg"&gt;&lt;/p&gt;
+&lt;/blockquote&gt;</content><category term="2018"></category><category term="systemd"></category></entry><entry><title>修复Nintendo Switch Joycon 手柄自动漂移问题</title><link href="https://fangpsh.github.io/posts/2018/xiu-fu-nintendo-switch-joycon-shou-bing-zi-dong-piao-yi-wen-ti.html" rel="alternate"></link><published>2018-06-23T00:00:00+08:00</published><updated>2018-06-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-06-23:/posts/2018/xiu-fu-nintendo-switch-joycon-shou-bing-zi-dong-piao-yi-wen-ti.html</id><summary type="html">&lt;p&gt;&lt;img alt="joy-con" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306155958.jpg"&gt;&lt;br&gt;
+图片来源：&lt;a href="https://www.zhihu.com/question/263710934/answer/282957512"&gt;知乎-西装暴徒&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;去年买的Switch，最近发现左手柄出现自动漂移，林克时不时自动往左走。搜索了下，在贴吧和知乎发现 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="joy-con" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306155958.jpg"&gt;&lt;br&gt;
+图片来源：&lt;a href="https://www.zhihu.com/question/263710934/answer/282957512"&gt;知乎-西装暴徒&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;去年买的Switch，最近发现左手柄出现自动漂移，林克时不时自动往左走。搜索了下，在贴吧和知乎发现挺常见的，例如&lt;a href="https://www.zhihu.com/question/263710934"&gt;Nintendo Switch左手柄Joy-con自动漂移问题，如何解决？&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;有人说用系统的校准摇杆的功能，实际上没用，那个校准只能应对电磁干扰。&lt;/p&gt;
+&lt;p&gt;网友分析原因是：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;摇杆下面会有一圈白色的粉末。那就是摇杆和边缘摩擦造成磨损而掉下来的粉末。这是无法避免的。而这个粉末就是摇杆漂移的元凶。因为粉末有可能会通过摇杆的缝隙飘进手柄内部，然后附着在摇杆的感应元件上，导致误触。也就是所谓的摇杆漂移，摇杆会一直往同一个方向走，不能自动复位。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;贴吧和知乎好多人拆手柄，然后换国产的摇杆模块，其实如果是一般的漂移，完全没必要。有人提到可以用吹气大发，牙签挑起摇杆下面半球形的橡胶，大吸一口，然后吹。我试了下，果然有点好使，不过一段时间之后又复发。证明了确实是粉末造成的。&lt;/p&gt;
+&lt;p&gt;接着看到说可以喷&lt;a href="http://www.wd40.com.cn/P_1.aspx"&gt;wd-40&lt;/a&gt;，能洗去灰尘。知乎有个答案提到wd-40 会硬化橡胶、塑料，Joycon 全是橡胶和塑料，所以先喷蓝瓶的wd-40，再喷精密电器清洁剂洗去wd-40。。。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wd-40" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160027.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;然后我查看了下答案了提到的wd-40精密仪器清洁剂：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wd-40-specialist" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160044.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;咦，有清洁功能呀，而且注明了可用于橡胶、塑料。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wd40" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160057.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;所以先喷蓝瓶wd-40 是不是多此一举呢。那就买黑瓶的wd-40试一试。京东自营没货，只能去淘宝找，淘宝价格都在41 左右，发现有&lt;a href="https://m.tb.cn/h.eYWcgVg"&gt;一家&lt;/a&gt;还可以领-3块钱代金券+包邮，销量还很高。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://m.tb.cn/h.eYWcgVg"&gt;&lt;img alt="wd-40-shop" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160149.jpg"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;看瓶体说明似乎对人体有害，不过挥发性好，如果在室内的话喷，建议打开风扇。喷前摇匀，然后揭起摇杆下的橡胶皮，喷一发，转几圈摇杆，等几分钟挥发干净。&lt;/p&gt;
+&lt;p&gt;果然好了！林克终于不会自动跳崖了。。。&lt;/p&gt;
+&lt;p&gt;我猜测清理完一次之后，以后可能还会出现粉末导致漂移，不过这一瓶360ml 应该够用了。&lt;/p&gt;</content><category term="2018"></category><category term="nintendo"></category></entry><entry><title>《时间管理--给系统管理员》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-06-04.html" rel="alternate"></link><published>2018-06-04T00:00:00+08:00</published><updated>2018-06-04T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-06-04:/posts/2018/2018-06-04.html</id><summary type="html">&lt;p&gt;&lt;img alt="s2917003" src="https://img2.doubanio.com/view/subject/s/public/s2917003.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;听说&lt;a href="https://book.douban.com/subject/2253513/"&gt;这本书&lt;/a&gt;是2年前，最近才想起看，逛了下京东亚马逊，全部没货，淘宝上倒是有不少翻印的盗版。07年出版的，已经十年前了，而本书的内 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="s2917003" src="https://img2.doubanio.com/view/subject/s/public/s2917003.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;听说&lt;a href="https://book.douban.com/subject/2253513/"&gt;这本书&lt;/a&gt;是2年前，最近才想起看，逛了下京东亚马逊，全部没货，淘宝上倒是有不少翻印的盗版。07年出版的，已经十年前了，而本书的内容感觉更老。作者创作这本书的时候，IBM 还如日中天，Netflix 还在出租DVD 光盘💿 呢。&lt;/p&gt;
 &lt;p&gt;我想看这书的大多数都是运维同学，然而今天的运维，已经和作者书中的系统管理员的工作内容大不一样。作者所做的工作内容，一小部分在如今也已经归入到IT 支持一类的职位中了。不过今天的运维依然要面对一堆琐事，不断被打断。&lt;/p&gt;
@@ -1967,7 +2076,94 @@ cd !$:h
 &lt;li&gt;&lt;a href="https://www.nginx.com/resources/wiki/start/topics/examples/full/"&gt;Full Example Configuration&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://github.com/chr4/nginx.vim/blob/master/syntax/nginx.vim"&gt;nginx.vim&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://www.kancloud.cn/digest/understandingnginx/202597"&gt;Nginx 配置解析&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2018"></category><category term="nginx"></category><category term="python"></category></entry><entry><title>禁用透明大页</title><link href="https://fangpsh.github.io/posts/2017/2017-12-05.html" rel="alternate"></link><published>2017-12-05T00:00:00+08:00</published><updated>2017-12-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-05:/posts/2017/2017-12-05.html</id><summary type="html">&lt;ul&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="nginx"></category><category term="python"></category></entry><entry><title>抓取微博，同步到Twitter</title><link href="https://fangpsh.github.io/posts/2017/2017-12-21.html" rel="alternate"></link><published>2017-12-21T00:00:00+08:00</published><updated>2017-12-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-21:/posts/2017/2017-12-21.html</id><summary type="html">&lt;p&gt;&lt;img alt="zelda" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161433.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;前几个月买了&lt;a href="https://www.nintendo.co.jp/hardware/switch/"&gt;NintendoSwitch&lt;/a&gt;，沉迷于“塞尔达-荒野之息”不能自拔，同时也关注着NS 新游戏的资讯。
+微博上有几个帐号会发布各种NS 游戏 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="zelda" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161433.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;前几个月买了&lt;a href="https://www.nintendo.co.jp/hardware/switch/"&gt;NintendoSwitch&lt;/a&gt;，沉迷于“塞尔达-荒野之息”不能自拔，同时也关注着NS 新游戏的资讯。
+微博上有几个帐号会发布各种NS 游戏信息，不过微博做的和💩 一样，完全不想用。联系了那几个微博博主，询问是否考虑也同步发在Twitter，没理我，那就自己动手吧。&lt;/p&gt;
+&lt;h2&gt;爬取微博&lt;/h2&gt;
+&lt;p&gt;本来还以为得手动解析网页，偶尔发现移动版居然有现成的API 可以用，十分酸爽。&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;https://m.weibo.cn/u/5084965647
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img alt="weibo1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161502.jpg"&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;https://m.weibo.cn/api/container/getIndex?containerid=1076035084965647&amp;amp;page=2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img alt="weibo2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161516.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;结构挺清晰的，data-cards 就是每一条微博，不过会有不同的card-type，选出card-type=9 的即可。&lt;/p&gt;
+&lt;p&gt;每一个card 里面，主要关注：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;itemid： 微博的唯一ID&lt;/li&gt;
+&lt;li&gt;text： 文本内容&lt;/li&gt;
+&lt;li&gt;pics： 图片&lt;/li&gt;
+&lt;li&gt;page_info: 如果带视频，会有一个page_info，其中包含视频信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这些接口应该有频率限制，不过我只想抓最新的，几十分钟访问一次即可。&lt;/p&gt;
+&lt;h2&gt;发布到Twitter&lt;/h2&gt;
+&lt;p&gt;创建一个帐号，然后再在这个帐号下创建一个 apps.twitter.com，直接生成一堆token，这样最方便。&lt;/p&gt;
+&lt;p&gt;关于Twitter 的认证可以参考：&lt;a href="http://isouth.org/archives/286.html"&gt;OAuth 认证步骤&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;重点得到这四个东西即可：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;CONSUMER_KEY&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;your-consumer-key&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;CONSUMER_SECRET&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;your-consumer-secret&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;ACCESS_TOKEN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;your-access-token&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;ACCESS_TOKEN_SECRET&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;your-access-secret&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;关于图片和视频上传可以参考：&lt;a href="https://github.com/twitterdev/large-video-upload-python"&gt;twitterdev/large-video-upload-python&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;微博的text 中带了大量的链接，需要处理一下，用re.sub 替换掉即可。&lt;br&gt;
+微博的话题是&lt;code&gt;#话题#&lt;/code&gt;，而Twitter 是&lt;code&gt;#话题&lt;/code&gt;，也需要处理一下。  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;card&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;mblog&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;text&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sub&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;data-url=\&amp;quot;([^\&amp;quot; ]+)\&amp;quot;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;gt; \1 &amp;lt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sub&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;lt;[^&amp;lt;]*&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sub&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;#([^#]+)#&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;#\1&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;关于图片、视频的几个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Twitter 的图片（除GIF 之外）限制一条tweet 只能发4张，微博可以有多张，需要注意拆分，然后把第一条tweet 的ID 作为第二条的 &lt;code&gt;in_reply_to_status_id&lt;/code&gt;，就能串成所谓的“主题帖”；&lt;/li&gt;
+&lt;li&gt;Twitter 的视频有一大堆限制，允许的视频时长也很短。索性不传视频了，直接保留微博原来的秒拍跳转链接；&lt;/li&gt;
+&lt;li&gt;GIF 图片，Twitter 一条tweet 也只能传一张，还不能是动图，懒得判断，直接丢弃GIF 图了。&lt;/li&gt;
+&lt;li&gt;传图片和视频时，记得带上&lt;code&gt;media_category&lt;/code&gt;，图片是&lt;code&gt;tweet_image&lt;/code&gt;，视频是&lt;code&gt;tweet_video&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;写好之后，丢到VPS 上，15分钟运行一次即可。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href="https://twitter.com/NinSwitch_News"&gt;@NinSwitch_News&lt;/a&gt;&lt;/strong&gt;&lt;br&gt;
+&lt;img alt="ns_news" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161552.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;代码就不发了，写得很快很糙，也没啥难度。  &lt;/p&gt;</content><category term="2017"></category><category term="spider"></category></entry><entry><title>ioping</title><link href="https://fangpsh.github.io/posts/2017/2017-12-13.html" rel="alternate"></link><published>2017-12-13T00:00:00+08:00</published><updated>2017-12-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-13:/posts/2017/2017-12-13.html</id><summary type="html">&lt;p&gt;&lt;img alt="ioping" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306152430.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;发现一个有趣的工具 - ioping，类似常用的ping 命令。ping 用来ping 网络，看延时、丢包等等，ioping 用来 “ping” IO，看IO 耗时，读写速度等等。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/koct9i/ioping"&gt;ioping&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;simple disk I …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="ioping" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306152430.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;发现一个有趣的工具 - ioping，类似常用的ping 命令。ping 用来ping 网络，看延时、丢包等等，ioping 用来 “ping” IO，看IO 耗时，读写速度等等。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/koct9i/ioping"&gt;ioping&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;simple disk I/0 latency measuring tool&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;用常见的包管理工具就可以安装上，&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;apt/yum/dnf/brew install ioping
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;ping 命令基本无害，不过ioping 据说可能会损坏数据，得小心使用。&lt;/p&gt;
+&lt;p&gt;安装之后，man 一下查看手册，会发现选项还挺多：每一次写入的大小，写入/读取请求的间隔，请求的总次数，同步/异步 IO， direct I/O 、cached I/O 多种模式等等。&lt;/p&gt;
+&lt;p&gt;默认一个数据块是4k ，可以选择写入，读取，或者读写交替模式，以前简单的IO测试都是用&lt;a href="https://en.wikipedia.org/wiki/Dd_(Unix)"&gt;dd&lt;/a&gt;，以后可以试一试用ioping，当然，专业严谨的压测还是得用&lt;a href="https://github.com/axboe/fio"&gt;fio&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;具体语法和示例，可以参考以下资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.systutorials.com/docs/linux/man/1-ioping/"&gt;ioping(1)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/koct9i/ioping"&gt;koct9i/ioping&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.cyberciti.biz/faq/linux-freebsd-openbsd-macosx-find-disk-io-latency-with-ioping/amp/?__twitter_impression=true"&gt;How to find disk I/O latency with ioping monitoring tool on Linux&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2017"></category><category term="bash"></category></entry><entry><title>禁用透明大页</title><link href="https://fangpsh.github.io/posts/2017/2017-12-05.html" rel="alternate"></link><published>2017-12-05T00:00:00+08:00</published><updated>2017-12-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-05:/posts/2017/2017-12-05.html</id><summary type="html">&lt;ul&gt;
 &lt;li&gt;原文链接：&lt;a href="https://blog.nelhage.com/post/transparent-hugepages/#fn:tree"&gt;blog.nelhage.com&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;原文作者：&lt;a href="https://blog.nelhage.com/about/"&gt;Nelson Elhage&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;原文发表时间： 2017-07-10&lt;/li&gt;
@@ -5532,7 +5728,82 @@ mailwarn        off
 &lt;p&gt;注意CentOS 7 默认将&lt;code&gt;huponexit&lt;/code&gt; 设为&lt;code&gt;off&lt;/code&gt; 了，这样在用户将Shell 退出结束会话时，系统不会发送 SIGHUP 给所有进程，这效果其实类似使用了nohup，nohup 的作用就是忽略HUP 信号。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;huponexit&lt;/span&gt;
 &lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;If&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;set&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;will&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;send&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;SIGHUP&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;all&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;jobs&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;when&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;an&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;interactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;login&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;shell&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;exits&lt;/span&gt;.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2016"></category><category term="shell"></category><category term="linux"></category></entry><entry><title>Bind DLZ With MySQL</title><link href="https://fangpsh.github.io/posts/2016/2016-05-11.html" rel="alternate"></link><published>2016-05-11T10:49:30+08:00</published><updated>2016-05-11T10:49:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-05-11:/posts/2016/2016-05-11.html</id><summary type="html">&lt;h2&gt;前言&lt;/h2&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2016"></category><category term="shell"></category><category term="linux"></category></entry><entry><title>豆瓣FM 红心歌曲导入网易云音乐</title><link href="https://fangpsh.github.io/posts/2016/2016-05-16.html" rel="alternate"></link><published>2016-05-16T12:08:30+08:00</published><updated>2016-05-16T12:08:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-05-16:/posts/2016/2016-05-16.html</id><summary type="html">&lt;p&gt;&lt;img alt="NeteaseMusic" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306155230.png"&gt;&lt;/p&gt;
+&lt;p&gt;从豆瓣FM 转用网易云音乐的几个原因：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;版权大战，豆瓣FM 里面的歌曲大部分都播放不了了；&lt;/li&gt;
+&lt;li&gt;豆瓣FM 音质太烂，相比QQ，网易，虾 …&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="NeteaseMusic" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306155230.png"&gt;&lt;/p&gt;
+&lt;p&gt;从豆瓣FM 转用网易云音乐的几个原因：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;版权大战，豆瓣FM 里面的歌曲大部分都播放不了了；&lt;/li&gt;
+&lt;li&gt;豆瓣FM 音质太烂，相比QQ，网易，虾米之类；&lt;/li&gt;
+&lt;li&gt;豆瓣FM 在OS X 下无官方客户端，网页版又依赖Flash，多年后的新版才弃用了；&lt;/li&gt;
+&lt;li&gt;豆瓣FM iOS App 常常需要重复登录，有时是在升级之后，简直不能忍；&lt;/li&gt;
+&lt;li&gt;豆瓣FM 在北京移动的宽带环境下常常播放卡顿，给豆瓣官方help 邮箱发邮件反馈，跑过他们的测试脚本，不了了之；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;网易云音乐的iOS App 和OS X App 都做的不错，不过私人FM 的歌曲推荐相比豆瓣FM 还是差一大节，怀疑是红心歌曲和垃圾歌曲标注的不够，所以产生将豆瓣FM 红心歌曲导入网易云音乐的想法。&lt;br&gt;
+记得网易云音乐一开始推出的时候，可以直接从豆瓣FM 和虾米音乐导入歌单，目前已经不可用，所以只能自己动手了。  &lt;/p&gt;
+&lt;p&gt;第一步，拉取豆瓣FM 红心歌曲列表，新版的接口好像变了，直接用旧版的接口，登录豆瓣FM 网页版本，&lt;br&gt;
+打开&lt;code&gt;https://douban.fm/mine/#!type=liked&lt;/code&gt;, Inspect 看一下网络请求接口，找出类似：&lt;br&gt;
+&lt;code&gt;http://douban.fm/j/play_record?ck=&amp;amp;spbid=&amp;amp;type=liked&amp;amp;start=&lt;/code&gt;&lt;br&gt;
+的请求，Copy As cURL，得到Cookie 之类的，&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#!/usr/bin/env bash&lt;/span&gt;
+&lt;span class="c1"&gt;#Convert DoubanFM liked songs into KWL list.&lt;/span&gt;
+&lt;span class="c1"&gt;#require:&lt;/span&gt;
+&lt;span class="c1"&gt;#  jq: https://stedolan.github.io/jq/&lt;/span&gt;
+
+&lt;span class="nv"&gt;COUNT&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="c1"&gt;#liked songs number#&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;i&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;seq&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;15&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;COUNT&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;songs&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;http://douban.fm/j/play_record?ck=&amp;amp;spbid=&amp;amp;type=liked&amp;amp;start=&amp;#39;&lt;/span&gt;&lt;span class="nv"&gt;$i&lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Host: douban.fm&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;User-Agent: &amp;#39;&lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Accept: text/plain, */*; q=0.01&amp;#39;&lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Accept-Language: en-US,en;q=0.5&amp;#39;&lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;DNT: 1&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;X-Requested-With: XMLHttpRequest&amp;#39;&lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Referer: http://douban.fm/mine/&amp;#39;&lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Cookie: &amp;#39;&lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Connection: keep-alive&amp;#39;&lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;jq&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.songs&amp;#39;&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;seq&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;song&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$songs&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;jq&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="nv"&gt;$s&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;title&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$song&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;jq&lt;span class="w"&gt; &lt;/span&gt;.title&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;artist&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$song&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;jq&lt;span class="w"&gt; &lt;/span&gt;.artist&lt;span class="sb"&gt;`&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$title&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$artist&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;lt;so name=&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$title&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;artist=&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$artist&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;gt;&amp;lt;/so&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;Douban_FM.kwl
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;sleep&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;
+&lt;span class="k"&gt;done&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;由于歌曲总数不一定是15 的倍数，所以最后可能会几项是NULL ，手动删除一下就好了。&lt;br&gt;
+生成的DoubanFM.kwl 是酷我的歌曲列表，上传地址：&lt;a href="http://music.163.com/#/import/kuwo"&gt;http://music.163.com/#/import/kuwo&lt;/a&gt;，导入即可。&lt;br&gt;
+.kwl 内容片段：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;&amp;lt;so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;とんちんかんちん一休さん&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;相内恵 / ヤングフレッシュ&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;岛人ぬ宝&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;BEGIN&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;美丽的梭罗河&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;黄秋生&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;雨&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;小果&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Paradise&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Coldplay&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Broken&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Jake Bugg&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;A Step You Can&amp;#39;t Take Back&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Keira Knightley&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Tokyo&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;California Wives&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;痴人&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;痴人 / 痴人&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;I Cried For You&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Katie Melua&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Counting Stars&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;OneRepublic&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+....
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;I Have Nothing&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Whitney Houston&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Sometimes When We Touch&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Rod Stewart&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;From The Bottom Of My Broken Heart&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Britney Spears&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Because I Love You&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Shakin Stevens&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Rhythm Of The Rain&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Jason Donovan / The Cascades&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;织梦行云&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="na"&gt;artist=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;骆集益&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/so&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;导入网易云音乐之后会生成一个和kwl文件同名的歌单，再在App 内操作导入到&lt;code&gt;我喜欢的音乐&lt;/code&gt; ，批量加红心即可。目前看来导入之后，隔几天，网易私人FM 的推荐稍微好了一些。&lt;/p&gt;
+&lt;p&gt;另外这次导入操作，豆瓣FM 歌曲下架的情况可以让人非常吃惊：&lt;br&gt;
+&lt;strong&gt;我的豆瓣FM红心歌曲总计1741 首，能播放的只有421 首，将其导入网易云音乐能播放的有1271首&lt;/strong&gt;。&lt;/p&gt;</content><category term="2016"></category><category term="douban"></category><category term="bash"></category></entry><entry><title>Bind DLZ With MySQL</title><link href="https://fangpsh.github.io/posts/2016/2016-05-11.html" rel="alternate"></link><published>2016-05-11T10:49:30+08:00</published><updated>2016-05-11T10:49:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-05-11:/posts/2016/2016-05-11.html</id><summary type="html">&lt;h2&gt;前言&lt;/h2&gt;
 &lt;p&gt;要做好运维自动化，内网域名的自动化管理不可少，得提供丰富的API 供其他内部系统调用。&lt;br&gt;
 之前在网易杭研实习，见过 …&lt;/p&gt;</summary><content type="html">&lt;h2&gt;前言&lt;/h2&gt;
 &lt;p&gt;要做好运维自动化，内网域名的自动化管理不可少，得提供丰富的API 供其他内部系统调用。&lt;br&gt;
@@ -7621,4 +7892,400 @@ debian 8还不会默认启用SELinux，debian testing上目前默认未安装SEL
 &lt;span class="w"&gt;        &lt;/span&gt;--enable-introspection&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
 &lt;span class="w"&gt;        &lt;/span&gt;--enable-gtk-doc
 &lt;span class="err"&gt;...&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2014"></category><category term="Systemd"></category><category term="Debian"></category></entry></feed>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2014"></category><category term="Systemd"></category><category term="Debian"></category></entry><entry><title>搭建树莓派集群</title><link href="https://fangpsh.github.io/posts/2014/2014-01-12.html" rel="alternate"></link><published>2014-01-12T00:00:00+08:00</published><updated>2014-01-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-12:/posts/2014/2014-01-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="Raspberry Pi Cluster" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306153041.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;大三上学期，有幸在小马哥的帮助下申请到资金搭建树莓派集群。粗糙记录下过程。&lt;/p&gt;
+&lt;h2&gt;初识树莓派&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20140811213050/http://www.leiphone.com/raspberry-pi-hands-on.html"&gt;《树莓派上手报告》&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://zh.wikipedia.org/wiki/树莓派"&gt;Wikipedia:树莓派 …&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="Raspberry Pi Cluster" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306153041.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;大三上学期，有幸在小马哥的帮助下申请到资金搭建树莓派集群。粗糙记录下过程。&lt;/p&gt;
+&lt;h2&gt;初识树莓派&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20140811213050/http://www.leiphone.com/raspberry-pi-hands-on.html"&gt;《树莓派上手报告》&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://zh.wikipedia.org/wiki/树莓派"&gt;Wikipedia:树莓派&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.cnblogs.com/ma6174/archive/2013/01/25/2875617.html"&gt;Raspberry Pi（树莓派）试用小记&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20140819084154/http://digi.tech.qq.com/a/20120908/000285.htm"&gt; 廉价迷你Linux机器Raspberry Pi详解&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考样例
+ -  &lt;a href="http://www.southampton.ac.uk/~sjc/raspberrypi/pi_supercomputer_southampton.htm"&gt;pi-supercomputer&lt;/a&gt;
+       基本过程可参考本文档
+ - &lt;a href="http://www.zdnet.com/build-your-own-supercomputer-out-of-raspberry-pi-boards-7000015831/"&gt;build-your-own-supercomputer-out-of-raspberry-pi-boards&lt;/a&gt;
+ -  www.cl.cam.ac.uk/projects/raspberrypi/&lt;/p&gt;
+&lt;h2&gt;材料&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;树莓派&lt;ul&gt;
+&lt;li&gt;排插&lt;/li&gt;
+&lt;li&gt;SD卡&lt;/li&gt;
+&lt;li&gt;USB_micro线（供电）&lt;/li&gt;
+&lt;li&gt;USB适配器（5V/1A～2A），也可以使用带源USB-HUB，从USB空供电&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;交换机，路由器&lt;/li&gt;
+&lt;li&gt;网线&lt;/li&gt;
+&lt;li&gt;乐高积木&lt;/li&gt;
+&lt;li&gt;散热电风扇（可利用机箱风扇自主组装）&lt;/li&gt;
+&lt;li&gt;散热片&lt;/li&gt;
+&lt;li&gt;导热硅胶&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可选（以下做调试之用）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;HDMI-VGA转换器&lt;/li&gt;
+&lt;li&gt;键盘&lt;/li&gt;
+&lt;li&gt;鼠标&lt;/li&gt;
+&lt;li&gt;显示器&lt;/li&gt;
+&lt;li&gt;PC机&lt;/li&gt;
+&lt;li&gt;USB-TTL线&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以上材料根据具体调整数量。&lt;/p&gt;
+&lt;h2&gt;组装&lt;/h2&gt;
+&lt;p&gt;系统刷写&lt;/p&gt;
+&lt;p&gt;可以选择的系统非常多，有Raspbian，Archlinuxarm，Pidora等等，按需选择。 刷系统，主要是往SD卡中写入系统，Linux下可以使用dd命令，windows下可以使用Win32DiskImager。 可以先刷写一个SD卡，然后进行常规配置和自定义配置，提取镜像，再写人其他SD卡。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.raspberrypi.org/downloads"&gt;官方系统镜像下载&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;~~&lt;a href="http://mirrors.ustc.edu.cn/raspberrypi/images/"&gt;中科大加速镜像&lt;/a&gt;~~&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.raspberrypi.org/help/quick-start-guide/"&gt;Quick start guid&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://mall.egoman.com.cn/index.php?option=com_content&amp;amp;view=article&amp;amp;id=99:-lab1raspberrywindows-&amp;amp;catid=47:shiyongfangan-&amp;amp;Itemid=222"&gt;浙大课程： Lab1:初见树莓派(Raspberry)(windows平台)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(DD命令示例) &lt;a href="http://zhangshenjia.com/it/raspberry_pi/mac-raspbian"&gt;mac下给树莓派安装raspbian系统&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;积木搭建&lt;/h3&gt;
+&lt;p&gt;具体按照实际情况搭建，本项目方案为，4层为一组，一共8组，一共32片树莓派。
+组与组之间需要预留组工的空间方便通风散热与线材的放置。&lt;/p&gt;
+&lt;h3&gt;散热方案&lt;/h3&gt;
+&lt;p&gt;一定要加散热片（散热片很便宜），在组装积木前将散热片用导热硅胶贴好。 风扇也是必须的，如果是夹扇，可在高处摇头吹。
+网络拓扑结构&lt;/p&gt;
+&lt;p&gt;路由器用来划分子网，同时作为DHCP服务器。交换机上行端口接路由器LAN口，树莓派接交换机端口。树莓派配置固定IP，方便管理。
+配置固定IP，以Raspbian（debain系）为例： 编辑 /etc/network/interfaces&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;auto eth0
+#iface eth0 inet dhcp
+iface eth0 inet static
+        address 192.168.1.2 #ip地址
+        netmask 255.255.255.0#掩码
+        gateway 192.168.1.1 #网关，路由器IP
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;重启网络服务&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#root用户，或者加sudo
+/etc/init.d/networking restart
+OR
+service networking restart
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如果需要还可配置DNS服务器。
+配置&lt;/p&gt;
+&lt;p&gt;在管理的节点生成ssh-key，把public分发到客户机，添加信任。手动添加非常繁琐，可以在前面一步，刷写系统的时候刷人public-key，或者使用 ssh-copy-id 为了使用ssh方便，可以修改hosts，如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="mf"&gt;192.168.1.101&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pi01&lt;/span&gt;
+&lt;span class="mf"&gt;192.168.1.102&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pi02&lt;/span&gt;
+&lt;span class="mf"&gt;192.168.1.103&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pi03&lt;/span&gt;
+&lt;span class="mf"&gt;....&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;然后 ssh pi[01~32]即可. 或者编写ssh的config文件，
+参考：Simplify Your Life With an SSH Config File&lt;/p&gt;
+&lt;p&gt;管理工具(mssh,pssh,ansible..)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.fuzhijie.me/?p=443"&gt;两把集群管理利器&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;推荐: &lt;a href="http://kumu-linux.github.io/blog/2013/08/12/pssh/"&gt;pssh使用方法&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;推荐: &lt;a href="https://github.com/ajdecon/ansible-pi-cluster"&gt;ansible-pi-cluster&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#example
+pssh -t 99999 -h pssh-rpis -P sudo aptitude update
+pssh -t 99999 -h pssh-rpis -P sudo aptitude -y upgrade
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;部署监控（Ganglia,berryio）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://ganglia.sourceforge.net/"&gt;Ganglia&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;推荐：&lt;a href="https://web.archive.org/web/20131002064835/http://thinkinside.tk/2013/07/30/ganglia.html"&gt;用Ganglia监控集群的性能&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20130429213141/http://www.elain.org/?p=359"&gt;ganglia监控的搭建部署&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20130117170841/http://www.myraspberrypi.info/?p=329"&gt;Monitoring the super computer with Nagios&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;单点监控：&lt;a href="https://github.com/NeonHorizon/berryio"&gt;berryio&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;还有其他监控系统，很多很多：nagios，munin，mrtg,zabbix,webnms,opmanager,collectd,cacti…&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;并行程序&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.southampton.ac.uk/~sjc/raspberrypi/pi_supercomputer_southampton.htm"&gt;pi_supercomputer&lt;/a&gt;:”Building MPI so we can run code on multiple nodes“ 部分&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.mpich.org/"&gt;MPICH&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;负载均衡&lt;/h3&gt;
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[apache])(http://raspberrywebserver.com/raspberrypicluster/raspberry-pi-cluster.html)&lt;/li&gt;
+&lt;li&gt;squid+haproxy+…&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Hadoop集群&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=""&gt;树莓派搭建hadoop集群&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20140811213050/http://blog.csdn.net/hguisu/article/details/7237395"&gt;Hadoop集群配置&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20140811213050/http://raspberrypicloud.wordpress.com/2013/04/25/getting-hadoop-to-run-on-the-raspberry-pi/"&gt;Getting hadoop to run on the Raspberry Pi&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;玩玩就好。。&lt;/p&gt;
+&lt;h3&gt;OpenStack Swift&lt;/h3&gt;
+&lt;p&gt;&lt;a href="http://programmerthoughts.com/openstack/swift-on-pi"&gt;openstack/swift-on-pi&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;挖矿&lt;/h3&gt;
+&lt;p&gt;使用cgminer，具体可参考&lt;a href="https://web.archive.org/web/20150120064306/http://shumeipai.nxez.com/2013/11/26/use-raspberry-pi-cpu-without-mining-machine-mining-case.html"&gt;无矿机情况下使用树莓派CPU挖矿&lt;/a&gt;
+速度就不说了，纯粹浪费电。。&lt;/p&gt;
+&lt;h3&gt;其他&lt;/h3&gt;
+&lt;h4&gt;搭建Raspbian镜像&lt;/h4&gt;
+&lt;p&gt;树莓派集群使用的系统主要为Raspbian，当进行软件包安装或更新时，如果有本地镜像，可以大大加快速度，节省时间。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;Rsync&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="n"&gt;rsync&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;archive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;verbose&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;delete&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;delete&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;delay&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;delay&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;updates&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;archive&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;raspbian&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;org&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;archive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sr"&gt;/path/to/local/&lt;/span&gt;&lt;span class="n"&gt;mirror&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;添加 crontable ， 自动更新。
+配置 webserver 或 ftpserver提供服务。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://web.archive.org/web/20140920210652/http://www.raspbian.org/RaspbianMirrors"&gt;官方镜像列表&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;USB-TTL连接树莓派&lt;/h4&gt;
+&lt;p&gt;在缺少外接显示器或者SSH出现故障时，利用TTL连入树莓派比较快捷。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;软件：putty,minicom…&lt;/li&gt;
+&lt;li&gt;工具：USB转TTL小板加杜邦线，或者直接买USB–TTL线。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;步骤&lt;/p&gt;
+&lt;p&gt;连接：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;RX-TX
+TX-RX
+GND-GND
+切勿将VC接到GND上
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;具体GPIO口定义请查看 &lt;a href="https://web.archive.org/web/20150108110105/http://www.raspicn.com/thread-76-1-1.html"&gt;树莓派上手实战之通过TTL串口终端连接RaspberryPi&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#minicom
+sudo aptitude install minicom
+minicom -D /dev/ttyUSB0 -b 115200 #波特率为115200
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href="https://web.archive.org/web/20140811213050/http://bbs.shumeipai.org/thread-95-1-1.html"&gt;超级终端通过串口与树莓派传输文件&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;参考
+ - &lt;a href="https://web.archive.org/web/20140811213050/http://elinux.org/RPi_Low-level_peripherals"&gt;RPi Low-level peripherals&lt;/a&gt;
+ - &lt;a href="https://web.archive.org/web/20140809060304/http://shumeipai.nxez.com/"&gt;推荐树莓派DIY笔记&lt;/a&gt;
+ - Dropbox: &lt;a href="https://www.dropbox.com/sh/9s66fyo8aib8s3c/Zdr6AofJ51"&gt;~~树莓派资料整合共享~~&lt;/a&gt;&lt;/p&gt;</content><category term="2014"></category><category term="RaspberryPi"></category></entry><entry><title>搭建PyPI及RubyGems镜像</title><link href="https://fangpsh.github.io/posts/2014/2014-01-02.html" rel="alternate"></link><published>2014-01-02T00:00:00+08:00</published><updated>2014-01-02T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-02:/posts/2014/2014-01-02.html</id><summary type="html">&lt;h2&gt;PyPI&lt;/h2&gt;
+&lt;p&gt;推荐使用bandersnatch搭建，bandersnatch是基于PEP381的一个分支，更推荐前者。
+bandersnatch的安装配置看官方文档就可以搞定了，这里大概说下基本步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;通过pip和easy_install安装bandersnatch，或者下载源码。&lt;/li&gt;
+&lt;li&gt;你需要一个nginx,lighttpd,或apache之类的webserver，推荐前二者选其一。配 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;h2&gt;PyPI&lt;/h2&gt;
+&lt;p&gt;推荐使用bandersnatch搭建，bandersnatch是基于PEP381的一个分支，更推荐前者。
+bandersnatch的安装配置看官方文档就可以搞定了，这里大概说下基本步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;通过pip和easy_install安装bandersnatch，或者下载源码。&lt;/li&gt;
+&lt;li&gt;你需要一个nginx,lighttpd,或apache之类的webserver，推荐前二者选其一。配置好webserver。&lt;/li&gt;
+&lt;li&gt;bandersnatch.conf位于/etc/下（安装后先执行 bandersnatch mirror 生成默认配置文件），按需修改该配置文件，对应条目都有说明，简单翻译如下：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;[mirror]&lt;/span&gt;
+&lt;span class="c1"&gt;; 同步内容存储的目录位置.&lt;/span&gt;
+&lt;span class="na"&gt;directory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;/home/mirror/pypi&lt;/span&gt;
+
+&lt;span class="c1"&gt;; 将同步的上有PyPI服务器，第一次同步可以选择清华，中科大，中大，豆瓣等国内服务器.&lt;/span&gt;
+&lt;span class="c1"&gt;; 后期的同步再修改为官方服务器。&lt;/span&gt;
+&lt;span class="c1"&gt;;master = https://testpypi.python.org&lt;/span&gt;
+&lt;span class="c1"&gt;;master = http://pypi.mirrors.ustc.edu.cn&lt;/span&gt;
+&lt;span class="c1"&gt;;master = http://pypi.douban.com&lt;/span&gt;
+
+&lt;span class="na"&gt;master&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;https://pypi.python.org&lt;/span&gt;
+
+&lt;span class="c1"&gt;;超时设置&lt;/span&gt;
+&lt;span class="c1"&gt;;The network socket timeout to use for all connections. This is set to a&lt;/span&gt;
+&lt;span class="c1"&gt;; somewhat aggressively low value: rather fail quickly temporarily and re-run&lt;/span&gt;
+&lt;span class="c1"&gt;; the client soon instead of having a process hang infinitely and have TCP not&lt;/span&gt;
+&lt;span class="c1"&gt;; catching up for ages.&lt;/span&gt;
+&lt;span class="na"&gt;timeout&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;10&lt;/span&gt;
+
+&lt;span class="c1"&gt;; 并行下载的线程数量.&lt;/span&gt;
+&lt;span class="c1"&gt;; 建议的线程设置:&lt;/span&gt;
+&lt;span class="c1"&gt;; - 保持默认设置3,以防止上游服务器过载&lt;/span&gt;
+&lt;span class="c1"&gt;; - 数据中心的官方服务器可以设置为20&lt;/span&gt;
+&lt;span class="c1"&gt;; - 50以上的设置可能不稳定，并会被bandersnatch禁止&lt;/span&gt;
+&lt;span class="na"&gt;workers&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;3&lt;/span&gt;
+
+&lt;span class="c1"&gt;;快速同步中遇到错误是否停止同步，如果是，将导致同步失败。&lt;/span&gt;
+&lt;span class="c1"&gt;;第一次同步时候建议设置为 false，后续可更改为true。&lt;/span&gt;
+&lt;span class="c1"&gt;; 值： &amp;quot;true&amp;quot; or &amp;quot;false&amp;quot;.&lt;/span&gt;
+&lt;span class="na"&gt;stop-on-error&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;false&lt;/span&gt;
+
+&lt;span class="c1"&gt;;本地服务器是否删除上游服务器已经删除的包。&lt;/span&gt;
+&lt;span class="c1"&gt;; 重要: 如果你的服务器是作为一个官方镜像提供给用户，请打开该选项。&lt;/span&gt;
+&lt;span class="na"&gt;delete-packages&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;true&lt;/span&gt;
+
+&lt;span class="k"&gt;[statistics]&lt;/span&gt;
+&lt;span class="c1"&gt;; A glob pattern matching all access log files that should be processed to&lt;/span&gt;
+&lt;span class="c1"&gt;; generate daily access statistics that will be aggregated on the master PyPI.&lt;/span&gt;
+&lt;span class="na"&gt;access-log-pattern&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;/var/log/nginx/*.pypi.python.org*access*&lt;/span&gt;
+&lt;span class="c1"&gt;; vim: set ft=cfg:&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;4.设置cron任务，自动定时执行同步命令,将任务文件放在/etc/cron.d文件下时，注意命名规则。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;LC_ALL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;en_US&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;utf8&lt;/span&gt;
+&lt;span class="o"&gt;*/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bandersnatch&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mirror&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;logger&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bandersnatch&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mirror&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bandersnatch&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;update&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;stats&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;logger&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bandersnatch&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;update-stats&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;5.关于bandersnatch更多配置请参考官方文档，另外可以配置exim4和编写脚本分析日记文件进行监控和报警。&lt;/p&gt;
+&lt;h2&gt;RubyGems&lt;/h2&gt;
+&lt;p&gt;RubyGems的搭建，可参考Ruby-China上帖子,按照huacnlee的步骤搭建即可，补充几点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;据说RubyGems会根据中国用户的ip将请求自动转 到日本的镜像站,这个很不错，但是我自己试用了几次都卡住不会跳，囧。日本的服务器地址是：http://tokyo-m.rubygems.org ，我曾经也将这个作为镜像站的上游进行同步，但是日本这个服务器不稳定，所以选择只能是与淘宝镜像或者将镜像服务器上FQ（proxychains，vpn等工具）。&lt;/li&gt;
+&lt;li&gt;除了使用上面的同步工具搭建镜像站，也可配置反向代理并cache.&lt;/li&gt;
+&lt;li&gt;初始同步可设置上游为淘宝，清华，中大等等。&lt;/li&gt;
+&lt;li&gt;如果你是搭建一个公共的镜像站提供服务，不建议使用Geminabox 中WEBrick作为webserver，换用nginx或者lighttpd吧。&lt;/li&gt;
+&lt;li&gt;将同步命令放入/etc/cron.d时除了要注意文件命名方式还可能遇到“rake aborted!”，这表明没设置PATH，参考如下（请按你的PATH进行配置）：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;#RUbygems&lt;/span&gt;
+&lt;span class="n"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=...&lt;/span&gt;&lt;span class="c1"&gt;#查看PATH的命令：echo $PATH&lt;/span&gt;
+&lt;span class="c1"&gt;#解释：10分钟一次，配置flock锁，执行rubygems中的同步，日记格式输出，邮件报警命令等。&lt;/span&gt;
+&lt;span class="o"&gt;*/&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;flock&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;xn&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lock&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mirror&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rubygems&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lock&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot; bash /root/scripts/bin/rubygems &amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;6.注意需要配置同步锁。可用上例代码中的flock。&lt;/p&gt;</content><category term="2014"></category><category term="pypi"></category><category term="rugygems"></category></entry><entry><title>搭建开源镜像站</title><link href="https://fangpsh.github.io/posts/2014/2014-01-01.html" rel="alternate"></link><published>2014-01-01T00:00:00+08:00</published><updated>2014-01-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-01:/posts/2014/2014-01-01.html</id><summary type="html">&lt;p&gt;&lt;img alt="SYSU Mirror" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160359.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;根据2013 SFD 广州聚会上的演讲《简单介绍如何搭建一个开源镜像站》幻灯片补充整理而成。
+内容：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;简介中山大学镜像站&lt;/li&gt;
+&lt;li&gt;搭建开 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="SYSU Mirror" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160359.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;根据2013 SFD 广州聚会上的演讲《简单介绍如何搭建一个开源镜像站》幻灯片补充整理而成。
+内容：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;简介中山大学镜像站&lt;/li&gt;
+&lt;li&gt;搭建开源镜像站流程&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;简介中山大学镜像站&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;服务器：&lt;blockquote&gt;
+&lt;p&gt;戴尔(dell ) PowerEdge1850 ,3.xGHz 4 cores CPU,8GB Memory,One 300GB Hard disk(default as raid 1,Space available 300GB),Bandwidth 100M(教育网,cernet),服务器用光纤连接存储,分配了一个1T的存储卷给服务器. Support:HTTP (Nginx) IPv4:202.116.65.189 (Unfortunately,No IPv6)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;Domain:mirror.sysu.edu.cn&lt;/li&gt;
+&lt;li&gt;System:Debian Wheezy AMD64&lt;/li&gt;
+&lt;li&gt;Team: 匿名略&lt;/li&gt;
+&lt;li&gt;Thanks:中山大学网络与信息技术中心提供的资源支持&lt;/li&gt;
+&lt;li&gt;源列表:&lt;ul&gt;
+&lt;li&gt;ArchLinux&lt;/li&gt;
+&lt;li&gt;ArchLinuxARM&lt;/li&gt;
+&lt;li&gt;Cygwin&lt;/li&gt;
+&lt;li&gt;PyPI&lt;/li&gt;
+&lt;li&gt;Raspbian&lt;/li&gt;
+&lt;li&gt;RubyGems&lt;/li&gt;
+&lt;li&gt;Slackware&lt;/li&gt;
+&lt;li&gt;Others(提供给校内用户和周边教育网用户的加速服务,陆续添加新出的发行版系统镜像等)&lt;/li&gt;
+&lt;li&gt;———————-plan ——-2013-9-21——————–&lt;/li&gt;
+&lt;li&gt;Ubuntu (校内用户需求大,希望空间够的时候能加上,原因稍后说明)&lt;/li&gt;
+&lt;li&gt;npm (Come Soon)&lt;/li&gt;
+&lt;li&gt;他小众的发行版或用户有较大需求的发行版(前提是服务器存储空间够。。囧。我们只有1T)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;搭建开源镜像站流程&lt;/p&gt;
+&lt;h2&gt;基本流程&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;服务器&amp;amp;带宽&amp;amp;存储&lt;/li&gt;
+&lt;li&gt;同步源选择 ,架构选择&lt;/li&gt;
+&lt;li&gt;提供的服务:ftp | http | rsync 3.官网获取同步方法或工具,源列表(选择上游源)&lt;/li&gt;
+&lt;li&gt;配置同步工具&lt;/li&gt;
+&lt;li&gt;定时同步 (crontable)&lt;/li&gt;
+&lt;li&gt;备份工作,监控与报警,日常维护,优化&lt;/li&gt;
+&lt;li&gt;文档编写(Wiki),Submit MirrorsList&lt;/li&gt;
+&lt;li&gt;其他&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;0/8.服务器&amp;amp;带宽&amp;amp;存储&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;服务器: Linux ,maybe windows ?..orz&lt;/li&gt;
+&lt;li&gt;带宽: 越大越好(上行带宽太小无法提供更好的服务,下行太小无法及时同步完整(按网络情况分时段同步,同时尽量避开负载高峰))。 如果要对外服务,需要一个公网IP,有域名更好。&lt;/li&gt;
+&lt;li&gt;储存: 越大越好(如果是对外提供大量服务,家用的硬盘估计撑不了一年)。可考虑用SSD作为cache。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;1/8.同步源选择 ,架构选择&lt;/h3&gt;
+&lt;p&gt;同步源选择:&lt;/p&gt;
+&lt;p&gt;按需求选择需要的发行版,稳定性第一,多样性第二,满足需求即可。同时也要注意”性价比“(自用镜像无需考虑),例如 OpenBSD之类的性价比可能很低 ,消耗大量的同步流量和磁盘空间可能性价比不是很大,同时例如大学中的镜像站需要网络中心的支持,所以需要考虑到校内用户的支持和热度(学生支持度不 够,nc的支持可能也会下降),同时校内有一定热度才好传承,所以如果添加类似Ubuntu的发行版”性价比“会很高。
+慎重选择上线的发行版(自身资源估计),上线尽量保持稳定。切勿随意更换服务。注意预留足够空间!&lt;/p&gt;
+&lt;p&gt;感谢中大IGI师兄以上给出的建议。推荐:&lt;a href="http://www.igigo.net/archives/65"&gt;《搭建linux mirror镜像》&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;架构选择:&lt;/p&gt;
+&lt;p&gt;一个发行版可能保护多种架构,(例如debian :alpha、amd64、arm、armel、hppa、hurd-i386、i386、ia64、m68k、mipsel、mips、powerpc、s390、sh and sparc,source,debian现有oldstable,stable ,testing,unstable,还有experimental版本),所以需要按需求选择需要同步的架构(因为磁盘空间不是无限的),一般来说就选择i386,amd64,外加source。&lt;/p&gt;
+&lt;h3&gt;2/8.提供的服务:ftp | http | rsync&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;FTP:vsftpd ?还有很多,不太了解,囧。&lt;/li&gt;
+&lt;li&gt;HTTP:
+Webserver建议选择nginx或lighttpd,因为镜像包含大量的静态文件,这两者据说比Apache更有优势, 记得cn99挂掉后,将Apache换到nginx了?
+建议 :nginx， lighttpd&lt;/li&gt;
+&lt;li&gt;Rsync:为下游提供,例如清华,中科大有开放某些发行版,国内提供rsync的镜像站不多,主要是提供rsync会有很高的IO负载,一般承受不起。如果有意愿提供rsync,google即可。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;3/8.官网获取同步方法或工具,源列表(选择上游源)&lt;/h3&gt;
+&lt;p&gt;同步方法或工具:
+一般就是Rsync,然后从上游拉东西,可以自己写脚本,也可以用官方提供的工具,例如debian的ftpsync等。
+切勿使用wget 等工具!不能保证文件link等属性,也无法做到增量同步,浪费资源!&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;清华的同步脚本:http://git.tuna.tsinghua.edu.cn/&lt;/li&gt;
+&lt;li&gt;北交Ideal的Mirror工具:https://github.com/ideal/mirror&lt;blockquote&gt;
+&lt;p&gt;(感谢ideal曾经提供的帮助,有意愿搭建镜像站的同学遇到 问题可在Twitter上找到他)Rubygems,PyPI,npm也是同样找寻或自己编写同步脚本后工具,或做反向代理。除了主动拉的,还有是官方主镜像推送到官方其他镜像,例如ArchlinuxARM。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;ubuntu还有个同步工具 apt-mirror&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;上游源:&lt;/p&gt;
+&lt;p&gt;上发行版官网获取MirrorsList,然后找寻提供rsync服务的镜像,选择上游源,一般选择国内,日本,新加坡,台湾等亚太地区的源。
+注意:官方rsync可能只对指定IP开放(负载问题)&lt;/p&gt;
+&lt;h3&gt;4/8.配置同步工具&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;自己写同步脚本 :&lt;ul&gt;
+&lt;li&gt;失败邮件报警,同步锁控制,两步同步,其他rsync参数。&lt;/li&gt;
+&lt;li&gt;Rsync教程:读 igi的同步脚本: http://www.igigo.net/archives/65&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;使用同步工具:&lt;ul&gt;
+&lt;li&gt;清华的同步脚本:http://git.tuna.tsinghua.edu.cn/&lt;/li&gt;
+&lt;li&gt;北交Ideal的Mirror工具:https://github.com/ideal/mirror/&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;PyPI,Rubygems,npm:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;读Rubygems和PyPI同步简单教程 : http://fangpeishi.com/post/da-jian-pypiji-rubygemsjing-xiang&lt;/li&gt;
+&lt;li&gt;读npm同步教程 :http://maskray.me/blog/2012-11-21-tuna-npm-mirror&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意:
+添加同步锁，debian系需要两步同步(先同步pool目录)。&lt;/p&gt;
+&lt;h3&gt;5/8.定时同步 (crontable)&lt;/h3&gt;
+&lt;p&gt;定时同步: 把写好的cron脚本丢进 /etc/cron.d/
+《定时自动任务crontab使用教程》
+注意:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;/etc/cron.d the file names must conform to the filename requirements of run-parts: they must be entirely made up of let‐ters, digits and can only contain the special signs underscores (‘‘) and hyphens (‘-’). Any file that does not conform to theserequirements will not be executed by run-parts. For example, any file containing dots will be ignored. This is done to prevent cron from running any of the files that are left by the Debian package management system when han‐ dling files in /etc/cron.d/ as configuration files (i.e. files ending in .dpkg-dist, .dpkg-orig, and .dpkg-new).
+(特殊字符只可以使用’‘和’-’,另外以’.’开头的文件会被忽略)&lt;/li&gt;
+&lt;li&gt;crontab脚本中注意path的配置,例如使用rubygems的同步工具碰到rake abort等问题。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;6/8.备份工作,监控与报警,日常维护,优化&lt;/h3&gt;
+&lt;p&gt;备份:&lt;/p&gt;
+&lt;p&gt;当配置文件发生变化时候利用脚本将其备份到Dropbox.
+监控与报警:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;用awk等工具对同步日记进行分析。&lt;/li&gt;
+&lt;li&gt;配置邮件服务程序,例如exim4,在之前的脚本中添加出现异常时候发邮件。(移动139邮箱有短信通知功能)。&lt;/li&gt;
+&lt;li&gt;部署监控程序,例如MUNIN,对磁盘情况,网络情况,负载情况等进行监控,以图表的形式直观呈现出来。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;日常维护:&lt;/p&gt;
+&lt;p&gt;当出现同步异常失败时(例如:上游down掉了,和上游的网络异常了,磁盘异常等等),需要更换上游或者其他方法。&lt;/p&gt;
+&lt;p&gt;优化:
+主要是针对镜像站大量的静态文件进行的优化.以及观察监控对流量和负载进行合理分配。&lt;/p&gt;
+&lt;h3&gt;7/8.文档编写(Wiki),Submit MirrorsList&lt;/h3&gt;
+&lt;p&gt;文档编写:
+一个是为了将经验积累,方便传承,同时也是为了方便其他搭建镜像站的朋友。例如建个wiki。&lt;/p&gt;
+&lt;p&gt;Submit your mirror to mirrorslist:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当镜像站足够稳定时,可考虑提交到官方mirrorslist,让更多的朋友知道,有小小的成就感也容易鼓励自身和传承。内网的镜像可在内部交流平台公开分享。&lt;/li&gt;
+&lt;li&gt;若是校园镜像站需要注意宣传,以得到更多师生的支持,同时方便传承。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;8/8.其他&lt;/h3&gt;
+&lt;p&gt;如果是在大学内要搭建一个镜像站,需要获取网络中心的支持,可能需要:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一颗“耐”心;&lt;/li&gt;
+&lt;li&gt;注意传承问题 (校内热度将影响nc对镜像站的支持程度,做好文档,发展好师弟师妹,如果有个Linux协会啥的平台组织最好不过了);&lt;/li&gt;
+&lt;li&gt;找靠谱老师支持(镜像快死掉了的时候,老师可能能救活它),熟悉nc里的老师或领导(解决问题更方便),记得镜像站要帮助宣传nc,记得感谢提供帮助的同学,老师和组织;&lt;/li&gt;
+&lt;li&gt;稳定为先。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“把它当一个服务于别人的事情来做“ -- 中大软件学院Arber老师&lt;/p&gt;
+&lt;/blockquote&gt;</content><category term="2014"></category><category term="linux"></category></entry></feed>
