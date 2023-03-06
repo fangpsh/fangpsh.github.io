@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Python Switch 多次调用小问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2019/2019-02-24.html" rel="bookmark"
+         title="Permalink to Python Switch 多次调用小问题">Python Switch 多次调用小问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>大家都知道Python 中没有Switch 关键词，如果写一堆if-elif-else 非常不美观，通常的做法是使用字典，今天遇到一个小问题，如下：</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Recource</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+   <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+       <span class="k">return</span> <span class="p">{</span>
+         <span class="s1">&#39;aliyun&#39;</span><span class="p">:{</span>
+             <span class="s1">&#39;create&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create__</span><span class="p">(),</span>
+             <span class="s1">&#39;update&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">(),</span>
+             <span class="o">...</span>
+             <span class="p">},</span>
+         <span class="s1">&#39;aws&#39;</span><span class="p">:</span> <span class="o">...</span>
+        <span class="p">}[</span><span class="n">provider</span><span class="p">][</span><span class="n">action</span><span class="p">]</span>
+</code></pre></div>
+
+<p>写完测试一下，发现字典里面每个函数都会被执行一遍，发现自己傻逼了，但是一时不知道该如何解决，Google 下找到了解决方式：
+<a href="https://stackoverflow.com/questions/46908510/pythonic-switch-within-class">Pythonic switch within class</a>,</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Recource</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+   <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+       <span class="k">return</span> <span class="p">{</span>
+         <span class="s1">&#39;aliyun&#39;</span><span class="p">:{</span>
+<span class="o">-</span>            <span class="s1">&#39;create&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create__</span><span class="p">(),</span>
+<span class="o">-</span>            <span class="s1">&#39;update&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">(),</span>
+<span class="o">+</span>            <span class="s1">&#39;create&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create__</span><span class="p">(),</span>
+<span class="o">+</span>            <span class="s1">&#39;update&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">(),</span>
+             <span class="o">...</span>
+             <span class="p">},</span>
+         <span class="s1">&#39;aws&#39;</span><span class="p">:</span> <span class="o">...</span>
+<span class="o">-</span>       <span class="p">}[</span><span class="n">provider</span><span class="p">][</span><span class="n">action</span><span class="p">]</span>
+<span class="o">+</span>       <span class="p">}[</span><span class="n">provider</span><span class="p">][</span><span class="n">action</span><span class="p">]()</span>
+</code></pre></div>
+
+<p>原来如此，lambda 定义一个匿名函数，这个对象指向具体函数对象的地址，类似<a href="https://en.wikipedia.org/wiki/Branch_table">jump table</a>。
+又一次面向Stack Overflow 编程 :P。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2019-02-24T00:00:00+08:00">
+      Sun 24 February 2019
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2019.html">2019</a> Tagged <a href="https://fangpsh.github.io/tag/python.html">python </a>
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-31894513-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    </body>
+</html>
