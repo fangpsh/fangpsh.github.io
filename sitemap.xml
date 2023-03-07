@@ -5,14 +5,14 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>https://fangpsh.github.io/</loc>
-<lastmod>2023-03-06T20:11:53-00:00</lastmod>
+<lastmod>2023-03-07T11:07:03-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>https://fangpsh.github.io/pages/about.html</loc>
-<lastmod>2023-03-06T20:11:53-00:00</lastmod>
+<lastmod>2023-03-07T11:07:03-00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -559,6 +559,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://fangpsh.github.io/posts/2014/2014-09-17.html</loc>
 <lastmod>2014-09-17T17:42:30+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>https://fangpsh.github.io/posts/2014/2014-08-20.html</loc>
+<lastmod>2014-08-20T00:00:00+08:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>

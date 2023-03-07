@@ -7892,7 +7892,116 @@ debian 8还不会默认启用SELinux，debian testing上目前默认未安装SEL
 &lt;span class="w"&gt;        &lt;/span&gt;--enable-introspection&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
 &lt;span class="w"&gt;        &lt;/span&gt;--enable-gtk-doc
 &lt;span class="err"&gt;...&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2014"></category><category term="Systemd"></category><category term="Debian"></category></entry><entry><title>搭建树莓派集群</title><link href="https://fangpsh.github.io/posts/2014/2014-01-12.html" rel="alternate"></link><published>2014-01-12T00:00:00+08:00</published><updated>2014-01-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-12:/posts/2014/2014-01-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="Raspberry Pi Cluster" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306153041.jpg"&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2014"></category><category term="Systemd"></category><category term="Debian"></category></entry><entry><title>Scrum 初探</title><link href="https://fangpsh.github.io/posts/2014/2014-08-20.html" rel="alternate"></link><published>2014-08-20T00:00:00+08:00</published><updated>2014-08-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-08-20:/posts/2014/2014-08-20.html</id><summary type="html">&lt;p&gt;&lt;img alt="scrum01" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110136.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;三月份参加腾讯广研创新班的时候，在华工大学城校区上了一节主题为敏捷迭代开发的课程，第一次接触到 Scrum ，广研的导 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="scrum01" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110136.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;三月份参加腾讯广研创新班的时候，在华工大学城校区上了一节主题为敏捷迭代开发的课程，第一次接触到 Scrum ，广研的导师讲的挺好，用视频配合腾讯内部实际情况介绍了 Scrum。前段时间看美剧 “Silicon Valley “(硅谷)，第一季的第五集里遇到了 Scrum，Jared 建立了一个叫“争球”的管理体系。&lt;/p&gt;
+&lt;p&gt;借着美剧纸上谈兵的学习下Scrum。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum02" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110151.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;Wikipedia的定义：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Scrum是一种迭代式增量软件开发过程，通常用于敏捷软件开发。Scrum在英语里是橄榄球运动中争球的意思。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;中文太简单了，看下英文的解释：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Scrum is an iterative and incremental agile software development framework for managing product development. It defines “a flexible, holistic product development strategy where a development team works as a unit to reach a common goal”. It challenges assumptions of the “traditional, sequential approach” to product development. Scrum enables teams to self-organize by encouraging physical co-location or close online collaboration of all team members and daily face-to-face communication among all team members and disciplines in the project.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;好吧，英文有点复杂和抽象，简单来说争球（争个球啊，这翻译实在太逗了：P）是一个适合团队进行敏捷迭代开发的框架。在剧中Jared提到要改善团队的沟通，Scrum 正有改善团队沟通的好处，另外更重要的是提高团队效率，对团队成员有激励作用等，可以更好的适应需求的变更。&lt;/p&gt;
+&lt;h3&gt;Sprint&lt;/h3&gt;
+&lt;p&gt;Scrum 由一系列的 Srpint（冲刺）组成，在橄榄球比赛中也正是由不断的冲刺进攻以达到胜利的目标，也有点像接力比赛中的每段赛程，见下图（图片来源：wikipedia）：
+&lt;img alt="sprint" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110237.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;由上图可以看出一个Sprint是30天，实际上一般是一周到一个月，典型的是2周时间。一次冲刺的时间虽然短，但是每一个冲刺完成的时候都是真正的 “完成”，即除了相关模块功能的完成，相关文档与测试工作也同期完成。&lt;/p&gt;
+&lt;p&gt;每个Sprint由一个Sprint 计划会议而开始，确定冲刺的工作量、完成日期等。上图中小圈的24h是指每日的例会（站立会议），即每天一次小冲刺，回顾和了解团队成员当天的完成情况等。关于会议的类型和简介后文继续。&lt;/p&gt;
+&lt;p&gt;管理Scrum的过程可以在任务板上使用便利贴等。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum03" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110248.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;看到这个任务板，让我想起了流行的团队管理工具–Trello，可以在Trello上应用Scrum框架,把Trello的Board当作任务板：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum04" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110302.jpg"&gt;&lt;/p&gt;
+&lt;h2&gt;Scrum 主要包含 三个角色、三个文档、四个会议。&lt;/h2&gt;
+&lt;h3&gt;角色&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Scrum主管&lt;/li&gt;
+&lt;li&gt;产品负责人&lt;/li&gt;
+&lt;li&gt;开发团队&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;Scrum主管&lt;/h4&gt;
+&lt;p&gt;&lt;img alt="scrum05" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110314.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;Scrum 主管像是球队中的教练。&lt;/p&gt;
+&lt;p&gt;Scrum 主管不是团队领导，即教练不是一个俱乐部的管理阶层一样，Scrum主要负责清理团队的障碍，保证团队进度的推荐，不受外界干扰。主管会检查项目的进度，协调团队工作等等。&lt;/p&gt;
+&lt;h4&gt;产品负责人&lt;/h4&gt;
+&lt;p&gt;&lt;img alt="scrum06" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110335.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;产品负责人类似球队俱乐部的经理。&lt;/p&gt;
+&lt;p&gt;产品负责人主要负责产品功能的设计、决定任务优先级、决定产品发布日期与功能等等。在剧中感觉 Richard 更像是产品负责人，但是其实他也是下文说到的开发团队的一员。Richard 是整个团队的CEO，他对团队的功能和各项业务作出最终决策。&lt;/p&gt;
+&lt;h4&gt;开发团队&lt;/h4&gt;
+&lt;p&gt;&lt;img alt="scrum07" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110355.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;开发团队就像球队的成员，他们负责完成整个比赛，负责拼搏和冲刺。&lt;/p&gt;
+&lt;p&gt;开发团队（设计、测试、编码等）负责团队主要的开发任务。&lt;/p&gt;
+&lt;p&gt;在剧中就是上图三者为开发人员，负责不同的部分，后边临时出现过一个负责云计算的天才黑客小孩，就当是外包人员吧~。&lt;/p&gt;
+&lt;h4&gt;其他&lt;/h4&gt;
+&lt;p&gt;&lt;img alt="scrum08" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110410.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;至于剧中这个二货，我也不知道怎么归类，他为团队提供孵化空间（免费住宿，获取%10股份），为想产品名称吃大量大麻，为产品logo请街头涂鸦人，和天使投资谈判，上台做产品展示等等，他付出挺多的，可是还是不知道怎么归类，归为开发团队感觉对不起其他队员。&lt;/p&gt;
+&lt;h3&gt;文档&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;产品backlog&lt;/li&gt;
+&lt;li&gt;冲刺backlog&lt;/li&gt;
+&lt;li&gt;燃尽图&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;产品backlog&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;产品订单是整个专案的概要文档。产品订单包括所有所需特性的粗略的描述。产品订单是关于将要生产什么样的产品。产品订单是开放的，每个人都可以编辑。产品订单包括粗略的估算，通常以天为单位。估算将帮助产品负责人衡量时程表和优先顺序（例如，如果”增加拼写检查”特性的估计需要花3天或3个月，将影响产品负责人对该特性的渴望）。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;产品backlog包含一个需求列表，使用用户故事来表示backlog条目，产品负责人对backlog条目排列优先级等。&lt;/p&gt;
+&lt;h4&gt;冲刺 backlog&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;冲刺订单（sprint backlog）是大大细化了的文档，包含团队如何实现下一个冲刺的需求的信息。任务被分解为以小时为单位，没有任务可以超过16个小时。如果一个任务超过16个小时，那么它就应该被进一步分解。冲刺订单上的任务不会被分派，而是由团队成员签名认领他们喜爱的任务。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img alt="scrum09" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110430.jpg"&gt;&lt;/p&gt;
+&lt;h4&gt;燃尽图&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;一个公开展示的图表，显示当前冲刺中未完成的任务数目，或在冲刺订单上未完成的订单项的数目
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;下图 （源自：wikipedia）直观的反映了工作量的情况，X轴是时间，Y轴是剩余工作量：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum10" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110447.jpg"&gt;&lt;/p&gt;
+&lt;h3&gt;会议&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Sprint 计划会议&lt;/li&gt;
+&lt;li&gt;Sprint 每日会议&lt;/li&gt;
+&lt;li&gt;Sprint 评审会议&lt;/li&gt;
+&lt;li&gt;Sprint 回顾会议&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;Sprint 计划会议&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;计划会议在Sprint开始前进行，主要进行分析评估产品的Backlog，确定目标，创建Sprint Backlog ，对任务分优先级，对任务工作量做估算确定本轮Sprint完成日期等。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Sprint 每日（站立）会议&lt;/h4&gt;
+&lt;p&gt;在冲刺中，每一天都会举行项目状况会议，被称为“scrum”或“每日站立会议”。每日站立会议有一些具体的指导原则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;会议准时开始。对于迟到者团队常常会制定惩罚措施（例如罚款，做俯卧撑，在脖子上挂橡胶鸡玩具）&lt;/li&gt;
+&lt;li&gt;欢迎所有人参加，&lt;/li&gt;
+&lt;li&gt;不论团队规模大小，会议被限制在15分钟。&lt;/li&gt;
+&lt;li&gt;所有出席者都应站立。（有助于保持会议简短）&lt;/li&gt;
+&lt;li&gt;会议应在固定地点和每天的同一时间举行。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在会议上，每个团队成员需要回答三个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;今天你完成了那些工作？&lt;/li&gt;
+&lt;li&gt;明天你打算做什么？&lt;/li&gt;
+&lt;li&gt;完成你的目标是否存在什么障碍？（Scrum主管需要记下这些障碍）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt="scrum11" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110513.jpg"&gt;&lt;/p&gt;
+&lt;h4&gt;Sprint 评审会议&lt;/h4&gt;
+&lt;p&gt;顾名思意，即产品负责人对产品进行评审。评审会议主要是将产品展示给产品负责人，当然也团队其他人员也可以参加。&lt;/p&gt;
+&lt;h4&gt;Sprint 回顾会议&lt;/h4&gt;
+&lt;p&gt;每一个冲刺完成后，都会举行一次冲刺回顾会议，在会议上所有团队成员都要反思这个冲刺。举行冲刺回顾会议是为了进行持续过程改进。会议的时间限制在4小时。&lt;/p&gt;
+&lt;h2&gt;最后：&lt;/h2&gt;
+&lt;p&gt;利用 Scrum，Richard的团队有条不紊的进行着Pied Piper 的开发，Gilfoyle和Dinesh互相较劲，“争球”争得不亦乐乎。当然第六集开头 Scrum就出现了点问题，Richard搞不定云计算部分，导致其他子任务堆积，托慢了进度（像一大坨大便堵住了下水道），这是后话。  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum_end" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110529.jpg"&gt;&lt;/p&gt;
+&lt;h3&gt;参考资料&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Scrum_%28software_development%29"&gt;Scrum (software development&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://blog.csdn.net/kesalin/article/details/7055750"&gt;Scrum 学习笔记&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.ithome.com.tw/node/69366"&gt;每天用15分钟掌握团队进度&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.dotblogs.com.tw/greengem/archive/2011/05/08/24500.aspx"&gt;SCRUM 初探&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;视频： &lt;a href="https://www.youtube.com/watch?v=XU0llRltyFM"&gt;Intro to Agile Scrum in Under 10 Minutes – What is Scrum?&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2014"></category><category term="scrum"></category></entry><entry><title>搭建树莓派集群</title><link href="https://fangpsh.github.io/posts/2014/2014-01-12.html" rel="alternate"></link><published>2014-01-12T00:00:00+08:00</published><updated>2014-01-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-12:/posts/2014/2014-01-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="Raspberry Pi Cluster" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306153041.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;大三上学期，有幸在小马哥的帮助下申请到资金搭建树莓派集群。粗糙记录下过程。&lt;/p&gt;
 &lt;h2&gt;初识树莓派&lt;/h2&gt;
 &lt;ul&gt;
