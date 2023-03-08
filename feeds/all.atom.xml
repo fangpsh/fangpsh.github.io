@@ -824,7 +824,7 @@ Reading: 6 Writing: 179 Waiting: 106
 &lt;li&gt;systemd-resolved&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;对了，&lt;a href="https://www.cyberciti.biz/faq/dhclient-etcresolvconf-hooks/"&gt;DHCP 也可能会碰你的resolv.conf 哦&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;学无止境，坑外有坑。&lt;/p&gt;</content><category term="2019"></category><category term="linux"></category><category term="resolv.conf"></category></entry><entry><title>解决Mac OS 下Alt-f、Alt-b 失效的问题</title><link href="https://fangpsh.github.io/posts/2019/2019-04-14.html" rel="alternate"></link><published>2019-04-14T00:00:00+08:00</published><updated>2019-04-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-04-14:/posts/2019/2019-04-14.html</id><summary type="html">&lt;p&gt;我算是半个Emacs 用户，Mac OS 吸引我的一个地方是它几乎所有输入框都能使用基本的Emacs 行操作快捷键，因为GNU Redline。&lt;/p&gt;
+&lt;p&gt;学无止境，坑外有坑。&lt;/p&gt;</content><category term="2019"></category><category term="linux"></category><category term="resolv.conf"></category><category term="wechat"></category></entry><entry><title>解决Mac OS 下Alt-f、Alt-b 失效的问题</title><link href="https://fangpsh.github.io/posts/2019/2019-04-14.html" rel="alternate"></link><published>2019-04-14T00:00:00+08:00</published><updated>2019-04-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-04-14:/posts/2019/2019-04-14.html</id><summary type="html">&lt;p&gt;我算是半个Emacs 用户，Mac OS 吸引我的一个地方是它几乎所有输入框都能使用基本的Emacs 行操作快捷键，因为GNU Redline。&lt;/p&gt;
 &lt;p&gt;最近看到&lt;a href="https://twitter.com/linuxtoy/status/957225197928525824"&gt;Linuxtoy …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;我算是半个Emacs 用户，Mac OS 吸引我的一个地方是它几乎所有输入框都能使用基本的Emacs 行操作快捷键，因为GNU Redline。&lt;/p&gt;
 &lt;p&gt;最近看到&lt;a href="https://twitter.com/linuxtoy/status/957225197928525824"&gt;Linuxtoy 推文&lt;/a&gt;里面的这张图：&lt;/p&gt;
 &lt;p&gt;&lt;img alt="moving_cli" src="https://clementc.github.io/figures/moving_cli.png"&gt;&lt;/p&gt;
@@ -840,7 +840,54 @@ Reading: 6 Writing: 179 Waiting: 106
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;重启下相关App ，例如Chrome 浏览器，再试一试，发现OK了，居然这么简单！&lt;/p&gt;
-&lt;p&gt;随后在GitHub 发现一个很强大的项目&lt;a href="https://github.com/ttscoff/KeyBindings"&gt;ttscoff/KeyBindings&lt;/a&gt;，有空再折腾，其他键用的不多。&lt;/p&gt;</content><category term="2019"></category><category term="效率"></category><category term="MacOS"></category></entry><entry><title>ip_local_port_range 小问题</title><link href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="alternate"></link><published>2019-03-01T00:00:00+08:00</published><updated>2019-03-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-03-01:/posts/2019/2019-03-01.html</id><summary type="html">&lt;p&gt;发现系统打印了一条日志，类似&lt;a href="https://access.redhat.com/solutions/2887631"&gt;redhat solution:2887631&lt;/a&gt;：&lt;/p&gt;
+&lt;p&gt;随后在GitHub 发现一个很强大的项目&lt;a href="https://github.com/ttscoff/KeyBindings"&gt;ttscoff/KeyBindings&lt;/a&gt;，有空再折腾，其他键用的不多。&lt;/p&gt;</content><category term="2019"></category><category term="效率"></category><category term="MacOS"></category></entry><entry><title>糟糕的斑马旅游</title><link href="https://fangpsh.github.io/posts/2019/horrible-bmtrip.html" rel="alternate"></link><published>2019-03-10T00:00:00+08:00</published><updated>2019-03-10T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-03-10:/posts/2019/horrible-bmtrip.html</id><summary type="html">&lt;p&gt;2018 年的元旦和女友又去了一次泰国，这次由于我工作比较忙，没精力做攻略，逛了一圈携程、飞猪，选了&lt;a href="https://bmtrip.com/"&gt;斑马旅游&lt;/a&gt;（上海歌晨信 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;2018 年的元旦和女友又去了一次泰国，这次由于我工作比较忙，没精力做攻略，逛了一圈携程、飞猪，选了&lt;a href="https://bmtrip.com/"&gt;斑马旅游&lt;/a&gt;（上海歌晨信息技术有限公司）的产品。&lt;/p&gt;
+&lt;p&gt;携程上一片五星好评，官网和产品介绍上“高品质”、“轻奢品质”、“精品”、“管家服务”等字眼，促使让我快速下单，继续埋头工作，坐等出发，相信斑马旅游会对本次服务提供一个高品质，和我们付出价格相符的服务，没想到入了个大坑。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmstrip-1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307111242.jpg"&gt;&lt;/p&gt;
+&lt;h2&gt;不违法的斑马旅游&lt;/h2&gt;
+&lt;p&gt;由于泰国免签，导致落地签人数暴增，排队等了快2个小时，所谓的管家服务，其实就是按照事先准备好的材料，实时在群里播报而已，微信客服人员，说的难听一些，就是个廉价机器人，并不会从具体行程的角度，为游客考虑一些细节。&lt;/p&gt;
+&lt;p&gt;终于排完队，出关了，斑马旅游采购的接机服务，让我们在语言不通的情况，在机场等了半小时，来回徘徊，找不到接机人。
+好不容易到达 入住的酒店：曼谷贝素坤逸12精品酒店(12th Avenue Hotel Bangkok)，该酒店在巷子深处，巷子四处一堆垃圾，出行非常不方便。&lt;/p&gt;
+&lt;p&gt;12月31日，夜间11点，房间正对泳池，泳池在放激烈的音乐，联系产品中提到的“24小时管家”，反应情况，斑马侧服务人员表示无法解决，严重影响休息。&lt;/p&gt;
+&lt;p&gt;1月1日，前往第二个酒店，芭堤雅莫杜斯海滨度假村(Pattaya Modus Beachfront Resort) ，才发现酒店处于荒野之中，步行10分钟之内都是一片荒地，垃圾成堆，野狗出没。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmstrip-03" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307120254.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;之前承诺的酒店免费班车，斑马没有事先提供相关详情。索要班车单之后，后续乘坐所谓的酒店免费班车，酒店人员依然对我们进行了收费，平均都在150泰铢+，和斑马客服人员联系，请求帮忙和酒店沟通，无果。
+&lt;strong&gt;斑马旅游并未对该酒店进行细致的考察&lt;/strong&gt;，酒店的早餐楼层都能弄错，和宣传的高品质服务差距太大。后续2天，每次午餐，晚餐，由于酒店附近一片荒地，外加野狗成群，不安全，都需要打车外出就餐。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-4" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307140854.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;1月3日 回程，斑马旅游告知师傅下午3点05 送机，我们2点30分在大堂等候，告知斑马我们已经在等候。一直到3点05分，没人举牌。
+询问斑马。斑马和本地送机服务商沟通之后，才知道师傅好久之前已经到了，体验糟糕。&lt;/p&gt;
+&lt;p&gt;终于发现所谓的高品质旅游，只是拼凑各类产品，接送机、机票酒店、本地团等等，他们的产品经理也不会整个行程真的从产品角度上进行考量。&lt;br&gt;
+在我提出和他们的产品负责人沟通的时候，斑马的管家人员只是想大事化小，一直强调自己安排的行程是前台披露的行程单，&lt;strong&gt;并不违法&lt;/strong&gt;。。。。也是非常无奈斑马旅游的目标就是不违法。&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://news.ifeng.com/a/20170809/51594943_0.shtml"&gt;《斑马旅游：它们“死磕”产品和服务，打造出了中国最“贴心”》&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“在中国众多旅游品牌中，斑马旅游应该是最“用心”它的旅行线路全由产品经理精心设计而来，服务精细到了你所能想象得到的任意细枝末节。亦或，你今天提出了建议，明天，新的专属于你的旅行线路就出现了，反应速度快的惊人”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;写这文章的人真是对不起他的良心，东南亚线还是他们主力的产品，都搞成这样，其他的线路可想而知。&lt;/p&gt;
+&lt;p&gt;广告很美好，体验很残酷。&lt;/p&gt;
+&lt;h2&gt;投诉投诉&lt;/h2&gt;
+&lt;p&gt;从第三天开始，就开始想着回家好了，斑马旅游毁掉了我和女朋友的年度旅游，回家再投诉。回国之后，提出经济赔偿，屎已经踩了，假期也毁了，斑马旅游的负责人说最多赔500，精神损失。。。并且示意我们拿了赔偿之后，闭嘴。我一万多都花了，不差你这几百块，拒绝。&lt;/p&gt;
+&lt;p&gt;大致就是&lt;a href="https://zhidao.baidu.com/question/1370162280692029979.html"&gt;这位网友&lt;/a&gt;的感觉：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-5" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141001.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;随后向携程投诉，携程处理的倒挺快，表示他们和斑马只是合作商的关系，不是上下级，没有权限。。。说给我们400 的赔偿，作为精神损失。&lt;/p&gt;
+&lt;p&gt;再向斑马旅游所在的&lt;a href="http://lyw.sh.gov.cn/lyj_website/HTML/DefaultSite/lyj_zmhd_lyts/List/index.htm?mail=lyj_zmhd_lyts"&gt;上海市旅游局投诉&lt;/a&gt;，这次发现斑马旅游过去每个月几乎也都会被投诉。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141028.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;不过上海旅游局表示我们是和携程签的合同，投诉主体不对。回家之后年前很忙，就当倒霉了，今天整理资料，看到行程单等文件，才又气上心头，十分不爽。&lt;/p&gt;
+&lt;p&gt;36Kr 上有一篇他们的&lt;a href="https://36kr.com/p/5106337.html"&gt;公关稿&lt;/a&gt;，17年获得了Pre-A轮融资，看来他们的广告文案，讲故事的能力还骗到了一些傻子。所谓的好评、所谓的数据，都能够造假，都能刷，但是线下的体验是无法造假的。&lt;/p&gt;
+&lt;p&gt;总的来说：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;高价格的糟心之旅&lt;/li&gt;
+&lt;li&gt;低质量的机器人客服&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;不如自己做攻略，一分钱一分货，享受旅游。&lt;br&gt;
+想省心，还是报个大旅行社的团吧，远离这种“皮包”公司。&lt;/p&gt;
+&lt;h2&gt;花絮&lt;/h2&gt;
+&lt;p&gt;知乎&lt;a href="https://www.zhihu.com/question/28105489/answer/173499903"&gt;软广&lt;/a&gt;，&lt;a href="https://www.zhihu.com/people/yitiao-ban-ma-7"&gt;这人&lt;/a&gt; 看起来很明显是员工，也挺不容易的，写这么长的帖子，就为了这几句话：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-6" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141348.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;在知乎搜斑马，发现一堆骂公司的&lt;a href="https://www.zhihu.com/question/61230719"&gt;帖&lt;/a&gt;，看起来乌烟瘴气，压榨员工。&lt;/p&gt;
+&lt;p&gt;想起和我对接的客服妹子，挺不容易的，她能做到的，都帮我了，斑马旅游拿她当廉价机器人使。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-9" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141613.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;回来再仔细看了一些携程评价，有些好评似乎是旅游结束之后，客服妹子“催”，或者说是“求”出来的，类似&lt;a href="https://www.dianping.com/review/355995485"&gt;这位网友说的情况&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-8" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141542.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;我写了一个差评之后，斑马旅游直接下线了，&lt;a href="http://vacations.ctrip.com/tour/detail/p19877402s30.html"&gt;下线的&lt;/a&gt;，&lt;a href="http://vacations.ctrip.com/tour/detail/p20446619s2.html"&gt;替换上线的&lt;/a&gt;，内容行程一模一样，原来就是这样掩盖的。。我下回还是认真看差评吧。&lt;/p&gt;</content><category term="2019"></category><category term="trip"></category></entry><entry><title>ip_local_port_range 小问题</title><link href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="alternate"></link><published>2019-03-01T00:00:00+08:00</published><updated>2019-03-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-03-01:/posts/2019/2019-03-01.html</id><summary type="html">&lt;p&gt;发现系统打印了一条日志，类似&lt;a href="https://access.redhat.com/solutions/2887631"&gt;redhat solution:2887631&lt;/a&gt;：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;Jan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;23&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;:&lt;span class="mi"&gt;37&lt;/span&gt;:&lt;span class="mi"&gt;22&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;localhost&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kernel&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ip_local_port_range&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;prefer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;different&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;parity&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;start&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;values&lt;/span&gt;.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
@@ -6719,7 +6766,7 @@ ntp.sjtu.edu.cn
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://linux.die.net/man/5/ntp.conf"&gt;man:ntp.conf&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://haibing.org/64/%e7%94%9f%e4%ba%a7%e4%b8%8a%e7%9a%84ntp%e9%85%8d%e7%bd%aentp-conf/"&gt;生产上的NTP配置ntp.conf&lt;/a&gt; &lt;/li&gt;
-&lt;/ul&gt;</content><category term="2016"></category><category term="linux"></category><category term="ntp"></category></entry><entry><title>使用Systemd 的Linux 的启动过程</title><link href="https://fangpsh.github.io/posts/2016/2016-03-15.html" rel="alternate"></link><published>2016-03-15T11:55:30+08:00</published><updated>2016-03-15T11:55:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-03-15:/posts/2016/2016-03-15.html</id><summary type="html">&lt;p&gt;这篇文章是回答知乎上一个朋友的问题：&lt;a href="https://www.zhihu.com/question/20880224"&gt;Systemd 的详细启动过程是怎样的&lt;/a&gt; 。&lt;br&gt;
+&lt;/ul&gt;</content><category term="2016"></category><category term="linux"></category><category term="ntp"></category><category term="wechat"></category></entry><entry><title>使用Systemd 的Linux 的启动过程</title><link href="https://fangpsh.github.io/posts/2016/2016-03-15.html" rel="alternate"></link><published>2016-03-15T11:55:30+08:00</published><updated>2016-03-15T11:55:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-03-15:/posts/2016/2016-03-15.html</id><summary type="html">&lt;p&gt;这篇文章是回答知乎上一个朋友的问题：&lt;a href="https://www.zhihu.com/question/20880224"&gt;Systemd 的详细启动过程是怎样的&lt;/a&gt; 。&lt;br&gt;
 回答这个问题前需要了解一下计算机的启动过程 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;这篇文章是回答知乎上一个朋友的问题：&lt;a href="https://www.zhihu.com/question/20880224"&gt;Systemd 的详细启动过程是怎样的&lt;/a&gt; 。&lt;br&gt;
 回答这个问题前需要了解一下计算机的启动过程和Linux 的启动过程，才能完整串起来。
 关于计算机的启动，可以先阅读一下阮一峰的文章：&lt;a href="http://www.ruanyifeng.com/blog/2013/02/booting.html"&gt;计算机是如何启动的？&lt;/a&gt;，这篇文章在系统启动部分，大概提到了Linux 系统的启动，
