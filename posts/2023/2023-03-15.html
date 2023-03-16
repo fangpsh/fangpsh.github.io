@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MTR UDP模式固定丢包率的问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-03-15.html" rel="bookmark"
+         title="Permalink to MTR UDP模式固定丢包率的问题">MTR UDP模式固定丢包率的问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 <code>1s/次</code>，会出现固定丢包，并且丢包总是在最后一跳：</p>
+<div class="highlight"><pre><span></span><code>mtr -u {ip} -nz --interval 0.5
+</code></pre></div>
+
+<p>但是使用mtr 默认的模式，icmp不会丢包。同事反馈不同厂商的机器，行为一致，那应该就系统内做的限制，所以怀疑我在机器上针对UDP 做了限速。</p>
+<p>交叉测试了下，
+1. 选择2台同机房的A，B ，A mtr B（公网IP），和反馈现象一致
+2. A mtr B （内网IP），和反馈现象一致</p>
+<p>当interval 是0.5 的时候，丢包率恰好是50%，在B 上抓包：
+<img alt="udp-loss" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230315173621.jpeg"></p>
+<p>B 的回ICMP: Destination Unreachable 是间隔性的。
+按照icmp ratelist 搜到了，找到了<a href="https://man7.org/linux/man-pages/man7/icmp.7.html">答案</a>。
+系统默认的<code>icmp_ratelimit</code>是<code>1000</code>，恰好是1s，那为何mtr ICMP 模式不会丢呢？
+因为还有一个参数<code>icmp_ratemask</code> ，默认为以下几类包被限制：</p>
+<div class="highlight"><pre><span></span><code><span class="w">       </span><span class="nt">icmp_ratemask</span><span class="w"> </span><span class="o">(</span><span class="nt">integer</span><span class="o">;</span><span class="w"> </span><span class="nt">default</span><span class="o">:</span><span class="w"> </span><span class="nt">see</span><span class="w"> </span><span class="nt">below</span><span class="o">;</span><span class="w"> </span><span class="nt">since</span><span class="w"> </span><span class="nt">Linux</span><span class="w"> </span><span class="nt">2</span><span class="p">.</span><span class="nc">4</span><span class="p">.</span><span class="nc">10</span><span class="o">)</span>
+<span class="w">              </span><span class="nt">Mask</span><span class="w"> </span><span class="nt">made</span><span class="w"> </span><span class="nt">of</span><span class="w"> </span><span class="nt">ICMP</span><span class="w"> </span><span class="nt">types</span><span class="w"> </span><span class="nt">for</span><span class="w"> </span><span class="nt">which</span><span class="w"> </span><span class="nt">rates</span><span class="w"> </span><span class="nt">are</span><span class="w"> </span><span class="nt">being</span><span class="w"> </span><span class="nt">limited</span><span class="o">.</span>
+
+<span class="w">              </span><span class="nt">Significant</span><span class="w"> </span><span class="nt">bits</span><span class="o">:</span><span class="w"> </span><span class="nt">IHGFEDCBA9876543210</span>
+<span class="w">              </span><span class="nt">Default</span><span class="w"> </span><span class="nt">mask</span><span class="o">:</span><span class="w">     </span><span class="nt">0000001100000011000</span><span class="w"> </span><span class="o">(</span><span class="nt">0x1818</span><span class="o">)</span>
+
+<span class="w">              </span><span class="nt">Bit</span><span class="w"> </span><span class="nt">definitions</span><span class="w"> </span><span class="o">(</span><span class="nt">see</span><span class="w"> </span><span class="nt">the</span><span class="w"> </span><span class="nt">Linux</span><span class="w"> </span><span class="nt">kernel</span><span class="w"> </span><span class="nt">source</span><span class="w"> </span><span class="nt">file</span>
+<span class="w">              </span><span class="nt">include</span><span class="o">/</span><span class="nt">linux</span><span class="o">/</span><span class="nt">icmp</span><span class="p">.</span><span class="nc">h</span><span class="o">):</span>
+
+<span class="w">                   </span><span class="nt">0</span><span class="w"> </span><span class="nt">Echo</span><span class="w"> </span><span class="nt">Reply</span>
+<span class="w">                   </span><span class="nt">3</span><span class="w"> </span><span class="nt">Destination</span><span class="w"> </span><span class="nt">Unreachable</span><span class="w"> </span><span class="o">*</span>
+<span class="w">                   </span><span class="nt">4</span><span class="w"> </span><span class="nt">Source</span><span class="w"> </span><span class="nt">Quench</span><span class="w"> </span><span class="o">*</span>
+<span class="w">                   </span><span class="nt">5</span><span class="w"> </span><span class="nt">Redirect</span>
+<span class="w">                   </span><span class="nt">8</span><span class="w"> </span><span class="nt">Echo</span><span class="w"> </span><span class="nt">Request</span>
+<span class="w">                   </span><span class="nt">B</span><span class="w"> </span><span class="nt">Time</span><span class="w"> </span><span class="nt">Exceeded</span><span class="w"> </span><span class="o">*</span>
+<span class="w">                   </span><span class="nt">C</span><span class="w"> </span><span class="nt">Parameter</span><span class="w"> </span><span class="nt">Problem</span><span class="w"> </span><span class="o">*</span>
+<span class="w">                   </span><span class="nt">D</span><span class="w"> </span><span class="nt">Timestamp</span><span class="w"> </span><span class="nt">Request</span>
+<span class="w">                   </span><span class="nt">E</span><span class="w"> </span><span class="nt">Timestamp</span><span class="w"> </span><span class="nt">Reply</span>
+<span class="w">                   </span><span class="nt">F</span><span class="w"> </span><span class="nt">Info</span><span class="w"> </span><span class="nt">Request</span>
+<span class="w">                   </span><span class="nt">G</span><span class="w"> </span><span class="nt">Info</span><span class="w"> </span><span class="nt">Reply</span>
+<span class="w">                   </span><span class="nt">H</span><span class="w"> </span><span class="nt">Address</span><span class="w"> </span><span class="nt">Mask</span><span class="w"> </span><span class="nt">Request</span>
+<span class="w">                   </span><span class="nt">I</span><span class="w"> </span><span class="nt">Address</span><span class="w"> </span><span class="nt">Mask</span><span class="w"> </span><span class="nt">Reply</span>
+</code></pre></div>
+
+<p>IMCP 模式下回的包是<code>G Info Reply</code>，未在<code>icmp_ratemask</code> 标记范围内。
+<img alt="icmp-reply" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230315174413.png"></p>
+<p>感谢细心的同事，又学习到了。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-03-15T00:00:00+08:00">
+      Wed 15 March 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/linux.html">linux </a><a href="https://fangpsh.github.io/tag/network.html">network </a>
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>
