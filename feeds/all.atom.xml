@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-03-15T00:00:00+08:00</updated><entry><title>MTR UDP模式固定丢包率的问题</title><link href="https://fangpsh.github.io/posts/2023/2023-03-15.html" rel="alternate"></link><published>2023-03-15T00:00:00+08:00</published><updated>2023-03-15T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-03-15:/posts/2023/2023-03-15.html</id><summary type="html">&lt;p&gt;不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 &lt;code&gt;1s/次&lt;/code&gt;，会出现固定丢 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 &lt;code&gt;1s/次&lt;/code&gt;，会出现固定丢包，并且丢包总是在最后一跳：&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-03-17T00:00:00+08:00</updated><entry><title>阿里云共享流量包单价对比</title><link href="https://fangpsh.github.io/posts/2023/2023-03-17.html" rel="alternate"></link><published>2023-03-17T00:00:00+08:00</published><updated>2023-03-17T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-03-17:/posts/2023/2023-03-17.html</id><summary type="html">&lt;p&gt;阿里云的共享流量包定价，不完全符合流量包越大单价越低，有效期越长单价越低的思维定式，阿里云产品经理是故意的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;阿里云的共享流量包定价，不完全符合流量包越大单价越低，有效期越长单价越低的思维定式，阿里云产品经理是故意的还是不小心的呢？&lt;/p&gt;
+&lt;p&gt;之前几年负责云资源采购时，算过阿里云&lt;code&gt;300TB-6月&lt;/code&gt;的包单价是最低的，所以都选择采购这个规格。今天再算一遍，发现又有一些新的变化。&lt;/p&gt;
+&lt;p&gt;声明：以下数据2023-03-17采集，个人帐号登录云商控制台获取。厂商可能随时调整活针对用户调整，请根据自身情况再次核对。&lt;/p&gt;
+&lt;p&gt;先列结论： &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;12月以上的大包没必要购买，单价无优势；&lt;/li&gt;
+&lt;li&gt;同一类型、有效期下的流量包，并不是规格越大越便宜，&lt;strong&gt;流量刺客&lt;/strong&gt;：&lt;ol&gt;
+&lt;li&gt;亚太全时，128G-1月异常，比50G-1月还高&lt;/li&gt;
+&lt;li&gt;亚太全时，10T-1月异常，比5T-1月还高&lt;/li&gt;
+&lt;li&gt;亚太闲时，10T-1月异常，比5T-1月还高&lt;/li&gt;
+&lt;li&gt;亚太闲时，60T-6月异常，比30T-6月还高&lt;/li&gt;
+&lt;li&gt;欧美全时，10T-1月异常，比5T-1月还高&lt;/li&gt;
+&lt;li&gt;欧美全时，60T-6月异常，比30T-6月还高&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;以亚太全时为例，按流量情况，建议在三类包里面选：&lt;ol&gt;
+&lt;li&gt;50G-1月&lt;/li&gt;
+&lt;li&gt;5T-1月&lt;/li&gt;
+&lt;li&gt;30T-6月（单价和5T-6月一样，但是有效期更长，适合不均衡的情况）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;亚太闲时和欧美全时，可以参考以下表格自行抉择。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="亚太全时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142005.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="亚太闲时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142040.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="欧美全时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142125.png"&gt;&lt;/p&gt;
+&lt;p&gt;顺便看了下，腾讯上海全时的流量包情况，比较符合思维定式，时间越长，包越大，单价越低：
+&lt;img alt="腾讯上海全时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142156.png"&gt;&lt;/p&gt;
+&lt;p&gt;如果需要获取这个表格，请在公众号里回复&lt;a href="https://docs.google.com/spreadsheets/d/1U4cff_GZILOqMl9ApcdmLjzQYIr_wWoY/edit?usp=sharing&amp;amp;ouid=118315519688232626252&amp;amp;rtpof=true&amp;amp;sd=true"&gt;阿里云流量&lt;/a&gt;。&lt;/p&gt;</content><category term="2023"></category><category term="cloud"></category><category term="aliyun"></category><category term="wechat"></category></entry><entry><title>MTR UDP模式固定丢包率的问题</title><link href="https://fangpsh.github.io/posts/2023/2023-03-15.html" rel="alternate"></link><published>2023-03-15T00:00:00+08:00</published><updated>2023-03-15T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-03-15:/posts/2023/2023-03-15.html</id><summary type="html">&lt;p&gt;不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 &lt;code&gt;1s/次&lt;/code&gt;，会出现固定丢 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 &lt;code&gt;1s/次&lt;/code&gt;，会出现固定丢包，并且丢包总是在最后一跳：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mtr -u {ip} -nz --interval 0.5
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
