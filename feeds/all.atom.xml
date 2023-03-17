@@ -22,6 +22,7 @@
 &lt;/li&gt;
 &lt;li&gt;亚太闲时和欧美全时，可以参考以下表格自行抉择。&lt;/li&gt;
 &lt;/ol&gt;
+&lt;p&gt;假设亚太全时 月平均流量消耗是300T，那最佳做法是写一个脚本，监控余量，自动补30T-6月包，而不是直接搞一个300T-6月包。&lt;/p&gt;
 &lt;p&gt;&lt;img alt="亚太全时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142005.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img alt="亚太闲时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142040.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img alt="欧美全时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142125.png"&gt;&lt;/p&gt;
