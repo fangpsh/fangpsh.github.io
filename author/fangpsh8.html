@@ -26,6 +26,11 @@
 <h2>Articles by fangpsh</h2>
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2015/2015-11-26.html" rel="bookmark" title="Permalink to Docker与虚拟机等的SSH权限管理控制解决方案">Docker与虚拟机等的SSH权限管理控制解决方案</a></h2> </header>
+                <div class="entry-content"> <p>Docker和VM一类的云平台的权限控制如果采用常见的方式，把登录者的公钥写入<code>~/.ssh/authorized_keys</code>, 由于企业内部的人员流动和权限变更，往往不是十分便利。  </p>
+<p>特别是如果还选择把authorized_keys 打到镜像 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2015/2015-11-24.html" rel="bookmark" title="Permalink to OpenGrok 安装部署与添加LDAP验证">OpenGrok 安装部署与添加LDAP验证</a></h2> </header>
                 <div class="entry-content"> <p>公司同事有阅读代码的需求，尝试部署了一个OpenGrok，安装过程参考这篇Blog，非常详细：<a href="http://ox0spy.github.io/opengrok/2013/08/14/setup-opengrok/">OpenGrok安装使用指南</a>，<br>
 或者直接看官方Wiki: <a href="https://github.com/OpenGrok/OpenGrok/wiki/How-to-install-OpenGrok">How to install OpenGrok</a> 。<br>
@@ -69,10 +74,6 @@
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2015/2015-01-01.html" rel="bookmark" title="Permalink to 运维笔记片段">运维笔记片段</a></h2> </header>
                 <div class="entry-content"> <p>帮同事迁移一个N年前的wordpress站（ http://52ml.net ），迁移后数据库使用mariadb，mariadb的socket默认监听在  0.0.0.0:3306上，但是wp无法连接（本地和远程测试连接没问题），需要在/etc/my.cnf中添加：bind-address=localhost。另 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2014/2014-12-16.html" rel="bookmark" title="Permalink to 尝试解决openSUSE下zypper软件包名称自动补全的问题">尝试解决openSUSE下zypper软件包名称自动补全的问题</a></h2> </header>
-                <div class="entry-content"> <p>一年前从debian 换到opensese的时候，很不习惯zypper在安装软件包的时候不能自动补全，添加到todolist里面，后来停用evernote 给忘记了，前几天上去整理笔记发现了，所以尝试性得解决了下，另外 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>逆向办公大楼门禁APK，成功生成通行二维码 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-04-20.html" rel="bookmark"
+         title="Permalink to 逆向办公大楼门禁APK，成功生成通行二维码">逆向办公大楼门禁APK，成功生成通行二维码</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>脱壳逆向，不必硬碰硬。大多数业务，迭代更新只是更新业务，但是加密的逻辑并无变化。</p>
+<p>对于攻击方：
+1. 不少业务不会在一开始就加固：
+可以直接找到历史包，最近一次未加固版本。
+类似业务不会一开始套CDN，可以通过查询域名解析历史找到可能的源站。</p>
+<ol>
+<li>找加固后较旧的版本：
+各类加固不断更新，逆向思路/工具也不断升级。如果持有的工具能应对老版本的加固，何不找老版本的软件包？</li>
+</ol>
+<p>对于业务方：
+除了要保持更新加固软件，还需要按版本不断更换关键业务的AES  KEY。</p>
+<p>下面是逆向过程。</p>
+<h2>找历史包</h2>
+<ol>
+<li>apkpure、apkimirror 之类</li>
+<li>官方软件下载链接：可猜测历史版本号的链接，或把URL 前半部分丢搜索引擎里面</li>
+<li>豌豆荚：国内软件，豌豆荚的历史包非常全</li>
+</ol>
+<p>在豌豆荚找到该软件历史包，2分法下载apk改zip，解压查看assets和lib等内容判断是否进行加固和采用的加固厂商：</p>
+<ol>
+<li>6.5.0: 最后一个未加固的版本；</li>
+<li>7.0.0: 第一个使用360 加固的版本；</li>
+</ol>
+<h2>脱壳</h2>
+<p>安装7.0 版本，生成二维码，可正常通行，表明7.0 版逻辑正常。</p>
+<p>先试一试用<a href="https://github.com/CodingGay/BlackDex/">BlackDex</a> 脱壳，一次性成功。</p>
+<p>注意：如果安装BlackDex 之后未看到APP，表明选择的版本错了，换另外一个版本，BlackDex32或者64。</p>
+<p>脱壳拿到的dex 文件，使用d2j-dex2jar 转为jar。</p>
+<p>apktool、dex2jar、jd-gui 的安装，各位师傅写的都非常多了，没啥好说的。</p>
+<p>注意：macOS 如果打开jd-gui 提示JAVA版本问题，Google 搜索“Java反编译利器JD-GUI(解决报错This program requires Java 1.8+)”，也可以找到很多师傅写的文章。</p>
+<h2>收集必要信息</h2>
+<p>开始逆向看代码之前，用proxyman 或者charles，走一遍完整的业务流程，抓取到所需的信息，同时也看一遍客户端和服务端交互的信息，会有个思路，特别是对一些关键参数名、接口名，方便我们后遍走读代码。</p>
+<p>proxyman 的使用，也有非常多师傅的文章，Google 即可。</p>
+<p>例如获取到的登录后的个人信息，留作备用，后续肯定会用到。</p>
+<div class="highlight"><pre><span></span><code>{
+  &quot;code&quot;: &quot;000&quot;,
+  &quot;describe&quot;: &quot;Operation succeed!&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;A5D00B33819E458B8XXXXXXXX&quot;,
+    &quot;account&quot;: &quot;1091XXXX&quot;,
+    &quot;nickName&quot;: &quot;&quot;,
+    &quot;userName&quot;: &quot;陈XX&quot;,
+...
+</code></pre></div>
+
+<p>注意这个ID：A5D00B33819E458B8XXXXXXXX，后文会出现。</p>
+<h2>逆向代码</h2>
+<p>dex 拖入jd-gui 之后，从哪里开始看呢？</p>
+<p>用apktool 直接逆向到apk 包虽然没有关键代码，但是会包含一些变量名，可以作为线索。
+例如APP 上显示“扫码通行，点击刷新”，我们直接grep：</p>
+<p><img alt="grep" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143707.png"></p>
+<p>关键词 <code>passcode</code>，另外这是个二维码，也可以从先找<code>qrcode</code> 相关函数，然后看看那些地方调用了它，倒着看。</p>
+<p><img alt="createQRCode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143726.png"></p>
+<p><img alt="QrCodeFragment" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143814.png"></p>
+<p>看到关键行：</p>
+<div class="highlight"><pre><span></span><code>param1String = EncodeUtil.encodeKey(CacheUtils.getUserId(), QrCodeFragment.this.mPassCode, &quot;A&quot;, CacheUtils.getAppVersion());
+</code></pre></div>
+
+<p><img alt="encodeKey" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143840.png"></p>
+<p>出现一个关键信息：qrCodeKey，
+最后进行了AES 加密：</p>
+<div class="highlight"><pre><span></span><code><span class="k">return</span><span class="w"> </span><span class="nv">AESUtil</span>.<span class="nv">Encrypt</span><span class="ss">(</span><span class="nv">stringBuilder3</span>.<span class="nv">toString</span><span class="ss">()</span>,<span class="w"> </span><span class="nv">qrCodeKey</span>,<span class="w"> </span><span class="nv">qrCodeKey</span><span class="ss">)</span><span class="c1">;</span>
+</code></pre></div>
+
+<p>先看一下AES 的加密模式和填充算法等，再回过来看这个str生成逻辑。</p>
+<p><img alt="AESUtil" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143904.png"></p>
+<p>ok，我们得到了，<code>AES/CBC/PKCS5Padding</code>，也有密钥（qrCodeKey）了。</p>
+<p>打开安装的APP，连续生成2，3张通行二维码，解析出二维码表示的字符串：</p>
+<div class="highlight"><pre><span></span><code>l/YKQnk8F/JcCXI3k4uvf05a1hcpnZSmdgBV...ak9A/xPh7KsgPhUffKRjajLi/2u5IIOA==
+l/YKQnk8F/JcCXI3k4uvf3Ekfg1dzyTiTp+D...AhSGF3bqW2OjWiaCZDU/IbFQ9di9af3wUew==
+l/YKQnk8F/JcCXI3k4uvf1VsKs6lu...3AtHsxb9I16t2vXJ0qpK+7DmEgADVBdw==
+</code></pre></div>
+
+<p>找一个<a href="https://tool.lmeee.com/jiami/aes">AES 在线加解密</a>的网站，试一试：</p>
+<p><img alt="" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143926.png"></p>
+<p>ok，搞定了sign_str，有了这个sign_str 能方便我们后续校对sign_str 生成逻辑和编写poc。</p>
+<p>同时在这一步，可以发现前半部分字符串和上文出现UserID 有类似的地方。接下来就是读懂前面encodeKey 函数的逻辑，以及传入mCode 的生成落。</p>
+<p>UserID+mPassCode+md5_16(mPassCode)+"B"+版本号。
+UserID和mPassCode 不是直接拼凑，而是间隔交叉拼在一起。</p>
+<p>再看下mPassCode的生成逻辑：</p>
+<p><img alt="mPassCode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144057.png"></p>
+<p>从代码来看，只是简单的递增。这个时候，再去生成几个实际的二维码，用AES在线解密出，拿到mPassCode 的md5_16，丢到cmd5.com 里面看看：</p>
+<p><img alt="cmd5" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144121.png"></p>
+<div class="highlight"><pre><span></span><code><span class="n">e6e61673edb05342</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mo">00000171</span>
+<span class="mi">7</span><span class="n">a56b435986b1611</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">  </span><span class="mo">00000172</span>
+<span class="mi">651</span><span class="n">bac14cc8b1285</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">  </span><span class="mo">00000173</span>
+</code></pre></div>
+
+<p>确定只是简单递增，那么这个code 不是基于时间的OTP算法，猜测服务端会记录当前用到最大的code，以使之前的code 失效（后续实际验证也是如此）。</p>
+<p>到这里，基本就清晰了：
+mPassCode 单调递增，UserID 按4个分隔，，mPassCode按2个分发，两者交叉拼在一起，再加上mPassCode 的MD5-16，加字符“B”，再加版本号。</p>
+<p>举例：
+UserID 为：<code>A12345678910ABCEED6A474E79AA4FF6</code>
+当前mPassCode为：<code>00000123</code>，md5_16值为<code>c9b62e572837d1b9</code>
+版本号为：<code>7.1.2</code></p>
+<p>拼凑字符串为：</p>
+<div class="highlight"><pre><span></span><code>A123    4567  8910   ABCE  ED6A   474E79AA4FF6
+     00     00     00    01     23             c9b62e572837d1b9  B7.1.2
+结果为：
+A12300456700891001ABCE23ED6A474E79AA4FF6c9b62e572837d1b9B7.1.2
+</code></pre></div>
+
+<h2>PoC</h2>
+<div class="highlight"><pre><span></span><code><span class="s s-Atom">import</span> <span class="s s-Atom">hashlib</span>
+<span class="s s-Atom">import</span> <span class="s s-Atom">random</span>
+<span class="s s-Atom">import</span> <span class="s s-Atom">string</span>
+
+<span class="s s-Atom">from</span> <span class="nv">Crypto</span><span class="p">.</span><span class="nv">Cipher</span> <span class="s s-Atom">import</span> <span class="nv">AES</span>  
+<span class="s s-Atom">from</span> <span class="s s-Atom">base64</span> <span class="s s-Atom">import</span> <span class="s s-Atom">b64decode</span><span class="p">,</span> <span class="s s-Atom">b64encode</span>
+
+<span class="nv">BLOCK_SIZE</span> <span class="o">=</span> <span class="nv">AES</span><span class="p">.</span><span class="s s-Atom">block_size</span>
+<span class="s s-Atom">pad</span> <span class="o">=</span> <span class="s s-Atom">lambda</span> <span class="s s-Atom">s</span><span class="p">:</span> <span class="s s-Atom">s</span> <span class="o">+</span> <span class="p">(</span><span class="nv">BLOCK_SIZE</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">s</span><span class="p">.</span><span class="nf">encode</span><span class="p">())</span> <span class="c1">% BLOCK_SIZE) * chr(BLOCK_SIZE - len(s.encode()) % BLOCK_SIZE)</span>
+<span class="s s-Atom">unpad</span> <span class="o">=</span> <span class="s s-Atom">lambda</span> <span class="s s-Atom">s</span><span class="p">:</span> <span class="s s-Atom">s</span><span class="p">[</span><span class="o">:-</span><span class="nf">ord</span><span class="p">(</span><span class="s s-Atom">s</span><span class="p">[</span><span class="nf">len</span><span class="p">(</span><span class="s s-Atom">s</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">:</span><span class="p">])]</span>
+
+
+<span class="s s-Atom">class</span> <span class="nv">AESCipher</span><span class="o">:</span>
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">secretkey</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">)</span><span class="o">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">key</span> <span class="o">=</span> <span class="s s-Atom">secretkey</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iv</span> <span class="o">=</span> <span class="s s-Atom">secretkey</span><span class="p">[</span><span class="mi">0</span><span class="o">:</span><span class="mi">16</span><span class="p">]</span>  <span class="s s-Atom">#</span> <span class="s s-Atom">偏移量</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">encrypt</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">text</span><span class="p">)</span><span class="o">:</span>
+        <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        加密 ：先补位，再AES加密，后base64编码</span>
+<span class="s2">        :param text: 需加密的明文</span>
+<span class="s2">        :return:</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="s s-Atom">#</span> <span class="s s-Atom">text</span> <span class="o">=</span> <span class="nf">pad</span><span class="p">(</span><span class="s s-Atom">text</span><span class="p">)</span> <span class="s s-Atom">包pycrypto的写法，加密函数可以接受str也可以接受bytess</span>
+        <span class="s s-Atom">text</span> <span class="o">=</span> <span class="nf">pad</span><span class="p">(</span><span class="s s-Atom">text</span><span class="p">).</span><span class="nf">encode</span><span class="p">()</span>  <span class="s s-Atom">#</span> <span class="s s-Atom">包pycryptodome</span> <span class="s s-Atom">的加密函数不接受str</span>
+        <span class="s s-Atom">cipher</span> <span class="o">=</span> <span class="nv">AES</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s s-Atom">key</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">key</span><span class="p">.</span><span class="nf">encode</span><span class="p">(),</span> <span class="s s-Atom">mode</span><span class="o">=</span><span class="nv">AES</span><span class="p">.</span><span class="nv">MODE_CBC</span><span class="p">,</span> <span class="nv">IV</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iv</span><span class="p">.</span><span class="nf">encode</span><span class="p">())</span>
+        <span class="s s-Atom">encrypted_text</span> <span class="o">=</span> <span class="s s-Atom">cipher</span><span class="p">.</span><span class="nf">encrypt</span><span class="p">(</span><span class="s s-Atom">text</span><span class="p">)</span>
+        <span class="s s-Atom">#</span> <span class="s s-Atom">进行64位的编码</span><span class="p">,</span><span class="s s-Atom">返回得到加密后的bytes，decode成字符串</span>
+        <span class="s s-Atom">return</span> <span class="nf">b64encode</span><span class="p">(</span><span class="s s-Atom">encrypted_text</span><span class="p">).</span><span class="nf">decode</span><span class="p">(</span><span class="s s-Atom">&#39;utf-8&#39;</span><span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">decrypt</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">encrypted_text</span><span class="p">)</span><span class="o">:</span>
+        <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        解密 ：偏移量为key[0:16]；先base64解，再AES解密，后取消补位</span>
+<span class="s2">        :param encrypted_text : 已经加密的密文</span>
+<span class="s2">        :return:</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="s s-Atom">encrypted_text</span> <span class="o">=</span> <span class="nf">b64decode</span><span class="p">(</span><span class="s s-Atom">encrypted_text</span><span class="p">)</span>
+        <span class="s s-Atom">cipher</span> <span class="o">=</span> <span class="nv">AES</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s s-Atom">key</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">key</span><span class="p">.</span><span class="nf">encode</span><span class="p">(),</span> <span class="s s-Atom">mode</span><span class="o">=</span><span class="nv">AES</span><span class="p">.</span><span class="nv">MODE_CBC</span><span class="p">,</span> <span class="nv">IV</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iv</span><span class="p">.</span><span class="nf">encode</span><span class="p">())</span>
+        <span class="s s-Atom">decrypted_text</span> <span class="o">=</span> <span class="s s-Atom">cipher</span><span class="p">.</span><span class="nf">decrypt</span><span class="p">(</span><span class="s s-Atom">encrypted_text</span><span class="p">)</span>
+        <span class="s s-Atom">return</span> <span class="nf">unpad</span><span class="p">(</span><span class="s s-Atom">decrypted_text</span><span class="p">).</span><span class="nf">decode</span><span class="p">(</span><span class="s s-Atom">&#39;utf-8&#39;</span><span class="p">)</span>
+
+
+<span class="s s-Atom">code=&#39;00000123&#39;</span>
+<span class="s s-Atom">c1</span><span class="o">=</span><span class="s s-Atom">code</span><span class="p">[</span><span class="mi">0</span><span class="o">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="s s-Atom">c2</span><span class="o">=</span><span class="s s-Atom">code</span><span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="mi">4</span><span class="p">]</span>
+<span class="s s-Atom">c3</span><span class="o">=</span><span class="s s-Atom">code</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">6</span><span class="p">]</span>
+<span class="s s-Atom">c4</span><span class="o">=</span><span class="s s-Atom">code</span><span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">8</span><span class="p">]</span>
+
+<span class="s s-Atom">md5_16</span><span class="o">=</span><span class="s s-Atom">hashlib</span><span class="p">.</span><span class="nf">md5</span><span class="p">(</span><span class="s s-Atom">code</span><span class="p">.</span><span class="nf">encode</span><span class="p">(</span><span class="s s-Atom">&#39;utf-8&#39;</span><span class="p">)).</span><span class="nf">hexdigest</span><span class="p">()[</span><span class="mi">8</span><span class="o">:-</span><span class="mi">8</span><span class="p">]</span>
+
+<span class="s s-Atom">uid=&#39;A12345678910ABCEED6A474E79AA4FF6&#39;</span>
+
+<span class="s s-Atom">u1</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">0</span><span class="o">:</span><span class="mi">4</span><span class="p">]</span>
+<span class="s s-Atom">u2</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">8</span><span class="p">]</span>
+<span class="s s-Atom">u3</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">8</span><span class="o">:</span><span class="mi">12</span><span class="p">]</span>
+<span class="s s-Atom">u4</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">12</span><span class="o">:</span><span class="mi">16</span><span class="p">]</span>
+<span class="s s-Atom">u5</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">16</span><span class="o">:</span><span class="p">]</span>
+<span class="s s-Atom">sign_str</span><span class="o">=</span><span class="s s-Atom">f</span><span class="s2">&quot;{u1}{c1}{u2}{c2}{u3}{c3}{u4}{c4}{u5}{md5_16}B7.1.2&quot;</span>
+<span class="nf">print</span><span class="p">(</span><span class="s s-Atom">sign_str</span><span class="p">)</span>
+
+<span class="s s-Atom">encrypted_text</span> <span class="o">=</span> <span class="nv">AESCipher</span><span class="p">(</span><span class="s2">&quot;略&quot;</span><span class="p">).</span><span class="nf">encrypt</span><span class="p">(</span><span class="s s-Atom">sign_str</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="s s-Atom">encrypted_text</span><span class="p">)</span>
+</code></pre></div>
+
+<p>再将encrypted_text 生成二维码即可。</p>
+<p>如果我是业务方，可以怎么改进？</p>
+<p>我的思路是：</p>
+<p>每个新版，采用最新的加密固件，同时更换AES Key。
+生成的二维码包含当前版本的明文信息和加密串，在服务端先按明文反查对于AES Key，再解密验证加密串。
+这样既能保持向后兼容，必要时候强制用户升级，逐步吊销不安全版本的AES Key。</p>
+<p>感谢各位师傅观看，献丑了，预祝大家五一快乐。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-04-20T00:00:00+08:00">
+      Thu 20 April 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/hack.html">hack </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>
