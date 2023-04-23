@@ -4,7 +4,7 @@
 &lt;p&gt;这个方案的局限：
 1. 只能加速http、https 流量；
 2. github.com（http2）似乎有异常，见下文解决方法。&lt;/p&gt;
-&lt;p&gt;按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就想搞几个机场账号，一个月成本百来块解决。&lt;/p&gt;
+&lt;p&gt;按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就会搞几个机场账号，一个月成本百来块解决。&lt;/p&gt;
 &lt;p&gt;当然我牢记前辈们的血泪教训：在工作场合中，能用钱解决的，尽量用钱（乙方）解决，要不然就是给自己找事了🐕。&lt;/p&gt;
 &lt;p&gt;说回正事，先画草图：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;             ┌──────────┐   query:www.google.com ┌───────────┐
@@ -239,7 +239,7 @@ iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&g
  - &lt;a href="https://www.bilibili.com/read/cv14088928/"&gt;使用 iptables 的 tproxy 完成本机访问家里内网&lt;/a&gt;
  - &lt;a href="https://moecm.com/something-about-v2ray-with-tproxy/"&gt;第一篇万字长文：围绕透明代理的又一次探究&lt;/a&gt;
  - &lt;a href="https://blog.mmf.moe/post/tproxy-investigation/"&gt;TProxy 探秘&lt;/a&gt;
- - &lt;a href="https://www.kernel.org/doc/Documentation/networking/tproxy.txt"&gt;tproxy.txt&lt;/a&gt;&lt;/p&gt;</content><category term="2023"></category><category term="proxy"></category></entry><entry><title>逆向办公大楼门禁APK，成功生成通行二维码</title><link href="https://fangpsh.github.io/posts/2023/2023-04-20.html" rel="alternate"></link><published>2023-04-20T00:00:00+08:00</published><updated>2023-04-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-04-20:/posts/2023/2023-04-20.html</id><summary type="html">&lt;p&gt;脱壳逆向，不必硬碰硬。大多数业务，迭代更新只是更新业务，但是加密的逻辑并无变化。&lt;/p&gt;
+ - &lt;a href="https://www.kernel.org/doc/Documentation/networking/tproxy.txt"&gt;tproxy.txt&lt;/a&gt;&lt;/p&gt;</content><category term="2023"></category><category term="proxy"></category><category term="iptables"></category></entry><entry><title>逆向办公大楼门禁APK，成功生成通行二维码</title><link href="https://fangpsh.github.io/posts/2023/2023-04-20.html" rel="alternate"></link><published>2023-04-20T00:00:00+08:00</published><updated>2023-04-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-04-20:/posts/2023/2023-04-20.html</id><summary type="html">&lt;p&gt;脱壳逆向，不必硬碰硬。大多数业务，迭代更新只是更新业务，但是加密的逻辑并无变化。&lt;/p&gt;
 &lt;p&gt;对于攻击方：
 1. 不少业务不会在一开 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;脱壳逆向，不必硬碰硬。大多数业务，迭代更新只是更新业务，但是加密的逻辑并无变化。&lt;/p&gt;
 &lt;p&gt;对于攻击方：
