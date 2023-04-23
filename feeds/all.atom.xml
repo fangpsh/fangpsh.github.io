@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-04-23T00:00:00+08:00</updated><entry><title>轻量级办公室无感知跨境加速方案</title><link href="https://fangpsh.github.io/posts/2023/2023-04-23.html" rel="alternate"></link><published>2023-04-23T00:00:00+08:00</published><updated>2023-04-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-04-23:/posts/2023/2023-04-23.html</id><summary type="html">&lt;p&gt;之前逛V2EX 看到一个网友的帖子：“&lt;a href="https://www.v2ex.com/t/928907"&gt;请教公司内部如何实现无感知跨境加速&lt;/a&gt;”，把海外IP 全部走到代理网关，维护成本比较高。如 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前逛V2EX 看到一个网友的帖子：“&lt;a href="https://www.v2ex.com/t/928907"&gt;请教公司内部如何实现无感知跨境加速&lt;/a&gt;”，把海外IP 全部走到代理网关，维护成本比较高。如果只是简单的Web 加速，DNS 劫持+SNIProxy 是更轻量的方法。&lt;/p&gt;
 &lt;p&gt;~~有&lt;a href="https://docs.fortinet.com/document/fortigate/6.2.14/cookbook/80739/dynamic-application-steering-with-lowest-cost-and-best-quality-strategies"&gt;Fortinet&lt;/a&gt;、&lt;a href="https://bbs.panabit.com/thread-12376-1-1.html"&gt;Panabit&lt;/a&gt;的土豪无须接着看🤑。~~&lt;/p&gt;
-&lt;p&gt;这个方案的局限：
-1. 只能加速http、https 流量；
-2. github.com（http2）似乎有异常，见下文解决方法。&lt;/p&gt;
+&lt;p&gt;这个方案的局限：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;只能加速http、https 流量；&lt;/li&gt;
+&lt;li&gt;github.com（http2）似乎有异常，见下文解决方法。&lt;/li&gt;
+&lt;/ol&gt;
 &lt;p&gt;按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就会搞几个机场账号，一个月成本百来块解决。&lt;/p&gt;
 &lt;p&gt;当然我牢记前辈们的血泪教训：在工作场合中，能用钱解决的，尽量用钱（乙方）解决，要不然就是给自己找事了🐕。&lt;/p&gt;
 &lt;p&gt;说回正事，先画草图：&lt;/p&gt;
@@ -41,7 +43,7 @@
 
 &lt;p&gt;找一台机器装上clash/v2ray/sing-box 等，下面以clash为例。&lt;/p&gt;
 &lt;p&gt;local dns 用adguard-home、bind、dnsmasq、pdns-recursor都可，把要加速的子域名劫持解析到代理机IP。&lt;/p&gt;
-&lt;h3&gt;SNIPROXY 配置&lt;/h3&gt;
+&lt;h2&gt;SNIProxy 配置&lt;/h2&gt;
 &lt;p&gt;从&lt;a href="https://github.com/dlundquist/sniproxy"&gt;官方仓库&lt;/a&gt;拉代码编译安装，或者发行版仓库内找找。配置就一句话，没什么好说的，如果不想有人随意本地host 下域名就能走这个代理传透出去，就写下具体域名，语法官方手册。当然也可以在clash 那里控制。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;table http_hosts {
     .* *:80
@@ -142,11 +144,13 @@ ip rule add fwmark 1 table 100
 Details: cache-hkg17926-HKG
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;搜到的一些issue：
- - &lt;a href="https://github.com/dlundquist/sniproxy/issues/178"&gt;http2 clients being proxied to wrong host. #178&lt;/a&gt;
- - &lt;a href="https://github.com/snail007/goproxy/issues/422"&gt;HTTP代理访问Github会经常出现 Fastly error: unknown domain: github.com. #422
-&lt;/a&gt;
- - &lt;a href="https://github.com/dlundquist/sniproxy/issues/242#issuecomment-302831849"&gt;NIproxy doesn't support http2 or SPDY explicitly,&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;搜到的一些issue：  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/dlundquist/sniproxy/issues/178"&gt;http2 clients being proxied to wrong host. #178&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/snail007/goproxy/issues/422"&gt;HTTP代理访问Github会经常出现 Fastly error: unknown domain: github.com. #422
+&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/dlundquist/sniproxy/issues/242#issuecomment-302831849"&gt;NIproxy doesn't support http2 or SPDY explicitly,&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;看起来和http2 长连接有关，暂时没精力（能力）细究，看到有一个&lt;a href="https://github.com/dlundquist/sniproxy/pull/98"&gt;PR&lt;/a&gt;是能针对特定域名指定一些，但是没合。&lt;/p&gt;
 &lt;p&gt;那就只能倒回去用网关的模式解决了。&lt;/p&gt;
 &lt;p&gt;dig 了下github.com 的域名，集中在这2个段，添加策略路由，把下一条指到代理机。&lt;/p&gt;
@@ -234,12 +238,14 @@ iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&g
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;参考资料：
- - &lt;a href="https://guide.v2fly.org/app/tproxy.html#%E8%AE%BE%E7%BD%AE%E7%BD%91%E5%85%B3"&gt;透明代理(TPROXY)&lt;/a&gt;
- - &lt;a href="https://www.bilibili.com/read/cv14088928/"&gt;使用 iptables 的 tproxy 完成本机访问家里内网&lt;/a&gt;
- - &lt;a href="https://moecm.com/something-about-v2ray-with-tproxy/"&gt;第一篇万字长文：围绕透明代理的又一次探究&lt;/a&gt;
- - &lt;a href="https://blog.mmf.moe/post/tproxy-investigation/"&gt;TProxy 探秘&lt;/a&gt;
- - &lt;a href="https://www.kernel.org/doc/Documentation/networking/tproxy.txt"&gt;tproxy.txt&lt;/a&gt;&lt;/p&gt;</content><category term="2023"></category><category term="proxy"></category><category term="iptables"></category></entry><entry><title>逆向办公大楼门禁APK，成功生成通行二维码</title><link href="https://fangpsh.github.io/posts/2023/2023-04-20.html" rel="alternate"></link><published>2023-04-20T00:00:00+08:00</published><updated>2023-04-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-04-20:/posts/2023/2023-04-20.html</id><summary type="html">&lt;p&gt;脱壳逆向，不必硬碰硬。大多数业务，迭代更新只是更新业务，但是加密的逻辑并无变化。&lt;/p&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://guide.v2fly.org/app/tproxy.html#%E8%AE%BE%E7%BD%AE%E7%BD%91%E5%85%B3"&gt;透明代理(TPROXY)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.bilibili.com/read/cv14088928/"&gt;使用 iptables 的 tproxy 完成本机访问家里内网&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://moecm.com/something-about-v2ray-with-tproxy/"&gt;第一篇万字长文：围绕透明代理的又一次探究&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://blog.mmf.moe/post/tproxy-investigation/"&gt;TProxy 探秘&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.kernel.org/doc/Documentation/networking/tproxy.txt"&gt;tproxy.txt&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2023"></category><category term="proxy"></category><category term="iptables"></category></entry><entry><title>逆向办公大楼门禁APK，成功生成通行二维码</title><link href="https://fangpsh.github.io/posts/2023/2023-04-20.html" rel="alternate"></link><published>2023-04-20T00:00:00+08:00</published><updated>2023-04-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-04-20:/posts/2023/2023-04-20.html</id><summary type="html">&lt;p&gt;脱壳逆向，不必硬碰硬。大多数业务，迭代更新只是更新业务，但是加密的逻辑并无变化。&lt;/p&gt;
 &lt;p&gt;对于攻击方：
 1. 不少业务不会在一开 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;脱壳逆向，不必硬碰硬。大多数业务，迭代更新只是更新业务，但是加密的逻辑并无变化。&lt;/p&gt;
 &lt;p&gt;对于攻击方：

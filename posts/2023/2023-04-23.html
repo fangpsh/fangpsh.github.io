@@ -35,9 +35,11 @@
   <div id="article-content" class="entry-content">
     <p>之前逛V2EX 看到一个网友的帖子：“<a href="https://www.v2ex.com/t/928907">请教公司内部如何实现无感知跨境加速</a>”，把海外IP 全部走到代理网关，维护成本比较高。如果只是简单的Web 加速，DNS 劫持+SNIProxy 是更轻量的方法。</p>
 <p>~~有<a href="https://docs.fortinet.com/document/fortigate/6.2.14/cookbook/80739/dynamic-application-steering-with-lowest-cost-and-best-quality-strategies">Fortinet</a>、<a href="https://bbs.panabit.com/thread-12376-1-1.html">Panabit</a>的土豪无须接着看🤑。~~</p>
-<p>这个方案的局限：
-1. 只能加速http、https 流量；
-2. github.com（http2）似乎有异常，见下文解决方法。</p>
+<p>这个方案的局限：</p>
+<ol>
+<li>只能加速http、https 流量；</li>
+<li>github.com（http2）似乎有异常，见下文解决方法。</li>
+</ol>
 <p>按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就会搞几个机场账号，一个月成本百来块解决。</p>
 <p>当然我牢记前辈们的血泪教训：在工作场合中，能用钱解决的，尽量用钱（乙方）解决，要不然就是给自己找事了🐕。</p>
 <p>说回正事，先画草图：</p>
@@ -75,7 +77,7 @@
 
 <p>找一台机器装上clash/v2ray/sing-box 等，下面以clash为例。</p>
 <p>local dns 用adguard-home、bind、dnsmasq、pdns-recursor都可，把要加速的子域名劫持解析到代理机IP。</p>
-<h3>SNIPROXY 配置</h3>
+<h2>SNIProxy 配置</h2>
 <p>从<a href="https://github.com/dlundquist/sniproxy">官方仓库</a>拉代码编译安装，或者发行版仓库内找找。配置就一句话，没什么好说的，如果不想有人随意本地host 下域名就能走这个代理传透出去，就写下具体域名，语法官方手册。当然也可以在clash 那里控制。</p>
 <div class="highlight"><pre><span></span><code>table http_hosts {
     .* *:80
@@ -176,11 +178,13 @@ ip rule add fwmark 1 table 100
 Details: cache-hkg17926-HKG
 </code></pre></div>
 
-<p>搜到的一些issue：
- - <a href="https://github.com/dlundquist/sniproxy/issues/178">http2 clients being proxied to wrong host. #178</a>
- - <a href="https://github.com/snail007/goproxy/issues/422">HTTP代理访问Github会经常出现 Fastly error: unknown domain: github.com. #422
-</a>
- - <a href="https://github.com/dlundquist/sniproxy/issues/242#issuecomment-302831849">NIproxy doesn't support http2 or SPDY explicitly,</a></p>
+<p>搜到的一些issue：  </p>
+<ul>
+<li><a href="https://github.com/dlundquist/sniproxy/issues/178">http2 clients being proxied to wrong host. #178</a></li>
+<li><a href="https://github.com/snail007/goproxy/issues/422">HTTP代理访问Github会经常出现 Fastly error: unknown domain: github.com. #422
+</a></li>
+<li><a href="https://github.com/dlundquist/sniproxy/issues/242#issuecomment-302831849">NIproxy doesn't support http2 or SPDY explicitly,</a></li>
+</ul>
 <p>看起来和http2 长连接有关，暂时没精力（能力）细究，看到有一个<a href="https://github.com/dlundquist/sniproxy/pull/98">PR</a>是能针对特定域名指定一些，但是没合。</p>
 <p>那就只能倒回去用网关的模式解决了。</p>
 <p>dig 了下github.com 的域名，集中在这2个段，添加策略路由，把下一条指到代理机。</p>
@@ -268,12 +272,14 @@ iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </
 </ul>
 </li>
 </ul>
-<p>参考资料：
- - <a href="https://guide.v2fly.org/app/tproxy.html#%E8%AE%BE%E7%BD%AE%E7%BD%91%E5%85%B3">透明代理(TPROXY)</a>
- - <a href="https://www.bilibili.com/read/cv14088928/">使用 iptables 的 tproxy 完成本机访问家里内网</a>
- - <a href="https://moecm.com/something-about-v2ray-with-tproxy/">第一篇万字长文：围绕透明代理的又一次探究</a>
- - <a href="https://blog.mmf.moe/post/tproxy-investigation/">TProxy 探秘</a>
- - <a href="https://www.kernel.org/doc/Documentation/networking/tproxy.txt">tproxy.txt</a></p>
+<p>参考资料：</p>
+<ul>
+<li><a href="https://guide.v2fly.org/app/tproxy.html#%E8%AE%BE%E7%BD%AE%E7%BD%91%E5%85%B3">透明代理(TPROXY)</a></li>
+<li><a href="https://www.bilibili.com/read/cv14088928/">使用 iptables 的 tproxy 完成本机访问家里内网</a></li>
+<li><a href="https://moecm.com/something-about-v2ray-with-tproxy/">第一篇万字长文：围绕透明代理的又一次探究</a></li>
+<li><a href="https://blog.mmf.moe/post/tproxy-investigation/">TProxy 探秘</a></li>
+<li><a href="https://www.kernel.org/doc/Documentation/networking/tproxy.txt">tproxy.txt</a></li>
+</ul>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
     Posted on <abbr class="published" title="2023-04-23T00:00:00+08:00">
