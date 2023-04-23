@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>轻量级办公室无感知跨境加速 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-04-23.html" rel="bookmark"
+         title="Permalink to 轻量级办公室无感知跨境加速">轻量级办公室无感知跨境加速</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>之前逛V2EX 看到一个网友的帖子：“<a href="https://www.v2ex.com/t/928907">请教公司内部如何实现无感知跨境加速</a>”，把海外IP 全部走到代理网关，维护成本比较高。如果只是简单的Web 加速，DNS 劫持+SNIProxy 是更轻量的方法。</p>
+<blockquote>
+<p>有Fortinet、Panabit的土豪无须接着看🤑。</p>
+</blockquote>
+<p>这个方案的局限：
+1. 只能加速http、https 流量；
+2. github.com（http2）似乎有异常，见下文解决方法。</p>
+<p>按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就想搞几个机场账号，一个月成本百来块解决。</p>
+<p>当然我牢记前辈们的血泪教训：在工作场合中，能用钱解决的，尽量用钱（乙方）解决，要不然就是给自己找事了🐕。</p>
+<p>说回正事，先画草图：</p>
+<div class="highlight"><pre><span></span><code>             ┌──────────┐   query:www.google.com ┌───────────┐
+             │          ├────────────────────────►           │
+             │  client  │                        │ local dns │
+             │          ◄────────────────────────┤           │
+             └───┬───▲──┘    A:192.168.11.11     └───────────┘
+                 │   │
+                 │   │
+                 │   │
+         http req│   │ http rsp
+                 │   │                      ┼
+                 │   │
+                 │   │
+             ┌───▼───┴──────────┐
+             │                  │
+             │    proxy         │
+             │  192.168.11.11   │
+             └───────────────┬──┘
+                             │
+                             │internal
+                             │
+       ┌─────────────────────┴────────────────────┐
+       │                                          │
+       │ ┌───────────┐         ┌────────────┐     │
+       │ │ SNIPROXY  │  OUTPUT │            │     │
+       │ │ http:80   ├────────►│   CLASH    │     │
+       │ │ https:443 │ IPTABLES│   TPROXY   │     │
+       │ └───────────┘         └────────────┘     │
+       │                                          │
+       │                                          │
+       └──────────────────────────────────────────┘
+</code></pre></div>
+
+<p>找一台机器装上clash/v2ray/sing-box 等，下面以clash为例。</p>
+<p>local dns 用adguard-home、bind、dnsmasq、pdns-recursor都可，把要加速的子域名劫持解析到代理机IP。</p>
+<h3>SNIPROXY 配置</h3>
+<p>从<a href="https://github.com/dlundquist/sniproxy">官方仓库</a>拉代码编译安装，或者发行版仓库内找找。配置就一句话，没什么好说的，如果不想有人随意本地host 下域名就能走这个代理传透出去，就写下具体域名，语法官方手册。当然也可以在clash 那里控制。</p>
+<div class="highlight"><pre><span></span><code>table http_hosts {
+    .* *:80
+}
+
+table https_hosts {
+    .* *:443
+}
+</code></pre></div>
+
+<h2>Clash 配置</h2>
+<p>就一句话，其他和日常配置没差别：</p>
+<div class="highlight"><pre><span></span><code>tproxy-port: 7891
+</code></pre></div>
+
+<p>若用非特权用户起，clash.service记得设置Capability。</p>
+<div class="highlight"><pre><span></span><code>CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_SYS_PTRACE CAP_DAC_READ_SEARCH
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_SYS_PTRACE CAP_DAC_READ_SEARCH
+</code></pre></div>
+
+<p>另外在部署此类代理时，建议拒绝掉内网域名（内网地址），以免增加追踪审计复杂度。</p>
+<div class="highlight"><pre><span></span><code>- GEOIP,LAN,REJECT
+- DOMAIN-SUFFIX,oa.com,REJECT
+- ...
+</code></pre></div>
+
+<h2>主机配置</h2>
+<p>主要涉及策略路由和iptables，正常只需要设置OUTPUT chain 即可，但是为了解决下文github的问题，也配置下FORWARD。</p>
+<p>让特殊标记的包流向本机：</p>
+<div class="highlight"><pre><span></span><code># 记得配置开启启动生效
+ip route flush table 100
+ip route add local default dev lo table 100
+ip rule add fwmark 1 table 100
+</code></pre></div>
+
+<p>iptables，抄网友的，记得做持久化：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">F</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">X</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">nat</span><span class="w"> </span><span class="o">-</span><span class="nv">F</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">F</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">P</span><span class="w"> </span><span class="nv">INPUT</span><span class="w"> </span><span class="nv">ACCEPT</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">P</span><span class="w"> </span><span class="nv">FORWARD</span><span class="w"> </span><span class="nv">ACCEPT</span>
+
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">INPUT</span><span class="w"> </span><span class="o">-</span><span class="nv">m</span><span class="w"> </span><span class="nv">conntrack</span><span class="w"> </span><span class="o">--</span><span class="nv">ctstate</span><span class="w"> </span><span class="nv">ESTABLISHED</span>,<span class="nv">RELATED</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">ACCEPT</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">INPUT</span><span class="w"> </span><span class="o">-</span><span class="nv">p</span><span class="w"> </span><span class="nv">tcp</span><span class="w"> </span><span class="o">--</span><span class="nv">dport</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">ACCEPT</span>
+
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">INPUT</span><span class="w"> </span><span class="o">-</span><span class="nv">s</span><span class="w"> </span><span class="mi">127</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">ACCEPT</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">INPUT</span><span class="w"> </span><span class="o">-</span><span class="nv">s</span><span class="w"> </span><span class="mi">192</span>.<span class="mi">168</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">16</span><span class="w"> </span><span class="o">-</span><span class="nv">p</span><span class="w"> </span><span class="nv">tcp</span><span class="w">  </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">ACCEPT</span>
+
+#<span class="w"> </span><span class="k">RETURN</span><span class="w"> </span><span class="nv">LOCAL</span><span class="w"> </span><span class="nv">AND</span><span class="w"> </span><span class="nv">LANS</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">8</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">8</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">127</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">8</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">169</span>.<span class="mi">254</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">16</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">172</span>.<span class="mi">16</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">12</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">192</span>.<span class="mi">168</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">16</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">192</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">24</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">192</span>.<span class="mi">0</span>.<span class="mi">2</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">24</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">198</span>.<span class="mi">18</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">15</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">198</span>.<span class="mi">51</span>.<span class="mi">100</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">24</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">203</span>.<span class="mi">0</span>.<span class="mi">113</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">24</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">255</span>.<span class="mi">255</span>.<span class="mi">255</span>.<span class="mi">255</span><span class="o">/</span><span class="mi">32</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">100</span>.<span class="mi">64</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">10</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">224</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">4</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">DROP</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">240</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">4</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+#<span class="w"> </span><span class="nv">FORWARD</span><span class="w"> </span><span class="nv">ALL</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">p</span><span class="w"> </span><span class="nv">udp</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">TPROXY</span><span class="w"> </span><span class="o">--</span><span class="nv">on</span><span class="o">-</span><span class="nv">port</span><span class="w"> </span><span class="mi">7891</span><span class="w"> </span><span class="o">--</span><span class="nv">tproxy</span><span class="o">-</span><span class="nv">mark</span><span class="w"> </span><span class="mi">1</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">clash</span><span class="w"> </span><span class="o">-</span><span class="nv">p</span><span class="w"> </span><span class="nv">tcp</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">TPROXY</span><span class="w"> </span><span class="o">--</span><span class="nv">on</span><span class="o">-</span><span class="nv">port</span><span class="w"> </span><span class="mi">7891</span><span class="w"> </span><span class="o">--</span><span class="nv">tproxy</span><span class="o">-</span><span class="nv">mark</span><span class="w"> </span><span class="mi">1</span>
+
+#<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">OUTPUT</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">clash</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">PREROUTING</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">clash</span>
+
+
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">N</span><span class="w"> </span><span class="nv">LOCAL_DIVERT</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">LOCAL_DIVERT</span><span class="w"> </span><span class="o">-</span><span class="nv">d</span><span class="w"> </span><span class="mi">192</span>.<span class="mi">168</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">16</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="k">RETURN</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">LOCAL_DIVERT</span><span class="w"> </span><span class="o">-</span><span class="nv">p</span><span class="w"> </span><span class="nv">tcp</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">MARK</span><span class="w"> </span><span class="o">--</span><span class="nv">set</span><span class="o">-</span><span class="nv">mark</span><span class="w"> </span><span class="mi">1</span>
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">LOCAL_DIVERT</span><span class="w"> </span><span class="o">-</span><span class="nv">p</span><span class="w"> </span><span class="nv">udp</span><span class="w"> </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">MARK</span><span class="w"> </span><span class="o">--</span><span class="nv">set</span><span class="o">-</span><span class="nv">mark</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="nv">iptables</span><span class="w"> </span><span class="o">-</span><span class="nv">t</span><span class="w"> </span><span class="nv">mangle</span><span class="w"> </span><span class="o">-</span><span class="nv">A</span><span class="w"> </span><span class="nv">OUTPUT</span><span class="w"> </span><span class="o">-</span><span class="nv">m</span><span class="w"> </span><span class="nv">owner</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="o">--</span><span class="nv">gid</span><span class="o">-</span><span class="nv">owner</span><span class="w"> </span>{<span class="w"> </span>运行<span class="nv">clash</span><span class="w"> </span>程序的<span class="nv">GID</span>}<span class="w">  </span><span class="o">-</span><span class="nv">j</span><span class="w"> </span><span class="nv">LOCAL_DIVERT</span>
+</code></pre></div>
+
+<p>如果尝试写：<code>iptables -t mangle -A OUTPUT -j clash</code> 会出现错误：</p>
+<div class="highlight"><pre><span></span><code><span class="n">iptables</span> <span class="n">v1</span><span class="p">.</span><span class="mf">8.7</span> <span class="p">(</span><span class="n">nf_tables</span><span class="p">):</span>  <span class="n">RULE_APPEND</span> <span class="n">failed</span> <span class="p">(</span><span class="n">Invalid</span> <span class="n">argument</span><span class="p">):</span> <span class="n">rule</span> <span class="n">in</span> <span class="n">chain</span> <span class="n">OUTPUT</span>
+</code></pre></div>
+
+<p>网友解释：</p>
+<blockquote>
+<p>由于 tproxy 只能工作在 PREROUTING 链，从本机发出去的数据包会直接通过 OUTPUT 链出去了，本机数据包没有机会走一下 PREROUTING 链。 作者：靛青K https://www.bilibili.com/read/cv14088928/ 出处：bilibili</p>
+</blockquote>
+<p>sysctl 开启ipv4包转发：</p>
+<div class="highlight"><pre><span></span><code>echo &quot;1&quot; &gt; /proc/sys/net/ipv4/ip_forward
+#建议配置/etc/sysctl.conf中，开机生效。
+</code></pre></div>
+
+<h2>github.com 的问题</h2>
+<p>如果把github.com 劫持到sniproxy，不久浏览器就会出现以下错误：</p>
+<div class="highlight"><pre><span></span><code>Fastly error: unknown domain: github.com. Please check that this domain has been added to a service.
+Details: cache-hkg17926-HKG
+</code></pre></div>
+
+<p>搜到的一些issue：
+ - <a href="https://github.com/dlundquist/sniproxy/issues/178">http2 clients being proxied to wrong host. #178</a>
+ - <a href="https://github.com/snail007/goproxy/issues/422">HTTP代理访问Github会经常出现 Fastly error: unknown domain: github.com. #422
+</a>
+ - <a href="https://github.com/dlundquist/sniproxy/issues/242#issuecomment-302831849">NIproxy doesn't support http2 or SPDY explicitly,</a></p>
+<p>看起来和http2 长连接有关，暂时没精力（能力）细究，看到有一个<a href="https://github.com/dlundquist/sniproxy/pull/98">PR</a>是能针对特定域名指定一些，但是没合。</p>
+<p>那就只能倒回去用网关的模式解决了。</p>
+<p>dig 了下github.com 的域名，集中在这2个段，添加策略路由，把下一条指到代理机。</p>
+<div class="highlight"><pre><span></span><code><span class="mf">140.82.112.0</span><span class="o">/</span><span class="mf">22</span>
+<span class="mf">20.205.192.0</span><span class="o">/</span><span class="mf">18</span>
+</code></pre></div>
+
+<p>内网搭建一个uptime kuma 或者megaease/easeprobe，对github.com 进行curl 探测，发现异常再加新的IP。</p>
+<h2>sniproxy+v2ray+redirect</h2>
+<p>v2ray（dokodemo-door）+ redirect 也行，简单贴下配置：</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;log&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">&quot;loglevel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;access&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/v2ray/access.log&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/v2ray/error.log&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;inbounds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="s2">&quot;tag&quot;</span><span class="p">:</span><span class="s2">&quot;transparent&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12345</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;protocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dokodemo-door&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="s2">&quot;network&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tcp,udp&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;followRedirect&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">true</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="s2">&quot;sniffing&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;destOverride&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="s2">&quot;http&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="s2">&quot;tls&quot;</span>
+<span class="w">                </span><span class="p">]</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="s2">&quot;streamSettings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="s2">&quot;sockopt&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="s2">&quot;tproxy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;redirect&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="s2">&quot;outbounds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="s2">&quot;protocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vmess&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="o">...</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="s2">&quot;streamSettings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="s2">&quot;sockopt&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="s2">&quot;mark&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">255</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="s2">&quot;tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;proxy&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+
+iptables<span class="w"> </span>-F
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-F
+iptables<span class="w"> </span>-P<span class="w"> </span>INPUT<span class="w"> </span>ACCEPT
+iptables<span class="w"> </span>-P<span class="w"> </span>FORWARD<span class="w"> </span>ACCEPT
+
+
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-N<span class="w"> </span>V2RAY
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-A<span class="w"> </span>OUTPUT<span class="w"> </span>-p<span class="w"> </span>tcp<span class="w"> </span>-j<span class="w"> </span>V2RAY
+
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-A<span class="w"> </span>V2RAY<span class="w"> </span>-d<span class="w"> </span><span class="m">192</span>.168.0.0/16<span class="w"> </span>-j<span class="w"> </span>RETURN
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-A<span class="w"> </span>V2RAY<span class="w"> </span>-d<span class="w"> </span><span class="m">10</span>.0.0.0/8<span class="w"> </span>-j<span class="w"> </span>RETURN
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-A<span class="w"> </span>V2RAY<span class="w"> </span>-p<span class="w"> </span>tcp<span class="w"> </span>-j<span class="w"> </span>RETURN<span class="w"> </span>-m<span class="w"> </span>mark<span class="w"> </span>--mark<span class="w"> </span>0xff
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-A<span class="w"> </span>V2RAY<span class="w"> </span>-p<span class="w"> </span>tcp<span class="w"> </span>-j<span class="w"> </span>REDIRECT<span class="w"> </span>--to-ports<span class="w"> </span><span class="m">12345</span>
+
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-A<span class="w"> </span>PREROUTING<span class="w"> </span>-p<span class="w"> </span>tcp<span class="w"> </span>-j<span class="w"> </span>V2RAY
+</code></pre></div>
+
+<h2>容灾</h2>
+<p>这些网站本来就不存在，容什么灾？😂</p>
+<ul>
+<li><a href="http://www.linuxvirtualserver.org/">LVS</a> 传统做法<ul>
+<li>或者土豪有F5之类</li>
+</ul>
+</li>
+<li>配置多个代理机，localDNS 那里返回多个A记录，Chrome 自己会重试；<ul>
+<li>我选这个</li>
+</ul>
+</li>
+</ul>
+<p>参考资料：
+ - <a href="https://guide.v2fly.org/app/tproxy.html#%E8%AE%BE%E7%BD%AE%E7%BD%91%E5%85%B3">透明代理(TPROXY)</a>
+ - <a href="https://www.bilibili.com/read/cv14088928/">使用 iptables 的 tproxy 完成本机访问家里内网</a>
+ - <a href="https://moecm.com/something-about-v2ray-with-tproxy/">第一篇万字长文：围绕透明代理的又一次探究</a>
+ - <a href="https://blog.mmf.moe/post/tproxy-investigation/">TProxy 探秘</a>
+ - <a href="https://www.kernel.org/doc/Documentation/networking/tproxy.txt">tproxy.txt</a></p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-04-23T00:00:00+08:00">
+      Sun 23 April 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/proxy.html">proxy </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>
