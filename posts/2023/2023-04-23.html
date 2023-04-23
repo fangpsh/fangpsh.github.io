@@ -34,9 +34,7 @@
   </div>     
   <div id="article-content" class="entry-content">
     <p>之前逛V2EX 看到一个网友的帖子：“<a href="https://www.v2ex.com/t/928907">请教公司内部如何实现无感知跨境加速</a>”，把海外IP 全部走到代理网关，维护成本比较高。如果只是简单的Web 加速，DNS 劫持+SNIProxy 是更轻量的方法。</p>
-<blockquote>
-<p>有Fortinet、Panabit的土豪无须接着看🤑。</p>
-</blockquote>
+<p>~~有<a href="https://docs.fortinet.com/document/fortigate/6.2.14/cookbook/80739/dynamic-application-steering-with-lowest-cost-and-best-quality-strategies">Fortinet</a>、<a href="https://bbs.panabit.com/thread-12376-1-1.html">Panabit</a>的土豪无须接着看🤑。~~</p>
 <p>这个方案的局限：
 1. 只能加速http、https 流量；
 2. github.com（http2）似乎有异常，见下文解决方法。</p>

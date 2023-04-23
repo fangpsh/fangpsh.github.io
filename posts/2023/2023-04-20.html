@@ -107,7 +107,7 @@ l/YKQnk8F/JcCXI3k4uvf1VsKs6lu...3AtHsxb9I16t2vXJ0qpK+7DmEgADVBdw==
 </code></pre></div>
 
 <p>找一个<a href="https://tool.lmeee.com/jiami/aes">AES 在线加解密</a>的网站，试一试：</p>
-<p><img alt="" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143926.png"></p>
+<p><img alt="aes-decrypt" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143926.png"></p>
 <p>ok，搞定了sign_str，有了这个sign_str 能方便我们后续校对sign_str 生成逻辑和编写poc。</p>
 <p>同时在这一步，可以发现前半部分字符串和上文出现UserID 有类似的地方。接下来就是读懂前面encodeKey 函数的逻辑，以及传入mCode 的生成落。</p>
 <p>UserID+mPassCode+md5_16(mPassCode)+"B"+版本号。
