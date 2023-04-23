@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-04-23T00:00:00+08:00</updated><entry><title>轻量级办公室无感知跨境加速方案</title><link href="https://fangpsh.github.io/posts/2023/2023-04-23.html" rel="alternate"></link><published>2023-04-23T00:00:00+08:00</published><updated>2023-04-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-04-23:/posts/2023/2023-04-23.html</id><summary type="html">&lt;p&gt;之前逛V2EX 看到一个网友的帖子：“&lt;a href="https://www.v2ex.com/t/928907"&gt;请教公司内部如何实现无感知跨境加速&lt;/a&gt;”，把海外IP 全部走到代理网关，维护成本比较高。如 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前逛V2EX 看到一个网友的帖子：“&lt;a href="https://www.v2ex.com/t/928907"&gt;请教公司内部如何实现无感知跨境加速&lt;/a&gt;”，把海外IP 全部走到代理网关，维护成本比较高。如果只是简单的Web 加速，DNS 劫持+SNIProxy 是更轻量的方法。&lt;/p&gt;
-&lt;p&gt;~~有&lt;a href="https://docs.fortinet.com/document/fortigate/6.2.14/cookbook/80739/dynamic-application-steering-with-lowest-cost-and-best-quality-strategies"&gt;Fortinet&lt;/a&gt;、&lt;a href="https://bbs.panabit.com/thread-12376-1-1.html"&gt;Panabit&lt;/a&gt;的土豪无须接着看🤑。~~&lt;/p&gt;
+&lt;p&gt;~~有&lt;a href="https://docs.fortinet.com/document/fortigate/6.2.14/cookbook/80739/dynamic-application-steering-with-lowest-cost-and-best-quality-strategies"&gt;Fortinet&lt;/a&gt;、&lt;a href="https://bbs.panabit.com/thread-12376-1-1.html"&gt;Panabit&lt;/a&gt;的土豪无须接着看 🤑~~&lt;/p&gt;
 &lt;p&gt;这个方案的局限：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;只能加速http、https 流量；&lt;/li&gt;
 &lt;li&gt;github.com（http2）似乎有异常，见下文解决方法。&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就会搞几个机场账号，一个月成本百来块解决。&lt;/p&gt;
-&lt;p&gt;当然我牢记前辈们的血泪教训：在工作场合中，能用钱解决的，尽量用钱（乙方）解决，要不然就是给自己找事了🐕。&lt;/p&gt;
-&lt;p&gt;说回正事，先画草图：&lt;/p&gt;
+&lt;p&gt;按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就会搞几个机场账号，一个月成本百来块解决。  &lt;/p&gt;
+&lt;p&gt;当然我牢记前辈们的血泪教训：在工作场合中，能用钱解决的，尽量用钱（乙方）解决，要不然就是给自己找事了🐕。  &lt;/p&gt;
+&lt;p&gt;说回正事，画个草图：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;             ┌──────────┐   query:www.google.com ┌───────────┐
              │          ├────────────────────────►           │
              │  client  │                        │ local dns │
@@ -233,7 +233,7 @@ iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&g
 &lt;li&gt;或者土豪有F5之类&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;配置多个代理机，localDNS 那里返回多个A记录，Chrome 自己会重试；&lt;ul&gt;
+&lt;li&gt;配置多个代理机，local dns 那里返回多个A记录，Chrome 自己会重试；&lt;ul&gt;
 &lt;li&gt;我选这个&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;

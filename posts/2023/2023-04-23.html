@@ -34,15 +34,15 @@
   </div>     
   <div id="article-content" class="entry-content">
     <p>之前逛V2EX 看到一个网友的帖子：“<a href="https://www.v2ex.com/t/928907">请教公司内部如何实现无感知跨境加速</a>”，把海外IP 全部走到代理网关，维护成本比较高。如果只是简单的Web 加速，DNS 劫持+SNIProxy 是更轻量的方法。</p>
-<p>~~有<a href="https://docs.fortinet.com/document/fortigate/6.2.14/cookbook/80739/dynamic-application-steering-with-lowest-cost-and-best-quality-strategies">Fortinet</a>、<a href="https://bbs.panabit.com/thread-12376-1-1.html">Panabit</a>的土豪无须接着看🤑。~~</p>
+<p>~~有<a href="https://docs.fortinet.com/document/fortigate/6.2.14/cookbook/80739/dynamic-application-steering-with-lowest-cost-and-best-quality-strategies">Fortinet</a>、<a href="https://bbs.panabit.com/thread-12376-1-1.html">Panabit</a>的土豪无须接着看 🤑~~</p>
 <p>这个方案的局限：</p>
 <ol>
 <li>只能加速http、https 流量；</li>
 <li>github.com（http2）似乎有异常，见下文解决方法。</li>
 </ol>
-<p>按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就会搞几个机场账号，一个月成本百来块解决。</p>
-<p>当然我牢记前辈们的血泪教训：在工作场合中，能用钱解决的，尽量用钱（乙方）解决，要不然就是给自己找事了🐕。</p>
-<p>说回正事，先画草图：</p>
+<p>按网友说的联通/电信的MPLS，1000元/M/(月?)，如果是我的话，就会搞几个机场账号，一个月成本百来块解决。  </p>
+<p>当然我牢记前辈们的血泪教训：在工作场合中，能用钱解决的，尽量用钱（乙方）解决，要不然就是给自己找事了🐕。  </p>
+<p>说回正事，画个草图：</p>
 <div class="highlight"><pre><span></span><code>             ┌──────────┐   query:www.google.com ┌───────────┐
              │          ├────────────────────────►           │
              │  client  │                        │ local dns │
@@ -267,7 +267,7 @@ iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </
 <li>或者土豪有F5之类</li>
 </ul>
 </li>
-<li>配置多个代理机，localDNS 那里返回多个A记录，Chrome 自己会重试；<ul>
+<li>配置多个代理机，local dns 那里返回多个A记录，Chrome 自己会重试；<ul>
 <li>我选这个</li>
 </ul>
 </li>
