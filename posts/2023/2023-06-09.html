@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>请给域名解析GEO线路配置兜底线路 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-06-09.html" rel="bookmark"
+         title="Permalink to 请给域名解析GEO线路配置兜底线路">请给域名解析GEO线路配置兜底线路</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>阿里云云解析、腾讯DNSPod、AWS Route53 等均支持GEO线路解析，可以看阿里这个<a href="https://help.aliyun.com/document_detail/29730.html">文档</a>：</p>
+<blockquote>
+<p>实现原理<br>
+云解析是通过识别LocalDNS的出口IP，来判断访问者来源。<br>
+如果LocalDNS支持EDNS  <br>
+因为云解析DNS支持 edns-client-subnet，所以在获取访问者来源IP时，优先获取 edns-client-subnet 扩展里携带的IP，如果edns-client-subnet 扩展里存在IP，云解析DNS会以该IP来判断访问者的地理位置 ；如果不存在，则以LocalDNS出口IP来判断访问者的地理位置。<br>
+如果LocalDNS不支持EDNS    <br>
+LocalDNS会迭代请求至云解析DNS，云解析DNS根据访问者LocalDNS出口IP来判断访问者的地址位置，实现智能解析。  <br>
+如果LocalDNS变相支持EDNS    <br>
+用户发起DNS请求，递归到LocalDNS，则LocalDNS将本次请求发送到二级节点，通过二级节点向云解析DNS发起请求，此时云解析DNS会根据LocalDNS二级节点的地域位置返回具体
+的细分线路解析结果。  </p>
+</blockquote>
+<p>这上面调度靠的就是IP库，调度的准确性完全依赖这个库。
+能不能准确的将你想要的用户调度到对应的节点，这里面会有2个问题：</p>
+<ol>
+<li>厂商的IP库准不准；</li>
+<li>厂商的研发怎么处理IP库字段和GEO 匹配逻辑；</li>
+</ol>
+<p>IPIP.NET创始人高春晖写过一个系列：<a href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA4NDMzODY1MQ==&amp;action=getalbum&amp;album_id=2292580962339192832&amp;scene=173&amp;from_msgid=2247484081&amp;from_itemidx=1&amp;count=3&amp;nolastread=1#wechat_redirect">DNS智能解析功能评测</a>，读完这个系列文档，我们就能发现，除了使用了IPIP 的的DNSPod和DNS.COM，其他厂商都一塌糊涂。</p>
+<p>如果你认为高春晖是自卖自夸，那大可实际测试一下。从我的体验来看，他说的没错。</p>
+<p>这里的本质问题就是IPIP的数据和准确性好了一大截。印象阿里是有采购IPIP，但是似乎是只给了CDN 业务用，阿里云解析还自己搞了一个IP库，和IPIP.NET 闹了一段官司后道歉下线了。</p>
+<p>你可能会问AWS 是不是好一点，头部大厂，做国外业务的，对国外分国家地区解析用Route53更好一点？ 实际的情况是Route53 用的是Maxmind，而Maxmind 的数据从我过往的经验来看，及时性和准确比IPIP 差很多，有时候甚至比IP2Location 还差。（至于Route53 权威节点的网络性能，暂不讨论，只讨论线路的准确性的。对了，Route53 按解析次数收费，也太贵了。。别上贼船）</p>
+<p>总之，我个人感觉如果IPIP.NET 打90分，那Maxmind 和IP2Location 就大概60~70分，基于他们做出来的产品也就差不多。</p>
+<p>回到DNS解析这个兜底线路问题，如果DNS 的IP库不准，特别是对一些localdns 的出口ip（回看下上面阿里云的的原理）识别不准，</p>
+<h4>例1</h4>
+<p>例如一个广东 联通的出口IP，IP库识别出来可能是 <code>中国 联通</code>，或者只有<code>联通</code>，这个时候如果你的线路是这么配置的：</p>
+<ul>
+<li>默认 -&gt; x.y.z.0</li>
+<li>华北 电信 -&gt; x.y.z.1</li>
+<li>华南 联通 -&gt; x.y.z.2</li>
+<li>华北 移动 -&gt; x.y.z.3</li>
+<li>...</li>
+</ul>
+<p>那么就会匹配到 <code>默认 x.y.z.0</code>，如果这个IP 不是BGP 线路，就跨网绕了一圈。
+加一个<code>联通 -&gt; x.y.z.4</code> 可以防止这种情况。</p>
+<h4>例2</h4>
+<p>如果你的解析线路是：</p>
+<ul>
+<li>电信 -&gt; x.y.z.0</li>
+<li>联通 -&gt; x.y.z.1</li>
+<li>移动 -&gt; x.y.z.2</li>
+<li>广电 -&gt; x.y.z.3</li>
+<li>...</li>
+<li>境外 -&gt; x.y.z.101</li>
+</ul>
+<p>是的，你是把厂商支持的分运营商线路都加上了，但是就没加<code>默认</code>线路，<strong>但是也会有少数国内用户的IP，IP库读出来不带ISP 信息</strong>，那这部分用户这个时候会拿不到解析结果。</p>
+<h4>例3</h4>
+<p>按洲配置了解析线路：</p>
+<ul>
+<li>默认-&gt; 腾讯北京IP</li>
+<li>亚洲-&gt; 阿里香港IP</li>
+<li>欧洲-&gt; AWS 德国IP</li>
+<li>大洋洲..</li>
+<li>北美洲..</li>
+<li>..洲</li>
+</ul>
+<p>如果一个境外IP 识别出来是空，会直接走到<code>默认 腾讯北京</code>，这个时候保险一点加上<code>境外线路</code>。我们并不知道DNS的研发会如何处理这种情况，</p>
+<ul>
+<li>境外线路，是匹配明确了境外地区国家的？对于无国家的，走默认线路；</li>
+<li>境外线路，是匹配所有除了中国大陆意外的IP？对于无国家的，如果有境外线路，走境外线路</li>
+</ul>
+<p>BTW. 如果上面这种情况，你怕自己一不小心没有把<code>洲</code>线路加全，那更应该加一个<code>境外</code>线路兜底。</p>
+<p>BTW2. Route53 没有境外线路，他的默认是全球，你需要单独添加中国线路，逻辑和国内厂商相反。</p>
+<h4>例4</h4>
+<p>你写了一堆脚本，按每个国家分线路配置了，但是哪天脚本出错，少添加了一个国家或者运维误删了一个国家，这个国家直接走到默认线路，默认线路指向的可能是北京。 （如果没有默认线路，就更惨了）</p>
+<p>你写了一堆脚本，按每个国家分线路配置了，但是IP库的对于一些小国家和争议地区的代码和DNS调度系统不一致，DNS 研发没处理或者不想处理这个问题，这个国家也会走到默认线路。</p>
+<h4>总结</h4>
+<p>这是小概率事件，出错影响的势必是小部分用户，又极难发现。<br>
+啰唆了这么多，很简单的一件事，时刻牢记配上默认线路兜底。<br>
+当添加了按国家，按地区+运营商分线路解析，记得按情况配置大洲线路，运营商线路，境外线路兜底。  </p>
+<hr>
+<p>IP 库厂商在做IP  定位时，理想的也应该是准确度优先，而不是覆盖度优先。
+什么是准确度优先呢? 即如果你吃不准一个IP是不是广东的，就不要瞎标，只标到中国就好了。我记得IPIP.NET 是这么做，很早之前跑过一个测试，当时看到对于教育网的IP，IPIP.NET标的都是准确度优先，不会瞎标。</p>
+<p>但是国内有一些IP库厂商，选择覆盖度优先，他一定要标到城市或者一级行政区，即使他吃不准后面是不是对的。标上再说，然后吹嘘自己覆盖度99.999%。</p>
+<p><strong>假设DNS 厂商用的是准确度优先的，那我们就更应该设置兜底策略。</strong></p>
+<p>如果是覆盖度优先的的呢？只能说少用，能用尽量只加默认线路、大运营线路，业务上少依赖DNS 调度的准确性。</p>
+<p>🐴后🧨</p>
+<p>现在公司部分业务部门使用了大量分线路解析的情况，分国家、地区，将用户引导到不同节点上。去年提醒了业务部门和总监，添加和检查加洲线路、默认线路兜底被无视，今年就漏了个国家线路被客户投诉 🤦‍♂️。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-06-09T00:00:00+08:00">
+      Fri 09 June 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/dns.html">dns </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>
