@@ -43,7 +43,7 @@
 <p><strong>风险提示：硬盘有价，数据无价，以下仅代表个人情况。</strong></p>
 <p>公司的磁盘是2块盘，做了RAID1，那么单独一块盘完全是镜像，先拿一块盘做下实验，搞坏的话，还剩余一个再搞个QNAP（QuTScloud） 也能读出来。</p>
 <p>同事帮忙弄了一台Dell R430，装了个CentOS7，带的阵列卡是<code>PERC H730 Mini</code>。</p>
-<p>系统盘在Slot0，Qnap 拆下的磁盘在Slot1，先安装<a href="https://docs.broadcom.com/docs-and-downloads/raid-controllers/raid-controllers-common-files/8-07-14_MegaCLI.zip">megacli</a>，上次帮同学折腾才发现新的卡要用<code>storcli64</code> 了。</p>
+<p>系统盘在Slot0，Qnap 拆下的磁盘在Slot1，先安装<a href="https://docs.broadcom.com/docs-and-downloads/raid-controllers/raid-controllers-common-files/8-07-14_MegaCLI.zip">megacli</a>。题外话，上次帮同学折腾才发现新的卡已经要用<code>storcli64</code> 了。</p>
 <p>环境准备：安装<code>lvm2</code>，<code>mdadm</code> </p>
 <p>插入磁盘，再将对应slot 设置为<code>JBOD</code>:</p>
 <div class="highlight"><pre><span></span><code>./MegaCli64 -PDMakeJBOD -PhysDrv[32:1] -a0
@@ -104,8 +104,8 @@
 <span class="w">      </span><span class="mi">7804071616</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="n">super</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">[</span><span class="n">2/1</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">U_</span><span class="o">]</span>
 </code></pre></div>
 
-<p>借着执行<code>pvdisplay</code>，但是我并未看到<code>/dev/md125</code> 这个PV，
-搜了下，执行<code>pvscan --cache</code> (Updates the runtime state for all lvm devices)：</p>
+<p>接着执行<code>pvdisplay</code>，但是我并未看到<code>/dev/md125</code> 这个PV，</p>
+<p>搜了下，需要执行<code>pvscan --cache</code> (Updates the runtime state for all lvm devices)：</p>
 <div class="highlight"><pre><span></span><code>  --- Physical volume ---
   PV Name               /dev/md125
   VG Name               vg289

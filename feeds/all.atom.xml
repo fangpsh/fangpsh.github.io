@@ -12,7 +12,7 @@
 &lt;p&gt;&lt;strong&gt;风险提示：硬盘有价，数据无价，以下仅代表个人情况。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;公司的磁盘是2块盘，做了RAID1，那么单独一块盘完全是镜像，先拿一块盘做下实验，搞坏的话，还剩余一个再搞个QNAP（QuTScloud） 也能读出来。&lt;/p&gt;
 &lt;p&gt;同事帮忙弄了一台Dell R430，装了个CentOS7，带的阵列卡是&lt;code&gt;PERC H730 Mini&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;系统盘在Slot0，Qnap 拆下的磁盘在Slot1，先安装&lt;a href="https://docs.broadcom.com/docs-and-downloads/raid-controllers/raid-controllers-common-files/8-07-14_MegaCLI.zip"&gt;megacli&lt;/a&gt;，上次帮同学折腾才发现新的卡要用&lt;code&gt;storcli64&lt;/code&gt; 了。&lt;/p&gt;
+&lt;p&gt;系统盘在Slot0，Qnap 拆下的磁盘在Slot1，先安装&lt;a href="https://docs.broadcom.com/docs-and-downloads/raid-controllers/raid-controllers-common-files/8-07-14_MegaCLI.zip"&gt;megacli&lt;/a&gt;。题外话，上次帮同学折腾才发现新的卡已经要用&lt;code&gt;storcli64&lt;/code&gt; 了。&lt;/p&gt;
 &lt;p&gt;环境准备：安装&lt;code&gt;lvm2&lt;/code&gt;，&lt;code&gt;mdadm&lt;/code&gt; &lt;/p&gt;
 &lt;p&gt;插入磁盘，再将对应slot 设置为&lt;code&gt;JBOD&lt;/code&gt;:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;./MegaCli64 -PDMakeJBOD -PhysDrv[32:1] -a0
@@ -73,8 +73,8 @@
 &lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;7804071616&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;2/1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;U_&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;借着执行&lt;code&gt;pvdisplay&lt;/code&gt;，但是我并未看到&lt;code&gt;/dev/md125&lt;/code&gt; 这个PV，
-搜了下，执行&lt;code&gt;pvscan --cache&lt;/code&gt; (Updates the runtime state for all lvm devices)：&lt;/p&gt;
+&lt;p&gt;接着执行&lt;code&gt;pvdisplay&lt;/code&gt;，但是我并未看到&lt;code&gt;/dev/md125&lt;/code&gt; 这个PV，&lt;/p&gt;
+&lt;p&gt;搜了下，需要执行&lt;code&gt;pvscan --cache&lt;/code&gt; (Updates the runtime state for all lvm devices)：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;  --- Physical volume ---
   PV Name               /dev/md125
   VG Name               vg289
