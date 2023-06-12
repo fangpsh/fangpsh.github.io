@@ -1,5 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-06-09T00:00:00+08:00</updated><entry><title>请给域名解析GEO线路配置兜底线路</title><link href="https://fangpsh.github.io/posts/2023/2023-06-09.html" rel="alternate"></link><published>2023-06-09T00:00:00+08:00</published><updated>2023-06-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-06-09:/posts/2023/2023-06-09.html</id><summary type="html">&lt;p&gt;阿里云云解析、腾讯DNSPod、AWS Route53 等均支持GEO线路解析，可以看阿里这个&lt;a href="https://help.aliyun.com/document_detail/29730.html"&gt;文档&lt;/a&gt;：&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-06-12T00:00:00+08:00</updated><entry><title>威联通RAID1 磁盘数据导出</title><link href="https://fangpsh.github.io/posts/2023/2023-06-12.html" rel="alternate"></link><published>2023-06-12T00:00:00+08:00</published><updated>2023-06-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-06-12:/posts/2023/2023-06-12.html</id><summary type="html">&lt;p&gt;公司用了多年的&lt;a href="https://www.qnap.com/en/product/ts-651"&gt;TS-651&lt;/a&gt; 坏了，修了没跑几天又坏（深圳南山赛格👎 ），
+最开始搜索&lt;code&gt;qnap 硬盘导出&lt;/code&gt;，首先看到&lt;a href="https://post.smzdm.com/p/301806/"&gt;smzdm&lt;/a&gt;的帖子：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Qnap的磁盘分区采用的是md RAID+LVM2的两层组织结构，即使我使用 …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;p&gt;公司用了多年的&lt;a href="https://www.qnap.com/en/product/ts-651"&gt;TS-651&lt;/a&gt; 坏了，修了没跑几天又坏（深圳南山赛格👎 ），
+最开始搜索&lt;code&gt;qnap 硬盘导出&lt;/code&gt;，首先看到&lt;a href="https://post.smzdm.com/p/301806/"&gt;smzdm&lt;/a&gt;的帖子：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Qnap的磁盘分区采用的是md RAID+LVM2的两层组织结构，即使我使用的是Single模式分区也是一样的结构。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;看起来有戏，尝试一下数据导出，主要参考这篇文章&lt;a href="https://ripcaster.co.uk/Data_Recovery_from_Failed_QNAP_RAID_1"&gt;Data Recovery from Failed QNAP RAID 1 on a PC using Linux&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;注意：在QNAP 官网&lt;a href="https://www.qnap.com.cn/zh-cn/nas-migration"&gt;数据迁移兼容性检查&lt;/a&gt;工具中，ARM 和X86 的系统是不能互相迁移的，那可能意味着ARM 的磁盘，在x86 的服务器上是不是也不能导出 🤔？&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;风险提示：硬盘有价，数据无价，以下仅代表个人情况。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;公司的磁盘是2块盘，做了RAID1，那么单独一块盘完全是镜像，先拿一块盘做下实验，搞坏的话，还剩余一个再搞个QNAP（QuTScloud） 也能读出来。&lt;/p&gt;
+&lt;p&gt;同事帮忙弄了一台Dell R430，装了个CentOS7，带的阵列卡是&lt;code&gt;PERC H730 Mini&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;系统盘在Slot0，Qnap 拆下的磁盘在Slot1，先安装&lt;a href="https://docs.broadcom.com/docs-and-downloads/raid-controllers/raid-controllers-common-files/8-07-14_MegaCLI.zip"&gt;megacli&lt;/a&gt;，上次帮同学折腾才发现新的卡要用&lt;code&gt;storcli64&lt;/code&gt; 了。&lt;/p&gt;
+&lt;p&gt;环境准备：安装&lt;code&gt;lvm2&lt;/code&gt;，&lt;code&gt;mdadm&lt;/code&gt; &lt;/p&gt;
+&lt;p&gt;插入磁盘，再将对应slot 设置为&lt;code&gt;JBOD&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;./MegaCli64 -PDMakeJBOD -PhysDrv[32:1] -a0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;fdisk 能看到设备了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;Disk&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;sdb&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8001&lt;/span&gt;.&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;GB&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8001563222016&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;15628053168&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;sectors&lt;/span&gt;
+&lt;span class="nv"&gt;Units&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;sectors&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;of&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;512&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;512&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;
+&lt;span class="nv"&gt;Sector&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;size&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;logical&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;physical&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;512&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4096&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;
+&lt;span class="nv"&gt;I&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;O&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;size&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;minimum&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;optimal&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4096&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4096&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;
+&lt;span class="nv"&gt;Disk&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;label&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;type&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;gpt&lt;/span&gt;
+&lt;span class="nv"&gt;Disk&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;identifier&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;FDF2182D&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;83&lt;/span&gt;&lt;span class="nv"&gt;DC&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;47&lt;/span&gt;&lt;span class="nv"&gt;B6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="nv"&gt;B39&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;01&lt;/span&gt;&lt;span class="nv"&gt;ECAF78BCEC&lt;/span&gt;
+
+
+#&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="nv"&gt;Start&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="k"&gt;End&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;Size&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Type&lt;/span&gt;&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nv"&gt;Name&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="mi"&gt;40&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;1060289&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;517&lt;/span&gt;.&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nv"&gt;M&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;1060296&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;2120579&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;517&lt;/span&gt;.&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nv"&gt;M&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;2120584&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15610264109&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;.&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="nv"&gt;T&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15610264112&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15611324399&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;517&lt;/span&gt;.&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nv"&gt;M&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15611324408&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15628031999&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="nv"&gt;G&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;扫描一下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mdadm --examine --scan
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;cat /proc/mdstat&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;md123&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb4&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;27&lt;/span&gt;&lt;span class="o"&gt;](&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;530128&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+
+&lt;span class="n"&gt;md124&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb5&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;](&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;8353780&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+
+&lt;span class="n"&gt;md125&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb3&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;7804071616&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+
+&lt;span class="n"&gt;md126&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb1&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;27&lt;/span&gt;&lt;span class="o"&gt;](&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;530108&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+
+&lt;span class="n"&gt;md127&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb2&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;](&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;530124&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;数据在sdb3/md125。参考smzdm那个教程，执行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mdadm -A --verbose --run ...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;记得有个error，提示设备在使用中，还是什么错误（后台在自动挂载了？），我手工stop 一下，再挂载就好了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mdadm --stop /dev/md125
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mdadm --run /dev/md125
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这个时候再&lt;code&gt;cat /proc/mdstat&lt;/code&gt;能看到&lt;code&gt;active&lt;/code&gt; 了。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;Personalities&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;raid1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;md125&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;active&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;raid1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb3&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;0&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;7804071616&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;2/1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;U_&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;借着执行&lt;code&gt;pvdisplay&lt;/code&gt;，但是我并未看到&lt;code&gt;/dev/md125&lt;/code&gt; 这个PV，
+搜了下，执行&lt;code&gt;pvscan --cache&lt;/code&gt; (Updates the runtime state for all lvm devices)：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;  --- Physical volume ---
+  PV Name               /dev/md125
+  VG Name               vg289
+  PV Size               &amp;lt;7.27 TiB / not usable 1.65 MiB
+  Allocatable           yes (but full)
+  PE Size               4.00 MiB
+  Total PE              1905290
+  Free PE               0
+  Allocated PE          1905290
+  PV UUID               hkvib9-WQfS-iyOu-b2U9-1LNa-5I2e-O2Vjwb
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;lvscan 看下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;  inactive          &amp;#39;/dev/vg289/lv546&amp;#39; [74.42 GiB] inherit
+  inactive            &amp;#39;/dev/vg289/lv3&amp;#39; [&amp;lt;7.20 TiB] inherit
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这个时候尝试去挂载&lt;code&gt;/dev/vg289/lv3&lt;/code&gt; 发现设备不存在，需要再执行下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;lvchange -ay /dev/vg289/lv3
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;再&lt;code&gt;mount&lt;/code&gt; 就可以了，备份完数据后，卸载的话按 ripcaster 教程文末脚本。&lt;/p&gt;</content><category term="2023"></category><category term="nas"></category><category term="qnap"></category><category term="raid"></category></entry><entry><title>请给域名解析GEO线路配置兜底线路</title><link href="https://fangpsh.github.io/posts/2023/2023-06-09.html" rel="alternate"></link><published>2023-06-09T00:00:00+08:00</published><updated>2023-06-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-06-09:/posts/2023/2023-06-09.html</id><summary type="html">&lt;p&gt;阿里云云解析、腾讯DNSPod、AWS Route53 等均支持GEO线路解析，可以看阿里这个&lt;a href="https://help.aliyun.com/document_detail/29730.html"&gt;文档&lt;/a&gt;：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;实现原理&lt;br&gt;
 云解析是通过识别LocalDNS的出口IP，来判断访问者来源。&lt;br&gt;

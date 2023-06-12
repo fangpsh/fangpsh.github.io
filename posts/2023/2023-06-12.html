@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>威联通RAID1 磁盘数据导出 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-06-12.html" rel="bookmark"
+         title="Permalink to 威联通RAID1 磁盘数据导出">威联通RAID1 磁盘数据导出</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>公司用了多年的<a href="https://www.qnap.com/en/product/ts-651">TS-651</a> 坏了，修了没跑几天又坏（深圳南山赛格👎 ），
+最开始搜索<code>qnap 硬盘导出</code>，首先看到<a href="https://post.smzdm.com/p/301806/">smzdm</a>的帖子：</p>
+<blockquote>
+<p>Qnap的磁盘分区采用的是md RAID+LVM2的两层组织结构，即使我使用的是Single模式分区也是一样的结构。</p>
+</blockquote>
+<p>看起来有戏，尝试一下数据导出，主要参考这篇文章<a href="https://ripcaster.co.uk/Data_Recovery_from_Failed_QNAP_RAID_1">Data Recovery from Failed QNAP RAID 1 on a PC using Linux</a></p>
+<p>注意：在QNAP 官网<a href="https://www.qnap.com.cn/zh-cn/nas-migration">数据迁移兼容性检查</a>工具中，ARM 和X86 的系统是不能互相迁移的，那可能意味着ARM 的磁盘，在x86 的服务器上是不是也不能导出 🤔？</p>
+<p><strong>风险提示：硬盘有价，数据无价，以下仅代表个人情况。</strong></p>
+<p>公司的磁盘是2块盘，做了RAID1，那么单独一块盘完全是镜像，先拿一块盘做下实验，搞坏的话，还剩余一个再搞个QNAP（QuTScloud） 也能读出来。</p>
+<p>同事帮忙弄了一台Dell R430，装了个CentOS7，带的阵列卡是<code>PERC H730 Mini</code>。</p>
+<p>系统盘在Slot0，Qnap 拆下的磁盘在Slot1，先安装<a href="https://docs.broadcom.com/docs-and-downloads/raid-controllers/raid-controllers-common-files/8-07-14_MegaCLI.zip">megacli</a>，上次帮同学折腾才发现新的卡要用<code>storcli64</code> 了。</p>
+<p>环境准备：安装<code>lvm2</code>，<code>mdadm</code> </p>
+<p>插入磁盘，再将对应slot 设置为<code>JBOD</code>:</p>
+<div class="highlight"><pre><span></span><code>./MegaCli64 -PDMakeJBOD -PhysDrv[32:1] -a0
+</code></pre></div>
+
+<p>fdisk 能看到设备了：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">Disk</span><span class="w"> </span><span class="o">/</span><span class="nv">dev</span><span class="o">/</span><span class="nv">sdb</span>:<span class="w"> </span><span class="mi">8001</span>.<span class="mi">6</span><span class="w"> </span><span class="nv">GB</span>,<span class="w"> </span><span class="mi">8001563222016</span><span class="w"> </span><span class="nv">bytes</span>,<span class="w"> </span><span class="mi">15628053168</span><span class="w"> </span><span class="nv">sectors</span>
+<span class="nv">Units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sectors</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">512</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">512</span><span class="w"> </span><span class="nv">bytes</span>
+<span class="nv">Sector</span><span class="w"> </span><span class="nv">size</span><span class="w"> </span><span class="ss">(</span><span class="nv">logical</span><span class="o">/</span><span class="nv">physical</span><span class="ss">)</span>:<span class="w"> </span><span class="mi">512</span><span class="w"> </span><span class="nv">bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">4096</span><span class="w"> </span><span class="nv">bytes</span>
+<span class="nv">I</span><span class="o">/</span><span class="nv">O</span><span class="w"> </span><span class="nv">size</span><span class="w"> </span><span class="ss">(</span><span class="nv">minimum</span><span class="o">/</span><span class="nv">optimal</span><span class="ss">)</span>:<span class="w"> </span><span class="mi">4096</span><span class="w"> </span><span class="nv">bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">4096</span><span class="w"> </span><span class="nv">bytes</span>
+<span class="nv">Disk</span><span class="w"> </span><span class="nv">label</span><span class="w"> </span><span class="nv">type</span>:<span class="w"> </span><span class="nv">gpt</span>
+<span class="nv">Disk</span><span class="w"> </span><span class="nv">identifier</span>:<span class="w"> </span><span class="nv">FDF2182D</span><span class="o">-</span><span class="mi">83</span><span class="nv">DC</span><span class="o">-</span><span class="mi">47</span><span class="nv">B6</span><span class="o">-</span><span class="mi">8</span><span class="nv">B39</span><span class="o">-</span><span class="mi">01</span><span class="nv">ECAF78BCEC</span>
+
+
+#<span class="w">         </span><span class="nv">Start</span><span class="w">          </span><span class="k">End</span><span class="w">    </span><span class="nv">Size</span><span class="w">  </span><span class="nv">Type</span><span class="w">            </span><span class="nv">Name</span>
+<span class="w"> </span><span class="mi">1</span><span class="w">           </span><span class="mi">40</span><span class="w">      </span><span class="mi">1060289</span><span class="w">  </span><span class="mi">517</span>.<span class="mi">7</span><span class="nv">M</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
+<span class="w"> </span><span class="mi">2</span><span class="w">      </span><span class="mi">1060296</span><span class="w">      </span><span class="mi">2120579</span><span class="w">  </span><span class="mi">517</span>.<span class="mi">7</span><span class="nv">M</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
+<span class="w"> </span><span class="mi">3</span><span class="w">      </span><span class="mi">2120584</span><span class="w">  </span><span class="mi">15610264109</span><span class="w">    </span><span class="mi">7</span>.<span class="mi">3</span><span class="nv">T</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
+<span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="mi">15610264112</span><span class="w">  </span><span class="mi">15611324399</span><span class="w">  </span><span class="mi">517</span>.<span class="mi">7</span><span class="nv">M</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
+<span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="mi">15611324408</span><span class="w">  </span><span class="mi">15628031999</span><span class="w">      </span><span class="mi">8</span><span class="nv">G</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
+</code></pre></div>
+
+<p>扫描一下：</p>
+<div class="highlight"><pre><span></span><code>mdadm --examine --scan
+</code></pre></div>
+
+<p><code>cat /proc/mdstat</code></p>
+<div class="highlight"><pre><span></span><code><span class="n">md123</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb4</span><span class="o">[</span><span class="mi">27</span><span class="o">](</span><span class="n">S</span><span class="o">)</span>
+<span class="w">      </span><span class="mi">530128</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+
+<span class="n">md124</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb5</span><span class="o">[</span><span class="mi">0</span><span class="o">](</span><span class="n">S</span><span class="o">)</span>
+<span class="w">      </span><span class="mi">8353780</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+
+<span class="n">md125</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb3</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+<span class="w">      </span><span class="mi">7804071616</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+
+<span class="n">md126</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb1</span><span class="o">[</span><span class="mi">27</span><span class="o">](</span><span class="n">S</span><span class="o">)</span>
+<span class="w">      </span><span class="mi">530108</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+
+<span class="n">md127</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb2</span><span class="o">[</span><span class="mi">2</span><span class="o">](</span><span class="n">S</span><span class="o">)</span>
+<span class="w">      </span><span class="mi">530124</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+</code></pre></div>
+
+<p>数据在sdb3/md125。参考smzdm那个教程，执行</p>
+<div class="highlight"><pre><span></span><code>mdadm -A --verbose --run ...
+</code></pre></div>
+
+<p>记得有个error，提示设备在使用中，还是什么错误（后台在自动挂载了？），我手工stop 一下，再挂载就好了：</p>
+<div class="highlight"><pre><span></span><code>mdadm --stop /dev/md125
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>mdadm --run /dev/md125
+</code></pre></div>
+
+<p>这个时候再<code>cat /proc/mdstat</code>能看到<code>active</code> 了。</p>
+<div class="highlight"><pre><span></span><code><span class="n">Personalities</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="o">[</span><span class="n">raid1</span><span class="o">]</span>
+<span class="n">md125</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="n">raid1</span><span class="w"> </span><span class="n">sdb3</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
+<span class="w">      </span><span class="mi">7804071616</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="n">super</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">[</span><span class="n">2/1</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">U_</span><span class="o">]</span>
+</code></pre></div>
+
+<p>借着执行<code>pvdisplay</code>，但是我并未看到<code>/dev/md125</code> 这个PV，
+搜了下，执行<code>pvscan --cache</code> (Updates the runtime state for all lvm devices)：</p>
+<div class="highlight"><pre><span></span><code>  --- Physical volume ---
+  PV Name               /dev/md125
+  VG Name               vg289
+  PV Size               &lt;7.27 TiB / not usable 1.65 MiB
+  Allocatable           yes (but full)
+  PE Size               4.00 MiB
+  Total PE              1905290
+  Free PE               0
+  Allocated PE          1905290
+  PV UUID               hkvib9-WQfS-iyOu-b2U9-1LNa-5I2e-O2Vjwb
+</code></pre></div>
+
+<p>lvscan 看下：</p>
+<div class="highlight"><pre><span></span><code>  inactive          &#39;/dev/vg289/lv546&#39; [74.42 GiB] inherit
+  inactive            &#39;/dev/vg289/lv3&#39; [&lt;7.20 TiB] inherit
+</code></pre></div>
+
+<p>这个时候尝试去挂载<code>/dev/vg289/lv3</code> 发现设备不存在，需要再执行下：</p>
+<div class="highlight"><pre><span></span><code>lvchange -ay /dev/vg289/lv3
+</code></pre></div>
+
+<p>再<code>mount</code> 就可以了，备份完数据后，卸载的话按 ripcaster 教程文末脚本。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-06-12T00:00:00+08:00">
+      Mon 12 June 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/nas.html">nas </a><a href="https://fangpsh.github.io/tag/qnap.html">qnap </a><a href="https://fangpsh.github.io/tag/raid.html">raid </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>
