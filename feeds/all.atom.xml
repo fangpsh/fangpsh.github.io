@@ -6,13 +6,13 @@
 &lt;p&gt;Qnap的磁盘分区采用的是md RAID+LVM2的两层组织结构，即使我使用的是Single模式分区也是一样的结构。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;看起来有戏，尝试一下数据导出，主要参考这篇文章&lt;a href="https://ripcaster.co.uk/Data_Recovery_from_Failed_QNAP_RAID_1"&gt;Data Recovery from Failed QNAP RAID 1 on a PC using Linux&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;注意：在QNAP 官网&lt;a href="https://www.qnap.com.cn/zh-cn/nas-migration"&gt;数据迁移兼容性检查&lt;/a&gt;工具中，ARM 和X86 的系统是不能互相迁移的，那可能意味着ARM 的磁盘，在x86 的服务器上是不是也不能导出 🤔？&lt;/p&gt;
+&lt;p&gt;注意：在QNAP 官网&lt;a href="https://www.qnap.com.cn/zh-cn/nas-migration"&gt;数据迁移兼容性检查&lt;/a&gt;工具中，ARM 和x86 的系统是不能互相迁移的，那可能意味着ARM 的磁盘，在x86 的服务器上是不是也不能导出 🤔？&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;风险提示：硬盘有价，数据无价，以下仅代表个人情况。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;公司的磁盘是2块盘，做了RAID1，那么单独一块盘完全是镜像，先拿一块盘做下实验，搞坏的话，还剩余一个再搞个QNAP（QuTScloud） 也能读出来。&lt;/p&gt;
 &lt;p&gt;同事帮忙弄了一台Dell R430，装了个CentOS7，带的阵列卡是&lt;code&gt;PERC H730 Mini&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;系统盘在Slot0，Qnap 拆下的磁盘在Slot1，先安装&lt;a href="https://docs.broadcom.com/docs-and-downloads/raid-controllers/raid-controllers-common-files/8-07-14_MegaCLI.zip"&gt;megacli&lt;/a&gt;。题外话，上次帮同学折腾才发现新的卡已经要用&lt;code&gt;storcli64&lt;/code&gt; 了。&lt;/p&gt;
 &lt;p&gt;环境准备：安装&lt;code&gt;lvm2&lt;/code&gt;，&lt;code&gt;mdadm&lt;/code&gt; &lt;/p&gt;
-&lt;p&gt;插入磁盘，再将对应slot 设置为&lt;code&gt;JBOD&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;插入磁盘，再将对应slot 磁盘设置为&lt;code&gt;JBOD&lt;/code&gt;:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;./MegaCli64 -PDMakeJBOD -PhysDrv[32:1] -a0
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
@@ -58,14 +58,14 @@
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mdadm -A --verbose --run ...
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;记得有个error，提示设备在使用中，还是什么错误（后台在自动挂载了？），我手工stop 一下，再挂载就好了：&lt;/p&gt;
+&lt;p&gt;记得有个error，提示设备在使用中，还是什么错误（后台在自动挂载了？），手工stop 一下，再挂载就好了：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mdadm --stop /dev/md125
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mdadm --run /dev/md125
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;这个时候再&lt;code&gt;cat /proc/mdstat&lt;/code&gt;能看到&lt;code&gt;active&lt;/code&gt; 了。&lt;/p&gt;
+&lt;p&gt;这个时候再&lt;code&gt;cat /proc/mdstat&lt;/code&gt; 能看到&lt;code&gt;active&lt;/code&gt; 了。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;Personalities&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;raid1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="n"&gt;md125&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;active&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;raid1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb3&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;0&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;7804071616&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;2/1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;U_&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;

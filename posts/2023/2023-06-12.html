@@ -39,13 +39,13 @@
 <p>Qnap的磁盘分区采用的是md RAID+LVM2的两层组织结构，即使我使用的是Single模式分区也是一样的结构。</p>
 </blockquote>
 <p>看起来有戏，尝试一下数据导出，主要参考这篇文章<a href="https://ripcaster.co.uk/Data_Recovery_from_Failed_QNAP_RAID_1">Data Recovery from Failed QNAP RAID 1 on a PC using Linux</a></p>
-<p>注意：在QNAP 官网<a href="https://www.qnap.com.cn/zh-cn/nas-migration">数据迁移兼容性检查</a>工具中，ARM 和X86 的系统是不能互相迁移的，那可能意味着ARM 的磁盘，在x86 的服务器上是不是也不能导出 🤔？</p>
+<p>注意：在QNAP 官网<a href="https://www.qnap.com.cn/zh-cn/nas-migration">数据迁移兼容性检查</a>工具中，ARM 和x86 的系统是不能互相迁移的，那可能意味着ARM 的磁盘，在x86 的服务器上是不是也不能导出 🤔？</p>
 <p><strong>风险提示：硬盘有价，数据无价，以下仅代表个人情况。</strong></p>
 <p>公司的磁盘是2块盘，做了RAID1，那么单独一块盘完全是镜像，先拿一块盘做下实验，搞坏的话，还剩余一个再搞个QNAP（QuTScloud） 也能读出来。</p>
 <p>同事帮忙弄了一台Dell R430，装了个CentOS7，带的阵列卡是<code>PERC H730 Mini</code>。</p>
 <p>系统盘在Slot0，Qnap 拆下的磁盘在Slot1，先安装<a href="https://docs.broadcom.com/docs-and-downloads/raid-controllers/raid-controllers-common-files/8-07-14_MegaCLI.zip">megacli</a>。题外话，上次帮同学折腾才发现新的卡已经要用<code>storcli64</code> 了。</p>
 <p>环境准备：安装<code>lvm2</code>，<code>mdadm</code> </p>
-<p>插入磁盘，再将对应slot 设置为<code>JBOD</code>:</p>
+<p>插入磁盘，再将对应slot 磁盘设置为<code>JBOD</code>:</p>
 <div class="highlight"><pre><span></span><code>./MegaCli64 -PDMakeJBOD -PhysDrv[32:1] -a0
 </code></pre></div>
 
@@ -91,14 +91,14 @@
 <div class="highlight"><pre><span></span><code>mdadm -A --verbose --run ...
 </code></pre></div>
 
-<p>记得有个error，提示设备在使用中，还是什么错误（后台在自动挂载了？），我手工stop 一下，再挂载就好了：</p>
+<p>记得有个error，提示设备在使用中，还是什么错误（后台在自动挂载了？），手工stop 一下，再挂载就好了：</p>
 <div class="highlight"><pre><span></span><code>mdadm --stop /dev/md125
 </code></pre></div>
 
 <div class="highlight"><pre><span></span><code>mdadm --run /dev/md125
 </code></pre></div>
 
-<p>这个时候再<code>cat /proc/mdstat</code>能看到<code>active</code> 了。</p>
+<p>这个时候再<code>cat /proc/mdstat</code> 能看到<code>active</code> 了。</p>
 <div class="highlight"><pre><span></span><code><span class="n">Personalities</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="o">[</span><span class="n">raid1</span><span class="o">]</span>
 <span class="n">md125</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="n">raid1</span><span class="w"> </span><span class="n">sdb3</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
 <span class="w">      </span><span class="mi">7804071616</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="n">super</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">[</span><span class="n">2/1</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">U_</span><span class="o">]</span>
