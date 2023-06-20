@@ -130,7 +130,7 @@ md125 : active raid1 sdb3[0]
 
 <p>再<code>mount</code> 就可以了，备份完数据后，卸载的话按 ripcaster 教程文末脚本。</p>
 <p>LUKS 加密盘的挂载前面步骤一样，增加一个解密过程：
-参考 https://www.linux-howto.info/mount-qnap-encrypted-volume/ ，
+参考 <a href="https://www.linux-howto.info/mount-qnap-encrypted-volume/">mount-qnap-encrypted-volume</a>，
 文中  storage_util 那个工具是qnap 专有的，可以用openssl 代替：</p>
 <div class="highlight"><pre><span></span><code>openssl passwd -1 -salt YCCaQNAP &#39;密码&#39;
 </code></pre></div>

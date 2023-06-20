@@ -96,7 +96,7 @@ md125 : active raid1 sdb3[0]
 
 &lt;p&gt;再&lt;code&gt;mount&lt;/code&gt; 就可以了，备份完数据后，卸载的话按 ripcaster 教程文末脚本。&lt;/p&gt;
 &lt;p&gt;LUKS 加密盘的挂载前面步骤一样，增加一个解密过程：
-参考 https://www.linux-howto.info/mount-qnap-encrypted-volume/ ，
+参考 &lt;a href="https://www.linux-howto.info/mount-qnap-encrypted-volume/"&gt;mount-qnap-encrypted-volume&lt;/a&gt;，
 文中  storage_util 那个工具是qnap 专有的，可以用openssl 代替：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;openssl passwd -1 -salt YCCaQNAP &amp;#39;密码&amp;#39;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2023"></category><category term="nas"></category><category term="qnap"></category><category term="raid"></category></entry><entry><title>请给域名解析GEO线路配置兜底线路</title><link href="https://fangpsh.github.io/posts/2023/2023-06-09.html" rel="alternate"></link><published>2023-06-09T00:00:00+08:00</published><updated>2023-06-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-06-09:/posts/2023/2023-06-09.html</id><summary type="html">&lt;p&gt;阿里云云解析、腾讯DNSPod、AWS Route53 等均支持GEO线路解析，可以看阿里这个&lt;a href="https://help.aliyun.com/document_detail/29730.html"&gt;文档&lt;/a&gt;：&lt;/p&gt;
