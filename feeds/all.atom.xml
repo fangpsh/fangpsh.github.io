@@ -17,20 +17,20 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;fdisk 能看到设备了：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;Disk&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;sdb&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8001&lt;/span&gt;.&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;GB&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8001563222016&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;15628053168&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;sectors&lt;/span&gt;
-&lt;span class="nv"&gt;Units&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;sectors&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;of&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;512&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;512&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;
-&lt;span class="nv"&gt;Sector&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;size&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;logical&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;physical&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;512&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4096&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;
-&lt;span class="nv"&gt;I&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;O&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;size&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;minimum&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;optimal&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4096&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4096&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bytes&lt;/span&gt;
-&lt;span class="nv"&gt;Disk&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;label&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;type&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;gpt&lt;/span&gt;
-&lt;span class="nv"&gt;Disk&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;identifier&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;FDF2182D&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;83&lt;/span&gt;&lt;span class="nv"&gt;DC&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;47&lt;/span&gt;&lt;span class="nv"&gt;B6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="nv"&gt;B39&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;01&lt;/span&gt;&lt;span class="nv"&gt;ECAF78BCEC&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Disk /dev/sdb: 8001.6 GB, 8001563222016 bytes, 15628053168 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disk label type: gpt
+Disk identifier: FDF2182D-83DC-47B6-8B39-01ECAF78BCEC
 
 
-#&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="nv"&gt;Start&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="k"&gt;End&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;Size&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Type&lt;/span&gt;&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nv"&gt;Name&lt;/span&gt;
-&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="mi"&gt;40&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;1060289&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;517&lt;/span&gt;.&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nv"&gt;M&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
-&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;1060296&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;2120579&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;517&lt;/span&gt;.&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nv"&gt;M&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
-&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;2120584&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15610264109&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;.&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="nv"&gt;T&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
-&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15610264112&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15611324399&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;517&lt;/span&gt;.&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nv"&gt;M&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
-&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15611324408&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mi"&gt;15628031999&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="nv"&gt;G&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;Microsoft&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;basic&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;primary&lt;/span&gt;
+#         Start          End    Size  Type            Name
+ 1           40      1060289  517.7M  Microsoft basic primary
+ 2      1060296      2120579  517.7M  Microsoft basic primary
+ 3      2120584  15610264109    7.3T  Microsoft basic primary
+ 4  15610264112  15611324399  517.7M  Microsoft basic primary
+ 5  15611324408  15628031999      8G  Microsoft basic primary
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;扫描一下：&lt;/p&gt;
@@ -38,20 +38,20 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;code&gt;cat /proc/mdstat&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;md123&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb4&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;27&lt;/span&gt;&lt;span class="o"&gt;](&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;530128&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;md123 : inactive sdb4[27](S)
+      530128 blocks super 1.0
 
-&lt;span class="n"&gt;md124&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb5&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;](&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;8353780&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+md124 : inactive sdb5[0](S)
+      8353780 blocks super 1.0
 
-&lt;span class="n"&gt;md125&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb3&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;7804071616&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+md125 : inactive sdb3[0]
+      7804071616 blocks super 1.0
 
-&lt;span class="n"&gt;md126&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb1&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;27&lt;/span&gt;&lt;span class="o"&gt;](&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;530108&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+md126 : inactive sdb1[27](S)
+      530108 blocks super 1.0
 
-&lt;span class="n"&gt;md127&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;inactive&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb2&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;](&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;530124&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;
+md127 : inactive sdb2[2](S)
+      530124 blocks super 1.0
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;数据在sdb3/md125。参考smzdm那个教程，执行&lt;/p&gt;
@@ -66,9 +66,9 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;这个时候再&lt;code&gt;cat /proc/mdstat&lt;/code&gt; 能看到&lt;code&gt;active&lt;/code&gt; 了。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;Personalities&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;raid1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;md125&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;active&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;raid1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sdb3&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;0&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="mi"&gt;7804071616&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;blocks&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;super&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;2/1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;U_&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Personalities : [raid1]
+md125 : active raid1 sdb3[0]
+      7804071616 blocks super 1.0 [2/1] [U_]
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;接着执行&lt;code&gt;pvdisplay&lt;/code&gt;，但是我并未看到&lt;code&gt;/dev/md125&lt;/code&gt; 这个PV，&lt;/p&gt;
@@ -94,7 +94,12 @@
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;lvchange -ay /dev/vg289/lv3
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;再&lt;code&gt;mount&lt;/code&gt; 就可以了，备份完数据后，卸载的话按 ripcaster 教程文末脚本。&lt;/p&gt;</content><category term="2023"></category><category term="nas"></category><category term="qnap"></category><category term="raid"></category></entry><entry><title>请给域名解析GEO线路配置兜底线路</title><link href="https://fangpsh.github.io/posts/2023/2023-06-09.html" rel="alternate"></link><published>2023-06-09T00:00:00+08:00</published><updated>2023-06-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-06-09:/posts/2023/2023-06-09.html</id><summary type="html">&lt;p&gt;阿里云云解析、腾讯DNSPod、AWS Route53 等均支持GEO线路解析，可以看阿里这个&lt;a href="https://help.aliyun.com/document_detail/29730.html"&gt;文档&lt;/a&gt;：&lt;/p&gt;
+&lt;p&gt;再&lt;code&gt;mount&lt;/code&gt; 就可以了，备份完数据后，卸载的话按 ripcaster 教程文末脚本。&lt;/p&gt;
+&lt;p&gt;LUKS 加密盘的挂载前面步骤一样，增加一个解密过程：
+参考 https://www.linux-howto.info/mount-qnap-encrypted-volume/ ，
+文中  storage_util 那个工具是qnap 专有的，可以用openssl 代替：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;openssl passwd -1 -salt YCCaQNAP &amp;#39;密码&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2023"></category><category term="nas"></category><category term="qnap"></category><category term="raid"></category></entry><entry><title>请给域名解析GEO线路配置兜底线路</title><link href="https://fangpsh.github.io/posts/2023/2023-06-09.html" rel="alternate"></link><published>2023-06-09T00:00:00+08:00</published><updated>2023-06-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-06-09:/posts/2023/2023-06-09.html</id><summary type="html">&lt;p&gt;阿里云云解析、腾讯DNSPod、AWS Route53 等均支持GEO线路解析，可以看阿里这个&lt;a href="https://help.aliyun.com/document_detail/29730.html"&gt;文档&lt;/a&gt;：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;实现原理&lt;br&gt;
 云解析是通过识别LocalDNS的出口IP，来判断访问者来源。&lt;br&gt;

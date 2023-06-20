@@ -51,20 +51,20 @@
 </code></pre></div>
 
 <p>fdisk 能看到设备了：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">Disk</span><span class="w"> </span><span class="o">/</span><span class="nv">dev</span><span class="o">/</span><span class="nv">sdb</span>:<span class="w"> </span><span class="mi">8001</span>.<span class="mi">6</span><span class="w"> </span><span class="nv">GB</span>,<span class="w"> </span><span class="mi">8001563222016</span><span class="w"> </span><span class="nv">bytes</span>,<span class="w"> </span><span class="mi">15628053168</span><span class="w"> </span><span class="nv">sectors</span>
-<span class="nv">Units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sectors</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">512</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">512</span><span class="w"> </span><span class="nv">bytes</span>
-<span class="nv">Sector</span><span class="w"> </span><span class="nv">size</span><span class="w"> </span><span class="ss">(</span><span class="nv">logical</span><span class="o">/</span><span class="nv">physical</span><span class="ss">)</span>:<span class="w"> </span><span class="mi">512</span><span class="w"> </span><span class="nv">bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">4096</span><span class="w"> </span><span class="nv">bytes</span>
-<span class="nv">I</span><span class="o">/</span><span class="nv">O</span><span class="w"> </span><span class="nv">size</span><span class="w"> </span><span class="ss">(</span><span class="nv">minimum</span><span class="o">/</span><span class="nv">optimal</span><span class="ss">)</span>:<span class="w"> </span><span class="mi">4096</span><span class="w"> </span><span class="nv">bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">4096</span><span class="w"> </span><span class="nv">bytes</span>
-<span class="nv">Disk</span><span class="w"> </span><span class="nv">label</span><span class="w"> </span><span class="nv">type</span>:<span class="w"> </span><span class="nv">gpt</span>
-<span class="nv">Disk</span><span class="w"> </span><span class="nv">identifier</span>:<span class="w"> </span><span class="nv">FDF2182D</span><span class="o">-</span><span class="mi">83</span><span class="nv">DC</span><span class="o">-</span><span class="mi">47</span><span class="nv">B6</span><span class="o">-</span><span class="mi">8</span><span class="nv">B39</span><span class="o">-</span><span class="mi">01</span><span class="nv">ECAF78BCEC</span>
+<div class="highlight"><pre><span></span><code>Disk /dev/sdb: 8001.6 GB, 8001563222016 bytes, 15628053168 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disk label type: gpt
+Disk identifier: FDF2182D-83DC-47B6-8B39-01ECAF78BCEC
 
 
-#<span class="w">         </span><span class="nv">Start</span><span class="w">          </span><span class="k">End</span><span class="w">    </span><span class="nv">Size</span><span class="w">  </span><span class="nv">Type</span><span class="w">            </span><span class="nv">Name</span>
-<span class="w"> </span><span class="mi">1</span><span class="w">           </span><span class="mi">40</span><span class="w">      </span><span class="mi">1060289</span><span class="w">  </span><span class="mi">517</span>.<span class="mi">7</span><span class="nv">M</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
-<span class="w"> </span><span class="mi">2</span><span class="w">      </span><span class="mi">1060296</span><span class="w">      </span><span class="mi">2120579</span><span class="w">  </span><span class="mi">517</span>.<span class="mi">7</span><span class="nv">M</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
-<span class="w"> </span><span class="mi">3</span><span class="w">      </span><span class="mi">2120584</span><span class="w">  </span><span class="mi">15610264109</span><span class="w">    </span><span class="mi">7</span>.<span class="mi">3</span><span class="nv">T</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
-<span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="mi">15610264112</span><span class="w">  </span><span class="mi">15611324399</span><span class="w">  </span><span class="mi">517</span>.<span class="mi">7</span><span class="nv">M</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
-<span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="mi">15611324408</span><span class="w">  </span><span class="mi">15628031999</span><span class="w">      </span><span class="mi">8</span><span class="nv">G</span><span class="w">  </span><span class="nv">Microsoft</span><span class="w"> </span><span class="nv">basic</span><span class="w"> </span><span class="nv">primary</span>
+#         Start          End    Size  Type            Name
+ 1           40      1060289  517.7M  Microsoft basic primary
+ 2      1060296      2120579  517.7M  Microsoft basic primary
+ 3      2120584  15610264109    7.3T  Microsoft basic primary
+ 4  15610264112  15611324399  517.7M  Microsoft basic primary
+ 5  15611324408  15628031999      8G  Microsoft basic primary
 </code></pre></div>
 
 <p>扫描一下：</p>
@@ -72,20 +72,20 @@
 </code></pre></div>
 
 <p><code>cat /proc/mdstat</code></p>
-<div class="highlight"><pre><span></span><code><span class="n">md123</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb4</span><span class="o">[</span><span class="mi">27</span><span class="o">](</span><span class="n">S</span><span class="o">)</span>
-<span class="w">      </span><span class="mi">530128</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+<div class="highlight"><pre><span></span><code>md123 : inactive sdb4[27](S)
+      530128 blocks super 1.0
 
-<span class="n">md124</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb5</span><span class="o">[</span><span class="mi">0</span><span class="o">](</span><span class="n">S</span><span class="o">)</span>
-<span class="w">      </span><span class="mi">8353780</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+md124 : inactive sdb5[0](S)
+      8353780 blocks super 1.0
 
-<span class="n">md125</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb3</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-<span class="w">      </span><span class="mi">7804071616</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+md125 : inactive sdb3[0]
+      7804071616 blocks super 1.0
 
-<span class="n">md126</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb1</span><span class="o">[</span><span class="mi">27</span><span class="o">](</span><span class="n">S</span><span class="o">)</span>
-<span class="w">      </span><span class="mi">530108</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+md126 : inactive sdb1[27](S)
+      530108 blocks super 1.0
 
-<span class="n">md127</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">inactive</span><span class="w"> </span><span class="n">sdb2</span><span class="o">[</span><span class="mi">2</span><span class="o">](</span><span class="n">S</span><span class="o">)</span>
-<span class="w">      </span><span class="mi">530124</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="kd">super</span><span class="w"> </span><span class="mf">1.0</span>
+md127 : inactive sdb2[2](S)
+      530124 blocks super 1.0
 </code></pre></div>
 
 <p>数据在sdb3/md125。参考smzdm那个教程，执行</p>
@@ -100,9 +100,9 @@
 </code></pre></div>
 
 <p>这个时候再<code>cat /proc/mdstat</code> 能看到<code>active</code> 了。</p>
-<div class="highlight"><pre><span></span><code><span class="n">Personalities</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="o">[</span><span class="n">raid1</span><span class="o">]</span>
-<span class="n">md125</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="n">raid1</span><span class="w"> </span><span class="n">sdb3</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
-<span class="w">      </span><span class="mi">7804071616</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="n">super</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">[</span><span class="n">2/1</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">U_</span><span class="o">]</span>
+<div class="highlight"><pre><span></span><code>Personalities : [raid1]
+md125 : active raid1 sdb3[0]
+      7804071616 blocks super 1.0 [2/1] [U_]
 </code></pre></div>
 
 <p>接着执行<code>pvdisplay</code>，但是我并未看到<code>/dev/md125</code> 这个PV，</p>
@@ -129,6 +129,11 @@
 </code></pre></div>
 
 <p>再<code>mount</code> 就可以了，备份完数据后，卸载的话按 ripcaster 教程文末脚本。</p>
+<p>LUKS 加密盘的挂载前面步骤一样，增加一个解密过程：
+参考 https://www.linux-howto.info/mount-qnap-encrypted-volume/ ，
+文中  storage_util 那个工具是qnap 专有的，可以用openssl 代替：</p>
+<div class="highlight"><pre><span></span><code>openssl passwd -1 -salt YCCaQNAP &#39;密码&#39;
+</code></pre></div>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
     Posted on <abbr class="published" title="2023-06-12T00:00:00+08:00">
