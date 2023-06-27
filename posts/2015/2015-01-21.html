@@ -67,9 +67,9 @@
 <p>现有web服务的访问日志webaccess.log,形式如下:
 </p>
 </blockquote>
-<div class="highlight"><pre><span></span><code><span class="mf">200</span><span class="w"> </span><span class="mf">123.190.216.50</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">shanghai</span><span class="mf">.</span><span class="n">baixing</span><span class="mf">.</span><span class="n">com</span><span class="w"> </span><span class="err">[</span><span class="mf">03</span><span class="o">/</span><span class="n">Mar</span><span class="o">/</span><span class="mf">2013</span><span class="p">:</span><span class="mf">03</span><span class="p">:</span><span class="mf">59</span><span class="p">:</span><span class="mf">59</span><span class="w"> </span><span class="o">+</span><span class="mf">0800</span><span class="err">]</span><span class="w"> </span><span class="s">&quot;GET</span>
-<span class="o">/</span><span class="n">menpiao</span><span class="o">/</span><span class="n">a250632202</span><span class="mf">.</span><span class="n">html</span><span class="w"> </span><span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span><span class="s">&quot; &quot;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">shanghai</span><span class="mf">.</span><span class="n">baixing</span><span class="mf">.</span><span class="n">com</span><span class="o">/</span><span class="n">menpiao</span><span class="o">/</span><span class="err">&quot;</span>
-<span class="s">&quot;Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)&quot;</span><span class="w"> </span><span class="mf">9175</span><span class="w"> </span><span class="mf">384</span><span class="w"> </span><span class="mf">54237......</span>
+<div class="highlight"><pre><span></span><code>200 123.190.216.50 - shanghai.baixing.com [03/Mar/2013:03:59:59 +0800] &quot;GET
+/menpiao/a250632202.html HTTP/1.1&quot; &quot;http://shanghai.baixing.com/menpiao/&quot;
+&quot;Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)&quot; 9175 384 54237......
 </code></pre></div>
 
 <p>现需要从中分别提取所有包含“Googlebot”和“Baiduspider”,且非404打头的行,分别保存到以访问日

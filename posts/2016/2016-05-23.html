@@ -52,8 +52,8 @@ mailwarn        off
 </code></pre></div>
 
 <p>注意CentOS 7 默认将<code>huponexit</code> 设为<code>off</code> 了，这样在用户将Shell 退出结束会话时，系统不会发送 SIGHUP 给所有进程，这效果其实类似使用了nohup，nohup 的作用就是忽略HUP 信号。</p>
-<div class="highlight"><pre><span></span><code><span class="nv">huponexit</span>
-<span class="w">  </span><span class="k">If</span><span class="w"> </span><span class="nv">set</span>,<span class="w"> </span><span class="nv">bash</span><span class="w"> </span><span class="nv">will</span><span class="w"> </span><span class="k">send</span><span class="w"> </span><span class="nv">SIGHUP</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">all</span><span class="w"> </span><span class="nv">jobs</span><span class="w"> </span><span class="nv">when</span><span class="w"> </span><span class="nv">an</span><span class="w"> </span><span class="nv">interactive</span><span class="w"> </span><span class="nv">login</span><span class="w"> </span><span class="nv">shell</span><span class="w"> </span><span class="nv">exits</span>.
+<div class="highlight"><pre><span></span><code>huponexit
+  If set, bash will send SIGHUP to all jobs when an interactive login shell exits.
 </code></pre></div>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">

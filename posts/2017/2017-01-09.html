@@ -123,12 +123,12 @@ hosts:      files dns myhostname
 
 <p>参考手册，按照配置的定义，关于hosts，会先查files，而对于hosts，对应的files 是/etc/hosts，然后是dns 查询，最后是看<code>/etc/hostname</code>。
 做下实验，把配置改为：</p>
-<div class="highlight"><pre><span></span><code><span class="n">hosts</span><span class="o">:</span><span class="w">      </span><span class="n">files</span><span class="w"> </span>
+<div class="highlight"><pre><span></span><code>hosts:      files 
 </code></pre></div>
 
 <p><code>socket.getfqdn()</code> 返回结果为空。</p>
 <p>配置改成：</p>
-<div class="highlight"><pre><span></span><code><span class="n">hosts</span><span class="o">:</span><span class="w">  </span><span class="n">myhostname</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">dns</span>
+<div class="highlight"><pre><span></span><code>hosts:  myhostname files dns
 </code></pre></div>
 
 <p><code>socket.getfqdn()</code> 返回结果为<code>/etc/hostname</code> 的内容。</p>

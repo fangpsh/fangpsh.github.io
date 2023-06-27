@@ -78,10 +78,10 @@ verify 函数。</p>
 
 <hr>
 <p>在给<a href="http://walle-web.io">walle</a> 添加LDAP 支持的时候，发现无论如何都是用户名和密码不一致，耐心看了下代码，发现作者<a href="https://github.com/meolu/walle-web/blob/03a8d848f398103a097bb79a1c4004062ec83705/models/LdapUser.php#L82,L90">写错了</a>，似乎是直接抄的phpldapadmin 的<a href="https://github.com/leenooks/phpLDAPadmin/blob/708bc5ed83cc92f42ec10ae621b39a799c0e3a61/lib/functions.php#L2199,L2209">代码</a>🌚🌝：</p>
-<div class="highlight"><pre><span></span><code><span class="nt">public</span><span class="w"> </span><span class="nt">function</span><span class="w"> </span><span class="nt">validatePassword</span><span class="o">($</span><span class="nt">password</span><span class="o">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="err">$encryptionType</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">strstr(substr($this-&gt;_password,</span><span class="w"> </span><span class="err">1),</span><span class="w"> </span><span class="err">&#39;</span><span class="p">}</span><span class="err">&#39;</span><span class="o">,</span><span class="w"> </span><span class="nt">true</span><span class="o">);</span>
-<span class="w">    </span><span class="nt">return</span><span class="w"> </span><span class="nt">self</span><span class="p">::</span><span class="nd">generate_password</span><span class="o">($</span><span class="nt">password</span><span class="o">,</span><span class="w"> </span><span class="o">$</span><span class="nt">encryptionType</span><span class="o">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">$</span><span class="nt">this-</span><span class="o">&gt;</span><span class="nt">_password</span><span class="o">;</span>
-<span class="err">}</span>
+<div class="highlight"><pre><span></span><code>public function validatePassword($password) {
+    $encryptionType = strstr(substr($this-&gt;_password, 1), &#39;}&#39;, true);
+    return self::generate_password($password, $encryptionType) == $this-&gt;_password;
+}
 </code></pre></div>
 
 <p><code>generate_password</code> 里面用随机的salt 生成了一个hash，来校验，怎么可能会一样嘛。自己改了本地的代码，提了一个<a href="https://github.com/meolu/walle-web/issues/426">issue</a>。</p>

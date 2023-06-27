@@ -55,20 +55,20 @@ nghttp2-server
 </code></pre></div>
 
 <p>编辑配置文件 <code>/etc/nghttpx/nghttpx.conf</code>：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">frontend</span><span class="o">=</span><span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span>,<span class="mi">443</span>
-<span class="nv">backend</span><span class="o">=</span><span class="mi">127</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">1</span>,<span class="mi">3128</span>
-<span class="nv">private</span><span class="o">-</span><span class="nv">key</span><span class="o">-</span><span class="nv">file</span><span class="o">=/</span><span class="nv">root</span><span class="o">/</span><span class="nv">ssl</span><span class="o">/</span><span class="mi">2</span><span class="nv">_xxxxx</span>.<span class="nv">fangpeishi</span>.<span class="nv">com</span>.<span class="nv">key</span>
-<span class="nv">certificate</span><span class="o">-</span><span class="nv">file</span><span class="o">=/</span><span class="nv">root</span><span class="o">/</span><span class="nv">ssl</span><span class="o">/</span><span class="mi">1</span><span class="nv">_xxxxx</span>.<span class="nv">fangpeishi</span>.<span class="nv">com_bundle</span>.<span class="nv">crt</span>
-<span class="nv">http2</span><span class="o">-</span><span class="nv">proxy</span><span class="o">=</span><span class="nv">yes</span>
-<span class="nv">errorlog</span><span class="o">-</span><span class="nv">syslog</span><span class="o">=</span><span class="nv">yes</span>
-<span class="nv">workers</span><span class="o">=</span><span class="mi">1</span>
+<div class="highlight"><pre><span></span><code>frontend=0.0.0.0,443
+backend=127.0.0.1,3128
+private-key-file=/root/ssl/2_xxxxx.fangpeishi.com.key
+certificate-file=/root/ssl/1_xxxxx.fangpeishi.com_bundle.crt
+http2-proxy=yes
+errorlog-syslog=yes
+workers=1
 
-<span class="nv">add</span><span class="o">-</span><span class="nv">x</span><span class="o">-</span><span class="nv">forwarded</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="nv">no</span>
+add-x-forwarded-for=no
 
-<span class="nv">no</span><span class="o">-</span><span class="nv">via</span><span class="o">=</span><span class="nv">yes</span>
-<span class="nv">no</span><span class="o">-</span><span class="nv">ocsp</span><span class="o">=</span><span class="nv">yes</span>
-<span class="nv">tls</span><span class="o">-</span><span class="nv">proto</span><span class="o">-</span><span class="nv">list</span><span class="o">=</span><span class="nv">TLSv1</span>.<span class="mi">2</span>
-<span class="nv">ciphers</span><span class="o">=</span><span class="nv">ECDHE</span><span class="o">+</span><span class="nv">AES128</span>
+no-via=yes
+no-ocsp=yes
+tls-proto-list=TLSv1.2
+ciphers=ECDHE+AES128
 </code></pre></div>
 
 <p>我是抄的上文文章中的配置，先跑起来再说。。</p>
@@ -136,12 +136,12 @@ http_access allow auth_user
 </code></pre></div>
 
 <p>加载模块，打开参数：</p>
-<div class="highlight"><pre><span></span><code><span class="n">modprobe</span><span class="w"> </span><span class="n">tcp_bbr</span>
-<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;tcp_bbr&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">tee</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">modules</span><span class="o">-</span><span class="nb">load</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">modules</span><span class="o">.</span><span class="n">conf</span>
+<div class="highlight"><pre><span></span><code>modprobe tcp_bbr
+echo &quot;tcp_bbr&quot; | tee -a /etc/modules-load.d/modules.conf
 
-<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;net.core.default_qdisc=fq&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">tee</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysctl</span><span class="o">.</span><span class="n">conf</span>
-<span class="n">echo</span><span class="w"> </span><span class="s2">&quot;net.ipv4.tcp_congestion_control=bbr&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">tee</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysctl</span><span class="o">.</span><span class="n">conf</span>
-<span class="n">sysctl</span><span class="w"> </span><span class="o">-</span><span class="n">p</span>
+echo &quot;net.core.default_qdisc=fq&quot; | tee -a /etc/sysctl.conf
+echo &quot;net.ipv4.tcp_congestion_control=bbr&quot; | tee -a /etc/sysctl.conf
+sysctl -p
 </code></pre></div>
 
 <p>最后验证一下：</p>

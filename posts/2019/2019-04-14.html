@@ -41,11 +41,11 @@
 <p><img alt="ffffff" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162114.png"></p>
 <p>以为是系统限制，忍受了很久。今天搜索下，翻到一篇文章：<a href="https://blog.sensible.io/2012/10/19/mac-os-x-emacs-style-keybindings-everywhere.html">Mac OS X: Emacs-like keybindings everywhere</a>， 找到解决方法。</p>
 <p>创建配置文件：<code>~/Library/KeyBindings/DefaultKeyBinding.dict</code> （如果不存在这个<code>KeyBindings</code> 目录，就新建一个）</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="err">&quot;~d&quot;</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">&quot;</span><span class="n">deleteWordForward</span><span class="p">:</span><span class="s2">&quot;;</span>
-<span class="s2">    &quot;</span><span class="o">~</span><span class="n">f</span><span class="s2">&quot; = &quot;</span><span class="n">moveWordForward</span><span class="o">:</span><span class="s2">&quot;;</span>
-<span class="s2">    &quot;</span><span class="o">~</span><span class="n">b</span><span class="s2">&quot; = &quot;</span><span class="n">moveWordBackward</span><span class="o">:</span><span class="err">&quot;</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code>{
+    &quot;~d&quot; = &quot;deleteWordForward:&quot;;
+    &quot;~f&quot; = &quot;moveWordForward:&quot;;
+    &quot;~b&quot; = &quot;moveWordBackward:&quot;;
+}
 </code></pre></div>
 
 <p>重启下相关App ，例如Chrome 浏览器，再试一试，发现OK了，居然这么简单！</p>

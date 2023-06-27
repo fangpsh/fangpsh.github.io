@@ -39,21 +39,21 @@
 <p>官网的教程<a href="https://www.terraform.io/guides/writing-custom-terraform-providers.html">Writing Custom Providers</a> 比较简单，我是先看这个例子，了解大致的结构。再读<a href="https://github.com/alibaba/terraform-provider">alibaba/terraform-provider</a> 源码，照猫画虎。</p>
 <p>这篇教程写的也不错<a href="http://blog.jfabre.net/2017/01/22/writing-terraform-provider/">Writing a Terraform provider</a>，看完之后很受用，写邮件给作者表示希望能翻译，没理我:( 。</p>
 <p>代码目录：</p>
-<div class="highlight"><pre><span></span><code><span class="err">├──</span><span class="w"> </span><span class="n">README</span><span class="p">.</span><span class="n">md</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">api</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">clb</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">common</span>
-<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">cvm</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="k">go</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">qcloud</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="k">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">data_source_qcloud_zones</span><span class="p">.</span><span class="k">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">provider</span><span class="p">.</span><span class="k">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">resource_qcloud_clb</span><span class="p">.</span><span class="k">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">resource_qcloud_clb_listener</span><span class="p">.</span><span class="k">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">resource_qcloud_eip</span><span class="p">.</span><span class="k">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">validators</span><span class="p">.</span><span class="k">go</span>
-<span class="p">....</span>
+<div class="highlight"><pre><span></span><code>├── README.md
+├── api
+│   ├── clb
+│   ├── common
+│   └── cvm
+├── main.go
+├── qcloud
+│   ├── config.go
+│   ├── data_source_qcloud_zones.go
+│   ├── provider.go
+│   ├── resource_qcloud_clb.go
+│   ├── resource_qcloud_clb_listener.go
+│   ├── resource_qcloud_eip.go
+│   └── validators.go
+....
 </code></pre></div>
 
 <h2>main.go</h2>
@@ -74,15 +74,15 @@
 
 <h2>api/</h2>
 <p>provider 是通过云产品的api 调用相关的接口对资源进行CRUD，不过腾讯云没有提供golang 的sdk，需要自己封装一下。我参考了阿里云的<a href="https://github.com/denverdino/aliyungo">denverdino/aliyungo</a>，阿里云的provider 也是使用的这个SDK。签名函数直接用了腾讯云的<a href="https://github.com/QcloudApi/qcloud_sign_golang">QcloudApi/qcloud_sign_golang</a>。</p>
-<div class="highlight"><pre><span></span><code><span class="o">.</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">clb</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">client</span><span class="o">.</span><span class="n">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">listener</span><span class="o">.</span><span class="n">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">load_balancer</span><span class="o">.</span><span class="n">go</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">common</span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">client</span><span class="o">.</span><span class="n">go</span>
-<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nb">sign</span><span class="o">.</span><span class="n">go</span>
-<span class="err">└──</span><span class="w"> </span><span class="n">cvm</span>
+<div class="highlight"><pre><span></span><code>.
+├── clb
+│   ├── client.go
+│   ├── listener.go
+│   └── load_balancer.go
+├── common
+│   ├── client.go
+│   └── sign.go
+└── cvm
 </code></pre></div>
 
 <p>按照不同产品分成多个client，是因为不同产品的API 在参数上有一些区别，例如版本号，接口地址等。我放弃继续实现的主要原因就是腾讯云的API 文档错误百出，各个产品API 风格不统一，非常累。</p>
@@ -101,40 +101,40 @@
 <h3>validators.go</h3>
 <p>在实现Resource 或者DataSource 的时候，需要传一些参数给API，服务端对这类参数一般都有规定，除了基本的类型区别，比如Int，String 之类的，还会有必须大于几，小于几，字符串必须以什么结尾开头等等。</p>
 <p>例如阿里云provider 的这个<a href="https://github.com/alibaba/terraform-provider/blob/master/alicloud/resource_alicloud_slb.go#L32">片段</a>：</p>
-<div class="highlight"><pre><span></span><code><span class="n">func</span><span class="w"> </span><span class="n">resourceAliyunSlb</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="k">schema</span><span class="p">.</span><span class="n">Resource</span><span class="w"> </span><span class="err">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="k">schema</span><span class="p">.</span><span class="n">Resource</span><span class="err">{</span>
-<span class="w">        </span><span class="k">Create</span><span class="err">:</span><span class="w"> </span><span class="n">resourceAliyunSlbCreate</span><span class="p">,</span>
-<span class="w">        </span><span class="k">Read</span><span class="err">:</span><span class="w">   </span><span class="n">resourceAliyunSlbRead</span><span class="p">,</span>
-<span class="w">        </span><span class="k">Update</span><span class="err">:</span><span class="w"> </span><span class="n">resourceAliyunSlbUpdate</span><span class="p">,</span>
-<span class="w">        </span><span class="k">Delete</span><span class="err">:</span><span class="w"> </span><span class="n">resourceAliyunSlbDelete</span><span class="p">,</span>
-<span class="w">        </span><span class="nl">Importer</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="k">schema</span><span class="p">.</span><span class="n">ResourceImporter</span><span class="err">{</span>
-<span class="w">            </span><span class="k">State</span><span class="err">:</span><span class="w"> </span><span class="k">schema</span><span class="p">.</span><span class="n">ImportStatePassthrough</span><span class="p">,</span>
-<span class="w">        </span><span class="err">}</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code>func resourceAliyunSlb() *schema.Resource {
+    return &amp;schema.Resource{
+        Create: resourceAliyunSlbCreate,
+        Read:   resourceAliyunSlbRead,
+        Update: resourceAliyunSlbUpdate,
+        Delete: resourceAliyunSlbDelete,
+        Importer: &amp;schema.ResourceImporter{
+            State: schema.ImportStatePassthrough,
+        },
 
-<span class="w">        </span><span class="k">Schema</span><span class="err">:</span><span class="w"> </span><span class="k">map</span><span class="o">[</span><span class="n">string</span><span class="o">]*</span><span class="k">schema</span><span class="p">.</span><span class="k">Schema</span><span class="err">{</span>
-<span class="w">            </span><span class="ss">&quot;name&quot;</span><span class="err">:</span><span class="w"> </span><span class="o">&amp;</span><span class="k">schema</span><span class="p">.</span><span class="k">Schema</span><span class="err">{</span>
-<span class="w">            </span><span class="nl">Type</span><span class="p">:</span><span class="w">         </span><span class="k">schema</span><span class="p">.</span><span class="n">TypeString</span><span class="p">,</span>
-<span class="w">            </span><span class="nl">Optional</span><span class="p">:</span><span class="w">     </span><span class="k">true</span><span class="p">,</span>
-<span class="w">            </span><span class="nl">ValidateFunc</span><span class="p">:</span><span class="w"> </span><span class="n">validateSlbName</span><span class="p">,</span>
-<span class="w">            </span><span class="nl">Computed</span><span class="p">:</span><span class="w">     </span><span class="k">true</span><span class="p">,</span>
-<span class="w">            </span><span class="err">}</span><span class="p">,</span>
+        Schema: map[string]*schema.Schema{
+            &quot;name&quot;: &amp;schema.Schema{
+            Type:         schema.TypeString,
+            Optional:     true,
+            ValidateFunc: validateSlbName,
+            Computed:     true,
+            },
 </code></pre></div>
 
 <p>ValidateFunc 调用的 <a href="https://github.com/alibaba/terraform-provider/blob/master/alicloud/validators.go#L305">validateSlbName</a> ：</p>
-<div class="highlight"><pre><span></span><code><span class="o">//</span><span class="w"> </span><span class="n">SLB</span>
-<span class="k">func</span><span class="w"> </span><span class="n">validateSlbName</span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="n">interface</span><span class="p">{},</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">ws</span><span class="w"> </span><span class="p">[]</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">errors</span><span class="w"> </span><span class="p">[]</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="o">.</span><span class="p">(</span><span class="n">string</span><span class="p">);</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">80</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">errors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">append</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span><span class="w"> </span><span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span>
-<span class="w">                    </span><span class="s2">&quot;%q must be a valid load balancer name characters between 1 and 80&quot;</span><span class="p">,</span>
-<span class="w">                    </span><span class="n">k</span><span class="p">))</span>
-<span class="w">                </span><span class="k">return</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
+<div class="highlight"><pre><span></span><code>// SLB
+func validateSlbName(v interface{}, k string) (ws []string, errors []error) {
+    if value := v.(string); value != &quot;&quot; {
+        if len(value) &lt; 1 || len(value) &gt; 80 {
+            errors = append(errors, fmt.Errorf(
+                    &quot;%q must be a valid load balancer name characters between 1 and 80&quot;,
+                    k))
+                return
+            }
+    }
 
 
-<span class="w">    </span><span class="k">return</span>
-<span class="p">}</span>
+    return
+}
 </code></pre></div>
 
 <p>看看阿里云官网文档的<a href="https://help.aliyun.com/document_detail/27577.html?spm=5176.doc27566.2.4.K5ta6Q">要求</a>：</p>
@@ -153,13 +153,13 @@ String
 <p>在实现其他Provider 时，对着API 文档敲即可。</p>
 <h2>resource_*.go</h2>
 <p>provider 的resource 可以认为是云服务的各项产品了，例如腾讯云的CLB，CDN，CVM 等。按照要求实现增删改查的函数即可。</p>
-<div class="highlight"><pre><span></span><code><span class="k">func</span><span class="w"> </span><span class="n">resourceQcloudClb</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="n">schema</span><span class="o">.</span><span class="n">Resource</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">schema</span><span class="o">.</span><span class="n">Resource</span><span class="p">{</span>
-<span class="w">        </span><span class="n">Create</span><span class="p">:</span><span class="w"> </span><span class="n">resourceQcloudClbCreate</span><span class="p">,</span>
-<span class="w">        </span><span class="n">Read</span><span class="p">:</span><span class="w">   </span><span class="n">resourceQcloudClbRead</span><span class="p">,</span>
-<span class="w">        </span><span class="n">Update</span><span class="p">:</span><span class="w"> </span><span class="n">resourceQcloudClbUpdate</span><span class="p">,</span>
-<span class="w">        </span><span class="n">Delete</span><span class="p">:</span><span class="w"> </span><span class="n">resourceQcloudClbDelete</span><span class="p">,</span>
-<span class="o">....</span>
+<div class="highlight"><pre><span></span><code>func resourceQcloudClb() *schema.Resource {
+    return &amp;schema.Resource{
+        Create: resourceQcloudClbCreate,
+        Read:   resourceQcloudClbRead,
+        Update: resourceQcloudClbUpdate,
+        Delete: resourceQcloudClbDelete,
+....
 </code></pre></div>
 
 <h3>Create</h3>
@@ -177,33 +177,33 @@ String
 <p>Set sets the value for the given key.</p>
 <p>If the key is invalid or the value is not a correct type, an error will be returned.</p>
 </blockquote>
-<div class="highlight"><pre><span></span><code><span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;load_balancer_type&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">clb</span><span class="o">.</span><span class="n">LoadBalancerSet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">LoadBalancerType</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">clb</span><span class="o">.</span><span class="n">LoadBalancerSet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">LoadBalancerName</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">clb</span><span class="o">.</span><span class="n">LoadBalancerSet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">LoadBalancerName</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;domain_prefix&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">clb</span><span class="o">.</span><span class="n">LoadBalancerSet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Domain</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>d.Set(&quot;load_balancer_type&quot;, clb.LoadBalancerSet[0].LoadBalancerType)
+d.Set(&quot;forward&quot;, clb.LoadBalancerSet[0].LoadBalancerName)
+d.Set(&quot;load_balancer_name&quot;, clb.LoadBalancerSet[0].LoadBalancerName)
+d.Set(&quot;domain_prefix&quot;, clb.LoadBalancerSet[0].Domain)
 </code></pre></div>
 
 <h3>Update</h3>
 <p>这个函数相对比较复杂，更新tf 文件中资源属性的时候，会调用这个函数，apply 到服务端。一般用 d.HasChange 来检测对应的属性是否改变：</p>
-<div class="highlight"><pre><span></span><code><span class="n">d</span><span class="o">.</span><span class="n">Partial</span><span class="p">(</span><span class="bp">true</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>d.Partial(true)
 
-<span class="o">...</span>
+...
 
-<span class="k">if</span><span class="w"> </span><span class="n">d</span><span class="o">.</span><span class="n">HasChange</span><span class="p">(</span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">args</span><span class="o">.</span><span class="n">LoadBalancerName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-<span class="w">    </span><span class="n">argList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">append</span><span class="p">(</span><span class="n">argList</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">conn</span><span class="o">.</span><span class="n">ModifyLoadBalancerAttributes</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">argList</span><span class="p">)</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">nil</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">err</span>
-<span class="w">    </span><span class="p">}</span>
+if d.HasChange(&quot;load_balancer_name&quot;) {
+    args.LoadBalancerName = d.Get(&quot;load_balancer_name&quot;).(string)
+    argList = append(argList, &quot;load_balancer_name&quot;)
+    _, err := conn.ModifyLoadBalancerAttributes(args, argList)
+    if err != nil {
+        return err
+    }
 
-<span class="w">    </span><span class="n">d</span><span class="o">.</span><span class="n">SetPartial</span><span class="p">(</span><span class="s2">&quot;load_balancer_name&quot;</span><span class="p">)</span>
-<span class="p">}</span>
+    d.SetPartial(&quot;load_balancer_name&quot;)
+}
 
-<span class="o">...</span>
+...
 
-<span class="n">d</span><span class="o">.</span><span class="n">Partial</span><span class="p">(</span><span class="bp">false</span><span class="p">)</span>
-<span class="k">return</span><span class="w"> </span><span class="n">resourceQcloudClbRead</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">meta</span><span class="p">)</span>
+d.Partial(false)
+return resourceQcloudClbRead(d, meta)
 </code></pre></div>
 
 <hr>
@@ -224,47 +224,47 @@ String
 <p>If partial state mode is disabled, then this has no effect. Additionally, whenever partial state mode is toggled, the partial data is cleared.</p>
 </blockquote>
 <p>Update 一般能用HasChange 应付，但是如果遇到出现子资源这种需求时，就比较麻烦。例如阿里云的一个SLB 后面会挂很多listener（监听器） ：</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Create a new load balancer for classic</span>
-<span class="n">resource</span><span class="w"> </span><span class="s2">&quot;alicloud_slb&quot;</span><span class="w"> </span><span class="s2">&quot;classic&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="n">name</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-slb-tf&quot;</span>
-<span class="n">internet</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span>
-<span class="n">internet_charge_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;paybybandwidth&quot;</span>
-<span class="n">bandwidth</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+<div class="highlight"><pre><span></span><code># Create a new load balancer for classic
+resource &quot;alicloud_slb&quot; &quot;classic&quot; {
+name                 = &quot;test-slb-tf&quot;
+internet             = true
+internet_charge_type = &quot;paybybandwidth&quot;
+bandwidth            = 5
 
-<span class="n">listener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="s2">&quot;instance_port&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;2111&quot;</span>
-<span class="w">        </span><span class="s2">&quot;lb_port&quot;</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;21&quot;</span>
-<span class="w">        </span><span class="s2">&quot;lb_protocol&quot;</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tcp&quot;</span>
-<span class="w">        </span><span class="s2">&quot;bandwidth&quot;</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;5&quot;</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="s2">&quot;instance_port&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;8000&quot;</span>
-<span class="w">        </span><span class="s2">&quot;lb_port&quot;</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;80&quot;</span>
-<span class="w">        </span><span class="s2">&quot;lb_protocol&quot;</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;http&quot;</span>
-<span class="w">        </span><span class="s2">&quot;bandwidth&quot;</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;5&quot;</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="s2">&quot;instance_port&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;1611&quot;</span>
-<span class="w">        </span><span class="s2">&quot;lb_port&quot;</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;161&quot;</span>
-<span class="w">        </span><span class="s2">&quot;lb_protocol&quot;</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;udp&quot;</span>
-<span class="w">        </span><span class="s2">&quot;bandwidth&quot;</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;5&quot;</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="p">}</span>
+listener = [
+    {
+        &quot;instance_port&quot; = &quot;2111&quot;
+        &quot;lb_port&quot;       = &quot;21&quot;
+        &quot;lb_protocol&quot;   = &quot;tcp&quot;
+        &quot;bandwidth&quot;     = &quot;5&quot;
+    },
+    {
+        &quot;instance_port&quot; = &quot;8000&quot;
+        &quot;lb_port&quot;       = &quot;80&quot;
+        &quot;lb_protocol&quot;   = &quot;http&quot;
+        &quot;bandwidth&quot;     = &quot;5&quot;
+    },
+    {
+        &quot;instance_port&quot; = &quot;1611&quot;
+        &quot;lb_port&quot;       = &quot;161&quot;
+        &quot;lb_protocol&quot;   = &quot;udp&quot;
+        &quot;bandwidth&quot;     = &quot;5&quot;
+    },
+    ]
+}
 </code></pre></div>
 
 <p>这种在Update 时就比较尴尬，因为listener 就是一个list，没有唯一标识，修改一下端口啥的，总不能把所有listener 删除再添加一遍。</p>
 <p>阿里云的做法是通过<code>func (*ResourceData) GetChange</code> 难道新、旧的值，互相对比，把改变的listener 删除掉，修改后的listener 新增，<a href="https://github.com/terraform-providers/terraform-provider-alicloud/blob/974aa3101f94ab18099c1284274128c042a902bb/alicloud/resource_alicloud_slb.go#L335,#L362">HasChange("listener")</a>。</p>
 <p>不过我在实现腾讯云的CLB Listener 时候，采用的做法是用一个<code>load_balancer_id</code>  指向CLB 的资源ID，这样建立起对应关系：</p>
-<div class="highlight"><pre><span></span><code><span class="n">resource</span><span class="w"> </span><span class="s2">&quot;qcloud_clb_listener&quot;</span><span class="w"> </span><span class="s2">&quot;tcp1234&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">depends_on</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;qcloud_clb.example&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="n">load_balancer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;${qcloud_clb.example.id}&quot;</span>
-<span class="w">    </span><span class="n">listener_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;abcxxxxxsodo&quot;</span>
-<span class="w">    </span><span class="n">load_balancer_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1234</span>
-<span class="w">    </span><span class="n">instance_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4567</span>
-<span class="w">    </span><span class="n">protocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code>resource &quot;qcloud_clb_listener&quot; &quot;tcp1234&quot; {
+    depends_on = [&quot;qcloud_clb.example&quot;]
+    load_balancer_id = &quot;${qcloud_clb.example.id}&quot;
+    listener_name = &quot;abcxxxxxsodo&quot;
+    load_balancer_port = 1234
+    instance_port = 4567
+    protocol = 2
+}
 </code></pre></div>
 
 <p>不过我在给listener 加backend server 的时候，感觉还是得用阿里那种做法。</p>

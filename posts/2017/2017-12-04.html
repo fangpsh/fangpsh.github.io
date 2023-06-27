@@ -45,13 +45,13 @@
 <p>给出一个如何找到这些有问题的header 的方法。访问<code>chrome://net-internals/#events</code>（这链接没法点击，只能复制然后粘贴到地址栏再访问），在搜索框输入你的域名（我以<code>example.com</code>为例），然后在其他标签中打开出问题的网站。返回<code>chrome://net-internals/#events</code> ，选中Source Type 是<code>HTTP2_SESSION</code> 的行。</p>
 <p><img alt="chrome-events-http2_session" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228211536.png"></p>
 <p>在右边，可以看到HTTP/2 协议的详细信息，重点部分如下：</p>
-<div class="highlight"><pre><span></span><code><span class="n">t</span><span class="o">=</span><span class="mi">50413</span> <span class="p">[</span><span class="n">st</span><span class="o">=</span><span class="mi">7</span><span class="p">]</span>  <span class="n">HTTP2_SESSION_RECV_INVALID_HEADER</span>
-                <span class="o">--&gt;</span> <span class="n">header_name</span> <span class="o">=</span> <span class="s">&quot;referrer policy&quot;</span>
-                <span class="o">--&gt;</span> <span class="n">header_value</span> <span class="o">=</span> <span class="s">&quot;same-origin&quot;</span>
-<span class="n">t</span><span class="o">=</span><span class="mi">50413</span> <span class="p">[</span><span class="n">st</span><span class="o">=</span><span class="mi">7</span><span class="p">]</span>  <span class="n">HTTP2_SESSION_SEND_RST_STREAM</span>
-               <span class="o">--&gt;</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Could not parse Spdy Control Frame Header.&quot;</span>
-               <span class="o">--&gt;</span> <span class="n">error_code</span> <span class="o">=</span> <span class="s">&quot;1 (PROTOCOL_ERROR)&quot;</span>
-               <span class="o">--&gt;</span> <span class="n">stream_id</span> <span class="o">=</span> <span class="mi">3</span>
+<div class="highlight"><pre><span></span><code>t=50413 [st=7]  HTTP2_SESSION_RECV_INVALID_HEADER
+                --&gt; header_name = &quot;referrer policy&quot;
+                --&gt; header_value = &quot;same-origin&quot;
+t=50413 [st=7]  HTTP2_SESSION_SEND_RST_STREAM
+               --&gt; description = &quot;Could not parse Spdy Control Frame Header.&quot;
+               --&gt; error_code = &quot;1 (PROTOCOL_ERROR)&quot;
+               --&gt; stream_id = 3
 </code></pre></div>
 
 <p>看到<code>HTTP2_SESSION_RECV_INVALID_HEADER</code> 那行了吗？无效的header 就在它下面，在这个问题中，无效的header 是<code>referrer policy</code>，用空格代替了破折号。HTTP/2 协议理的header 名称必须全小写，如果你发送一个<code>Referrer-Policy</code>的header，浏览器会视为<code>referrer-policy</code>。在这个问题中，被视为成无效的<code>referrer policy</code>。</p>

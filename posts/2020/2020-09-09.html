@@ -42,17 +42,17 @@
 <p><img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png">
 <img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"></p>
 <p>按照之前的理解，A MTR B 和 B MTR ，最后一跳应该是镜像对等的：</p>
-<div class="highlight"><pre><span></span><code><span class="c">A  MTR B :</span>
+<div class="highlight"><pre><span></span><code>A  MTR B :
 
-<span class="c">A                   B</span>
-<span class="c">|</span><span class="nb">---------</span><span class="nv">&gt;</span><span class="nb">---------</span><span class="c">|  </span><span class="nv">&lt;</span><span class="c"> icmp request  package1</span>
-<span class="c">|</span><span class="nb">--------</span><span class="nv">&lt;</span><span class="nb">----------</span><span class="c">|  </span><span class="nv">&lt;</span><span class="c"> icmp reply    package2</span>
+A                   B
+|---------&gt;---------|  &lt; icmp request  package1
+|--------&lt;----------|  &lt; icmp reply    package2
 
-<span class="c">B MTR A:</span>
+B MTR A:
 
-<span class="c">B                   A</span>
-<span class="c">|</span><span class="nb">---------</span><span class="nv">&gt;</span><span class="nb">---------</span><span class="c">|  </span><span class="nv">&lt;</span><span class="c"> icmp request  package3</span>
-<span class="c">|</span><span class="nb">--------</span><span class="nv">&lt;</span><span class="nb">----------</span><span class="c">|  </span><span class="nv">&lt;</span><span class="c"> icmp reply    package4</span>
+B                   A
+|---------&gt;---------|  &lt; icmp request  package3
+|--------&lt;----------|  &lt; icmp reply    package4
 </code></pre></div>
 
 <p>如果A MTR B出现丢包，那么可能出现在 去程，也可能是回程，所以才需要B MTR A 来判断断点。

@@ -120,8 +120,8 @@ Returns 0 on success.  </p>
 </code></pre></div>
 
 <p>虽然默认值是0，但是如果你尝试写回0，是会失败的：</p>
-<div class="highlight"><pre><span></span><code><span class="o">-&gt;</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">vm</span><span class="o">/</span><span class="n">drop_caches</span>
-<span class="n">echo</span><span class="o">:</span><span class="w"> </span><span class="n">write</span><span class="w"> </span><span class="nf">error</span><span class="o">:</span><span class="w"> </span><span class="n">invalid</span><span class="w"> </span><span class="n">argument</span>
+<div class="highlight"><pre><span></span><code>-&gt; echo 0 &gt; /proc/sys/vm/drop_caches
+echo: write error: invalid argument
 </code></pre></div>
 
 <p>另外可以看到<code>sysctl_drop_caches</code> 为3(11b) 时，和1，2 做&amp; 操作，都为True，所以都会drop。</p>
@@ -145,41 +145,41 @@ Returns 0 on success.  </p>
 </ul>
 <hr>
 <p><a href="https://www.kernel.org/doc/Documentation/sysctl/vm.txt">kernel.org/doc/Documentation/sysctl/vm.txt</a>：</p>
-<div class="highlight"><pre><span></span><code><span class="n">drop_caches</span>
+<div class="highlight"><pre><span></span><code>drop_caches
 
-<span class="n">Writing</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">cause</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="n">clean</span><span class="w"> </span><span class="n">caches</span><span class="p">,</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">well</span><span class="w"> </span><span class="k">as</span>
-<span class="n">reclaimable</span><span class="w"> </span><span class="n">slab</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="n">like</span><span class="w"> </span><span class="n">dentries</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">inodes</span><span class="o">.</span><span class="w">  </span><span class="n">Once</span><span class="w"> </span><span class="n">dropped</span><span class="p">,</span><span class="w"> </span><span class="n">their</span>
-<span class="n">memory</span><span class="w"> </span><span class="n">becomes</span><span class="w"> </span><span class="n">free</span><span class="o">.</span>
+Writing to this will cause the kernel to drop clean caches, as well as
+reclaimable slab objects like dentries and inodes.  Once dropped, their
+memory becomes free.
 
-<span class="n">To</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="n">pagecache</span><span class="p">:</span>
-<span class="n">echo</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">vm</span><span class="o">/</span><span class="n">drop_caches</span>
-<span class="n">To</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="n">reclaimable</span><span class="w"> </span><span class="n">slab</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="p">(</span><span class="n">includes</span><span class="w"> </span><span class="n">dentries</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">inodes</span><span class="p">):</span>
-<span class="n">echo</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">vm</span><span class="o">/</span><span class="n">drop_caches</span>
-<span class="n">To</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="n">slab</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">pagecache</span><span class="p">:</span>
-<span class="n">echo</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">vm</span><span class="o">/</span><span class="n">drop_caches</span>
+To free pagecache:
+echo 1 &gt; /proc/sys/vm/drop_caches
+To free reclaimable slab objects (includes dentries and inodes):
+echo 2 &gt; /proc/sys/vm/drop_caches
+To free slab objects and pagecache:
+echo 3 &gt; /proc/sys/vm/drop_caches
 
-<span class="n">This</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">non</span><span class="o">-</span><span class="n">destructive</span><span class="w"> </span><span class="n">operation</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">dirty</span><span class="w"> </span><span class="n">objects</span><span class="o">.</span>
-<span class="n">To</span><span class="w"> </span><span class="n">increase</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="n">freed</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">operation</span><span class="p">,</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">run</span>
-<span class="err">`</span><span class="n">sync</span><span class="s1">&#39; prior to writing to /proc/sys/vm/drop_caches.  This will minimize the</span>
-<span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">dirty</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">system</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">create</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">candidates</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span>
-<span class="n">dropped</span><span class="o">.</span>
+This is a non-destructive operation and will not free any dirty objects.
+To increase the number of objects freed by this operation, the user may run
+`sync&#39; prior to writing to /proc/sys/vm/drop_caches.  This will minimize the
+number of dirty objects on the system and create more candidates to be
+dropped.
 
-<span class="n">This</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">means</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">growth</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">various</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="n">caches</span>
-<span class="p">(</span><span class="n">inodes</span><span class="p">,</span><span class="w"> </span><span class="n">dentries</span><span class="p">,</span><span class="w"> </span><span class="n">pagecache</span><span class="p">,</span><span class="w"> </span><span class="n">etc</span><span class="o">...</span><span class="p">)</span><span class="w">  </span><span class="n">These</span><span class="w"> </span><span class="n">objects</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">automatically</span>
-<span class="n">reclaimed</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">memory</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">needed</span><span class="w"> </span><span class="n">elsewhere</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">system</span><span class="o">.</span>
+This file is not a means to control the growth of the various kernel caches
+(inodes, dentries, pagecache, etc...)  These objects are automatically
+reclaimed by the kernel when memory is needed elsewhere on the system.
 
-<span class="n">Use</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">cause</span><span class="w"> </span><span class="n">performance</span><span class="w"> </span><span class="n">problems</span><span class="o">.</span><span class="w">  </span><span class="n">Since</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">discards</span><span class="w"> </span><span class="n">cached</span>
-<span class="n">objects</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">cost</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">significant</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">CPU</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">recreate</span><span class="w"> </span><span class="n">the</span>
-<span class="n">dropped</span><span class="w"> </span><span class="n">objects</span><span class="p">,</span><span class="w"> </span><span class="n">especially</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">were</span><span class="w"> </span><span class="n">under</span><span class="w"> </span><span class="n">heavy</span><span class="w"> </span><span class="n">use</span><span class="o">.</span><span class="w">  </span><span class="n">Because</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">this</span><span class="p">,</span>
-<span class="n">use</span><span class="w"> </span><span class="n">outside</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">testing</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">debugging</span><span class="w"> </span><span class="n">environment</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">recommended</span><span class="o">.</span>
+Use of this file can cause performance problems.  Since it discards cached
+objects, it may cost a significant amount of I/O and CPU to recreate the
+dropped objects, especially if they were under heavy use.  Because of this,
+use outside of a testing or debugging environment is not recommended.
 
-<span class="n">You</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">informational</span><span class="w"> </span><span class="n">messages</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="nb">log</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="k">is</span>
-<span class="n">used</span><span class="p">:</span>
+You may see informational messages in your kernel log when this file is
+used:
 
-<span class="n">cat</span><span class="w"> </span><span class="p">(</span><span class="mi">1234</span><span class="p">):</span><span class="w"> </span><span class="n">drop_caches</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+cat (1234): drop_caches: 3
 
-<span class="n">These</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">informational</span><span class="w"> </span><span class="n">only</span><span class="o">.</span><span class="w">  </span><span class="n">They</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">mean</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">anything</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">wrong</span>
-<span class="n">with</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">system</span><span class="o">.</span><span class="w">  </span><span class="n">To</span><span class="w"> </span><span class="n">disable</span><span class="w"> </span><span class="n">them</span><span class="p">,</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="n">bit</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="n">into</span><span class="w"> </span><span class="n">drop_caches</span><span class="o">.</span>
+These are informational only.  They do not mean that anything is wrong
+with your system.  To disable them, echo 4 (bit 3) into drop_caches.
 </code></pre></div>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">

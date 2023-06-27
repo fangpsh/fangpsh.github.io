@@ -86,7 +86,7 @@
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="bookmark" title="Permalink to ip_local_port_range 小问题">ip_local_port_range 小问题</a></h2> </header>
                 <div class="entry-content"> <p>发现系统打印了一条日志，类似<a href="https://access.redhat.com/solutions/2887631">redhat solution:2887631</a>：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">Jan</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="mi">14</span>:<span class="mi">37</span>:<span class="mi">22</span><span class="w"> </span><span class="nv">localhost</span><span class="w"> </span><span class="nv">kernel</span>:<span class="w"> </span><span class="nv">ip_local_port_range</span>:<span class="w"> </span><span class="nv">prefer</span><span class="w"> </span><span class="nv">different</span><span class="w"> </span><span class="nv">parity</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">start</span><span class="o">/</span><span class="k">end</span><span class="w"> </span><span class="nv">values</span>.
+<div class="highlight"><pre><span></span><code>Jan 23 14:37:22 localhost kernel: ip_local_port_range: prefer different parity for start/end values.
 </code></pre></div>
 
 <p>意思是建议将<code>/proc/sys/net/ipv4/ip_local_port_range</code> 的两个数设置一个 …</p> </div><!-- entry-content -->

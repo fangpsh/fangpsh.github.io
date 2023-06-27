@@ -191,7 +191,7 @@ ES_MAX_MEM=&quot;$ES_MIN_MEM&quot;
 </code></pre></div>
 
 <p>要在集群上应用配置，我们可以通过一个PUT 来创建和更新模板：  </p>
-<div class="highlight"><pre><span></span><code><span class="n">curl</span><span class="w"> </span><span class="o">-</span><span class="n">XPUT</span><span class="w"> </span><span class="s1">&#39;http://localhost:9200/_template/template_logstash/&#39;</span><span class="w"> </span><span class="o">-</span><span class="n">d</span><span class="w"> </span><span class="nv">@logstash</span><span class="o">-</span><span class="n">template</span><span class="p">.</span><span class="n">json</span>
+<div class="highlight"><pre><span></span><code>curl -XPUT &#39;http://localhost:9200/_template/template_logstash/&#39; -d @logstash-template.json
 </code></pre></div>
 
 <p>将模板设置为<code>logstash-*</code> ，意味着配置将应用到所以'logstash-' 开头新建的索引。我通过禁用对<code>_all</code> 字段进行搜索并将默认的属性修改为<code>@message</code>，覆盖了原来的默认搜索行为（译注：默认会对全部字段进行搜索，作者禁用了这种行为，修改为只对message 字段进行搜索）。这个字段（译注：指message 字段）将包含原生的syslog 消息。这也是唯一一个禁止分析的字段。不要不安。这能节省空间和建立索引的时间。这意味着搜索文档中其他字段时只能使用精确搜索，而不能使用模糊搜索，不过这是OK 的。我们依然可以对<code>@message</code> 字段进行模糊搜索！这将极大的降低存储空间。  </p>

@@ -37,15 +37,15 @@
     <p>实习期间做的一个东西需要读写控制crontab 的任务，失败需要报警。crontab本身有报警，但是非常不友好，例如cron job如果有任何输出（标准输出或者标准错误输出），都会发送邮件通知，并且还需要在每台机器上配置smtp，非常麻烦。所以想着就在前面直接套了个脚本，如果任务异常，用curl调一下远程服务的api发送邮件即可。</p>
 <p>找到这样一份shell脚本-- <a href="http://habilis.net/cronic/">Cronic</a>，不过这份脚本不满足一些需求，并在部署测试的时候遇到一些bug，修正如下。</p>
 <p>上文脚本链接中的例子是：  </p>
-<div class="highlight"><pre><span></span><code><span class="mf">0</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cronic</span><span class="w"> </span><span class="n">backup</span>
+<div class="highlight"><pre><span></span><code>0 1 * * * cronic backup
 </code></pre></div>
 
 <p><code>backup</code>指的是<strong>一条</strong>命令，不能使用组合的命令，不然会出现意想不到的事情。例如：  </p>
-<div class="highlight"><pre><span></span><code><span class="mf">30</span><span class="w"> </span><span class="mf">23</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cronic</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="o">/</span><span class="n">named</span><span class="o">/</span><span class="n">zone_bak</span><span class="w">  </span><span class="err">&amp;&amp;</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="mf">.</span><span class="o">/</span><span class="w"> </span><span class="o">-</span><span class="n">maxdepth</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="o">-</span><span class="n">mtime</span><span class="w"> </span><span class="o">+</span><span class="mf">2</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="n">xargs</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">rm</span><span class="w"> </span><span class="o">-</span><span class="n">rf</span><span class="w"> </span><span class="err">{}</span>
+<div class="highlight"><pre><span></span><code>30 23 * * * cronic cd /named/zone_bak  &amp;&amp; find ./ -maxdepth 1 -mtime +2 | xargs -i rm -rf {}
 </code></pre></div>
 
 <p>如果用root 用户执行这个任务，将直接导致 /root下两天前的所有文件被删。。至于为什么，看原来脚本的写法就知道了：</p>
-<div class="highlight"><pre><span></span><code><span class="s">&quot;$@&quot;</span><span class="w"> </span><span class="o">&gt;</span><span class="n">$OUT</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="n">$TRACE</span>
+<div class="highlight"><pre><span></span><code>&quot;$@&quot; &gt;$OUT 2&gt;$TRACE
 </code></pre></div>
 
 <p>解决方法是把cron job都写成一个脚本，然后 <code>cronic command</code> 来调用，但是开发同学肯定不爽，SA也不爽。<br>
@@ -54,7 +54,7 @@
 </code></pre></div>
 
 <p>原来脚本中执行命令的部分使用<code>eval</code>改写，顺带解决下重定向输出的bug（想想如果command中已经包含了重定向的操作，会发生什么奇怪的事情，2333）：  </p>
-<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="n">eval</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="n">$</span><span class="s">@&quot;)&quot;</span><span class="w"> </span><span class="o">&gt;</span><span class="n">$OUT</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="n">$TRACE</span>
+<div class="highlight"><pre><span></span><code> eval &quot;(&quot;$@&quot;)&quot; &gt;$OUT 2&gt;$TRACE
 </code></pre></div>
 
 <p>完整脚本见 <a href="https://gist.github.com/fangpsh/688b56c029147f44d879">cronic.sh</a>。</p>

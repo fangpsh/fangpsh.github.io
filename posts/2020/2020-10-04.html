@@ -291,13 +291,13 @@
 </code></pre></div>
 
 <p>输出</p>
-<div class="highlight"><pre><span></span><code><span class="n">requests</span><span class="p">.</span><span class="n">exceptions</span><span class="p">.</span><span class="nl">ConnectionError:</span><span class="w"> </span><span class="n">Connection</span><span class="w"> </span><span class="n">refused</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">Responses</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">call</span><span class="w"> </span><span class="n">doesn</span><span class="p">&#39;</span><span class="n">t</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">registered</span><span class="w"> </span><span class="n">mock</span><span class="p">.</span>
+<div class="highlight"><pre><span></span><code>requests.exceptions.ConnectionError: Connection refused by Responses - the call doesn&#39;t match any registered mock.
 
-<span class="nl">Request:</span>
-<span class="o">-</span><span class="w"> </span><span class="n">GET</span><span class="w"> </span><span class="nl">https:</span><span class="c1">//invalid-request.com/</span>
+Request:
+- GET https://invalid-request.com/
 
-<span class="n">Available</span><span class="w"> </span><span class="nl">matches:</span>
-<span class="o">-</span><span class="w"> </span><span class="n">GET</span><span class="w"> </span><span class="nl">https:</span><span class="c1">//api.stripe.com/v1/charges</span>
+Available matches:
+- GET https://api.stripe.com/v1/charges
 </code></pre></div>
 
 <h2>模仿浏览器行为</h2>

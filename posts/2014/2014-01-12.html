@@ -112,10 +112,10 @@ service networking restart
 <p>如果需要还可配置DNS服务器。
 配置</p>
 <p>在管理的节点生成ssh-key，把public分发到客户机，添加信任。手动添加非常繁琐，可以在前面一步，刷写系统的时候刷人public-key，或者使用 ssh-copy-id 为了使用ssh方便，可以修改hosts，如下：</p>
-<div class="highlight"><pre><span></span><code><span class="mf">192.168.1.101</span><span class="w"> </span><span class="n">pi01</span>
-<span class="mf">192.168.1.102</span><span class="w"> </span><span class="n">pi02</span>
-<span class="mf">192.168.1.103</span><span class="w"> </span><span class="n">pi03</span>
-<span class="mf">....</span>
+<div class="highlight"><pre><span></span><code>192.168.1.101 pi01
+192.168.1.102 pi02
+192.168.1.103 pi03
+....
 </code></pre></div>
 
 <p>然后 ssh pi[01~32]即可. 或者编写ssh的config文件，
@@ -168,9 +168,9 @@ pssh -t 99999 -h pssh-rpis -P sudo aptitude -y upgrade
 <h3>其他</h3>
 <h4>搭建Raspbian镜像</h4>
 <p>树莓派集群使用的系统主要为Raspbian，当进行软件包安装或更新时，如果有本地镜像，可以大大加快速度，节省时间。</p>
-<div class="highlight"><pre><span></span><code><span class="n">Rsync</span><span class="o">:</span>
-<span class="n">rsync</span><span class="w"> </span><span class="o">--</span><span class="n">archive</span><span class="w"> </span><span class="o">--</span><span class="n">verbose</span><span class="w"> </span><span class="o">--</span><span class="n">delete</span><span class="w"> </span><span class="o">--</span><span class="n">delete</span><span class="o">-</span><span class="n">delay</span><span class="w"> </span><span class="o">--</span><span class="n">delay</span><span class="o">-</span><span class="n">updates</span><span class="w"> </span><span class="o">\</span>
-<span class="w">    </span><span class="n">archive</span><span class="o">.</span><span class="na">raspbian</span><span class="o">.</span><span class="na">org</span><span class="o">::</span><span class="n">archive</span><span class="w"> </span><span class="sr">/path/to/local/</span><span class="n">mirror</span>
+<div class="highlight"><pre><span></span><code>Rsync:
+rsync --archive --verbose --delete --delete-delay --delay-updates \
+    archive.raspbian.org::archive /path/to/local/mirror
 </code></pre></div>
 
 <p>添加 crontable ， 自动更新。

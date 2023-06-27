@@ -46,13 +46,13 @@ Server Name Indication，简称为 SNI，是 TLS 的一个扩展，为解决这�
 <p><em>引用来源：<a href="https://imququ.com/post/sth-about-switch-to-https-2.html">关于启用 HTTPS 的一些经验分享（二）</a>。</em></p>
 </blockquote>
 <p>使用OpenSSL 测试NginxA，NginxB，不指定Host 头，NginxA 返回的是a.com 的证书，NginxB 返回的也是a.com 的证书。  </p>
-<div class="highlight"><pre><span></span><code><span class="nv">openssl</span><span class="w"> </span><span class="nv">s_client</span><span class="w"> </span><span class="o">-</span><span class="k">connect</span><span class="w"> </span><span class="nv">nginx_ip</span>:<span class="mi">443</span><span class="w"> </span><span class="o">-</span><span class="nv">showcerts</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">/</span><span class="nv">dev</span><span class="o">/</span><span class="nv">null</span><span class="w"> </span>
+<div class="highlight"><pre><span></span><code>openssl s_client -connect nginx_ip:443 -showcerts &lt; /dev/null 
 </code></pre></div>
 
 <h2>Nginx 源码分析</h2>
 <p>基本确定是配置加载的顺序问题。在NginxA 和NginxB 中先加载的都是a.com。
 在nginx.conf 中，我用 include 指令 引入了 某目录下的所有conf 结尾的配置:  </p>
-<div class="highlight"><pre><span></span><code><span class="k">include</span><span class="w"> </span><span class="o">/</span><span class="nv">home</span><span class="o">/</span><span class="nv">xxxxx</span><span class="cm">/*.conf;</span>
+<div class="highlight"><pre><span></span><code>include /home/xxxxx/*.conf;
 </code></pre></div>
 
 <p>怀疑Nginx include 是按照字典顺序，即a-z 的顺序。看下源代码，参考的Nginx 代码版本是1.11.0。<br>
@@ -107,29 +107,29 @@ Server Name Indication，简称为 SNI，是 TLS 的一个扩展，为解决这�
 </code></pre></div>
 
 <p><code>ngx_open_glob</code> 这个函数有点眼熟，glob 是一个熟悉的名字，在Python 和其他语言中常常看到相关的库，用来做文件路径搜索和匹配。继续找<code>ngx_open_glob</code> 这个函数：  </p>
-<div class="highlight"><pre><span></span><code><span class="cp">#/src/os/unix/ngx_files.c</span>
+<div class="highlight"><pre><span></span><code>#/src/os/unix/ngx_files.c
 
-<span class="n">ngx_int_t</span>
-<span class="nf">ngx_open_glob</span><span class="p">(</span><span class="n">ngx_glob_t</span><span class="w"> </span><span class="o">*</span><span class="n">gl</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="kt">int</span><span class="w">  </span><span class="n">n</span><span class="p">;</span>
+ngx_int_t
+ngx_open_glob(ngx_glob_t *gl)
+{
+    int  n;
 
-<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glob</span><span class="p">((</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">gl</span><span class="o">-&gt;</span><span class="n">pattern</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">gl</span><span class="o">-&gt;</span><span class="n">pglob</span><span class="p">);</span>
+    n = glob((char *) gl-&gt;pattern, 0, NULL, &amp;gl-&gt;pglob);
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NGX_OK</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
+    if (n == 0) {
+        return NGX_OK;
+    }
 
-<span class="cp">#ifdef GLOB_NOMATCH</span>
+#ifdef GLOB_NOMATCH
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GLOB_NOMATCH</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">gl</span><span class="o">-&gt;</span><span class="n">test</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NGX_OK</span><span class="p">;</span>
-<span class="p">}</span>
+    if (n == GLOB_NOMATCH &amp;&amp; gl-&gt;test) {
+        return NGX_OK;
+}
 
-<span class="cp">#endif</span>
+#endif
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">NGX_ERROR</span><span class="p">;</span>
-<span class="p">}</span>
+    return NGX_ERROR;
+}
 </code></pre></div>
 
 <p><code>ngx_conf_include</code> 在后续拿到匹配的文件路径，循环调用<code>ngx_read_glob</code> 进行读取解析。<br>
@@ -147,10 +147,10 @@ Server Name Indication，简称为 SNI，是 TLS 的一个扩展，为解决这�
 
 <p>继续搞清楚返回顺序的问题，<code>glob</code> 函数的传参第二个是flags。<br>
 flags 可以设置为<code>GLOB_NOSORT</code>，要求对返回的结果不进行排序，也就是说默认是排序的。  </p>
-<div class="highlight"><pre><span></span><code><span class="nv">GLOB_NOSORT</span>
-<span class="nv">Don</span><span class="err">&#39;t sort the returned pathnames.  The only reason to do this</span>
-<span class="err">is to save processing time.  By default, the returned</span>
-<span class="err">pathnames are sorted.</span>
+<div class="highlight"><pre><span></span><code>GLOB_NOSORT
+Don&#39;t sort the returned pathnames.  The only reason to do this
+is to save processing time.  By default, the returned
+pathnames are sorted.
 </code></pre></div>
 
 <p>在<code>ngx_open_glob</code> 中调用<code>glob</code>是传的<code>flags</code> 是<code>int 0</code>。在GLOB 的手册中没找到关于flags 设置为0 的说明。继续翻代码。  </p>
@@ -216,16 +216,16 @@ flags 可以设置为<code>GLOB_NOSORT</code>，要求对返回的结果不进�
 <p>图片<a href="http://www.jianshu.com/p/b4c38f44c4ea">来源网络</a> ，现在手头已经找不到用SySV 做Init 的机器了，冏。</p>
 <h2>Changeset 4943:1e2d5d3f9f6b</h2>
 <p><a href="https://trac.nginx.org/nginx/changeset/4943/nginx">Changeset 4943:1e2d5d3f9f6b in nginx</a>。</p>
-<div class="highlight"><pre><span></span><code><span class="n">Message</span><span class="o">:</span>
-<span class="n">Core</span><span class="o">:</span><span class="w"> </span><span class="n">removed</span><span class="w"> </span><span class="n">GLOB_NOSORT</span><span class="w"> </span><span class="n">glob</span><span class="w"> </span><span class="n">option</span><span class="o">.</span>
-<span class="n">This</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">alphabetical</span><span class="w"> </span><span class="n">sorting</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">included</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="k">if</span>
-<span class="n">the</span><span class="w"> </span><span class="s2">&quot;include&quot;</span><span class="w"> </span><span class="n">directive</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">wildcards</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">used</span><span class="o">.</span>
+<div class="highlight"><pre><span></span><code>Message:
+Core: removed GLOB_NOSORT glob option.
+This will result in alphabetical sorting of included files if
+the &quot;include&quot; directive with wildcards is used.
 
-<span class="n">Note</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">behaviour</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="n">different</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">Windows</span><span class="o">,</span><span class="w"> </span><span class="n">where</span>
-<span class="n">alphabetical</span><span class="w"> </span><span class="n">sorting</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">guaranteed</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">FindFirsFile</span><span class="o">?()/</span><span class="n">FindNextFile</span><span class="o">?()</span>
-<span class="o">(</span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">alphabetical</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">NTFS</span><span class="o">,</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">FAT</span><span class="o">).</span>
+Note that the behaviour is now different from that on Windows, where
+alphabetical sorting is not guaranteed for FindFirsFile?()/FindNextFile?()
+(used to be alphabetical on NTFS, but not on FAT).
 
-<span class="n">Approved</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">Igor</span><span class="w"> </span><span class="n">Sysoev</span><span class="o">,</span><span class="w"> </span><span class="n">prodded</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">many</span><span class="o">.</span>
+Approved by Igor Sysoev, prodded by many.
 </code></pre></div>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">

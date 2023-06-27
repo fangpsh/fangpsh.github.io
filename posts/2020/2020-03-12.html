@@ -72,19 +72,19 @@ src/gz openwrt_telephony http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19
           RX bytes:15494186 (14.7 MiB)  TX bytes:15679087 (14.9 MiB)
 </code></pre></div>
 
-<div class="highlight"><pre><span></span><code><span class="n">root</span><span class="nv">@OpenWrt</span><span class="err">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">ping6</span><span class="w">  </span><span class="n">qq</span><span class="p">.</span><span class="n">com</span>
-<span class="n">PING</span><span class="w"> </span><span class="n">qq</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="p">(</span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="mi">56</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="n">bytes</span>
-<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">0</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.958</span><span class="w"> </span><span class="n">ms</span>
-<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.962</span><span class="w"> </span><span class="n">ms</span>
-<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">2</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">38.267</span><span class="w"> </span><span class="n">ms</span>
-<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">3</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.821</span><span class="w"> </span><span class="n">ms</span>
-<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">4</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.260</span><span class="w"> </span><span class="n">ms</span>
-<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">5</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.530</span><span class="w"> </span><span class="n">ms</span>
-<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span><span class="err">:</span><span class="w"> </span><span class="n">seq</span><span class="o">=</span><span class="mi">6</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">50</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">37.828</span><span class="w"> </span><span class="n">ms</span>
-<span class="o">^</span><span class="n">C</span>
-<span class="o">---</span><span class="w"> </span><span class="n">qq</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="n">ping</span><span class="w"> </span><span class="k">statistics</span><span class="w"> </span><span class="o">---</span>
-<span class="mi">7</span><span class="w"> </span><span class="n">packets</span><span class="w"> </span><span class="n">transmitted</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">packets</span><span class="w"> </span><span class="n">received</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="n">packet</span><span class="w"> </span><span class="n">loss</span>
-<span class="nf">round</span><span class="o">-</span><span class="n">trip</span><span class="w"> </span><span class="nf">min</span><span class="o">/</span><span class="nf">avg</span><span class="o">/</span><span class="nf">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">37.260</span><span class="o">/</span><span class="mf">37.803</span><span class="o">/</span><span class="mf">38.267</span><span class="w"> </span><span class="n">ms</span>
+<div class="highlight"><pre><span></span><code>root@OpenWrt:~# ping6  qq.com
+PING qq.com (fd2e:f49a:9639:1111::7b97:8912): 56 data bytes
+64 bytes from fd2e:f49a:9639:1111::7b97:8912: seq=0 ttl=50 time=37.958 ms
+64 bytes from fd2e:f49a:9639:1111::7b97:8912: seq=1 ttl=50 time=37.962 ms
+64 bytes from fd2e:f49a:9639:1111::7b97:8912: seq=2 ttl=50 time=38.267 ms
+64 bytes from fd2e:f49a:9639:1111::7b97:8912: seq=3 ttl=50 time=37.821 ms
+64 bytes from fd2e:f49a:9639:1111::7b97:8912: seq=4 ttl=50 time=37.260 ms
+64 bytes from fd2e:f49a:9639:1111::7b97:8912: seq=5 ttl=50 time=37.530 ms
+64 bytes from fd2e:f49a:9639:1111::7b97:8912: seq=6 ttl=50 time=37.828 ms
+^C
+--- qq.com ping statistics ---
+7 packets transmitted, 7 packets received, 0% packet loss
+round-trip min/avg/max = 37.260/37.803/38.267 ms
 </code></pre></div>
 
 <p>DNS64 需要totd，不过这软件在仓库中没了，需要交叉编译，有点麻烦。后来看到<a href="https://microcai.org/2019/02/13/nat64.html">unbound</a>，仓库里面也没有。那只能用<a href="https://openwrt.org/docs/guide-user/services/dns/bind">bind</a> 了。</p>
@@ -93,26 +93,26 @@ src/gz openwrt_telephony http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19
 </code></pre></div>
 
 <p>修改配置<code>/etc/bind/named.conf</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">options</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="err">directory</span><span class="w"> </span><span class="err">&quot;/tmp&quot;</span><span class="p">;</span>
-<span class="w">        </span><span class="err">listen-on</span><span class="w"> </span><span class="err">port</span><span class="w"> </span><span class="err">53</span><span class="w">  </span><span class="err">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
-<span class="w">        </span><span class="nt">listen-on-v6</span><span class="w"> </span><span class="nt">port</span><span class="w"> </span><span class="nt">53</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
+<div class="highlight"><pre><span></span><code>options {
+        directory &quot;/tmp&quot;;
+        listen-on port 53  { any; };
+        listen-on-v6 port 53 { any; };
 
-<span class="w">        </span><span class="nt">recursion</span><span class="w"> </span><span class="nt">yes</span><span class="o">;</span>
-<span class="w">        </span><span class="nt">allow-recursion</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
-<span class="w">        </span><span class="nt">allow-query</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
-<span class="w">        </span><span class="nt">allow-query-cache</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">any</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="o">;</span>
+        recursion yes;
+        allow-recursion { any; };
+        allow-query { any; };
+        allow-query-cache { any; };
 
 
-<span class="w">        </span><span class="nt">forwarders</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="err">202.96.134.133</span><span class="p">;</span>
-<span class="w">                </span><span class="err">223.5.5.5</span><span class="p">;</span>
-<span class="w">                </span><span class="err">114.114.114.114</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span><span class="o">;</span>
+        forwarders {
+                202.96.134.133;
+                223.5.5.5;
+                114.114.114.114;
+        };
 
-<span class="w">        </span><span class="nt">auth-nxdomain</span><span class="w"> </span><span class="nt">no</span><span class="o">;</span>
-<span class="w">        </span><span class="nt">dns64</span><span class="w"> </span><span class="nt">fd2e</span><span class="p">:</span><span class="nd">f49a</span><span class="p">:</span><span class="nd">9639</span><span class="p">:</span><span class="nd">1111</span><span class="o">::/</span><span class="nt">96</span><span class="w"> </span><span class="p">{}</span><span class="o">;</span><span class="w"> </span><span class="p">#</span><span class="nn">参考tayga</span><span class="w"> </span><span class="nt">中配额的前缀</span>
-<span class="err">}</span><span class="o">;</span>
+        auth-nxdomain no;
+        dns64 fd2e:f49a:9639:1111::/96 {}; #参考tayga 中配额的前缀
+};
 </code></pre></div>
 
 <p>openwrt 本身跑着一个dnsmasq，用作DNS 和DHCP 等服务，本来想通过<a href="https://openwrt.org/docs/guide-user/base-system/dhcp">server=</a> 配置，把请求转给bind，bind设置一个非53端口，
@@ -125,11 +125,11 @@ src/gz openwrt_telephony http://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/19
 </code></pre></div>
 
 <p>重启网络和named后，dig(<code>opkg install bind-tools</code>)测试一下：</p>
-<div class="highlight"><pre><span></span><code><span class="n">root</span><span class="nv">@OpenWrt</span><span class="err">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">dig</span><span class="w"> </span><span class="n">qq</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="n">AAAA</span><span class="w"> </span><span class="o">+</span><span class="n">short</span>
-<span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="nl">b703</span><span class="p">:</span><span class="n">e223</span>
-<span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">3</span><span class="nl">d81</span><span class="p">:</span><span class="mi">72</span><span class="n">f</span>
-<span class="nl">fd2e</span><span class="p">:</span><span class="nl">f49a</span><span class="p">:</span><span class="mi">9639</span><span class="err">:</span><span class="mi">1111</span><span class="o">::</span><span class="mi">7</span><span class="nl">b97</span><span class="p">:</span><span class="mi">8912</span>
-<span class="n">root</span><span class="nv">@OpenWrt</span><span class="err">:</span><span class="o">~</span><span class="err">#</span>
+<div class="highlight"><pre><span></span><code>root@OpenWrt:~# dig qq.com AAAA +short
+fd2e:f49a:9639:1111::b703:e223
+fd2e:f49a:9639:1111::3d81:72f
+fd2e:f49a:9639:1111::7b97:8912
+root@OpenWrt:~#
 </code></pre></div>
 
 <p>完美。</p>
@@ -147,6 +147,10 @@ config dhcp &#39;lan&#39;
 
 <p>配置项解释，可参考<a href="https://www.douban.com/note/618429634/">DHCPv6 over PPPoE on OpenWrt / LEDE</a>。</p>
 <p>最后，感谢各位网友的教程:) 。</p>
+<hr>
+<p>2023年-06-27 更新：
+1. 如果ULA 是内网段（fd,fc ）又关闭了dhcpv4，安卓设备会无法连接，将ULA替换为公网段即可解决。
+2. 现在，使用Jool 是最佳选择：https://openwrt.org/docs/guide-user/network/ipv6/nat64</p>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
     Posted on <abbr class="published" title="2020-03-12T00:00:00+08:00">

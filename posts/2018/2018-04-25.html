@@ -46,9 +46,9 @@
 <p>域名：免费的.tk 域名玩一玩，开隐私保护，tongshi.tk。<br>
 服务器地址隐藏：cloudflare 免费CDN，全站开启。  </p>
 <p>收集腾讯内网出口的IP 地址范围，三个段：</p>
-<div class="highlight"><pre><span></span><code><span class="mf">14.17.22.0</span><span class="o">/</span><span class="mf">24</span>
-<span class="mf">103.7.28.0</span><span class="o">/</span><span class="mf">22</span>
-<span class="mf">103.7.29.0</span><span class="o">/</span><span class="mf">24</span>
+<div class="highlight"><pre><span></span><code>14.17.22.0/24
+103.7.28.0/22
+103.7.29.0/24
 </code></pre></div>
 
 <p>开启HTTPS 支持，防止在公司内网访问，被中间人监听 🙈  。</p>
@@ -72,16 +72,16 @@
 
 <p>测试了一下，客户端自己伪造这个头，无效，还是会被CloudFlare 重写为正确的客户端IP。</p>
 <p>安装插件<a href="https://gitlab.com/ReDevelopers/ReFlar/user-management">reflar/user-management</a>，关闭邮箱注册。</p>
-<div class="highlight"><pre><span></span><code><span class="n">Disable</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="n">registration</span>
+<div class="highlight"><pre><span></span><code>Disable email registration
 </code></pre></div>
 
 <p>在注册接口上限制一下：</p>
-<div class="highlight"><pre><span></span><code><span class="n">location</span><span class="w"> </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">reflar</span><span class="o">/</span><span class="n">usermanagement</span><span class="o">/</span><span class="n">register</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">$allowed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">&#39;</span><span class="n">deny</span><span class="p">&#39;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mh">403</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="n">try_files</span><span class="w"> </span><span class="n">$uri</span><span class="w"> </span><span class="n">$uri</span><span class="o">/</span><span class="w"> </span><span class="o">/</span><span class="n">api</span><span class="p">.</span><span class="n">php</span><span class="o">?</span><span class="n">$query_string</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code>location /api/reflar/usermanagement/register {
+    if ( $allowed = &#39;deny&#39; ) {
+        return 403;
+    }
+    try_files $uri $uri/ /api.php?$query_string;
+}
 </code></pre></div>
 
 <p>搞定。</p>

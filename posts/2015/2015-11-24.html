@@ -44,20 +44,20 @@
 </code></pre></div>
 
 <p>另外一个问题是LDAP支持的问题，需要支持LDAP验证，Google了一下，不少解决方法，不过都是抄来抄去，而且由于个人对Tomcat不熟悉，最后找了一个简单的方法，编辑server.html,也HOST标签之间插入：</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;Realm</span><span class="w"> </span><span class="na">className=</span><span class="s">&quot;org.apache.catalina.realm.JNDIRealm&quot;</span>
-<span class="w">               </span><span class="na">debug=</span><span class="s">&quot;99&quot;</span>
-<span class="w">               </span><span class="na">connectionURL=</span><span class="s">&quot;ldap://&quot;</span>
-<span class="w">               </span><span class="na">userPattern=</span><span class="s">&quot;cn={0}, ou=XXX,dc=XXX,dc=XXX&quot;</span>
-<span class="nt">/&gt;</span>
-<span class="nt">&lt;/Realm&gt;</span>
+<div class="highlight"><pre><span></span><code>&lt;Realm className=&quot;org.apache.catalina.realm.JNDIRealm&quot;
+               debug=&quot;99&quot;
+               connectionURL=&quot;ldap://&quot;
+               userPattern=&quot;cn={0}, ou=XXX,dc=XXX,dc=XXX&quot;
+/&gt;
+&lt;/Realm&gt;
 </code></pre></div>
 
 <p>另外把原有的一个Realm块注释掉：</p>
-<div class="highlight"><pre><span></span><code><span class="cm">&lt;!--</span>
-<span class="cm">        &lt;Realm className=&quot;org.apache.catalina.realm.UserDatabaseRealm&quot;</span>
-<span class="cm">               resourceName=&quot;UserDatabase&quot;/&gt;</span>
-<span class="cm">        &lt;/Realm&gt;</span>
-<span class="cm">--&gt;</span>
+<div class="highlight"><pre><span></span><code>&lt;!--
+        &lt;Realm className=&quot;org.apache.catalina.realm.UserDatabaseRealm&quot;
+               resourceName=&quot;UserDatabase&quot;/&gt;
+        &lt;/Realm&gt;
+--&gt;
 </code></pre></div>
 
 <p>效果如下，基本的HTTP Authentication对话框：  </p>

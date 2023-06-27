@@ -79,16 +79,16 @@ Google 了下，Stackoverflow 看到一问题：<br>
 </code></pre></div>
 
 <p>修改pelican 主题 的base.html 之类模板文件的，引入这个JavaScript 文件：  </p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;script</span><span class="w"> </span><span class="na">src=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">SITEURL</span> <span class="cp">}}</span><span class="s">/theme/static/js/toc.js&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<div class="highlight"><pre><span></span><code>&lt;script src=&quot;{{ SITEURL }}/theme/static/js/toc.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
 </code></pre></div>
 
 <p>修改pelican 主题的生成文章的html 模板，加一个div，另外还需要给文章内容的div 加一个<code>id="contents"</code>：  </p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;div</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;toc&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;/div&gt;</span>
+<div class="highlight"><pre><span></span><code>&lt;div id=&quot;toc&quot;&gt;
+&lt;/div&gt;
 
-<span class="nt">&lt;div</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;article-content&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;entry-content&quot;</span><span class="nt">&gt;</span>
-<span class="cp">{{</span> <span class="nv">article.content</span> <span class="cp">}}</span>
-<span class="w">  </span><span class="nt">&lt;/div&gt;</span><span class="cm">&lt;!-- /.entry-content --&gt;</span>
+&lt;div id=&quot;article-content&quot; class=&quot;entry-content&quot;&gt;
+{{ article.content }}
+  &lt;/div&gt;&lt;!-- /.entry-content --&gt;
 ...
 </code></pre></div>
 

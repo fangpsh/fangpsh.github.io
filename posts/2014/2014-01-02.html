@@ -42,52 +42,52 @@ bandersnatch的安装配置看官方文档就可以搞定了，这里大概说�
 <li>你需要一个nginx,lighttpd,或apache之类的webserver，推荐前二者选其一。配置好webserver。</li>
 <li>bandersnatch.conf位于/etc/下（安装后先执行 bandersnatch mirror 生成默认配置文件），按需修改该配置文件，对应条目都有说明，简单翻译如下：</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="k">[mirror]</span>
-<span class="c1">; 同步内容存储的目录位置.</span>
-<span class="na">directory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/home/mirror/pypi</span>
+<div class="highlight"><pre><span></span><code>[mirror]
+; 同步内容存储的目录位置.
+directory = /home/mirror/pypi
 
-<span class="c1">; 将同步的上有PyPI服务器，第一次同步可以选择清华，中科大，中大，豆瓣等国内服务器.</span>
-<span class="c1">; 后期的同步再修改为官方服务器。</span>
-<span class="c1">;master = https://testpypi.python.org</span>
-<span class="c1">;master = http://pypi.mirrors.ustc.edu.cn</span>
-<span class="c1">;master = http://pypi.douban.com</span>
+; 将同步的上有PyPI服务器，第一次同步可以选择清华，中科大，中大，豆瓣等国内服务器.
+; 后期的同步再修改为官方服务器。
+;master = https://testpypi.python.org
+;master = http://pypi.mirrors.ustc.edu.cn
+;master = http://pypi.douban.com
 
-<span class="na">master</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">https://pypi.python.org</span>
+master = https://pypi.python.org
 
-<span class="c1">;超时设置</span>
-<span class="c1">;The network socket timeout to use for all connections. This is set to a</span>
-<span class="c1">; somewhat aggressively low value: rather fail quickly temporarily and re-run</span>
-<span class="c1">; the client soon instead of having a process hang infinitely and have TCP not</span>
-<span class="c1">; catching up for ages.</span>
-<span class="na">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">10</span>
+;超时设置
+;The network socket timeout to use for all connections. This is set to a
+; somewhat aggressively low value: rather fail quickly temporarily and re-run
+; the client soon instead of having a process hang infinitely and have TCP not
+; catching up for ages.
+timeout = 10
 
-<span class="c1">; 并行下载的线程数量.</span>
-<span class="c1">; 建议的线程设置:</span>
-<span class="c1">; - 保持默认设置3,以防止上游服务器过载</span>
-<span class="c1">; - 数据中心的官方服务器可以设置为20</span>
-<span class="c1">; - 50以上的设置可能不稳定，并会被bandersnatch禁止</span>
-<span class="na">workers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">3</span>
+; 并行下载的线程数量.
+; 建议的线程设置:
+; - 保持默认设置3,以防止上游服务器过载
+; - 数据中心的官方服务器可以设置为20
+; - 50以上的设置可能不稳定，并会被bandersnatch禁止
+workers = 3
 
-<span class="c1">;快速同步中遇到错误是否停止同步，如果是，将导致同步失败。</span>
-<span class="c1">;第一次同步时候建议设置为 false，后续可更改为true。</span>
-<span class="c1">; 值： &quot;true&quot; or &quot;false&quot;.</span>
-<span class="na">stop-on-error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+;快速同步中遇到错误是否停止同步，如果是，将导致同步失败。
+;第一次同步时候建议设置为 false，后续可更改为true。
+; 值： &quot;true&quot; or &quot;false&quot;.
+stop-on-error = false
 
-<span class="c1">;本地服务器是否删除上游服务器已经删除的包。</span>
-<span class="c1">; 重要: 如果你的服务器是作为一个官方镜像提供给用户，请打开该选项。</span>
-<span class="na">delete-packages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+;本地服务器是否删除上游服务器已经删除的包。
+; 重要: 如果你的服务器是作为一个官方镜像提供给用户，请打开该选项。
+delete-packages = true
 
-<span class="k">[statistics]</span>
-<span class="c1">; A glob pattern matching all access log files that should be processed to</span>
-<span class="c1">; generate daily access statistics that will be aggregated on the master PyPI.</span>
-<span class="na">access-log-pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/var/log/nginx/*.pypi.python.org*access*</span>
-<span class="c1">; vim: set ft=cfg:</span>
+[statistics]
+; A glob pattern matching all access log files that should be processed to
+; generate daily access statistics that will be aggregated on the master PyPI.
+access-log-pattern = /var/log/nginx/*.pypi.python.org*access*
+; vim: set ft=cfg:
 </code></pre></div>
 
 <p>4.设置cron任务，自动定时执行同步命令,将任务文件放在/etc/cron.d文件下时，注意命名规则。</p>
-<div class="highlight"><pre><span></span><code><span class="n">LC_ALL</span><span class="o">=</span><span class="n">en_US</span><span class="p">.</span><span class="n">utf8</span>
-<span class="o">*/</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="n">bandersnatch</span><span class="w"> </span><span class="n">mirror</span><span class="w"> </span><span class="o">|&amp;</span><span class="w"> </span><span class="n">logger</span><span class="w"> </span><span class="o">-</span><span class="n">t</span><span class="w"> </span><span class="n">bandersnatch</span><span class="o">[</span><span class="n">mirror</span><span class="o">]</span>
-<span class="mi">12</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="n">bandersnatch</span><span class="w"> </span><span class="k">update</span><span class="o">-</span><span class="n">stats</span><span class="w"> </span><span class="o">|&amp;</span><span class="w"> </span><span class="n">logger</span><span class="w"> </span><span class="o">-</span><span class="n">t</span><span class="w"> </span><span class="n">bandersnatch</span><span class="o">[</span><span class="n">update-stats</span><span class="o">]</span>
+<div class="highlight"><pre><span></span><code>LC_ALL=en_US.utf8
+*/2 * * * * root bandersnatch mirror |&amp; logger -t bandersnatch[mirror]
+12 * * * * root bandersnatch update-stats |&amp; logger -t bandersnatch[update-stats]
 </code></pre></div>
 
 <p>5.关于bandersnatch更多配置请参考官方文档，另外可以配置exim4和编写脚本分析日记文件进行监控和报警。</p>
@@ -100,10 +100,10 @@ bandersnatch的安装配置看官方文档就可以搞定了，这里大概说�
 <li>如果你是搭建一个公共的镜像站提供服务，不建议使用Geminabox 中WEBrick作为webserver，换用nginx或者lighttpd吧。</li>
 <li>将同步命令放入/etc/cron.d时除了要注意文件命名方式还可能遇到“rake aborted!”，这表明没设置PATH，参考如下（请按你的PATH进行配置）：</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="c1">#RUbygems</span>
-<span class="n">PATH</span><span class="o">=...</span><span class="c1">#查看PATH的命令：echo $PATH</span>
-<span class="c1">#解释：10分钟一次，配置flock锁，执行rubygems中的同步，日记格式输出，邮件报警命令等。</span>
-<span class="o">*/</span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">flock</span><span class="w"> </span><span class="o">-</span><span class="n">xn</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">lock</span><span class="o">/</span><span class="n">mirror</span><span class="o">/</span><span class="n">rubygems</span><span class="o">.</span><span class="n">lock</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="s2">&quot; bash /root/scripts/bin/rubygems &quot;</span>
+<div class="highlight"><pre><span></span><code>#RUbygems
+PATH=...#查看PATH的命令：echo $PATH
+#解释：10分钟一次，配置flock锁，执行rubygems中的同步，日记格式输出，邮件报警命令等。
+*/10 * * * * flock -xn /var/lock/mirror/rubygems.lock -c &quot; bash /root/scripts/bin/rubygems &quot;
 </code></pre></div>
 
 <p>6.注意需要配置同步锁。可用上例代码中的flock。</p>

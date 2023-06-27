@@ -39,12 +39,12 @@
 <h2>编译OpenResty</h2>
 <p>说来惭愧，编译OpenResty费了好大一番工夫。先是没有看清stream-lua-nginx-modele 的分支，直接用master 分支的编译，测试代码的时候直接返回 <code>ngx.req.udp_socket</code> 是空。</p>
 <p>然后用bloody-dns-server 分支编译，又遇到 mmdb 库的问题。Mac OS 下需要在编译的时候指定maxminddb 的库：</p>
-<div class="highlight"><pre><span></span><code>.<span class="o">/</span><span class="nv">configure</span><span class="w"> </span>\
-<span class="o">--</span><span class="nv">with</span><span class="o">-</span><span class="nv">cc</span><span class="o">-</span><span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/openssl/include/ -I/usr/local/opt/pcre/include/&quot;</span><span class="w"> </span>\
-<span class="o">--</span><span class="nv">with</span><span class="o">-</span><span class="nv">ld</span><span class="o">-</span><span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/openssl/lib/ -L/usr/local/opt/pcre/lib/ -L/opt/mmdb/lib -lmaxminddb&quot;</span><span class="w"> </span>\<span class="w"> </span>
-<span class="o">--</span><span class="nv">with</span><span class="o">-</span><span class="nv">stream</span><span class="w"> </span>\
-<span class="o">--</span><span class="nv">with</span><span class="o">-</span><span class="nv">stream_ssl_module</span><span class="w"> </span>\
-<span class="o">--</span><span class="nv">add</span><span class="o">-</span><span class="nv">module</span><span class="o">=</span>.<span class="o">/</span><span class="nv">bundle</span><span class="o">/</span><span class="nv">stream</span><span class="o">-</span><span class="nv">lua</span><span class="o">-</span><span class="nv">nginx</span><span class="o">-</span><span class="nv">module</span>
+<div class="highlight"><pre><span></span><code>./configure \
+--with-cc-opt=&quot;-I/usr/local/opt/openssl/include/ -I/usr/local/opt/pcre/include/&quot; \
+--with-ld-opt=&quot;-L/usr/local/opt/openssl/lib/ -L/usr/local/opt/pcre/lib/ -L/opt/mmdb/lib -lmaxminddb&quot; \ 
+--with-stream \
+--with-stream_ssl_module \
+--add-module=./bundle/stream-lua-nginx-module
 </code></pre></div>
 
 <p>不然会出现一堆:</p>
@@ -58,7 +58,7 @@ ndefined reference to `MMDB_strerror&#39;
 <p>我看了一下 stream-lua-nginx-module 的<code>build.sh</code> 是显式指定了<code>-L/opt/mmdb/lib -lmaxminddb</code>，但是nginx 编译的时候没指定，就会报错。</p>
 <p>相关问题：<a href="https://stackoverflow.com/questions/32425361/ld-symbols-not-found-for-architecture-x86-64-clang-linker-command-failed">ld: symbols not found for architecture x86_64, clang: linker command failed</a>。</p>
 <p>遇到错误：</p>
-<div class="highlight"><pre><span></span><code><span class="nl">nginx</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">alert</span><span class="o">]</span><span class="w"> </span><span class="n">cannot</span><span class="w"> </span><span class="k">open</span><span class="w"> </span><span class="k">file</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">mmdb</span><span class="o">/</span><span class="k">database</span><span class="o">/</span><span class="n">GeoLite2</span><span class="o">-</span><span class="n">Country</span><span class="p">.</span><span class="n">mmdb</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nl">reading</span><span class="p">:</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="n">opening</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">specified</span><span class="w"> </span><span class="n">MaxMind</span><span class="w"> </span><span class="n">DB</span><span class="w"> </span><span class="k">file</span><span class="w"> </span><span class="ow">in</span>
+<div class="highlight"><pre><span></span><code>nginx: [alert] cannot open file /opt/mmdb/database/GeoLite2-Country.mmdb for reading: Error opening the specified MaxMind DB file in
 </code></pre></div>
 
 <p>去Maxmind 官网下一个，丢到对应的目录即可。</p>

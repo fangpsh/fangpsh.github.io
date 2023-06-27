@@ -49,58 +49,58 @@
 打开<code>https://douban.fm/mine/#!type=liked</code>, Inspect 看一下网络请求接口，找出类似：<br>
 <code>http://douban.fm/j/play_record?ck=&amp;spbid=&amp;type=liked&amp;start=</code><br>
 的请求，Copy As cURL，得到Cookie 之类的，</p>
-<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env bash</span>
-<span class="c1">#Convert DoubanFM liked songs into KWL list.</span>
-<span class="c1">#require:</span>
-<span class="c1">#  jq: https://stedolan.github.io/jq/</span>
+<div class="highlight"><pre><span></span><code>#!/usr/bin/env bash
+#Convert DoubanFM liked songs into KWL list.
+#require:
+#  jq: https://stedolan.github.io/jq/
 
-<span class="nv">COUNT</span><span class="o">=</span><span class="c1">#liked songs number#</span>
+COUNT=#liked songs number#
 
-<span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>seq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="si">${</span><span class="nv">COUNT</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span><span class="k">do</span>
-<span class="w">    </span><span class="nv">songs</span><span class="o">=</span><span class="sb">`</span>curl<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;http://douban.fm/j/play_record?ck=&amp;spbid=&amp;type=liked&amp;start=&#39;</span><span class="nv">$i</span><span class="se">\</span>
-<span class="w">           </span>-H<span class="w"> </span><span class="s1">&#39;Host: douban.fm&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;User-Agent: &#39;</span><span class="se">\</span>
-<span class="w">           </span>-H<span class="w"> </span><span class="s1">&#39;Accept: text/plain, */*; q=0.01&#39;</span><span class="se">\</span>
-<span class="w">           </span>-H<span class="w"> </span><span class="s1">&#39;Accept-Language: en-US,en;q=0.5&#39;</span><span class="se">\</span>
-<span class="w">           </span>-H<span class="w"> </span><span class="s1">&#39;DNT: 1&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">           </span>-H<span class="w"> </span><span class="s1">&#39;X-Requested-With: XMLHttpRequest&#39;</span><span class="se">\</span>
-<span class="w">           </span>-H<span class="w"> </span><span class="s1">&#39;Referer: http://douban.fm/mine/&#39;</span><span class="se">\</span>
-<span class="w">           </span>-H<span class="w"> </span><span class="s1">&#39;Cookie: &#39;</span><span class="se">\</span>
-<span class="w">           </span>-H<span class="w"> </span><span class="s1">&#39;Connection: keep-alive&#39;</span><span class="se">\</span>
-<span class="w">           </span><span class="p">|</span>jq<span class="w"> </span><span class="s1">&#39;.songs&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span>s<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>seq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">14</span><span class="sb">`</span><span class="p">;</span><span class="k">do</span>
-<span class="w">        </span><span class="nv">song</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$songs</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.<span class="o">[</span><span class="nv">$s</span><span class="o">]</span><span class="sb">`</span>
-<span class="w">        </span><span class="nv">title</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$song</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.title<span class="sb">`</span>
-<span class="w">        </span><span class="nv">artist</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$song</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.artist<span class="sb">`</span>
-<span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$title</span><span class="w"> </span><span class="nv">$artist</span>
-<span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&lt;so name=&quot;</span><span class="nv">$title</span><span class="w"> </span><span class="s2">&quot;artist=&quot;</span><span class="nv">$artist</span><span class="s2">&quot;&gt;&lt;/so&gt;&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>Douban_FM.kwl
-<span class="w">    </span><span class="k">done</span>
-<span class="w">    </span>sleep<span class="w"> </span><span class="m">10</span>
-<span class="k">done</span>
+for i in `seq 0 15 ${COUNT}`;do
+    songs=`curl -s &#39;http://douban.fm/j/play_record?ck=&amp;spbid=&amp;type=liked&amp;start=&#39;$i\
+           -H &#39;Host: douban.fm&#39; -H &#39;User-Agent: &#39;\
+           -H &#39;Accept: text/plain, */*; q=0.01&#39;\
+           -H &#39;Accept-Language: en-US,en;q=0.5&#39;\
+           -H &#39;DNT: 1&#39; \
+           -H &#39;X-Requested-With: XMLHttpRequest&#39;\
+           -H &#39;Referer: http://douban.fm/mine/&#39;\
+           -H &#39;Cookie: &#39;\
+           -H &#39;Connection: keep-alive&#39;\
+           |jq &#39;.songs&#39;`
+    for s in `seq 0 14`;do
+        song=`echo $songs | jq .[$s]`
+        title=`echo $song | jq .title`
+        artist=`echo $song | jq .artist`
+        echo $title $artist
+        echo &quot;&lt;so name=&quot;$title &quot;artist=&quot;$artist&quot;&gt;&lt;/so&gt;&quot; &gt;&gt; Douban_FM.kwl
+    done
+    sleep 10
+done
 </code></pre></div>
 
 <p>由于歌曲总数不一定是15 的倍数，所以最后可能会几项是NULL ，手动删除一下就好了。<br>
 生成的DoubanFM.kwl 是酷我的歌曲列表，上传地址：<a href="http://music.163.com/#/import/kuwo">http://music.163.com/#/import/kuwo</a>，导入即可。<br>
 .kwl 内容片段：</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;とんちんかんちん一休さん&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;相内恵 / ヤングフレッシュ&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;岛人ぬ宝&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;BEGIN&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;美丽的梭罗河&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;黄秋生&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;雨&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;小果&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Paradise&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Coldplay&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Broken&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Jake Bugg&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;A Step You Can&#39;t Take Back&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Keira Knightley&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Tokyo&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;California Wives&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;痴人&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;痴人 / 痴人&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;I Cried For You&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Katie Melua&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Counting Stars&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;OneRepublic&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
+<div class="highlight"><pre><span></span><code>&lt;so&gt;
+&lt;so name=&quot;とんちんかんちん一休さん&quot; artist=&quot;相内恵 / ヤングフレッシュ&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;岛人ぬ宝&quot; artist=&quot;BEGIN&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;美丽的梭罗河&quot; artist=&quot;黄秋生&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;雨&quot; artist=&quot;小果&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;Paradise&quot; artist=&quot;Coldplay&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;Broken&quot; artist=&quot;Jake Bugg&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;A Step You Can&#39;t Take Back&quot; artist=&quot;Keira Knightley&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;Tokyo&quot; artist=&quot;California Wives&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;痴人&quot; artist=&quot;痴人 / 痴人&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;I Cried For You&quot; artist=&quot;Katie Melua&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;Counting Stars&quot; artist=&quot;OneRepublic&quot;&gt;&lt;/so&gt;
 ....
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;I Have Nothing&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Whitney Houston&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Sometimes When We Touch&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Rod Stewart&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;From The Bottom Of My Broken Heart&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Britney Spears&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Because I Love You&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Shakin Stevens&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Rhythm Of The Rain&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;Jason Donovan / The Cascades&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;so</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;织梦行云&quot;</span><span class="w"> </span><span class="na">artist=</span><span class="s">&quot;骆集益&quot;</span><span class="nt">&gt;&lt;/so&gt;</span>
-<span class="nt">&lt;/so&gt;</span>
+&lt;so name=&quot;I Have Nothing&quot; artist=&quot;Whitney Houston&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;Sometimes When We Touch&quot; artist=&quot;Rod Stewart&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;From The Bottom Of My Broken Heart&quot; artist=&quot;Britney Spears&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;Because I Love You&quot; artist=&quot;Shakin Stevens&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;Rhythm Of The Rain&quot; artist=&quot;Jason Donovan / The Cascades&quot;&gt;&lt;/so&gt;
+&lt;so name=&quot;织梦行云&quot; artist=&quot;骆集益&quot;&gt;&lt;/so&gt;
+&lt;/so&gt;
 </code></pre></div>
 
 <p>导入网易云音乐之后会生成一个和kwl文件同名的歌单，再在App 内操作导入到<code>我喜欢的音乐</code> ，批量加红心即可。目前看来导入之后，隔几天，网易私人FM 的推荐稍微好了一些。</p>

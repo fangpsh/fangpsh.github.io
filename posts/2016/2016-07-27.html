@@ -56,13 +56,13 @@ to a proxy), or after the first response when no keepalive/close option is
 specified</strong>......</p>
 </blockquote>
 <p>另外官方给出了一个配置示例：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">defaults</span><span class="w"> </span><span class="nv">http</span>
-<span class="w">    </span><span class="nv">option</span><span class="w"> </span><span class="nv">http</span><span class="o">-</span><span class="nv">server</span><span class="o">-</span><span class="nv">close</span>
-<span class="w">    </span><span class="nb">timeout</span><span class="w"> </span><span class="k">connect</span><span class="w"> </span><span class="mi">5</span><span class="nv">s</span>
-<span class="w">    </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">client</span><span class="w"> </span><span class="mi">30</span><span class="nv">s</span>
-<span class="w">    </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">client</span><span class="o">-</span><span class="nv">fin</span><span class="w"> </span><span class="mi">30</span><span class="nv">s</span>
-<span class="w">    </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">server</span><span class="w"> </span><span class="mi">30</span><span class="nv">s</span>
-<span class="w">    </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">tunnel</span><span class="w">  </span><span class="mi">1</span><span class="nv">h</span><span class="w">    </span>#<span class="w"> </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">use</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">WebSocket</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="k">CONNECT</span>
+<div class="highlight"><pre><span></span><code>defaults http
+    option http-server-close
+    timeout connect 5s
+    timeout client 30s
+    timeout client-fin 30s
+    timeout server 30s
+    timeout tunnel  1h    # timeout to use with WebSocket and CONNECT
 </code></pre></div>
 
 <p>把中继的Haproxy 的这项值设为1h，解决了Slack 会频繁重连的问题。</p>

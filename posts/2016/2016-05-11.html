@@ -99,159 +99,159 @@ Master可以另外针对Bind DLZ 和MySQL 做高可用，这样的设计，可�
 </ul>
 <p>Nagios 有一个开源的插件可以使用：<a href="https://exchange.nagios.org/directory/Plugins/Network-Protocols/DNS/check_bind-2Esh/details">check_bind.sh</a>，不过很老了，可能需要自己改改，使用rndc 这个命令来获取Bind 的状态，采点绘图。<br>
 上面的脚本简单改改，可用于OpenFalcon，Bind9.9 版本：</p>
-<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env bash</span>
+<div class="highlight"><pre><span></span><code>#!/usr/bin/env bash
 
-<span class="c1">#check bind status for falcon agent</span>
-<span class="c1">#fork from https://exchange.nagios.org/directory/Plugins/Network-Protocols/DNS/check_bind-2Esh/details</span>
-<span class="c1">#author: fangpeishi</span>
+#check bind status for falcon agent
+#fork from https://exchange.nagios.org/directory/Plugins/Network-Protocols/DNS/check_bind-2Esh/details
+#author: fangpeishi
 
-<span class="nv">ST_OK</span><span class="o">=</span><span class="m">0</span>
-<span class="nv">ST_WR</span><span class="o">=</span><span class="m">1</span>
-<span class="nv">ST_CR</span><span class="o">=</span><span class="m">2</span>
-<span class="nv">ST_UK</span><span class="o">=</span><span class="m">3</span>
-<span class="nv">path_pid</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
-<span class="nv">name_pid</span><span class="o">=</span><span class="s2">&quot;named.pid&quot;</span>
-<span class="nv">path_rndc</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
-<span class="nv">path_stats</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
-<span class="nv">path_tmp</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
-<span class="nv">pid_check</span><span class="o">=</span><span class="m">1</span>
-<span class="nv">HOST</span><span class="o">=</span><span class="sb">`</span>hostname<span class="sb">`</span>
-<span class="nv">DATE</span><span class="o">=</span><span class="sb">`</span>date<span class="w"> </span>+%s<span class="sb">`</span>
+ST_OK=0
+ST_WR=1
+ST_CR=2
+ST_UK=3
+path_pid=&quot;&quot;
+name_pid=&quot;named.pid&quot;
+path_rndc=&quot;&quot;
+path_stats=&quot;&quot;
+path_tmp=&quot;&quot;
+pid_check=1
+HOST=`hostname`
+DATE=`date +%s`
 
 
-check_pid<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$path_pid</span><span class="s2">/</span><span class="nv">$name_pid</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">retval</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">retval</span><span class="o">=</span><span class="m">1</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="o">}</span>
+check_pid() {
+    if [ -f &quot;$path_pid/$name_pid&quot; ]
+    then
+        retval=0
+    else
+        retval=1
+    fi
+}
 
-trigger_stats<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$path_chroot</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span>sudo<span class="w"> </span>chroot<span class="w"> </span><span class="nv">$path_chroot</span><span class="w"> </span><span class="nv">$path_rndc</span>/rndc<span class="w"> </span>stats
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span>sudo<span class="w"> </span><span class="nv">$path_rndc</span>/rndc<span class="w"> </span>-c<span class="w"> </span>/named/etc/rndc.conf<span class="w"> </span>stats
-<span class="w">    </span><span class="k">fi</span>
-<span class="o">}</span>
+trigger_stats() {
+    if [ -n &quot;$path_chroot&quot; ]
+    then
+        sudo chroot $path_chroot $path_rndc/rndc stats
+    else
+        sudo $path_rndc/rndc -c /named/etc/rndc.conf stats
+    fi
+}
 
-copy_to_tmp<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span>tac<span class="w"> </span><span class="nv">$path_stats</span>/named_stats.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/--- \([0-9]*\)/{p=1} p{print} /\+\+\+ \([0-9]*\)/{p=0;if (count++==1) exit}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp
-<span class="w">    </span><span class="o">}</span>
+copy_to_tmp() {
+    tac $path_stats/named_stats.txt | awk &#39;/--- \([0-9]*\)/{p=1} p{print} /\+\+\+ \([0-9]*\)/{p=0;if (count++==1) exit}&#39; &gt; $path_tmp/named.stats.tmp
+    }
 
-get_vals<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="nv">succ_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in successful answer&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">succ_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in successful answer&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">ref_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in referral&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">ref_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in referral&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">nxrr_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in nxrrset&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">nxrr_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in nxrrset&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">nxdom_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in NXDOMAIN&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">nxdom_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in NXDOMAIN&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">rec_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;caused recursion&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">rec_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;caused recursion&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">fail_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in SERVFAIL&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">fail_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;resulted in SERVFAIL&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">dup_1st</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;duplicate queries received&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
-<span class="w">    </span><span class="nv">dup_2nd</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span><span class="s1">&#39;duplicate queries received&#39;</span><span class="w"> </span><span class="nv">$path_tmp</span>/named.stats.tmp<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-n<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-m1<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="sb">`</span>
+get_vals() {
+    succ_1st=`grep &#39;resulted in successful answer&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | grep -m1 &#39;&#39;`
+    succ_2nd=`grep &#39;resulted in successful answer&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | sort -n | grep -m1 &#39;&#39;`
+    ref_1st=`grep &#39;resulted in referral&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | grep -m1 &#39;&#39;`
+    ref_2nd=`grep &#39;resulted in referral&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | sort -n | grep -m1 &#39;&#39;`
+    nxrr_1st=`grep &#39;resulted in nxrrset&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | grep -m1 &#39;&#39;`
+    nxrr_2nd=`grep &#39;resulted in nxrrset&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | sort -n | grep -m1 &#39;&#39;`
+    nxdom_1st=`grep &#39;resulted in NXDOMAIN&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | grep -m1 &#39;&#39;`
+    nxdom_2nd=`grep &#39;resulted in NXDOMAIN&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | sort -n | grep -m1 &#39;&#39;`
+    rec_1st=`grep &#39;caused recursion&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | grep -m1 &#39;&#39;`
+    rec_2nd=`grep &#39;caused recursion&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | sort -n | grep -m1 &#39;&#39;`
+    fail_1st=`grep &#39;resulted in SERVFAIL&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | grep -m1 &#39;&#39;`
+    fail_2nd=`grep &#39;resulted in SERVFAIL&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | sort -n | grep -m1 &#39;&#39;`
+    dup_1st=`grep &#39;duplicate queries received&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | grep -m1 &#39;&#39;`
+    dup_2nd=`grep &#39;duplicate queries received&#39; $path_tmp/named.stats.tmp | awk &#39;{ print $1 }&#39; | sort -n | grep -m1 &#39;&#39;`
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$succ_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">success</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">success</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$succ_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$succ_2nd</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ref_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">referral</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">referral</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$ref_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$ref_2nd</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$nxrr_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">nxrrset</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">nxrrset</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$nxrr_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$nxrr_2nd</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$nxdom_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">nxdomain</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">nxdomain</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$nxdom_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$nxdom_2nd</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$rec_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">recursion</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">recursion</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$rec_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$rec_2nd</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$fail_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">failure</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">failure</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$fail_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$fail_2nd</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dup_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">duplicate</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">duplicate</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$dup_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$dup_2nd</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$drop_1st</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nv">dropped</span><span class="o">=</span><span class="m">0</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">        </span><span class="nv">dropped</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="nv">$drop_1st</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$drop_2nd</span><span class="sb">`</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="o">}</span>
+    if [ &quot;$succ_1st&quot; == &#39;&#39; ]
+    then
+        success=0
+    else
+        success=`expr $succ_1st - $succ_2nd`
+    fi
+    if [ &quot;$ref_1st&quot; == &#39;&#39; ]
+    then
+        referral=0
+    else
+        referral=`expr $ref_1st - $ref_2nd`
+    fi
+    if [ &quot;$nxrr_1st&quot; == &#39;&#39; ]
+    then
+        nxrrset=0
+    else
+        nxrrset=`expr $nxrr_1st - $nxrr_2nd`
+    fi
+    if [ &quot;$nxdom_1st&quot; == &#39;&#39; ]
+    then
+        nxdomain=0
+    else
+        nxdomain=`expr $nxdom_1st - $nxdom_2nd`
+    fi
+    if [ &quot;$rec_1st&quot; == &#39;&#39; ]
+    then
+        recursion=0
+    else
+        recursion=`expr $rec_1st - $rec_2nd`
+    fi
+    if [ &quot;$fail_1st&quot; == &#39;&#39; ]
+    then
+        failure=0
+    else
+        failure=`expr $fail_1st - $fail_2nd`
+    fi
+    if [ &quot;$dup_1st&quot; == &#39;&#39; ]
+    then
+        duplicate=0
+    else
+        duplicate=`expr $dup_1st - $dup_2nd`
+    fi
+    if [ &quot;$drop_1st&quot; == &#39;&#39; ]
+    then
+        dropped=0
+    else
+        dropped=`expr $drop_1st - $drop_2nd`
+    fi
+}
 
-falcon<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;{\&quot;metric\&quot;: \&quot;</span><span class="nv">$1</span><span class="s2">\&quot;, \&quot;endpoint\&quot;: \&quot;</span><span class="nv">$HOST</span><span class="s2">\&quot;, \&quot;tags\&quot;: \&quot;\&quot;, &quot;</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;\&quot;value\&quot;: </span><span class="nv">$2</span><span class="s2">,&quot;</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot; \&quot;timestamp\&quot;: </span><span class="nv">$DATE</span><span class="s2">, \&quot;counterType\&quot;: \&quot;GAUGE\&quot;, \&quot;step\&quot;: 60}&quot;</span>
-<span class="o">}</span>
+falcon() {
+    echo -n &quot;{\&quot;metric\&quot;: \&quot;$1\&quot;, \&quot;endpoint\&quot;: \&quot;$HOST\&quot;, \&quot;tags\&quot;: \&quot;\&quot;, &quot;
+    echo -n &quot;\&quot;value\&quot;: $2,&quot;
+    echo -n &quot; \&quot;timestamp\&quot;: $DATE, \&quot;counterType\&quot;: \&quot;GAUGE\&quot;, \&quot;step\&quot;: 60}&quot;
+}
 
-get_perfdata<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;[&quot;</span>
-<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;caused_recursion&quot;</span><span class="w"> </span><span class="nv">$recursion</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
-<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;duplicate_queries_received&quot;</span><span class="w"> </span><span class="nv">$duplicate</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
-<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;failure_responses&quot;</span><span class="w"> </span><span class="nv">$failure</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
-<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;nxdomain_responses&quot;</span><span class="w"> </span><span class="nv">$nxdomain</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
-<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;nxrrset_responses&quot;</span><span class="w"> </span><span class="nv">$nxrrset</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
-<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;referral_responses&quot;</span><span class="w"> </span><span class="nv">$referral</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
-<span class="w">    </span>falcon<span class="w"> </span><span class="s2">&quot;success_responses&quot;</span><span class="w"> </span><span class="nv">$success</span>
-<span class="o">}</span>
+get_perfdata() {
+    echo -n &quot;[&quot;
+    falcon &quot;caused_recursion&quot; $recursion
+    echo -n &quot;,&quot;
+    falcon &quot;duplicate_queries_received&quot; $duplicate
+    echo -n &quot;,&quot;
+    falcon &quot;failure_responses&quot; $failure
+    echo -n &quot;,&quot;
+    falcon &quot;nxdomain_responses&quot; $nxdomain
+    echo -n &quot;,&quot;
+    falcon &quot;nxrrset_responses&quot; $nxrrset
+    echo -n &quot;,&quot;
+    falcon &quot;referral_responses&quot; $referral
+    echo -n &quot;,&quot;
+    falcon &quot;success_responses&quot; $success
+}
 
-<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="si">${</span><span class="nv">pid_check</span><span class="si">}</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span>
-<span class="k">then</span>
-<span class="w">    </span>check_pid
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$retval</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span>
-<span class="w">    </span><span class="k">then</span>
-<span class="w">        </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;[&quot;</span>
-<span class="w">        </span>falcon<span class="w"> </span><span class="s2">&quot;check_bind&quot;</span><span class="w"> </span><span class="m">1</span>
-<span class="w">        </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;]&quot;</span>
-<span class="w">        </span><span class="nb">exit</span><span class="w"> </span><span class="nv">$ST_CR</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="k">fi</span>
+if [ ${pid_check} == 1 ]
+then
+    check_pid
+    if [ &quot;$retval&quot; = 1 ]
+    then
+        echo -n &quot;[&quot;
+        falcon &quot;check_bind&quot; 1
+        echo -n &quot;]&quot;
+        exit $ST_CR
+    fi
+fi
 
 trigger_stats
 copy_to_tmp
 get_vals
 get_perfdata
 
-<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,&quot;</span>
-falcon<span class="w"> </span><span class="s2">&quot;check_bind&quot;</span><span class="w"> </span><span class="m">0</span>
-<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;]&quot;</span>
+echo -n &quot;,&quot;
+falcon &quot;check_bind&quot; 0
+echo -n &quot;]&quot;
 
-Exit<span class="w"> </span><span class="nv">$ST_OK</span>
+Exit $ST_OK
 </code></pre></div>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">

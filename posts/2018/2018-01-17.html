@@ -44,10 +44,10 @@
 <p>1.8 提供了完整的 HTTP/2 支持，不知道bug 多不多，记得Nginx 刚刚支持HTTP/2 时修了很多bug。<br>
 另外一个重大的变化是Multithreading，多线程支持。HAProxy 支持多进程（nbproc），有几个问题，监控检查是每个进程自己做的，统计页面也不准确，maxconn 参数也只能限制单个进程。在前公司用到HAProxy 的时候，就因为这些问题，把多进程关了。多线程就好了，没了这些问题，依然能充分利用CPU。  </p>
 <p>1.8 还加了一个Master/Worker Mode，类似Nginx 的进程模型，一个Master + 多个 Worker。</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>ps<span class="w"> </span>axf<span class="w"> </span>-o<span class="w"> </span>pid,command
-<span class="m">15012</span><span class="w">      </span><span class="se">\_</span><span class="w"> </span>haproxy<span class="w"> </span>-f<span class="w"> </span>./master.cfg<span class="w"> </span>-d
-<span class="m">15013</span><span class="w">          </span><span class="se">\_</span><span class="w"> </span>haproxy<span class="w"> </span>-f<span class="w"> </span>./master.cfg<span class="w"> </span>-d
-<span class="m">15014</span><span class="w">          </span><span class="se">\_</span><span class="w"> </span>haproxy<span class="w"> </span>-f<span class="w"> </span>./master.cfg<span class="w"> </span>-d
+<div class="highlight"><pre><span></span><code>$ ps axf -o pid,command
+15012      \_ haproxy -f ./master.cfg -d
+15013          \_ haproxy -f ./master.cfg -d
+15014          \_ haproxy -f ./master.cfg -d
 </code></pre></div>
 
 <p>据说是为了解决：</p>

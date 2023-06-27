@@ -45,22 +45,22 @@ Haproxy 的主要用作代理请求，工作流程如下：<br>
 在Haproxy 配置中，对一个代理，会划分为2层，frontend（前端） 和backend（后端），这和上文说的Haproxy 的工作流程也是对应的。  </p>
 <!-- more -->
 <p>配置例（来自幻灯片）：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">global</span>
-<span class="w">  </span><span class="nv">daemon</span>
-<span class="nv">defaults</span>
-<span class="w">  </span><span class="nv">mode</span><span class="w"> </span><span class="nv">http</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">client</span><span class="w"> </span><span class="mi">10</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="k">connect</span><span class="w"> </span><span class="mi">4</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">server</span><span class="w"> </span><span class="mi">30</span><span class="nv">s</span>
+<div class="highlight"><pre><span></span><code>global
+  daemon
+defaults
+  mode http
+  timeout client 10s
+  timeout connect 4s
+  timeout server 30s
 
-<span class="nv">frontend</span><span class="w"> </span><span class="nv">fe</span>
-<span class="w">  </span><span class="nv">bind</span><span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">1</span>:<span class="mi">80</span>
-<span class="w">  </span><span class="nv">bind</span><span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">1</span>:<span class="mi">443</span><span class="w"> </span><span class="nv">ssl</span><span class="w"> </span><span class="nv">crt</span><span class="w"> </span>.<span class="o">/</span><span class="nv">my</span>.<span class="nv">pem</span>
-<span class="w">  </span><span class="nv">default_backend</span><span class="w"> </span><span class="nv">be</span>
+frontend fe
+  bind 10.0.0.1:80
+  bind 10.0.0.1:443 ssl crt ./my.pem
+  default_backend be
 
-<span class="nv">backend</span><span class="w"> </span><span class="nv">be</span>
-<span class="w">  </span><span class="nv">server</span><span class="w"> </span><span class="nv">s1</span><span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">101</span>:<span class="mi">80</span><span class="w"> </span><span class="nv">check</span>
-<span class="w">  </span><span class="nv">server</span><span class="w"> </span><span class="nv">s2</span><span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">102</span>:<span class="mi">80</span><span class="w"> </span><span class="nv">check</span>
+backend be
+  server s1 10.0.0.101:80 check
+  server s2 10.0.0.102:80 check
 </code></pre></div>
 
 <p><img alt="haproxy_frontend_backend" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164718.png">  </p>
@@ -72,16 +72,16 @@ backend:监控server，负载均衡，队列。<br>
     server server1 127.0.0.1:8000 maxconn 32
 </code></pre></div>
 
-<div class="highlight"><pre><span></span><code><span class="n">A</span><span class="w"> </span><span class="s2">&quot;frontend&quot;</span><span class="w"> </span><span class="n">section</span><span class="w"> </span><span class="n">describes</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">listening</span><span class="w"> </span><span class="n">sockets</span><span class="w"> </span><span class="n">accepting</span><span class="w"> </span><span class="n">client</span>
-<span class="n">connections</span><span class="o">.</span>
+<div class="highlight"><pre><span></span><code>A &quot;frontend&quot; section describes a set of listening sockets accepting client
+connections.
 
-<span class="n">A</span><span class="w"> </span><span class="s2">&quot;backend&quot;</span><span class="w"> </span><span class="n">section</span><span class="w"> </span><span class="n">describes</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">servers</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">connect</span>
-<span class="n">to</span><span class="w"> </span><span class="n">forward</span><span class="w"> </span><span class="n">incoming</span><span class="w"> </span><span class="n">connections</span><span class="o">.</span>
+A &quot;backend&quot; section describes a set of servers to which the proxy will connect
+to forward incoming connections.
 
-<span class="n">A</span><span class="w"> </span><span class="s2">&quot;listen&quot;</span><span class="w"> </span><span class="n">section</span><span class="w"> </span><span class="n">defines</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">complete</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">its</span><span class="w"> </span><span class="n">frontend</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">backend</span>
-<span class="n">parts</span><span class="w"> </span><span class="n">combined</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">section</span><span class="o">.</span><span class="w"> </span><span class="n">It</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">generally</span><span class="w"> </span><span class="n">useful</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">TCP</span><span class="o">-</span><span class="n">only</span><span class="w"> </span><span class="n">traffic</span><span class="o">.</span>
+A &quot;listen&quot; section defines a complete proxy with its frontend and backend
+parts combined in one section. It is generally useful for TCP-only traffic.
 
-<span class="err">摘自</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">haproxy</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">download</span><span class="o">/</span><span class="mf">1.4</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">configuration</span><span class="o">.</span><span class="n">txt</span>
+摘自 http://www.haproxy.org/download/1.4/doc/configuration.txt
 </code></pre></div>
 
 <h2>RTF(W|E|L)M</h2>
@@ -95,8 +95,8 @@ backend:监控server，负载均衡，队列。<br>
 <li>HAProxy 会提供一条消息，来解释错误，有时候也会提供修复方法。
 如下：</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">WARNING</span><span class="o">]</span><span class="w"> </span><span class="mi">177</span><span class="o">/</span><span class="mi">011147</span><span class="w"> </span><span class="p">(</span><span class="mi">8652</span><span class="p">)</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="n">Setting</span><span class="w"> </span><span class="n">tune</span><span class="p">.</span><span class="n">ssl</span><span class="p">.</span><span class="k">default</span><span class="o">-</span><span class="n">dh</span><span class="o">-</span><span class="n">param</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="k">default</span><span class="p">,</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">workload</span><span class="w"> </span><span class="n">permits</span><span class="w"> </span><span class="n">it</span>
-<span class="n">Configuration</span><span class="w"> </span><span class="k">file</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">valid</span>
+<div class="highlight"><pre><span></span><code>[WARNING] 177/011147 (8652) : Setting tune.ssl.default-dh-param to 1024 by default, if your workload permits it
+Configuration file is valid
 </code></pre></div>
 
 <p>HAProxy 的日志信息非常丰富，也可以自定义日志格式，对于线上排查故障非常有用。</p>
@@ -141,32 +141,32 @@ backend:监控server，负载均衡，队列。<br>
 如果线上启用了iptables，特别还是在一些前端流量接入的机器上，例如Nginx，LVS，Haproxy之类，要好好优化一番iptables。</p>
 <h2>HAProxy的多进程模式</h2>
 <p>配置示例（摘自幻灯片）：</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># **DON&#39;T RUN IN PRODUCTION, THERE ARE NO TIMEOUTS**</span>
-<span class="n">global</span>
-<span class="w">  </span><span class="n">nbproc</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">  </span><span class="n">cpu</span><span class="o">-</span><span class="n">map</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">  </span><span class="n">cpu</span><span class="o">-</span><span class="n">map</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">  </span><span class="n">stats</span><span class="w"> </span><span class="n">socket</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">haproxy</span><span class="o">/</span><span class="n">socket_web</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">  </span><span class="n">stats</span><span class="w"> </span><span class="n">socket</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">haproxy</span><span class="o">/</span><span class="n">socket_mysql</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="mi">2</span>
+<div class="highlight"><pre><span></span><code># **DON&#39;T RUN IN PRODUCTION, THERE ARE NO TIMEOUTS**
+global
+  nbproc 2
+  cpu-map 1 1
+  cpu-map 2 2
+  stats socket /var/run/haproxy/socket_web process 1
+  stats socket /var/run/haproxy/socket_mysql process 2
 
-<span class="n">defaults</span><span class="w"> </span><span class="n">HTTP</span>
-<span class="w">  </span><span class="n">bind</span><span class="o">-</span><span class="n">process</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">  </span><span class="n">mode</span><span class="w"> </span><span class="n">http</span>
+defaults HTTP
+  bind-process 1
+  mode http
 
-<span class="n">frontend</span><span class="w"> </span><span class="n">f_web</span>
-<span class="w">  </span><span class="n">bind</span><span class="w"> </span><span class="mf">192.168</span><span class="o">.</span><span class="mf">10.1</span><span class="p">:</span><span class="mi">9000</span>
-<span class="w">  </span><span class="n">default_backend</span><span class="w"> </span><span class="n">b_web</span>
-<span class="n">backend</span><span class="w"> </span><span class="n">b_web</span>
-<span class="w">  </span><span class="n">server</span><span class="w"> </span><span class="n">w1</span><span class="w"> </span><span class="mf">192.168</span><span class="o">.</span><span class="mf">10.21</span><span class="p">:</span><span class="mi">8000</span><span class="w"> </span><span class="n">check</span>
+frontend f_web
+  bind 192.168.10.1:9000
+  default_backend b_web
+backend b_web
+  server w1 192.168.10.21:8000 check
 
-<span class="n">defaults</span><span class="w"> </span><span class="n">MYSQL</span>
-<span class="w">  </span><span class="n">bind</span><span class="o">-</span><span class="n">process</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">  </span><span class="n">mode</span><span class="w"> </span><span class="n">tcp</span>
-<span class="n">frontend</span><span class="w"> </span><span class="n">f_mysql</span>
-<span class="w">  </span><span class="n">bind</span><span class="w"> </span><span class="mf">192.168</span><span class="o">.</span><span class="mf">10.1</span><span class="p">:</span><span class="mi">3306</span>
-<span class="w">  </span><span class="n">default_backend</span><span class="w"> </span><span class="n">b_mysql</span>
-<span class="n">backend</span><span class="w"> </span><span class="n">b_mysql</span>
-<span class="w">   </span><span class="n">server</span><span class="w"> </span><span class="n">m1</span><span class="w"> </span><span class="mf">192.168</span><span class="o">.</span><span class="mf">10.11</span><span class="p">:</span><span class="mi">3306</span><span class="w"> </span><span class="n">check</span>
+defaults MYSQL
+  bind-process 2
+  mode tcp
+frontend f_mysql
+  bind 192.168.10.1:3306
+  default_backend b_mysql
+backend b_mysql
+   server m1 192.168.10.11:3306 check
 </code></pre></div>
 
 <h3>好处</h3>
@@ -217,51 +217,51 @@ backend:监控server，负载均衡，队列。<br>
 </ul>
 <p>一些超时配置示例，来源幻灯片：</p>
 <p>HTTP 服务：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">defaults</span><span class="w"> </span><span class="nv">HTTP</span>
-<span class="w">  </span><span class="nv">mode</span><span class="w"> </span><span class="nv">http</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">http</span><span class="o">-</span><span class="nv">request</span><span class="w"> </span><span class="mi">10</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">client</span><span class="w"> </span><span class="mi">20</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="k">connect</span><span class="w"> </span><span class="mi">4</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">server</span><span class="w"> </span><span class="mi">30</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">http</span><span class="o">-</span><span class="nv">keep</span><span class="o">-</span><span class="nv">alive</span><span class="w"> </span><span class="mi">4</span><span class="nv">s</span>
-<span class="w">  </span>#<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">websockets</span>:
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">tunnel</span><span class="w"> </span><span class="mi">2</span><span class="nv">m</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">client</span><span class="o">-</span><span class="nv">fin</span><span class="w"> </span><span class="mi">1</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">server</span><span class="o">-</span><span class="nv">fin</span><span class="w"> </span><span class="mi">1</span><span class="nv">s</span>
+<div class="highlight"><pre><span></span><code>defaults HTTP
+  mode http
+  timeout http-request 10s
+  timeout client 20s
+  timeout connect 4s
+  timeout server 30s
+  timeout http-keep-alive 4s
+  # for websockets:
+  timeout tunnel 2m
+  timeout client-fin 1s
+  timeout server-fin 1s
 </code></pre></div>
 
 <p>TCP 长连接的服务，例如POP、IMAP 之类：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">defaults</span><span class="w"> </span><span class="nv">HTTP</span>
-<span class="w">  </span><span class="nv">mode</span><span class="w"> </span><span class="nv">http</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">client</span><span class="w">  </span><span class="mi">1</span><span class="nv">m</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="k">connect</span><span class="w"> </span><span class="mi">4</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">server</span><span class="w">  </span><span class="mi">1</span><span class="nv">m</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">client</span><span class="o">-</span><span class="nv">fin</span><span class="w"> </span><span class="mi">1</span><span class="nv">s</span>
-<span class="w">  </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">server</span><span class="o">-</span><span class="nv">fin</span><span class="w"> </span><span class="mi">1</span><span class="nv">s</span>
+<div class="highlight"><pre><span></span><code>defaults HTTP
+  mode http
+  timeout client  1m
+  timeout connect 4s
+  timeout server  1m
+  timeout client-fin 1s
+  timeout server-fin 1s
 </code></pre></div>
 
 <h2>Fetch</h2>
 <p>可以用来获取请求和响应的一些数据，也就是在haproxy 配置中可以使用一些变量，这些变量代表具体请求的一些内容，然后用它们来编写规则，更多细节参看幻灯片，以及官方这个文档：<a href="https://www.haproxy.com/doc/aloha/7.0/haproxy/fetching_data_samples.html">Fetching data samples</a>。</p>
 <h2>ACL</h2>
 <p>可以有匿名或者命名的ACL 规则，使用acl 来给规则起名字：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">acl</span><span class="w"> </span><span class="nv">api_path</span><span class="w"> </span><span class="nv">path_beg</span><span class="w"> </span><span class="o">-</span><span class="nv">i</span><span class="w"> </span><span class="o">/</span><span class="nv">api</span><span class="o">/</span>
-<span class="nv">use_backend</span><span class="w"> </span><span class="nv">bk_api</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">api_path</span>
+<div class="highlight"><pre><span></span><code>acl api_path path_beg -i /api/
+use_backend bk_api if api_path
 </code></pre></div>
 
 <p>匿名的规则，需要用大括号包起来：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">use_backend</span><span class="w"> </span><span class="nv">bk_api</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>{<span class="w"> </span><span class="nv">path_beg</span><span class="w"> </span><span class="o">-</span><span class="nv">i</span><span class="w"> </span><span class="o">/</span><span class="nv">api</span><span class="o">/</span><span class="w"> </span>}
+<div class="highlight"><pre><span></span><code>use_backend bk_api if { path_beg -i /api/ }
 </code></pre></div>
 
 <p>多个ACL 规则可以共用一个名字，关系上为逻辑或，即匹配任何一条规则即可：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">acl</span><span class="w"> </span><span class="nv">myapi</span><span class="w"> </span><span class="nv">path_beg</span><span class="w"> </span><span class="o">-</span><span class="nv">i</span><span class="w"> </span><span class="o">/</span><span class="nv">api</span><span class="o">/</span>
-<span class="nv">acl</span><span class="w"> </span><span class="nv">myapi</span><span class="w"> </span><span class="nv">hdr_beg</span><span class="ss">(</span><span class="nv">Host</span><span class="ss">)</span><span class="w"> </span><span class="o">-</span><span class="nv">i</span><span class="w"> </span><span class="nv">api</span>.
-<span class="nv">use_backend</span><span class="w"> </span><span class="nv">bk_api</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">myapi</span>
+<div class="highlight"><pre><span></span><code>acl myapi path_beg -i /api/
+acl myapi hdr_beg(Host) -i api.
+use_backend bk_api if myapi
 
 等价馀：
 
-<span class="nv">acl</span><span class="w"> </span><span class="nv">api_path</span><span class="w"> </span><span class="nv">path_beg</span><span class="w"> </span><span class="o">-</span><span class="nv">i</span><span class="w"> </span><span class="o">/</span><span class="nv">api</span><span class="o">/</span>
-<span class="nv">acl</span><span class="w"> </span><span class="nv">api_vhost</span><span class="w"> </span><span class="nv">hdr_beg</span><span class="ss">(</span><span class="nv">Host</span><span class="ss">)</span><span class="w"> </span><span class="o">-</span><span class="nv">i</span><span class="w"> </span><span class="nv">api</span>.
-<span class="nv">use_backend</span><span class="w"> </span><span class="nv">bk_api</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">api_path</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nv">api_vhost</span>
+acl api_path path_beg -i /api/
+acl api_vhost hdr_beg(Host) -i api.
+use_backend bk_api if api_path || api_vhost
 </code></pre></div>
 
 <h2>HTTP 规则</h2>
@@ -274,33 +274,33 @@ backend:监控server，负载均衡，队列。<br>
 <li>更新ACL 规则或map 内容等</li>
 </ul>
 <p>在HTTP 规则中可以使用上文提到的fetch 变量，编写复杂的规则，例如：</p>
-<div class="highlight"><pre><span></span><code><span class="n">http</span><span class="o">-</span><span class="n">request</span><span class="w"> </span><span class="k">deny</span><span class="w"> </span><span class="n">unless</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">req</span><span class="p">.</span><span class="n">hdr</span><span class="p">(</span><span class="k">Host</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">www</span><span class="p">.</span><span class="n">mydomain</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="err">}</span>
-<span class="n">http</span><span class="o">-</span><span class="n">request</span><span class="w"> </span><span class="n">redirect</span><span class="w"> </span><span class="n">location</span><span class="w"> </span><span class="o">/%[</span><span class="n">req.hdr(Host)</span><span class="o">]%[</span><span class="n">path</span><span class="o">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">path_beg</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="w"> </span><span class="err">}</span>
+<div class="highlight"><pre><span></span><code>http-request deny unless { req.hdr(Host) -i www.mydomain.com }
+http-request redirect location /%[req.hdr(Host)]%[path] if { path_beg -i /api/ }
 </code></pre></div>
 
 <h2>服务和应用保护</h2>
 <p>HAProxy 有请求队列，可以弊民后端服务被打挂，给server 配置合适的maxconn ，即可把后端服务收到的请求控制住。<br>
 HAProxy 团队有另外一份幻灯片，提供了更多HAProxy防DDoS的经验分享：<a href="http://www.slideshare.net/haproxytech/presentation-packetshield-solution-de-protection-contre-les-ddos-rseau">《Presentation packetshield, solution de protection contre les DDoS réseau》</a>。  </p>
 <p>另外可以对不同性能的后端，设置不同的maxconn，转发不同的请求，分流压力：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">frontend</span><span class="w"> </span><span class="nv">f_myapp</span>
-<span class="w">  </span><span class="nv">use_backend</span><span class="w"> </span><span class="nv">b_light</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>{<span class="w"> </span><span class="nv">path_beg</span><span class="w"> </span><span class="o">/</span><span class="nv">api</span><span class="o">/</span><span class="w"> </span><span class="o">/</span><span class="nv">foo</span><span class="o">/</span><span class="w"> </span><span class="o">/</span><span class="nv">bar</span><span class="o">/</span><span class="w"> </span>}
-<span class="w">  </span><span class="nv">use_backend</span><span class="w"> </span><span class="nv">b_heavy</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>{<span class="w"> </span><span class="nv">path_beg</span><span class="w"> </span><span class="o">/</span><span class="nv">search</span><span class="w"> </span><span class="o">/</span><span class="nv">massivefoo</span><span class="w"> </span><span class="o">/</span><span class="nv">heavybar</span><span class="w"> </span>}
-<span class="nv">backend</span><span class="w"> </span><span class="nv">b_light</span>
-<span class="w">  </span><span class="nv">server</span><span class="w"> </span><span class="nv">s1</span><span class="w"> </span><span class="nv">server1</span>:<span class="mi">80</span><span class="w"> </span><span class="nv">maxconn</span><span class="w"> </span><span class="mi">300</span>
-<span class="nv">backend</span><span class="w"> </span><span class="nv">b_heavy</span>
-<span class="w">  </span><span class="nv">server</span><span class="w"> </span><span class="nv">s1</span><span class="w"> </span><span class="nv">server1</span>:<span class="mi">80</span><span class="w"> </span><span class="nv">maxconn</span><span class="w"> </span><span class="mi">10</span>
+<div class="highlight"><pre><span></span><code>frontend f_myapp
+  use_backend b_light if { path_beg /api/ /foo/ /bar/ }
+  use_backend b_heavy if { path_beg /search /massivefoo /heavybar }
+backend b_light
+  server s1 server1:80 maxconn 300
+backend b_heavy
+  server s1 server1:80 maxconn 10
 </code></pre></div>
 
 <h2>统计页面</h2>
 <p>HAProxy 内部会维护很多计数器，用做统计与展示。统计页面可以配置成一个web 页面，也可以是输出CSV格式的UNIX 的套接字（UNIX socket）。配置示例：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">listen</span><span class="w"> </span><span class="nv">stats</span>
-<span class="w">  </span><span class="nv">bind</span><span class="o">-</span><span class="nv">process</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">  </span><span class="nv">bind</span><span class="w"> </span>:<span class="mi">9010</span>
-<span class="w">  </span><span class="nv">stats</span><span class="w"> </span><span class="nv">enable</span>
-<span class="w">  </span><span class="nv">stats</span><span class="w"> </span><span class="nv">uri</span><span class="w"> </span><span class="o">/</span>
-<span class="w">  </span><span class="nv">stats</span><span class="w"> </span><span class="nv">auth</span><span class="w"> </span><span class="nv">demo</span>:<span class="nv">demo</span>
-<span class="w">  </span><span class="nv">stats</span><span class="w"> </span><span class="nv">realm</span><span class="w"> </span><span class="nv">Demo</span>
-<span class="w">  </span><span class="nv">stats</span><span class="w"> </span><span class="nv">admin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">TRUE</span>
+<div class="highlight"><pre><span></span><code>listen stats
+  bind-process 1
+  bind :9010
+  stats enable
+  stats uri /
+  stats auth demo:demo
+  stats realm Demo
+  stats admin if TRUE
 </code></pre></div>
 
 <p>如果开了多进程（nbproc &gt; 1），我们上文提到的，HAProxy 进程直接的内存内容是不共享的，所以维护者各自的统计计数器，所以需要为每个进程创建一个状态页面或者UNIX socket。<br>

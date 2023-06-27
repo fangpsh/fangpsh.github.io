@@ -37,7 +37,7 @@
     <p>有一个小服务使用了<a href="http://airflow.apache.org">airflow</a>，会把比较耗时的离线任务丢到airflow 处理。
 在需要的时候触发（trigger_dag）这些任务。最近发现一小部分任务没成功，对应的dag 下也没找到日志记录，看起来是没触发成功。
 在airflow-web-server 中发现了异常日志：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">Run</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span>...<span class="w"> </span><span class="nv">already</span><span class="w"> </span><span class="nv">exists</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">dag</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span>...
+<div class="highlight"><pre><span></span><code>Run id ... already exists for dag id ...
 </code></pre></div>
 
 <p>看了下代码：<a href="https://github.com/apache/incubator-airflow/blob/master/airflow/api/common/experimental/trigger_dag.py#L42,L55">incubator-airflow/airflow/api/common/experimental/trigger_dag.py</a></p>

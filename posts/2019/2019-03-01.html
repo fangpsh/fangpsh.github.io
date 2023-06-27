@@ -35,17 +35,17 @@
   </div>     
   <div id="article-content" class="entry-content">
     <p>发现系统打印了一条日志，类似<a href="https://access.redhat.com/solutions/2887631">redhat solution:2887631</a>：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">Jan</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="mi">14</span>:<span class="mi">37</span>:<span class="mi">22</span><span class="w"> </span><span class="nv">localhost</span><span class="w"> </span><span class="nv">kernel</span>:<span class="w"> </span><span class="nv">ip_local_port_range</span>:<span class="w"> </span><span class="nv">prefer</span><span class="w"> </span><span class="nv">different</span><span class="w"> </span><span class="nv">parity</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">start</span><span class="o">/</span><span class="k">end</span><span class="w"> </span><span class="nv">values</span>.
+<div class="highlight"><pre><span></span><code>Jan 23 14:37:22 localhost kernel: ip_local_port_range: prefer different parity for start/end values.
 </code></pre></div>
 
 <p>意思是建议将<code>/proc/sys/net/ipv4/ip_local_port_range</code> 的两个数设置一个奇数，一个偶数。</p>
-<div class="highlight"><pre><span></span><code><span class="nv">ip_local_port_range</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nv">INTEGERS</span><span class="w">  </span>
-<span class="w">        </span><span class="nv">Defines</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">local</span><span class="w"> </span><span class="nv">port</span><span class="w"> </span><span class="nv">range</span><span class="w"> </span><span class="nv">that</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">used</span><span class="w"> </span><span class="nv">by</span><span class="w"> </span><span class="nv">TCP</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">UDP</span><span class="w"> </span><span class="nv">to</span><span class="w">  </span>
-<span class="w">        </span><span class="nv">choose</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">local</span><span class="w"> </span><span class="nv">port</span>.<span class="w"> </span><span class="nv">The</span><span class="w"> </span><span class="nv">first</span><span class="w"> </span><span class="nv">number</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">first</span>,<span class="w"> </span><span class="nv">the</span>
-<span class="w">        </span><span class="nv">second</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">last</span><span class="w"> </span><span class="nv">local</span><span class="w"> </span><span class="nv">port</span><span class="w"> </span><span class="nv">number</span>.
-<span class="w">        </span><span class="k">If</span><span class="w"> </span><span class="nv">possible</span>,<span class="w"> </span><span class="nv">it</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">better</span><span class="w"> </span><span class="nv">these</span><span class="w"> </span><span class="nv">numbers</span><span class="w"> </span><span class="nv">have</span><span class="w"> </span><span class="nv">different</span><span class="w"> </span><span class="nv">parity</span>.
-<span class="w">        </span><span class="ss">(</span><span class="nv">one</span><span class="w"> </span><span class="nv">even</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">one</span><span class="w"> </span><span class="nv">odd</span><span class="w"> </span><span class="nv">values</span><span class="ss">)</span>
-<span class="w">        </span><span class="nv">The</span><span class="w"> </span><span class="nv">default</span><span class="w"> </span><span class="nv">values</span><span class="w"> </span><span class="nv">are</span><span class="w"> </span><span class="mi">32768</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="mi">60999</span><span class="w"> </span><span class="nv">respectively</span>.
+<div class="highlight"><pre><span></span><code>ip_local_port_range - 2 INTEGERS  
+        Defines the local port range that is used by TCP and UDP to  
+        choose the local port. The first number is the first, the
+        second the last local port number.
+        If possible, it is better these numbers have different parity.
+        (one even and one odd values)
+        The default values are 32768 and 60999 respectively.
 </code></pre></div>
 
 <p>建议改，那就改一下咯。可是为什么呢？能让系统分配端口的时候更高效？</p>
@@ -63,36 +63,36 @@
 <li><a href="http://www.linuxtcpipstack.com/430.html">TCP层bind系统调用的实现分析</a></li>
 </ul>
 <p>看完好像有点明白了：</p>
-<div class="highlight"><pre><span></span><code><span class="gh">diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c</span>
-<span class="gh">index 3766bddb3e8a7303123aa7e32507f6f7801c10d5..8c0fc6fbc1afa08baf07ca86e98aa966a3f8e826 100644</span>
-<span class="gd">--- a/net/ipv4/inet_hashtables.c</span>
-<span class="gi">+++ b/net/ipv4/inet_hashtables.c</span>
-<span class="gu">@@ -501,8 +501,14 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,</span>
-<span class="w"> </span>        inet_get_local_port_range(net, &amp;low, &amp;high);
-<span class="w"> </span>        remaining = (high - low) + 1;
+<div class="highlight"><pre><span></span><code>diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 3766bddb3e8a7303123aa7e32507f6f7801c10d5..8c0fc6fbc1afa08baf07ca86e98aa966a3f8e826 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -501,8 +501,14 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+         inet_get_local_port_range(net, &amp;low, &amp;high);
+         remaining = (high - low) + 1;
 
-<span class="gi">+        /* By starting with offset being an even number,</span>
-<span class="gi">+         * we tend to leave about 50% of ports for other uses,</span>
-<span class="gi">+         * like bind(0).</span>
-<span class="gi">+         */</span>
-<span class="gi">+        offset &amp;= ~1;  // offset 始终为偶数</span>
-<span class="gi">+</span>
-<span class="w"> </span>        local_bh_disable();
-<span class="gd">-        for (i = 1; i &lt;= remaining; i++) {</span>
-<span class="gi">+        for (i = 0; i &lt; remaining; i++) {</span>
-<span class="w"> </span>            port = low + (i + offset) % remaining;  // 每次总是加偶数开始找，即i=0 的时候
-<span class="w"> </span>            if (inet_is_local_reserved_port(net, port))
-<span class="w"> </span>                continue;
-<span class="gu">@@ -546,7 +552,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,</span>
-<span class="w"> </span>        return -EADDRNOTAVAIL;
++        /* By starting with offset being an even number,
++         * we tend to leave about 50% of ports for other uses,
++         * like bind(0).
++         */
++        offset &amp;= ~1;  // offset 始终为偶数
++
+         local_bh_disable();
+-        for (i = 1; i &lt;= remaining; i++) {
++        for (i = 0; i &lt; remaining; i++) {
+             port = low + (i + offset) % remaining;  // 每次总是加偶数开始找，即i=0 的时候
+             if (inet_is_local_reserved_port(net, port))
+                 continue;
+@@ -546,7 +552,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+         return -EADDRNOTAVAIL;
 
-<span class="w"> </span>ok:
-<span class="gd">-        hint += i;</span>
-<span class="gi">+        hint += (i + 2) &amp; ~1;  // 每次调用函数时， offset = hint + port_offset; hint 是全局静态变量，始终为偶数</span>
-<span class="w"> </span>                               // 这样在同一个目地地址+端口，重复调用，且没其他connect 请求插入的时候，分配的端口号是加2递增
+ ok:
+-        hint += i;
++        hint += (i + 2) &amp; ~1;  // 每次调用函数时， offset = hint + port_offset; hint 是全局静态变量，始终为偶数
+                                // 这样在同一个目地地址+端口，重复调用，且没其他connect 请求插入的时候，分配的端口号是加2递增
 
-<span class="w"> </span>        /* Head lock still held and bh&#39;s disabled */
-<span class="w"> </span>        inet_bind_hash(sk, tb, port);
+         /* Head lock still held and bh&#39;s disabled */
+         inet_bind_hash(sk, tb, port);
 </code></pre></div>
 
 <p>N 个端口，每次从第偶数个开始找，看下<code>bind(0)</code> 分配端口的<a href="https://github.com/torvalds/linux/blob/29c6852602e259d2c1882f320b29d5c3fec0de04/net/ipv4/inet_connection_sock.c#L119">相关函数</a>：</p>

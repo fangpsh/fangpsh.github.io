@@ -36,10 +36,10 @@
   <div id="article-content" class="entry-content">
     <p><img alt="another_read_more_link_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165914.png"></p>
 <p>之前用<a href="http://octopress.org/">Octopress</a> 搭建博客的时候，用过一个很酷的功能，在文章中插入<code>&lt;!-- more --&gt;</code>之后，首页的文章列表只会显示这个标记之前的内容，然后添加一个类似继续阅读的链接。后来有一段时间切到Wordpress，也有类似的功能，但是在Pelican 上没见到。</p>
-<div class="highlight"><pre><span></span><code><span class="n">Inserting</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;!--</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="n">into</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">post</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">prevent</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">post</span><span class="w"> </span><span class="n">content</span>
-<span class="n">below</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">mark</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">being</span><span class="w"> </span><span class="n">displayed</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="nf">index</span><span class="w"> </span><span class="n">page</span><span class="w"> </span><span class="n">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">blog</span><span class="w"> </span><span class="n">posts</span><span class="p">,</span>
-<span class="n">a</span><span class="w"> </span><span class="s">&quot;Continue →&quot;</span><span class="w"> </span><span class="n">button</span><span class="w"> </span><span class="n">links</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="kr">full</span><span class="w"> </span><span class="n">post</span><span class="p">.</span><span class="w">  </span>
-<span class="o">--</span><span class="w"> </span><span class="n">http</span><span class="o">://</span><span class="n">octopress</span><span class="p">.</span><span class="n">org</span><span class="o">/</span><span class="n">docs</span><span class="o">/</span><span class="n">blogging</span><span class="o">/</span>
+<div class="highlight"><pre><span></span><code>Inserting a &lt;!-- more --&gt; comment into your post will prevent the post content
+below this mark from being displayed on the index page for the blog posts,
+a &quot;Continue →&quot; button links to the full post.  
+-- http://octopress.org/docs/blogging/
 </code></pre></div>
 
 <p>在<a href="https://github.com/getpelican/pelican-plugins">Pelica Plugins 列表</a>里翻了下:  </p>
@@ -99,19 +99,19 @@
 </code></pre></div>
 
 <p>默认添加的链接带有一个<code>another-read-more-link</code>属性，用来自定义喜欢的样式： </p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;a</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;another-read-more-link&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;/{url}&quot;</span><span class="w"> </span><span class="nt">&gt;</span>{text}<span class="nt">&lt;/a&gt;</span>
+<div class="highlight"><pre><span></span><code>&lt;a class=&quot;another-read-more-link&quot; href=&quot;/{url}&quot; &gt;{text}&lt;/a&gt;
 </code></pre></div>
 
 <p>例如：</p>
-<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="nc">another-read-more-link</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="mh">#eee</span><span class="p">;</span>
-<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">inline-block</span><span class="p">;</span>
-<span class="w">    </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mf">.4</span><span class="kt">em</span><span class="w"> </span><span class="mf">.4</span><span class="kt">em</span><span class="p">;</span>
-<span class="w">    </span><span class="k">margin-right</span><span class="p">:</span><span class="w"> </span><span class="mf">.5</span><span class="kt">em</span><span class="p">;</span>
-<span class="w">    </span><span class="k">text-decoration</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
-<span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#737373</span><span class="p">;</span>
-<span class="w">    </span><span class="k">transition</span><span class="p">:</span><span class="w"> </span><span class="k">background-color</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">s</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code>.another-read-more-link {
+    background: #eee;
+    display: inline-block;
+    padding: .4em .4em;
+    margin-right: .5em;
+    text-decoration: none;
+    color: #737373;
+    transition: background-color 0.5s;
+}
 </code></pre></div>
 
 <p>效果见上文图片。</p>

@@ -47,31 +47,31 @@ Initrd 这一步，Systemd 其实也可以接管，具体参考：<a href="https
 <p><img alt="runlevel" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161756.png"></p>
 <p>Systemd 有个单元文件（Unit）的概念，可以理解成一个单元文件就是一个服务单元，有很多类型的单元文件，Mount、Device、Service、Path、Timer 等，最常见的就是Service 单元：</p>
 <p>例：/usr/lib/systemd/system/named.service，具体的解释请看官方文档：</p>
-<div class="highlight"><pre><span></span><code><span class="k">[Unit]</span>
-<span class="na">Description</span><span class="o">=</span><span class="s">Berkeley Internet Name Domain (DNS)</span>
-<span class="na">Wants</span><span class="o">=</span><span class="s">nss-lookup.target</span>
-<span class="na">Wants</span><span class="o">=</span><span class="s">named-setup-rndc.service</span>
-<span class="na">Before</span><span class="o">=</span><span class="s">nss-lookup.target</span>
-<span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
-<span class="na">After</span><span class="o">=</span><span class="s">named-setup-rndc.service</span>
+<div class="highlight"><pre><span></span><code>[Unit]
+Description=Berkeley Internet Name Domain (DNS)
+Wants=nss-lookup.target
+Wants=named-setup-rndc.service
+Before=nss-lookup.target
+After=network.target
+After=named-setup-rndc.service
 
-<span class="k">[Service]</span>
-<span class="na">Type</span><span class="o">=</span><span class="s">forking</span>
-<span class="na">EnvironmentFile</span><span class="o">=</span><span class="s">-/etc/sysconfig/named</span>
-<span class="na">Environment</span><span class="o">=</span><span class="s">KRB5_KTNAME=/etc/named.keytab</span>
-<span class="na">PIDFile</span><span class="o">=</span><span class="s">/run/named/named.pid</span>
+[Service]
+Type=forking
+EnvironmentFile=-/etc/sysconfig/named
+Environment=KRB5_KTNAME=/etc/named.keytab
+PIDFile=/run/named/named.pid
 
-<span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/sbin/named-checkconf -z /etc/named.conf</span>
-<span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/sbin/named -u named $OPTIONS</span>
+ExecStartPre=/usr/sbin/named-checkconf -z /etc/named.conf
+ExecStart=/usr/sbin/named -u named $OPTIONS
 
-<span class="na">ExecReload</span><span class="o">=</span><span class="s">/bin/sh -c &#39;/usr/sbin/rndc reload &gt; /dev/null 2&gt;&amp;1 || /bin/kill -HUP $MAINPID&#39;</span>
+ExecReload=/bin/sh -c &#39;/usr/sbin/rndc reload &gt; /dev/null 2&gt;&amp;1 || /bin/kill -HUP $MAINPID&#39;
 
-<span class="na">ExecStop</span><span class="o">=</span><span class="s">/bin/sh -c &#39;/usr/sbin/rndc stop &gt; /dev/null 2&gt;&amp;1 || /bin/kill -TERM $MAINPID&#39;</span>
+ExecStop=/bin/sh -c &#39;/usr/sbin/rndc stop &gt; /dev/null 2&gt;&amp;1 || /bin/kill -TERM $MAINPID&#39;
 
-<span class="na">PrivateTmp</span><span class="o">=</span><span class="s">true</span>
+PrivateTmp=true
 
-<span class="k">[Install]</span>
-<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+[Install]
+WantedBy=multi-user.target
 </code></pre></div>
 
 <p>Target 也是一种单元文件，但是它是引用和组织其他的单元文件，定义组织各种依赖关系。所以，Target 肯定可以实现Runlevel 的作用，只要定义六个Target 就可以了嘛。

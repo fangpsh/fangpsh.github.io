@@ -110,7 +110,7 @@ Content-Type: text/html
 <p>Exipres 头信息对于设置静态图片缓存（例如导航栏或者按钮的图片）十分有用。因为这些文件不经常变动，你可以给它们设置一个特别长的过期时间，从而使你的网站更快得响应用户。它们对于控制规律变化的页面的缓存也非常有用。举个例子，如果你在每天早上六点更新一个页面，你可以设置对应代表的超时时间在这个点，从而让缓存知道什么时刻它们需要一份新的拷贝，而不必让用户点击“重载”按钮。</p>
 <p>Expires 头信息的值只能是HTTP格式的日期，其他的值都会被解析成‘过去的时刻’，以至于代表都会过期。另外记住HTTP的时间是格林威治时间（GMT），不是本地时间。<br>
 例如：  </p>
-<div class="highlight"><pre><span></span><code><span class="n">Expires</span><span class="o">:</span><span class="w"> </span><span class="n">Fri</span><span class="o">,</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="n">Oct</span><span class="w"> </span><span class="mi">1998</span><span class="w"> </span><span class="mi">14</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mi">41</span><span class="w"> </span><span class="n">GMT</span>
+<div class="highlight"><pre><span></span><code>Expires: Fri, 30 Oct 1998 14:19:41 GMT
 </code></pre></div>
 
 <p>虽然Expires头信息非常有用，但是它也有一些限制。首先，因为涉及到日期，Web服务器上和缓存上的时钟必须同步。如果它们不同步，将达不到预期的结果，缓存可能错误的认为过期的内容是新鲜的。
@@ -185,8 +185,8 @@ Content-Type: text/html
 <p>要查看一个代表文件的全部头信息，你可以使用Telnet 客户端手动连接Web服务器。</p>
 <p>要这样做，你可能需要在一个字段中指定端口（默认是80），或者你可能需要连接www.example.com:80 或www.example.com 80 (注意空格)。参考下你的Telnet客户端的文档。</p>
 <p>一旦你打开了网站的一个连接，输入一个代表文件的请求。例如，如果你想要看 http://www.example.com/foo.html 的头信息，连接 www.example.com，端口80，并输入：</p>
-<div class="highlight"><pre><span></span><code><span class="err">GET /foo.html HTTP/1.1 [回车]</span>
-<span class="err">Host: www.example.com [回车][回车]</span>
+<div class="highlight"><pre><span></span><code>GET /foo.html HTTP/1.1 [回车]
+Host: www.example.com [回车][回车]
 </code></pre></div>
 
 <p>每次你看到「回车」按下回车键，确保在最后的时候你按了两次。将会打印头信息，接着是完整的页面文件。如果只想看到头信息，将<code>GET</code> 换成 <code>HEAD</code>。</p>
@@ -228,17 +228,17 @@ Content-Type: text/html
 <ul>
 <li>.htaccess 文件允许网站发布者使用通常只能在配置文件中找到的命令。它们会影响到目录的内容和它们子目录的内容。和你的服务器管理员了解下它们是否被启用。</li>
 </ul>
-<div class="highlight"><pre><span></span><code>###<span class="w"> </span>激活<span class="w"> </span>mod_expires<span class="w"> </span>
-ExpiresActive<span class="w"> </span>On
-###<span class="w"> </span>.gif<span class="w"> </span>文件在访问一个月之后过期
-ExpiresByType<span class="w"> </span>image/gif<span class="w"> </span>A2592000
-###<span class="w"> </span>任何文件在最后一次修改的一天后过期
-###（此处使用了Alternative<span class="w"> </span>语法）
-ExpiresDefault<span class="w"> </span>&quot;modification<span class="w"> </span>plus<span class="w"> </span>1<span class="w"> </span>day&quot;
-###<span class="w"> </span>对<span class="w"> </span>index.html<span class="w"> </span>文件应用一个Cache-Control<span class="w"> </span>头信息
-<span class="nt">&lt;Files</span><span class="w"> </span><span class="err">index.html</span><span class="nt">&gt;</span>
-Header<span class="w"> </span>append<span class="w"> </span>Cache-Control<span class="w"> </span>&quot;public,<span class="w"> </span>must-revalidate&quot;
-<span class="nt">&lt;/Files&gt;</span>
+<div class="highlight"><pre><span></span><code>### 激活 mod_expires 
+ExpiresActive On
+### .gif 文件在访问一个月之后过期
+ExpiresByType image/gif A2592000
+### 任何文件在最后一次修改的一天后过期
+###（此处使用了Alternative 语法）
+ExpiresDefault &quot;modification plus 1 day&quot;
+### 对 index.html 文件应用一个Cache-Control 头信息
+&lt;Files index.html&gt;
+Header append Cache-Control &quot;public, must-revalidate&quot;
+&lt;/Files&gt;
 </code></pre></div>
 
 <ul>
@@ -259,15 +259,15 @@ Header<span class="w"> </span>append<span class="w"> </span>Cache-Control<span c
 </blockquote>
 <h3>CGI</h3>
 <p>CGI 脚本是生成内容最流行的方式之一。你可以非常容易的添加HTTP响应头信息，在你发送内容之前。大多数CGI实现都要求你写 Content-Type 头信息。例如，在Perl中：</p>
-<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/perl</span>
-<span class="k">print</span><span class="w"> </span><span class="s">&quot;Content-type: text/html\n&quot;</span><span class="p">;</span>
-<span class="k">print</span><span class="w"> </span><span class="s">&quot;Expires: Thu, 29 Oct 1998 17:04:19 GMT\n&quot;</span><span class="p">;</span>
-<span class="k">print</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">;</span>
-<span class="c1">### the content body follows...</span>
+<div class="highlight"><pre><span></span><code>#!/usr/bin/perl
+print &quot;Content-type: text/html\n&quot;;
+print &quot;Expires: Thu, 29 Oct 1998 17:04:19 GMT\n&quot;;
+print &quot;\n&quot;;
+### the content body follows...
 </code></pre></div>
 
 <p>由于都是文本信息，你可以非常容易的使用内置函数生成Expires和其他日期相关的头信息。如果你使用Cache-Control: max-age甚至可以更简单：</p>
-<div class="highlight"><pre><span></span><code><span class="nt">print</span><span class="w"> </span><span class="s2">&quot;Cache-Control: max-age=600\n&quot;</span><span class="o">;</span>
+<div class="highlight"><pre><span></span><code>print &quot;Cache-Control: max-age=600\n&quot;;
 </code></pre></div>
 
 <p>这会使脚本在请求之后可以被缓存10分钟，所以如果用户点击‘返回’按钮，他们不再会重新提交请求。</p>
@@ -280,13 +280,13 @@ Header<span class="w"> </span>append<span class="w"> </span>Cache-Control<span c
 <p><a href="http://www.php.net/">PHP</a>是一个内建在web服务器中的服务器端脚本语言，可以做为HTML嵌入式脚本，很像SSI，不过有更多的选项。PHP可以在各种Web服务器上设置为CGI脚本运行（Unix或Windows），或作为Apache的模块运行；</p>
 <p>默认情况下，PHP生成代表文件没有设置验证器，也就无法缓存。但是，开发者可以通过Header()函数来设置HTTP头信息。</p>
 <p>例如，这些代码会生成一个Cache-Control头信息，也会设置一个3天后过期的Expires头信息；</p>
-<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
- <span class="nx">Header</span><span class="p">(</span><span class="s2">&quot;Cache-Control: must-revalidate&quot;</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code>&lt;?php
+ Header(&quot;Cache-Control: must-revalidate&quot;);
 
- <span class="nv">$offset</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3</span><span class="p">;</span>
- <span class="nv">$ExpStr</span> <span class="o">=</span> <span class="s2">&quot;Expires: &quot;</span> <span class="o">.</span> <span class="nb">gmdate</span><span class="p">(</span><span class="s2">&quot;D, d M Y H:i:s&quot;</span><span class="p">,</span> <span class="nb">time</span><span class="p">()</span> <span class="o">+</span> <span class="nv">$offset</span><span class="p">)</span> <span class="o">.</span> <span class="s2">&quot; GMT&quot;</span><span class="p">;</span>
- <span class="nx">Header</span><span class="p">(</span><span class="nv">$ExpStr</span><span class="p">);</span>
-<span class="cp">?&gt;</span>
+ $offset = 60 * 60 * 24 * 3;
+ $ExpStr = &quot;Expires: &quot; . gmdate(&quot;D, d M Y H:i:s&quot;, time() + $offset) . &quot; GMT&quot;;
+ Header($ExpStr);
+?&gt;
 </code></pre></div>
 
 <p>记住，Header()的输出<strong>必须</strong>先于所有其他HTML的输出。</p>
@@ -309,11 +309,11 @@ Header<span class="w"> </span>append<span class="w"> </span>Cache-Control<span c
 <p>记住Web服务器的头信息也会通过Cold Fusion的一些部署方式传递(例如CGI）；检查你的服务器设置，确定你是否可以使用它，并通过在Web服务器上设置头信息来代替Cold Fusion。 </p>
 <h3>ASP and ASP.NET</h3>
 <p>Active Server Pages，内置在IIS中，在其他Web服务器中也可用，也允许你设置HTTP头。例如，设置一个过期时间，你可以使用Response方法的属性：</p>
-<div class="highlight"><pre><span></span><code><span class="cp">&lt;%</span><span class="w"> </span><span class="no">Response</span><span class="o">.</span><span class="n">Expires</span><span class="o">=</span><span class="mi">1440</span><span class="w"> </span><span class="cp">%&gt;</span>
+<div class="highlight"><pre><span></span><code>&lt;% Response.Expires=1440 %&gt;
 </code></pre></div>
 
 <p>指定请求的代表文件在多少分钟后过期。Cache-Control头信息可以这样添加：</p>
-<div class="highlight"><pre><span></span><code><span class="cp">&lt;%</span><span class="w"> </span><span class="no">Response</span><span class="o">.</span><span class="n">CacheControl</span><span class="o">=</span><span class="s2">&quot;public&quot;</span><span class="w"> </span><span class="cp">%&gt;</span>
+<div class="highlight"><pre><span></span><code>&lt;% Response.CacheControl=&quot;public&quot; %&gt;
 </code></pre></div>
 
 <p>在ASP.NET中，Response.Expires已不推荐使用。正确的方法是通过Response.Cache设置cache相关的头信息；</p>
