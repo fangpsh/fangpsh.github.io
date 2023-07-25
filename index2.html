@@ -26,6 +26,17 @@
 <section id="content" class="content">
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2020/2020-09-09.html" rel="bookmark" title="Permalink to 一个双向MTR仅单向丢包的问题">一个双向MTR仅单向丢包的问题</a></h2> </header>
+                <div class="entry-content"> <p>现象:</p>
+<ol>
+<li>A 机器ping B 机器丢包，触发A MTR B，最后一跳丢包；</li>
+<li>B 机器ping A 机器丢包，触发B MTR A，最后一跳不丢包；</li>
+</ol>
+<p><img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png">
+<img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"></p>
+<p>按照之前的理解 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2020/2020-04-25.html" rel="bookmark" title="Permalink to Azure 上Salt Minion异常断线的问题">Azure 上Salt Minion异常断线的问题</a></h2> </header>
                 <div class="entry-content"> <p>在几台Azure 的机器上发现salt minion一直在切换节点，以为是到阿里云香港的抖动问题，加了一个阿里云硅谷节点，把Azure 美国境内的节点都分配过 …</p> </div><!-- entry-content -->
         </article>
@@ -81,14 +92,6 @@
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2019/horrible-bmtrip.html" rel="bookmark" title="Permalink to 糟糕的斑马旅游">糟糕的斑马旅游</a></h2> </header>
                 <div class="entry-content"> <p>2018 年的元旦和女友又去了一次泰国，这次由于我工作比较忙，没精力做攻略，逛了一圈携程、飞猪，选了<a href="https://bmtrip.com/">斑马旅游</a>（上海歌晨信 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="bookmark" title="Permalink to ip_local_port_range 小问题">ip_local_port_range 小问题</a></h2> </header>
-                <div class="entry-content"> <p>发现系统打印了一条日志，类似<a href="https://access.redhat.com/solutions/2887631">redhat solution:2887631</a>：</p>
-<div class="highlight"><pre><span></span><code>Jan 23 14:37:22 localhost kernel: ip_local_port_range: prefer different parity for start/end values.
-</code></pre></div>
-
-<p>意思是建议将<code>/proc/sys/net/ipv4/ip_local_port_range</code> 的两个数设置一个 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

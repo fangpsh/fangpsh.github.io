@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>无法添加cloudpods 计算节点的问题排查 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-07-24.html" rel="bookmark"
+         title="Permalink to 无法添加cloudpods 计算节点的问题排查">无法添加cloudpods 计算节点的问题排查</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>给cloudpods 添加一个计算节点，出错：</p>
+<div class="highlight"><pre><span></span><code>TASK [worker-node : Use &#39;ocadm join 192.168.x.x:6443 --token howsjs.psr11nv5c5a2bi3q --discovery-token-unsafe-skip-ca-verification --enable-host-agent --node-ip 192.168.x.x --enable-hugepage &#39;] ***
+fatal: [192.168.x.x]: FAILED! =&gt;
+ {&quot;changed&quot;: true, &quot;cmd&quot;: [&quot;/opt/yunion/bin/ocadm&quot;, &quot;join&quot;, &quot;192.168.x.x:6443&quot;, &quot;--token&quot;, &quot;howsjs.XXXXXXX&quot;, &quot;--discovery-token-unsafe-skip-ca-verification&quot;, &quot;--enable-host-agent&quot;, &quot;--node-ip&quot;, &quot;192.168.8.6&quot;, &quot;--enable-hugepage&quot;], &quot;delta&quot;: &quot;0:05:00.667016&quot;, &quot;end&quot;: &quot;2023-07-21 15:08:32.106642&quot;, &quot;msg&quot;: &quot;non-zero return code&quot;, &quot;rc&quot;: 1, &quot;start&quot;: &quot;2023-07-21 15:03:31.439626&quot;, &quot;stderr&quot;: &quot;\t[WARNING SystemVerification]: this Docker version is not on the list of validated versions: 20.10.5. Latest validated version: 18.09\nerror execution phase preflight: couldn&#39;t validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s&quot;, &quot;stderr_lines&quot;: [&quot;\t[WARNING SystemVerification]: this Docker version is not on the list of validated versions: 20.10.5. Latest validated version: 18.09&quot;, &quot;error execution phase preflight: couldn&#39;t validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s&quot;], &quot;stdout&quot;: &quot;[preflight] Running pre-flight checks&quot;, &quot;stdout_lines&quot;: [&quot;[preflight] Running pre-flight checks&quot;]}
+</code></pre></div>
+
+<p>和那个Docker version 异常没啥关系，但是这段错误也让人看不懂，API Server 是正常的。</p>
+<p><code>error execution phase preflight: couldn't validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s</code> </p>
+<p>在ocboot 找到对应的role，将<a href="https://github.com/yunionio/ocboot/blob/master/onecloud/roles/worker-node/tasks/main.yml#L106">join</a> 命令日志等级提升：</p>
+<div class="highlight"><pre><span></span><code>-command: &quot;/opt/yunion/bin/ocadm {{ join_args }}&quot;
++command: &quot;/opt/yunion/bin/ocadm {{ join_args }} -v 5&quot;
+</code></pre></div>
+
+<p>再执行<code>add-node</code>，输出多一些了：</p>
+<div class="highlight"><pre><span></span><code>.... [discovery] Failed to connect to API Server \&quot;192.168.x.x:6443\&quot;: token id \&quot;qqrnpr\&quot; is invalid for this cluster or it has expired. Use \&quot;kubeadm token create\&quot; on the control-plane node to create a new valid token&quot;, &quot;I0721 17:02:24.772935   37384 token.go:199] [discovery] Trying to connect to API Server \&quot;192.168.x.x:6443\&quot;&quot;, &quot;I0721 17:02:24.773719   37384 token.go:74] [discovery] Created cluster-info discovery client, requesting info from \&quot;https://192.168.8.8:6443\&quot;&quot;, &quot;I0721 17:02:24.776478   37384 token.go:202] [discovery] Failed to connect to API Server \&quot;192.168.x.x:6443\&quot;: token id \&quot;xxxx\&quot; is invalid for this cluster or it has expired. Use \&quot;kubeadm token create\&quot; on the control-plane node to create a new valid token&quot;, &quot;I0721 17:02:29.502523   37384 token.go:219] [discovery] abort connecting to API servers after timeout of 5m0s&quot;, &quot;error execution phase preflight: couldn&#39;t validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s&quot;], &quot;stdout&quot;: &quot;[preflight] Running pre-flight checks&quot;, &quot;stdout_lines&quot;: [&quot;[preflight] Running pre-flight checks
+</code></pre></div>
+
+<p>上计算节点看看kublet 服务状态<code>systemctl status kubelet</code>：</p>
+<div class="highlight"><pre><span></span><code>Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.285975   44259 reflector.go:125] k8s.io/kubernetes/pkg/kubelet/kubelet.go:445: Failed to list *v1.Service: Unauthorized
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.289409   44259 kubelet.go:2252] node &quot;sz-node-8-6&quot; not found
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.389659   44259 kubelet.go:2252] node &quot;sz-node-8-6&quot; not found
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.460715   44259 file_linux.go:61] Unable to read config path &quot;/etc/kubernetes/manifests&quot;: path does not exist, ignoring
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.486273   44259 reflector.go:125] k8s.io/kubernetes/pkg/kubelet/kubelet.go:454: Failed to list *v1.Node: Unauthorized
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.489897   44259 kubelet.go:2252] node &quot;sz-node-8-6&quot; not found
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.590123   44259 kubelet.go:2252] node &quot;sz-node-8-6&quot; not found
+</code></pre></div>
+
+<p>Node 无法注册成功，看下kublet 的配置在哪里：</p>
+<div class="highlight"><pre><span></span><code>[Unit]
+Description=kubelet: The Kubernetes Node Agent
+Documentation=https://kubernetes.io/docs/
+
+[Service]
+ExecStart=/usr/bin/kubelet
+Restart=always
+StartLimitInterval=0
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+
+# /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+# Note: This dropin only works with kubeadm and kubelet v1.11+
+[Service]
+Environment=&quot;KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf&quot;
+Environment=&quot;KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml&quot;
+# This is a file that &quot;kubeadm init&quot; and &quot;kubeadm join&quot; generates at runtime, populating the KUBELET_KUBEADM_ARGS variable dynamically
+EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+# This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably, the user should use
+# the .NodeRegistration.KubeletExtraArgs object in the configuration files instead. KUBELET_EXTRA_ARGS should be sourced from this file.
+EnvironmentFile=-/etc/sysconfig/kubelet
+ExecStart=
+ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
+</code></pre></div>
+
+<p>对比了几个配置，和其他计算节点没啥差别，都是重装过的机器部署的。</p>
+<p><code>/etc/kubernetes/kubelet.conf</code></p>
+<div class="highlight"><pre><span></span><code>...
+preferences: {}
+users:
+- name: default-auth
+  user:
+    client-certificate: /var/lib/kubelet/pki/kubelet-client-current.pem
+    client-key: /var/lib/kubelet/pki/kubelet-client-current.pem
+</code></pre></div>
+
+<p>检查下证书：</p>
+<div class="highlight"><pre><span></span><code>openssl x509 -in /var/lib/kubelet/pki/kubelet-client-current.pem  -noout -text
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            6f:58:0f:41:fb:....
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=kubernetes
+        Validity
+            Not Before: Jul 21 10:47:00 2023 GMT
+            Not After : Jul 20 10:47:00 2024 GMT
+        Subject: O=system:nodes, CN=system:node:sz
+</code></pre></div>
+
+<p>🤔发现Not  Before 怎么是50分钟之后（GMT+8），检查所有master，发现有一台master 时间异常，修正这台master 时间。重新join，终于成功了。</p>
+<p>奇怪的ntpd 进程怎么挂了，建议cloudpods 主机监控项里面增加一个时间监控？</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-07-24T00:00:00+08:00">
+      Mon 24 July 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/kubernetes.html">kubernetes </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>

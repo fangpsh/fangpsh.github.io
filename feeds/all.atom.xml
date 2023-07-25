@@ -1,5 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-06-12T00:00:00+08:00</updated><entry><title>威联通RAID1 磁盘数据导出</title><link href="https://fangpsh.github.io/posts/2023/2023-06-12.html" rel="alternate"></link><published>2023-06-12T00:00:00+08:00</published><updated>2023-06-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-06-12:/posts/2023/2023-06-12.html</id><summary type="html">&lt;p&gt;公司用了多年的&lt;a href="https://www.qnap.com/en/product/ts-651"&gt;TS-651&lt;/a&gt; 坏了，修了没跑几天又坏（深圳市南山赛格新联创电脑经营部 👎 ），
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-07-24T00:00:00+08:00</updated><entry><title>无法添加cloudpods 计算节点的问题排查</title><link href="https://fangpsh.github.io/posts/2023/2023-07-24.html" rel="alternate"></link><published>2023-07-24T00:00:00+08:00</published><updated>2023-07-24T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-07-24:/posts/2023/2023-07-24.html</id><summary type="html">&lt;p&gt;给cloudpods 添加一个计算节点，出错：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;TASK [worker-node : Use &amp;#39;ocadm join 192.168.x.x:6443 --token howsjs.psr11nv5c5a2bi3q --discovery-token-unsafe-skip-ca-verification --enable-host-agent --node-ip 192.168.x.x --enable-hugepage &amp;#39;] ***
+fatal: [192.168.x.x]: FAILED! =&amp;gt;
+ {&amp;quot;changed&amp;quot;: true, &amp;quot;cmd&amp;quot;: [&amp;quot;/opt/yunion/bin/ocadm&amp;quot;, &amp;quot;join&amp;quot;, &amp;quot;192.168.x …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;给cloudpods 添加一个计算节点，出错：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;TASK [worker-node : Use &amp;#39;ocadm join 192.168.x.x:6443 --token howsjs.psr11nv5c5a2bi3q --discovery-token-unsafe-skip-ca-verification --enable-host-agent --node-ip 192.168.x.x --enable-hugepage &amp;#39;] ***
+fatal: [192.168.x.x]: FAILED! =&amp;gt;
+ {&amp;quot;changed&amp;quot;: true, &amp;quot;cmd&amp;quot;: [&amp;quot;/opt/yunion/bin/ocadm&amp;quot;, &amp;quot;join&amp;quot;, &amp;quot;192.168.x.x:6443&amp;quot;, &amp;quot;--token&amp;quot;, &amp;quot;howsjs.XXXXXXX&amp;quot;, &amp;quot;--discovery-token-unsafe-skip-ca-verification&amp;quot;, &amp;quot;--enable-host-agent&amp;quot;, &amp;quot;--node-ip&amp;quot;, &amp;quot;192.168.8.6&amp;quot;, &amp;quot;--enable-hugepage&amp;quot;], &amp;quot;delta&amp;quot;: &amp;quot;0:05:00.667016&amp;quot;, &amp;quot;end&amp;quot;: &amp;quot;2023-07-21 15:08:32.106642&amp;quot;, &amp;quot;msg&amp;quot;: &amp;quot;non-zero return code&amp;quot;, &amp;quot;rc&amp;quot;: 1, &amp;quot;start&amp;quot;: &amp;quot;2023-07-21 15:03:31.439626&amp;quot;, &amp;quot;stderr&amp;quot;: &amp;quot;\t[WARNING SystemVerification]: this Docker version is not on the list of validated versions: 20.10.5. Latest validated version: 18.09\nerror execution phase preflight: couldn&amp;#39;t validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s&amp;quot;, &amp;quot;stderr_lines&amp;quot;: [&amp;quot;\t[WARNING SystemVerification]: this Docker version is not on the list of validated versions: 20.10.5. Latest validated version: 18.09&amp;quot;, &amp;quot;error execution phase preflight: couldn&amp;#39;t validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s&amp;quot;], &amp;quot;stdout&amp;quot;: &amp;quot;[preflight] Running pre-flight checks&amp;quot;, &amp;quot;stdout_lines&amp;quot;: [&amp;quot;[preflight] Running pre-flight checks&amp;quot;]}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;和那个Docker version 异常没啥关系，但是这段错误也让人看不懂，API Server 是正常的。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;error execution phase preflight: couldn't validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s&lt;/code&gt; &lt;/p&gt;
+&lt;p&gt;在ocboot 找到对应的role，将&lt;a href="https://github.com/yunionio/ocboot/blob/master/onecloud/roles/worker-node/tasks/main.yml#L106"&gt;join&lt;/a&gt; 命令日志等级提升：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;-command: &amp;quot;/opt/yunion/bin/ocadm {{ join_args }}&amp;quot;
++command: &amp;quot;/opt/yunion/bin/ocadm {{ join_args }} -v 5&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;再执行&lt;code&gt;add-node&lt;/code&gt;，输出多一些了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;.... [discovery] Failed to connect to API Server \&amp;quot;192.168.x.x:6443\&amp;quot;: token id \&amp;quot;qqrnpr\&amp;quot; is invalid for this cluster or it has expired. Use \&amp;quot;kubeadm token create\&amp;quot; on the control-plane node to create a new valid token&amp;quot;, &amp;quot;I0721 17:02:24.772935   37384 token.go:199] [discovery] Trying to connect to API Server \&amp;quot;192.168.x.x:6443\&amp;quot;&amp;quot;, &amp;quot;I0721 17:02:24.773719   37384 token.go:74] [discovery] Created cluster-info discovery client, requesting info from \&amp;quot;https://192.168.8.8:6443\&amp;quot;&amp;quot;, &amp;quot;I0721 17:02:24.776478   37384 token.go:202] [discovery] Failed to connect to API Server \&amp;quot;192.168.x.x:6443\&amp;quot;: token id \&amp;quot;xxxx\&amp;quot; is invalid for this cluster or it has expired. Use \&amp;quot;kubeadm token create\&amp;quot; on the control-plane node to create a new valid token&amp;quot;, &amp;quot;I0721 17:02:29.502523   37384 token.go:219] [discovery] abort connecting to API servers after timeout of 5m0s&amp;quot;, &amp;quot;error execution phase preflight: couldn&amp;#39;t validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s&amp;quot;], &amp;quot;stdout&amp;quot;: &amp;quot;[preflight] Running pre-flight checks&amp;quot;, &amp;quot;stdout_lines&amp;quot;: [&amp;quot;[preflight] Running pre-flight checks
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上计算节点看看kublet 服务状态&lt;code&gt;systemctl status kubelet&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.285975   44259 reflector.go:125] k8s.io/kubernetes/pkg/kubelet/kubelet.go:445: Failed to list *v1.Service: Unauthorized
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.289409   44259 kubelet.go:2252] node &amp;quot;sz-node-8-6&amp;quot; not found
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.389659   44259 kubelet.go:2252] node &amp;quot;sz-node-8-6&amp;quot; not found
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.460715   44259 file_linux.go:61] Unable to read config path &amp;quot;/etc/kubernetes/manifests&amp;quot;: path does not exist, ignoring
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.486273   44259 reflector.go:125] k8s.io/kubernetes/pkg/kubelet/kubelet.go:454: Failed to list *v1.Node: Unauthorized
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.489897   44259 kubelet.go:2252] node &amp;quot;sz-node-8-6&amp;quot; not found
+Jul 21 17:11:12 localhost kubelet: E0721 17:11:12.590123   44259 kubelet.go:2252] node &amp;quot;sz-node-8-6&amp;quot; not found
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Node 无法注册成功，看下kublet 的配置在哪里：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;[Unit]
+Description=kubelet: The Kubernetes Node Agent
+Documentation=https://kubernetes.io/docs/
+
+[Service]
+ExecStart=/usr/bin/kubelet
+Restart=always
+StartLimitInterval=0
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+
+# /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+# Note: This dropin only works with kubeadm and kubelet v1.11+
+[Service]
+Environment=&amp;quot;KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf&amp;quot;
+Environment=&amp;quot;KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml&amp;quot;
+# This is a file that &amp;quot;kubeadm init&amp;quot; and &amp;quot;kubeadm join&amp;quot; generates at runtime, populating the KUBELET_KUBEADM_ARGS variable dynamically
+EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+# This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably, the user should use
+# the .NodeRegistration.KubeletExtraArgs object in the configuration files instead. KUBELET_EXTRA_ARGS should be sourced from this file.
+EnvironmentFile=-/etc/sysconfig/kubelet
+ExecStart=
+ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;对比了几个配置，和其他计算节点没啥差别，都是重装过的机器部署的。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;/etc/kubernetes/kubelet.conf&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;...
+preferences: {}
+users:
+- name: default-auth
+  user:
+    client-certificate: /var/lib/kubelet/pki/kubelet-client-current.pem
+    client-key: /var/lib/kubelet/pki/kubelet-client-current.pem
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;检查下证书：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;openssl x509 -in /var/lib/kubelet/pki/kubelet-client-current.pem  -noout -text
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            6f:58:0f:41:fb:....
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=kubernetes
+        Validity
+            Not Before: Jul 21 10:47:00 2023 GMT
+            Not After : Jul 20 10:47:00 2024 GMT
+        Subject: O=system:nodes, CN=system:node:sz
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;🤔发现Not  Before 怎么是50分钟之后（GMT+8），检查所有master，发现有一台master 时间异常，修正这台master 时间。重新join，终于成功了。&lt;/p&gt;
+&lt;p&gt;奇怪的ntpd 进程怎么挂了，建议cloudpods 主机监控项里面增加一个时间监控？&lt;/p&gt;</content><category term="2023"></category><category term="kubernetes"></category></entry><entry><title>威联通RAID1 磁盘数据导出</title><link href="https://fangpsh.github.io/posts/2023/2023-06-12.html" rel="alternate"></link><published>2023-06-12T00:00:00+08:00</published><updated>2023-06-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-06-12:/posts/2023/2023-06-12.html</id><summary type="html">&lt;p&gt;公司用了多年的&lt;a href="https://www.qnap.com/en/product/ts-651"&gt;TS-651&lt;/a&gt; 坏了，修了没跑几天又坏（深圳市南山赛格新联创电脑经营部 👎 ），
 最开始搜索&lt;code&gt;qnap 硬盘导出&lt;/code&gt;，首先看到&lt;a href="https://post.smzdm.com/p/301806/"&gt;smzdm&lt;/a&gt;的帖 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;公司用了多年的&lt;a href="https://www.qnap.com/en/product/ts-651"&gt;TS-651&lt;/a&gt; 坏了，修了没跑几天又坏（深圳市南山赛格新联创电脑经营部 👎 ），
 最开始搜索&lt;code&gt;qnap 硬盘导出&lt;/code&gt;，首先看到&lt;a href="https://post.smzdm.com/p/301806/"&gt;smzdm&lt;/a&gt;的帖子：&lt;/p&gt;
 &lt;blockquote&gt;
