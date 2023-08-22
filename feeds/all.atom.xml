@@ -49,11 +49,13 @@ godaddy.com.            2884    IN      NS      a8-67.akam.net.
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;openssl s_client -connect 目标地址:443 -servername  目标域名  -status -tlsextdebug &amp;lt; /dev/null 2&amp;gt;&amp;amp;1 |grep OCSP -B 3 -A 10
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;参考资料：
- - &lt;a href="https://jhuo.ca/post/ocsp-stapling-letsencrypt/"&gt;Ocsp Stapling 和iOS界面卡顿问题&lt;/a&gt;
- - &lt;a href="https://c4ys.com/archives/2148"&gt;letsencrypt https证书增加OCSP Stapling解决iOS公众号H5首次打开慢问题&lt;/a&gt;
- - &lt;a href="https://holmesian.org/OCSP-Stapling"&gt;记录OCSP Stapling的两个问题&lt;/a&gt;
- - &lt;a href="https://imququ.com/post/why-can-not-turn-on-ocsp-stapling.html"&gt;从无法开启 OCSP Stapling 说起&lt;/a&gt;&lt;/p&gt;</content><category term="2023"></category><category term="https"></category><category term="tls"></category></entry><entry><title>无法添加cloudpods 计算节点的问题排查</title><link href="https://fangpsh.github.io/posts/2023/2023-07-24.html" rel="alternate"></link><published>2023-07-24T00:00:00+08:00</published><updated>2023-07-24T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-07-24:/posts/2023/2023-07-24.html</id><summary type="html">&lt;p&gt;给cloudpods 添加一个计算节点，出错：&lt;/p&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://jhuo.ca/post/ocsp-stapling-letsencrypt/"&gt;Ocsp Stapling 和iOS界面卡顿问题&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://c4ys.com/archives/2148"&gt;letsencrypt https证书增加OCSP Stapling解决iOS公众号H5首次打开慢问题&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://holmesian.org/OCSP-Stapling"&gt;记录OCSP Stapling的两个问题&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://imququ.com/post/why-can-not-turn-on-ocsp-stapling.html"&gt;从无法开启 OCSP Stapling 说起&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2023"></category><category term="https"></category><category term="tls"></category></entry><entry><title>无法添加cloudpods 计算节点的问题排查</title><link href="https://fangpsh.github.io/posts/2023/2023-07-24.html" rel="alternate"></link><published>2023-07-24T00:00:00+08:00</published><updated>2023-07-24T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-07-24:/posts/2023/2023-07-24.html</id><summary type="html">&lt;p&gt;给cloudpods 添加一个计算节点，出错：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;TASK [worker-node : Use &amp;#39;ocadm join 192.168.x.x:6443 --token howsjs.XXX --discovery-token-unsafe-skip-ca-verification --enable-host-agent --node-ip 192.168.x.x --enable-hugepage &amp;#39;] ***
 fatal: [192.168.x.x]: FAILED! =&amp;gt;
  {&amp;quot;changed&amp;quot;: true, &amp;quot;cmd&amp;quot;: [&amp;quot;/opt/yunion/bin/ocadm&amp;quot;, &amp;quot;join&amp;quot;, &amp;quot;192.168.x …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;给cloudpods 添加一个计算节点，出错：&lt;/p&gt;
