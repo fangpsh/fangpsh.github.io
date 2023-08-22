@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>再次遇到OCSP引发的卡顿超时问题 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-08-18.html" rel="bookmark"
+         title="Permalink to 再次遇到OCSP引发的卡顿超时问题">再次遇到OCSP引发的卡顿超时问题</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>好几年前在iOS 上遇到过，最近又遇到了。之前BigSur 更新，好像也有过一次OCSP 超时的问题，参考 <a href="https://sspai.com/post/63649">OCSP，伴随苹果隐私收集与泄漏的小小争议
+</a>。
+这一次遇到是在QWebengineView 下加载超时，
+由于Godaddy  OCSP 使用的akamai cdn，由于众所周知的原因，在大陆访问异常概率非常高：</p>
+<div class="highlight"><pre><span></span><code>dig ocsp.godaddy.com
+
+; &lt;&lt;&gt;&gt; DiG 9.10.6 &lt;&lt;&gt;&gt; ocsp.godaddy.com
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 33808
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 8, ADDITIONAL: 14
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;ocsp.godaddy.com.              IN      A
+
+;; ANSWER SECTION:
+ocsp.godaddy.com.       600     IN      A       31.13.95.17
+
+;; AUTHORITY SECTION:
+godaddy.com.            2884    IN      NS      cns2.godaddy.com.
+godaddy.com.            2884    IN      NS      a11-64.akam.net.
+godaddy.com.            2884    IN      NS      a6-66.akam.net.
+godaddy.com.            2884    IN      NS      a9-67.akam.net.
+godaddy.com.            2884    IN      NS      a1-245.akam.net.
+godaddy.com.            2884    IN      NS      cns1.godaddy.com.
+godaddy.com.            2884    IN      NS      a20-65.akam.net.
+godaddy.com.            2884    IN      NS      a8-67.akam.net.
+</code></pre></div>
+
+<p>解决办法是要么换一个大陆的CA，要么开OCSP Stapling。开OCSP Stapling 的话，可以自己在Nginx 上折腾，或者打开CDN 的OCSP Stapling 开关。</p>
+<p>在Nginx 上折腾的话，由于Nginx 在大陆，Nginx 所在机器访问ocsp.godaddy.com 也受干扰，2个解决办法，一个是使用网友制作的<a href="https://jhuo.ca/post/ocsp-stapling-letsencrypt/">ocsp-proxy</a>一个是周期性从外部获取ocsp 信息，使用ngx_ssl_stapling_file 指定。</p>
+<p>无论是哪种办法，都得搞一个代理。</p>
+<p>如果要使用后者，需要将证书处理一下：
+将域名证书、中间证书、根证书按照从上到下的顺序保存为fullchains.pem ，中间证书单独保存为intermediate.pem，子证书保存为 site.pem，使用<code>openssl ocsp</code>，命令前可能需要使用<code>proxychains</code>之类走下代理：</p>
+<div class="highlight"><pre><span></span><code>openssl ocsp -no_nonce -text \
+-issuer intermediate.pem \
+-cert site.pem \
+-CAfile fullchains.pem \
+-url http://ocsp.godaddy.com \
+-header &quot;HOST&quot; &quot;ocsp.godaddy.com&quot; \
+-respout ocsp.resp
+</code></pre></div>
+
+<p>从哪里取中间证书和根证书？大多数时候从CA 处下载的时候，会一个CA Bundle的文件，里面即保护根证书和中间证书，拆分一下。或者可以直接从CA官网，或者用网上的证书链修复工具来获取。</p>
+<p>检查是否成功开启，外网的话也可以直接使用myssl.com 、ssllabs.com 检测：</p>
+<div class="highlight"><pre><span></span><code>&gt;openssl s_client -connect 目标地址:443 -servername  目标域名  -status -tlsextdebug &lt; /dev/null 2&gt;&amp;1 |grep OCSP -B 3 -A 10
+</code></pre></div>
+
+<p>参考资料：
+ - <a href="https://jhuo.ca/post/ocsp-stapling-letsencrypt/">Ocsp Stapling 和iOS界面卡顿问题</a>
+ - <a href="https://c4ys.com/archives/2148">letsencrypt https证书增加OCSP Stapling解决iOS公众号H5首次打开慢问题</a>
+ - <a href="https://holmesian.org/OCSP-Stapling">记录OCSP Stapling的两个问题</a>
+ - <a href="https://imququ.com/post/why-can-not-turn-on-ocsp-stapling.html">从无法开启 OCSP Stapling 说起</a></p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-08-18T00:00:00+08:00">
+      Fri 18 August 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/https.html">https </a><a href="https://fangpsh.github.io/tag/tls.html">tls </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>

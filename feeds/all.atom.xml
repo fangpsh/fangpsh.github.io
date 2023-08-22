@@ -1,5 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-07-24T00:00:00+08:00</updated><entry><title>无法添加cloudpods 计算节点的问题排查</title><link href="https://fangpsh.github.io/posts/2023/2023-07-24.html" rel="alternate"></link><published>2023-07-24T00:00:00+08:00</published><updated>2023-07-24T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-07-24:/posts/2023/2023-07-24.html</id><summary type="html">&lt;p&gt;给cloudpods 添加一个计算节点，出错：&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-08-18T00:00:00+08:00</updated><entry><title>再次遇到OCSP引发的卡顿超时问题</title><link href="https://fangpsh.github.io/posts/2023/2023-08-18.html" rel="alternate"></link><published>2023-08-18T00:00:00+08:00</published><updated>2023-08-18T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-08-18:/posts/2023/2023-08-18.html</id><summary type="html">&lt;p&gt;好几年前在iOS 上遇到过，最近又遇到了。之前BigSur 更新，好像也有过一次OCSP 超时的问题，参考 &lt;a href="https://sspai.com/post/63649"&gt;OCSP，伴随苹果隐私收集与泄漏的小 …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;好几年前在iOS 上遇到过，最近又遇到了。之前BigSur 更新，好像也有过一次OCSP 超时的问题，参考 &lt;a href="https://sspai.com/post/63649"&gt;OCSP，伴随苹果隐私收集与泄漏的小小争议
+&lt;/a&gt;。
+这一次遇到是在QWebengineView 下加载超时，
+由于Godaddy  OCSP 使用的akamai cdn，由于众所周知的原因，在大陆访问异常概率非常高：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;dig ocsp.godaddy.com
+
+; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.10.6 &amp;lt;&amp;lt;&amp;gt;&amp;gt; ocsp.godaddy.com
+;; global options: +cmd
+;; Got answer:
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 33808
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 8, ADDITIONAL: 14
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;ocsp.godaddy.com.              IN      A
+
+;; ANSWER SECTION:
+ocsp.godaddy.com.       600     IN      A       31.13.95.17
+
+;; AUTHORITY SECTION:
+godaddy.com.            2884    IN      NS      cns2.godaddy.com.
+godaddy.com.            2884    IN      NS      a11-64.akam.net.
+godaddy.com.            2884    IN      NS      a6-66.akam.net.
+godaddy.com.            2884    IN      NS      a9-67.akam.net.
+godaddy.com.            2884    IN      NS      a1-245.akam.net.
+godaddy.com.            2884    IN      NS      cns1.godaddy.com.
+godaddy.com.            2884    IN      NS      a20-65.akam.net.
+godaddy.com.            2884    IN      NS      a8-67.akam.net.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;解决办法是要么换一个大陆的CA，要么开OCSP Stapling。开OCSP Stapling 的话，可以自己在Nginx 上折腾，或者打开CDN 的OCSP Stapling 开关。&lt;/p&gt;
+&lt;p&gt;在Nginx 上折腾的话，由于Nginx 在大陆，Nginx 所在机器访问ocsp.godaddy.com 也受干扰，2个解决办法，一个是使用网友制作的&lt;a href="https://jhuo.ca/post/ocsp-stapling-letsencrypt/"&gt;ocsp-proxy&lt;/a&gt;一个是周期性从外部获取ocsp 信息，使用ngx_ssl_stapling_file 指定。&lt;/p&gt;
+&lt;p&gt;无论是哪种办法，都得搞一个代理。&lt;/p&gt;
+&lt;p&gt;如果要使用后者，需要将证书处理一下：
+将域名证书、中间证书、根证书按照从上到下的顺序保存为fullchains.pem ，中间证书单独保存为intermediate.pem，子证书保存为 site.pem，使用&lt;code&gt;openssl ocsp&lt;/code&gt;，命令前可能需要使用&lt;code&gt;proxychains&lt;/code&gt;之类走下代理：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;openssl ocsp -no_nonce -text \
+-issuer intermediate.pem \
+-cert site.pem \
+-CAfile fullchains.pem \
+-url http://ocsp.godaddy.com \
+-header &amp;quot;HOST&amp;quot; &amp;quot;ocsp.godaddy.com&amp;quot; \
+-respout ocsp.resp
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;从哪里取中间证书和根证书？大多数时候从CA 处下载的时候，会一个CA Bundle的文件，里面即保护根证书和中间证书，拆分一下。或者可以直接从CA官网，或者用网上的证书链修复工具来获取。&lt;/p&gt;
+&lt;p&gt;检查是否成功开启，外网的话也可以直接使用myssl.com 、ssllabs.com 检测：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;openssl s_client -connect 目标地址:443 -servername  目标域名  -status -tlsextdebug &amp;lt; /dev/null 2&amp;gt;&amp;amp;1 |grep OCSP -B 3 -A 10
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;参考资料：
+ - &lt;a href="https://jhuo.ca/post/ocsp-stapling-letsencrypt/"&gt;Ocsp Stapling 和iOS界面卡顿问题&lt;/a&gt;
+ - &lt;a href="https://c4ys.com/archives/2148"&gt;letsencrypt https证书增加OCSP Stapling解决iOS公众号H5首次打开慢问题&lt;/a&gt;
+ - &lt;a href="https://holmesian.org/OCSP-Stapling"&gt;记录OCSP Stapling的两个问题&lt;/a&gt;
+ - &lt;a href="https://imququ.com/post/why-can-not-turn-on-ocsp-stapling.html"&gt;从无法开启 OCSP Stapling 说起&lt;/a&gt;&lt;/p&gt;</content><category term="2023"></category><category term="https"></category><category term="tls"></category></entry><entry><title>无法添加cloudpods 计算节点的问题排查</title><link href="https://fangpsh.github.io/posts/2023/2023-07-24.html" rel="alternate"></link><published>2023-07-24T00:00:00+08:00</published><updated>2023-07-24T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-07-24:/posts/2023/2023-07-24.html</id><summary type="html">&lt;p&gt;给cloudpods 添加一个计算节点，出错：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;TASK [worker-node : Use &amp;#39;ocadm join 192.168.x.x:6443 --token howsjs.XXX --discovery-token-unsafe-skip-ca-verification --enable-host-agent --node-ip 192.168.x.x --enable-hugepage &amp;#39;] ***
 fatal: [192.168.x.x]: FAILED! =&amp;gt;
  {&amp;quot;changed&amp;quot;: true, &amp;quot;cmd&amp;quot;: [&amp;quot;/opt/yunion/bin/ocadm&amp;quot;, &amp;quot;join&amp;quot;, &amp;quot;192.168.x …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;给cloudpods 添加一个计算节点，出错：&lt;/p&gt;
