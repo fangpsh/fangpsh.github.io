@@ -36,15 +36,15 @@ godaddy.com.            2884    IN      NS      a8-67.akam.net.
 &lt;p&gt;如果要使用后者，需要将证书处理一下：
 将域名证书、中间证书、根证书按照从上到下的顺序保存为fullchains.pem ，中间证书单独保存为intermediate.pem，子证书保存为 site.pem，使用&lt;code&gt;openssl ocsp&lt;/code&gt;，命令前可能需要使用&lt;code&gt;proxychains&lt;/code&gt;之类走下代理：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;openssl ocsp -no_nonce -text \
--issuer intermediate.pem \
--cert site.pem \
--CAfile fullchains.pem \
+-issuer intermediate.pem \  # 中间证书
+-cert site.pem \            # 域名证书
+-CAfile fullchains.pem \    # 完整证书链
 -url http://ocsp.godaddy.com \
 -header &amp;quot;HOST&amp;quot; &amp;quot;ocsp.godaddy.com&amp;quot; \
 -respout ocsp.resp
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;从哪里取中间证书和根证书？大多数时候从CA 处下载的时候，会一个CA Bundle的文件，里面即保护根证书和中间证书，拆分一下。或者可以直接从CA官网，或者用网上的证书链修复工具来获取。&lt;/p&gt;
+&lt;p&gt;从哪里取中间证书和根证书？大多数时候从CA 处下载的时候，会一个CA Bundle的文件，里面包含根证书和中间证书，拆分一下。或者可以直接从CA官网，或者用网上的证书链修复工具来获取。&lt;/p&gt;
 &lt;p&gt;检查是否成功开启，外网的话也可以直接使用myssl.com 、ssllabs.com 检测：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;openssl s_client -connect 目标地址:443 -servername  目标域名  -status -tlsextdebug &amp;lt; /dev/null 2&amp;gt;&amp;amp;1 |grep OCSP -B 3 -A 10
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
