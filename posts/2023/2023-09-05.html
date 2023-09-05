@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>DNS Cache投毒事件处理 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-09-05.html" rel="bookmark"
+         title="Permalink to DNS Cache投毒事件处理">DNS Cache投毒事件处理</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明代理）：
+<img alt="aws 被劫持" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905171716.jpg"></p>
+<p>里面的域名是 djfidicjmwos.com，
+搜索这个域名，有一个类似的帖子：<a href="http://www.0818tuan.com/xbhd/1733117.html">部分网站登录时不时提示“你的连接不是专用连接”，然后进不去后，等会又可以进</a>。</p>
+<p>查看办公网的localdns，上游是深圳电信返回：</p>
+<p><img alt="localdns-log" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905172052.png"></p>
+<p>可疑IP：156.234.127.142</p>
+<p>直接访问这个IP 的https端口，返回证书和劫持一致：
+<img alt="证书报警" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905171559.jpeg"></p>
+<div class="highlight"><pre><span></span><code>SHA-256 Fingerprint F3 B1 56 4D 75 0E FE 87 4A C1 66 D4 27 BC 5A CF
+7E 45 54 BE FC F3 98 8B 7F 0E E0 69 90 5A 0B 02
+SHA-1 Fingerprint   6B B7 1F 0A 72 CD 9D C0 E5 11 17 37 39 57 DB 40
+36 B4 75 F5
+</code></pre></div>
+
+<p>按这个IP查询ti.360.net ，看起来和博彩相关：</p>
+<p><img alt="ip 信息" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905172306.jpeg"></p>
+<p>直接对202.96.128.166 发起请求，会间歇性返回这个IP，可能只是集群中某台服务器异常 ，
+这条记录的TTL特别长。</p>
+<div class="highlight"><pre><span></span><code>dig  @202.96.128.166 ap-southeast-1.console.aws.amazon.com
+
+; &lt;&lt;&gt;&gt; DiG 9.10.6 &lt;&lt;&gt;&gt; @202.96.128.166 ap-southeast-1.console.aws.amazon.com
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 42939
+;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 4, ADDITIONAL: 8
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;ap-southeast-1.console.aws.amazon.com. IN A
+
+;; ANSWER SECTION:
+ap-southeast-1.console.aws.amazon.com. 600 IN CNAME gr.console-geo.ap-southeast-1.amazonaws.com.
+gr.console-geo.ap-southeast-1.amazonaws.com. 600 IN CNAME a299197c08ba4f000.awsglobalaccelerator.com.
+a299197c08ba4f000.awsglobalaccelerator.com. 2206 IN A 156.234.127.142
+
+;; AUTHORITY SECTION:
+awsglobalaccelerator.com. 46274 IN      NS      ns-1484.awsdns-57.org.
+awsglobalaccelerator.com. 46274 IN      NS      ns-409.awsdns-51.com.
+awsglobalaccelerator.com. 46274 IN      NS      ns-609.awsdns-12.net.
+awsglobalaccelerator.com. 46274 IN      NS      ns-1949.awsdns-51.co.uk.
+
+;; ADDITIONAL SECTION:
+ns-1949.awsdns-51.co.uk. 2130   IN      A       205.251.199.157
+ns-409.awsdns-51.com.   42961   IN      A       205.251.193.153
+ns-609.awsdns-12.net.   67319   IN      A       205.251.194.97
+ns-1484.awsdns-57.org.  85695   IN      AAAA    2600:9000:5305:cc00::1
+ns-1949.awsdns-51.co.uk. 2130   IN      AAAA    2600:9000:5307:9d00::1
+ns-409.awsdns-51.com.   42961   IN      AAAA    2600:9000:5301:9900::1
+ns-609.awsdns-12.net.   47034   IN      AAAA    2600:9000:5302:6100::1
+
+;; Query time: 1113 msec
+;; SERVER: 202.96.128.166#53(202.96.128.166)
+;; WHEN: Mon Sep 04 17:09:16 CST 2023
+;; MSG SIZE  rcvd: 486
+</code></pre></div>
+
+<p>请求114.114.114.114 ，返回的是：156.234.127.138，一个C段，直接返回https 443端口，返回一样的证书。阿里的223.5.5.5，还有一个C段IP：156.234.127.27。</p>
+<p>DNSPod 的119.29.29.29 多次测试，没发现异常。
+1.1.1.1 和 8.8.8.8多次测试，也无异常。</p>
+<p>正常响应是3.3.15.1 和3.3.14.1:</p>
+<div class="highlight"><pre><span></span><code>ap-southeast-1.console.aws.amazon.com. 126 IN CNAME gr.console-geo.ap-southeast-1.amazonaws.com.
+gr.console-geo.ap-southeast-1.amazonaws.com. 126 IN CNAME a299197c08ba4f000.awsglobalaccelerator.com.
+a299197c08ba4f000.awsglobalaccelerator.com. 186 IN A 3.3.15.1
+a299197c08ba4f000.awsglobalaccelerator.com. 186 IN A 3.3.14.1
+</code></pre></div>
+
+<p><img alt="fofa一下" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905174026.png"></p>
+<p>同事说可能aws 的系统出问题了，我觉得可能性不大。猜测几个可能的原因：
+1. 电信某一组服务器被入侵？不太可能，114 也出现了类似情况；
+2. 跨境的中间链路上有dns 抢答，注入了恶意地址？好像可能性也不大；
+3. 权威服务器的某个IP在某个域内BGP Leak 了？ 牵引了部分权威服务器的流量，然后进行抢答；
+4. DNS 缓存投毒（DNS cache poisoning）；</p>
+<p>个人觉得可能性比较大的是 dns 缓存投毒了 ，有人猜测了dns查询事务id，进行了抢答。</p>
+<p>什么是DNS 缓存投毒，可参考：<a href="https://www.cloudflare.com/learning/dns/dns-cache-poisoning/">cloudflare: What is DNS cache poisoning? | DNS spoofing </a>，这个幻灯片讲解的比较详细 <a href="https://owasp.org/www-pdf-archive/DNS_Cache_Poisoning(OWASP_GHANA).pdf">Anatomy  of a DNS Cache Poisoning Attack</a>。</p>
+<p>规避方法，使用DNSSEC，或者不使用固定的源地址，随机源地址+随机事务ID，让攻击者更难猜测：</p>
+<div class="highlight"><pre><span></span><code>- UDP Source Port Randomization (UDP SPR): What this does is setting the UDP
+source port randomly, so an attacker would have to guess both the transaction ID
+and the source port in a short time window - which is usually not feasible (since they
+would need to make 232 combinations).
+- DNS Security Extensions (DNSSEC): It is a protocol designed to create a unique
+cryptographic signature and store it alongside other DNS records. Thus, DNSSEC
+provides DNS with an additional methods of verification by digitally signing the DNS
+information. This is done on all levels of the DNS Resolution process. 
+</code></pre></div>
+
+<p>从<a href="https://www.163.com/dy/article/GQ3FFVMO0552KI0B.html">这篇文章</a>看：</p>
+<div class="highlight"><pre><span></span><code>该变种攻击漏洞影响 Linux 内核以及流行的 DNS 软件，包括在 Linux 上运行的 BIND、Unbound 和 dnsmasq，但在其他操作系统如 FreeBSD 或 Windows 上运行的这些DNS软件则不会。
+</code></pre></div>
+
+<p>难道是因为DNSPod 是自研，所以没受影响？</p>
+<p>最后：
+深圳电信有3组内部DNS服务器，另外2组没受影响，注释掉有问题的这个地址临时规避了。</p>
+<p>IOCs：</p>
+<ul>
+<li>156.234.127.142</li>
+<li>156.234.127.138</li>
+<li>156.234.127.27</li>
+</ul>
+<p>其他参考链接：
+ - <a href="https://www.secrss.com/articles/18219">关于国内部分地区一些网站https证书出现问题的情况分析</a>
+ - <a href="https://v2ex.com/t/656367?p=2">Github pages 的 HTTPS 是不是出问题了？</a></p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-09-05T00:00:00+08:00">
+      Tue 05 September 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/dns.html">dns </a><a href="https://fangpsh.github.io/tag/hack.html">hack </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>
