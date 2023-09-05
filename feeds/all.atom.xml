@@ -102,9 +102,11 @@ information. This is done on all levels of the DNS Resolution process.
 &lt;li&gt;156.234.127.138&lt;/li&gt;
 &lt;li&gt;156.234.127.27&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;其他参考链接：
- - &lt;a href="https://www.secrss.com/articles/18219"&gt;关于国内部分地区一些网站https证书出现问题的情况分析&lt;/a&gt;
- - &lt;a href="https://v2ex.com/t/656367?p=2"&gt;Github pages 的 HTTPS 是不是出问题了？&lt;/a&gt;&lt;/p&gt;</content><category term="2023"></category><category term="dns"></category><category term="hack"></category></entry><entry><title>再次遇到OCSP引发的卡顿超时问题</title><link href="https://fangpsh.github.io/posts/2023/2023-08-18.html" rel="alternate"></link><published>2023-08-18T00:00:00+08:00</published><updated>2023-08-18T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-08-18:/posts/2023/2023-08-18.html</id><summary type="html">&lt;p&gt;好几年前在iOS 上遇到过，最近又遇到了。之前BigSur 更新，好像也有过一次OCSP 超时的问题，参考 &lt;a href="https://sspai.com/post/63649"&gt;OCSP，伴随苹果隐私收集与泄漏的小 …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;好几年前在iOS 上遇到过，最近又遇到了。之前BigSur 更新，好像也有过一次OCSP 超时的问题，参考 &lt;a href="https://sspai.com/post/63649"&gt;OCSP，伴随苹果隐私收集与泄漏的小小争议
+&lt;p&gt;其他参考链接：  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.secrss.com/articles/18219"&gt;关于国内部分地区一些网站https证书出现问题的情况分析&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://v2ex.com/t/656367?p=2"&gt;Github pages 的 HTTPS 是不是出问题了？&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2023"></category><category term="dns"></category><category term="hack"></category></entry><entry><title>再次遇到OCSP引发的卡顿超时问题</title><link href="https://fangpsh.github.io/posts/2023/2023-08-18.html" rel="alternate"></link><published>2023-08-18T00:00:00+08:00</published><updated>2023-08-18T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-08-18:/posts/2023/2023-08-18.html</id><summary type="html">&lt;p&gt;好几年前在iOS 上遇到过，最近又遇到了。之前BigSur 更新，好像也有过一次OCSP 超时的问题，参考 &lt;a href="https://sspai.com/post/63649"&gt;OCSP，伴随苹果隐私收集与泄漏的小 …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;好几年前在iOS 上遇到过，最近又遇到了。之前BigSur 更新，好像也有过一次OCSP 超时的问题，参考 &lt;a href="https://sspai.com/post/63649"&gt;OCSP，伴随苹果隐私收集与泄漏的小小争议
 &lt;/a&gt;。
 这一次遇到是在QWebengineView 下加载超时，
 由于Godaddy  OCSP 使用的akamai cdn，由于众所周知的原因，在大陆访问异常概率非常高：&lt;/p&gt;
