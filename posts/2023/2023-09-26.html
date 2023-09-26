@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>lvmcache 缓存盘掉盘处理 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-09-26.html" rel="bookmark"
+         title="Permalink to lvmcache 缓存盘掉盘处理">lvmcache 缓存盘掉盘处理</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：<code>Warning: dracut-initqueue timeout - starting timeout scripts</code>，启动失败，自动进入了救援模式<code>dracut:/#</code></p>
+<p>救援模式中，lvm 的变更操作都会报警：</p>
+<div class="highlight"><pre><span></span><code>Read-only locking type set. Write locks are prohibited.
+Can&#39;t get lock for...
+</code></pre></div>
+
+<p>需要手工编辑下<code>/etc/lvm/lvm.conf</code> 将<code>locking_type=4</code> 修改为<code>locking_type=1</code>，再继续。</p>
+<p>先尝试强制移除cache，失败了：</p>
+<div class="highlight"><pre><span></span><code>dracut:/# lucomvert -uncache centos/root --force
+Couldn&#39;t find device with unid Buatb2-rxoc-8B6f -cf8y-3XR3-JTer-WNS6tJ.
+WARNING: Cache pool data. logical wolume centos/cache_ cdata is missing.
+WARNING: Cache pool metadata logical volume centos/cache_cmeta is missing.
+WARMING: Uncaching of partially missi ng writethrough cache volume centos/root might destroy your date
+Do you really want to uncache centos/root with missing LUs? lym]:y
+t 1366 4737991 Buffer I&#39;d error on dey dm-3, logical block async page read
+devmapper centos -cache_cmeta: read failed: Input / output error
+Failed to active cache locally centos/root.
+</code></pre></div>
+
+<p>再试一试<code>lvm unreduce --removemiss centos --force</code>，也失败了：</p>
+<div class="highlight"><pre><span></span><code>Couldn&#39;t find device with unid BuatbZ-rxoc-8B6r -cf8y-3XR3-JTer-uNS6tj.
+WARNING:_ Removing partial LU centos/root:
+1388 5592321 Buffer Iro error on dey dm-3, logical block 8, async page read
+devmapper/centos-cache, cmeta: read failed: imput/output error
+failed to active cache locally centosroot.
+Failed to uncache centos/root.
+</code></pre></div>
+
+<p>看到有说可以再用一块盘，<a href="https://unix.stackexchange.com/questions/489182/lvm-pv-missing-after-reboot">替换为相同的UUID</a>，没折腾，最终用<a href="https://github.com/lvmteam/lvm2/issues/35">这个issue</a>的方法：</p>
+<blockquote>
+<p>At this point, the only way I found this can be fixed is to take the /etc/lvm/backup/lvmgroup file, modify it to remove the cache entries, rename the disk_corig back to disk, add "VISIBLE" flag back, and then run vgcfgrestore -f on the modified file.</p>
+</blockquote>
+<p>先保存下原配置（/etc/lvm/backup/centos），例如原配置是</p>
+<div class="highlight"><pre><span></span><code>...
+centos {
+        id = &quot;cPeVKa-nu1q-wuPJ-bcXB-1tYT-12aG-ALYYoT&quot;
+        seqno = 8
+        format = &quot;lvm2&quot;                 # informational
+        status = [&quot;RESIZEABLE&quot;, &quot;READ&quot;, &quot;WRITE&quot;]
+        flags = []
+        extent_size = 8192              # 4 Megabytes
+        max_lv = 0
+        max_pv = 0
+        metadata_copies = 0
+
+        physical_volumes {
+
+                pv0 {
+                        id = &quot;aJVnc3-w0xI-7WkX-Ejww-ROnQ-V1br-dsz6VX&quot;
+                        device = &quot;/dev/sda2&quot;    # Hint only
+
+                        status = [&quot;ALLOCATABLE&quot;]
+                        flags = []
+                        dev_size = 3902797824   # 1.81738 Terabytes
+                        pe_start = 2048
+                        pe_count = 476415       # 1.81738 Terabytes
+                }
+
+                pv1 {
+                        id = &quot;i6BCMc-GcML-GO3g-UISN-83fg-39Cg-rTZFe8&quot;
+                        device = &quot;/dev/sdb&quot;     # Hint only
+
+                        status = [&quot;ALLOCATABLE&quot;]
+                        flags = []
+                        dev_size = 248774656    # 118.625 Gigabytes
+                        pe_start = 2048
+                        pe_count = 30367        # 118.621 Gigabytes
+                }
+        }
+        logical_volumes {
+
+                root {
+                        id = &quot;rmdkDt-zyEW-i9UX-VLch-jzLr-154x-57Si74&quot;
+                        status = [&quot;READ&quot;, &quot;WRITE&quot;, &quot;VISIBLE&quot;]
+                        flags = []
+                        creation_time = 1693208343      # 2023-08-28 15:39:03 +0800
+                        creation_host = &quot;localhost.localdomain&quot;
+                        segment_count = 1
+
+                        segment1 {
+                                start_extent = 0
+                                extent_count = 476415   # 1.81738 Terabytes
+
+                                type = &quot;cache&quot;
+                                cache_pool = &quot;cache&quot;
+                                origin = &quot;root_corig&quot;
+                        }
+                }
+                cache {
+                ...
+                }
+                cache_cdata {
+                ...
+                }
+                cache_cmeta {
+                ...
+                }
+                lvol0_pmspare {
+                ...
+                }
+                root_corig {
+                        id = &quot;12gqfI-5f9u-SRkw-yTtc-PE12-x38t-h4lYUa&quot;
+                        status = [&quot;READ&quot;, &quot;WRITE&quot;]
+                        flags = []
+                        creation_time = 1693276572      # 2023-08-29 10:36:12 +0800
+                        creation_host = &quot;sz-node-8-12&quot;
+                        segment_count = 1
+
+                        segment1 {
+                                start_extent = 0
+                                extent_count = 476415   # 1.81738 Terabytes
+
+                                type = &quot;striped&quot;
+                                stripe_count = 1        # linear
+
+                                stripes = [
+                                        &quot;pv0&quot;, 0
+                                ]
+                        }
+                }
+        }
+
+}                                                                                   
+</code></pre></div>
+
+<p>将cache 相关的lv 配置都删除，掉盘的pv1 也可以删了，更新下<code>lv root</code> ，主要是修改segment 段配置 ，把root_corig 里面的挪过来即可，如下：</p>
+<div class="highlight"><pre><span></span><code>        logical_volumes {
+
+                root {
+                        id = &quot;rmdkDt-zyEW-i9UX-VLch-jzLr-154x-57Si74&quot;
+                        status = [&quot;READ&quot;, &quot;WRITE&quot;, &quot;VISIBLE&quot;]
+                        flags = []
+                        creation_time = 1693208343      # 2023-08-28 15:39:03 +0800
+                        creation_host = &quot;localhost.localdomain&quot;
+                        segment_count = 1
+
+                        segment1 {
+                                start_extent = 0
+                                extent_count = 476415   # 1.81738 Terabytes
+
+                                type = &quot;striped&quot;
+                                stripe_count = 1        # linear
+
+                                stripes = [
+                                        &quot;pv0&quot;, 0
+                                ]
+                        }
+                }
+        }
+</code></pre></div>
+
+<p>最后执行 <code>lvs vgcfgrestore -f 配置文件 vg名称</code> 生效。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-09-26T00:00:00+08:00">
+      Tue 26 September 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/lvm.html">lvm </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>

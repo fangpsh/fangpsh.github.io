@@ -1,5 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-09-05T00:00:00+08:00</updated><entry><title>DNS Cache投毒事件处理</title><link href="https://fangpsh.github.io/posts/2023/2023-09-05.html" rel="alternate"></link><published>2023-09-05T00:00:00+08:00</published><updated>2023-09-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-05:/posts/2023/2023-09-05.html</id><summary type="html">&lt;p&gt;最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明代理）：
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-09-26T00:00:00+08:00</updated><entry><title>lvmcache 缓存盘掉盘处理</title><link href="https://fangpsh.github.io/posts/2023/2023-09-26.html" rel="alternate"></link><published>2023-09-26T00:00:00+08:00</published><updated>2023-09-26T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-26:/posts/2023/2023-09-26.html</id><summary type="html">&lt;p&gt;一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：&lt;code&gt;Warning: dracut-initqueue timeout - starting timeout scripts&lt;/code&gt;，启动失败，自动进入了救援模式 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：&lt;code&gt;Warning: dracut-initqueue timeout - starting timeout scripts&lt;/code&gt;，启动失败，自动进入了救援模式&lt;code&gt;dracut:/#&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;救援模式中，lvm 的变更操作都会报警：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Read-only locking type set. Write locks are prohibited.
+Can&amp;#39;t get lock for...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;需要手工编辑下&lt;code&gt;/etc/lvm/lvm.conf&lt;/code&gt; 将&lt;code&gt;locking_type=4&lt;/code&gt; 修改为&lt;code&gt;locking_type=1&lt;/code&gt;，再继续。&lt;/p&gt;
+&lt;p&gt;先尝试强制移除cache，失败了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;dracut:/# lucomvert -uncache centos/root --force
+Couldn&amp;#39;t find device with unid Buatb2-rxoc-8B6f -cf8y-3XR3-JTer-WNS6tJ.
+WARNING: Cache pool data. logical wolume centos/cache_ cdata is missing.
+WARNING: Cache pool metadata logical volume centos/cache_cmeta is missing.
+WARMING: Uncaching of partially missi ng writethrough cache volume centos/root might destroy your date
+Do you really want to uncache centos/root with missing LUs? lym]:y
+t 1366 4737991 Buffer I&amp;#39;d error on dey dm-3, logical block async page read
+devmapper centos -cache_cmeta: read failed: Input / output error
+Failed to active cache locally centos/root.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;再试一试&lt;code&gt;lvm unreduce --removemiss centos --force&lt;/code&gt;，也失败了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Couldn&amp;#39;t find device with unid BuatbZ-rxoc-8B6r -cf8y-3XR3-JTer-uNS6tj.
+WARNING:_ Removing partial LU centos/root:
+1388 5592321 Buffer Iro error on dey dm-3, logical block 8, async page read
+devmapper/centos-cache, cmeta: read failed: imput/output error
+failed to active cache locally centosroot.
+Failed to uncache centos/root.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;看到有说可以再用一块盘，&lt;a href="https://unix.stackexchange.com/questions/489182/lvm-pv-missing-after-reboot"&gt;替换为相同的UUID&lt;/a&gt;，没折腾，最终用&lt;a href="https://github.com/lvmteam/lvm2/issues/35"&gt;这个issue&lt;/a&gt;的方法：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;At this point, the only way I found this can be fixed is to take the /etc/lvm/backup/lvmgroup file, modify it to remove the cache entries, rename the disk_corig back to disk, add "VISIBLE" flag back, and then run vgcfgrestore -f on the modified file.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;先保存下原配置（/etc/lvm/backup/centos），例如原配置是&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;...
+centos {
+        id = &amp;quot;cPeVKa-nu1q-wuPJ-bcXB-1tYT-12aG-ALYYoT&amp;quot;
+        seqno = 8
+        format = &amp;quot;lvm2&amp;quot;                 # informational
+        status = [&amp;quot;RESIZEABLE&amp;quot;, &amp;quot;READ&amp;quot;, &amp;quot;WRITE&amp;quot;]
+        flags = []
+        extent_size = 8192              # 4 Megabytes
+        max_lv = 0
+        max_pv = 0
+        metadata_copies = 0
+
+        physical_volumes {
+
+                pv0 {
+                        id = &amp;quot;aJVnc3-w0xI-7WkX-Ejww-ROnQ-V1br-dsz6VX&amp;quot;
+                        device = &amp;quot;/dev/sda2&amp;quot;    # Hint only
+
+                        status = [&amp;quot;ALLOCATABLE&amp;quot;]
+                        flags = []
+                        dev_size = 3902797824   # 1.81738 Terabytes
+                        pe_start = 2048
+                        pe_count = 476415       # 1.81738 Terabytes
+                }
+
+                pv1 {
+                        id = &amp;quot;i6BCMc-GcML-GO3g-UISN-83fg-39Cg-rTZFe8&amp;quot;
+                        device = &amp;quot;/dev/sdb&amp;quot;     # Hint only
+
+                        status = [&amp;quot;ALLOCATABLE&amp;quot;]
+                        flags = []
+                        dev_size = 248774656    # 118.625 Gigabytes
+                        pe_start = 2048
+                        pe_count = 30367        # 118.621 Gigabytes
+                }
+        }
+        logical_volumes {
+
+                root {
+                        id = &amp;quot;rmdkDt-zyEW-i9UX-VLch-jzLr-154x-57Si74&amp;quot;
+                        status = [&amp;quot;READ&amp;quot;, &amp;quot;WRITE&amp;quot;, &amp;quot;VISIBLE&amp;quot;]
+                        flags = []
+                        creation_time = 1693208343      # 2023-08-28 15:39:03 +0800
+                        creation_host = &amp;quot;localhost.localdomain&amp;quot;
+                        segment_count = 1
+
+                        segment1 {
+                                start_extent = 0
+                                extent_count = 476415   # 1.81738 Terabytes
+
+                                type = &amp;quot;cache&amp;quot;
+                                cache_pool = &amp;quot;cache&amp;quot;
+                                origin = &amp;quot;root_corig&amp;quot;
+                        }
+                }
+                cache {
+                ...
+                }
+                cache_cdata {
+                ...
+                }
+                cache_cmeta {
+                ...
+                }
+                lvol0_pmspare {
+                ...
+                }
+                root_corig {
+                        id = &amp;quot;12gqfI-5f9u-SRkw-yTtc-PE12-x38t-h4lYUa&amp;quot;
+                        status = [&amp;quot;READ&amp;quot;, &amp;quot;WRITE&amp;quot;]
+                        flags = []
+                        creation_time = 1693276572      # 2023-08-29 10:36:12 +0800
+                        creation_host = &amp;quot;sz-node-8-12&amp;quot;
+                        segment_count = 1
+
+                        segment1 {
+                                start_extent = 0
+                                extent_count = 476415   # 1.81738 Terabytes
+
+                                type = &amp;quot;striped&amp;quot;
+                                stripe_count = 1        # linear
+
+                                stripes = [
+                                        &amp;quot;pv0&amp;quot;, 0
+                                ]
+                        }
+                }
+        }
+
+}                                                                                   
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;将cache 相关的lv 配置都删除，掉盘的pv1 也可以删了，更新下&lt;code&gt;lv root&lt;/code&gt; ，主要是修改segment 段配置 ，把root_corig 里面的挪过来即可，如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;        logical_volumes {
+
+                root {
+                        id = &amp;quot;rmdkDt-zyEW-i9UX-VLch-jzLr-154x-57Si74&amp;quot;
+                        status = [&amp;quot;READ&amp;quot;, &amp;quot;WRITE&amp;quot;, &amp;quot;VISIBLE&amp;quot;]
+                        flags = []
+                        creation_time = 1693208343      # 2023-08-28 15:39:03 +0800
+                        creation_host = &amp;quot;localhost.localdomain&amp;quot;
+                        segment_count = 1
+
+                        segment1 {
+                                start_extent = 0
+                                extent_count = 476415   # 1.81738 Terabytes
+
+                                type = &amp;quot;striped&amp;quot;
+                                stripe_count = 1        # linear
+
+                                stripes = [
+                                        &amp;quot;pv0&amp;quot;, 0
+                                ]
+                        }
+                }
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;最后执行 &lt;code&gt;lvs vgcfgrestore -f 配置文件 vg名称&lt;/code&gt; 生效。&lt;/p&gt;</content><category term="2023"></category><category term="lvm"></category></entry><entry><title>DNS Cache投毒事件处理</title><link href="https://fangpsh.github.io/posts/2023/2023-09-05.html" rel="alternate"></link><published>2023-09-05T00:00:00+08:00</published><updated>2023-09-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-05:/posts/2023/2023-09-05.html</id><summary type="html">&lt;p&gt;最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明代理）：
 &lt;img alt="aws 被劫持" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905171716.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;里面的域名是 djfidicjmwos.com，
 搜索这个域名，有一个类似的帖子：&lt;a href="http://www.0818tuan.com/xbhd/1733117.html"&gt;部分网站登录时不时提示“你的连接不是专用连接”，然后进不去后，等会又可以进&lt;/a&gt;。&lt;/p&gt;
