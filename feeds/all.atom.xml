@@ -284,6 +284,7 @@ Disk stats (read/write):
 &lt;li&gt;m2转sata，基本无性能损失，利旧m2 ssd的话，够用；&lt;/li&gt;
 &lt;li&gt;淘宝的m2转sata，相比绿联的转盒，性能没啥差别，便宜3倍+；&lt;/li&gt;
 &lt;li&gt;ssd lvmcache 突发/平均性能不错，但是方差极大，可能出现毛刺阻塞、性能毛刺；&lt;/li&gt;
+&lt;li&gt;为防止ssd掉盘，槽位有空间的话，建议给cache做raid1；&lt;/li&gt;
 &lt;/ol&gt;</content><category term="2023"></category><category term="lvm"></category></entry><entry><title>lvmcache 缓存盘掉盘处理</title><link href="https://fangpsh.github.io/posts/2023/2023-09-26.html" rel="alternate"></link><published>2023-09-26T00:00:00+08:00</published><updated>2023-09-26T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-26:/posts/2023/2023-09-26.html</id><summary type="html">&lt;p&gt;一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：&lt;code&gt;Warning: dracut-initqueue timeout - starting timeout scripts&lt;/code&gt;，启动失败，自动进入了救援模式 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：&lt;code&gt;Warning: dracut-initqueue timeout - starting timeout scripts&lt;/code&gt;，启动失败，自动进入了救援模式&lt;code&gt;dracut:/#&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;救援模式中，lvm 的变更操作都会报警：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Read-only locking type set. Write locks are prohibited.
