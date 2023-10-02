@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>lvmcache性能简单测试 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-09-27.html" rel="bookmark"
+         title="Permalink to lvmcache性能简单测试">lvmcache性能简单测试</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>测试命令：</p>
+<div class="highlight"><pre><span></span><code>fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75
+</code></pre></div>
+
+<p>数据绝对值不具备参考价值，可参考的是相对差值。</p>
+<h3>HDD</h3>
+<p>3块7200转HDD组的RAID5，卡是H730。</p>
+<p>read: IOPS=799, BW=3198KiB/s (3274kB/s)(259MiB/82977msec)<br>
+  write: IOPS=265, BW=1061KiB/s (1087kB/s)(86.0MiB/82977msec)     </p>
+<div class="highlight"><pre><span></span><code>Jobs: 1 (f=1): [m(1)][3.8%][r=2598KiB/s,w=856KiB/s][r=649,w=214 IOPS][eta 31m:04s]
+fiotest: Laying out IO file (1 file / 8192MiB)
+^Cbs: 1 (f=1): [m(1)][4.2%][r=2660KiB/s,w=924KiB/s][r=665,w=231 IOPS][eta 31m:24s]
+fio: terminating on signal 2
+Jobs: 1 (f=1): [m(1)][4.2%][r=2614KiB/s,w=776KiB/s][r=653,w=194 IOPS][eta 31m:28s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=33271: Wed Jul 12 19:44:23 2023
+   read: IOPS=799, BW=3198KiB/s (3274kB/s)(259MiB/82977msec)
+   bw (  KiB/s): min= 1136, max= 5904, per=100.00%, avg=3200.67, stdev=1344.41, samples=165
+   iops        : min=  284, max= 1476, avg=800.12, stdev=336.10, samples=165
+  write: IOPS=265, BW=1061KiB/s (1087kB/s)(86.0MiB/82977msec)
+   bw (  KiB/s): min=  296, max= 2184, per=100.00%, avg=1064.34, stdev=460.66, samples=165
+   iops        : min=   74, max=  546, avg=266.03, stdev=115.20, samples=165
+  cpu          : usr=1.08%, sys=3.63%, ctx=81548, majf=0, minf=471
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &gt;=64=99.9%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &gt;=64=0.0%
+     issued rwts: total=66332,22020,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+Run status group 0 (all jobs):
+   READ: bw=3198KiB/s (3274kB/s), 3198KiB/s-3198KiB/s (3274kB/s-3274kB/s), io=259MiB (272MB), run=82977-82977msec
+  WRITE: bw=1061KiB/s (1087kB/s), 1061KiB/s-1061KiB/s (1087kB/s-1087kB/s), io=86.0MiB (90.2MB), run=82977-82977msec
+Disk stats (read/write):
+    dm-0: ios=66332/22040, merge=0/0, ticks=5244735/48626, in_queue=5298771, util=99.95%, aggrios=66332/22039, aggrmerge=0/5, aggrticks=5251175/48560, aggrin_queue=5299680, aggrutil=99.92%
+  sda: ios=66332/22039, merge=0/5, ticks=5251175/48560, in_queue=5299680, util=99.92%
+</code></pre></div>
+
+<h3>900G  三星SSD</h3>
+<p>read: IOPS=20.9k, BW=81.7MiB/s (85.6MB/s)(972MiB/11896msec)<br>
+   write: IOPS=6988, BW=27.3MiB/s (28.6MB/s)(325MiB/11896msec)  </p>
+<div class="highlight"><pre><span></span><code>fiotest: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=64
+fio-3.7
+Starting 1 process
+^Cbs: 1 (f=1): [m(1)][16.0%][r=75.0MiB/s,w=24.6MiB/s][r=19.2k,w=6305 IOPS][eta 01m:03s]
+fio: terminating on signal 2
+
+fiotest: (groupid=0, jobs=1): err= 0: pid=33739: Wed Jul 12 19:54:38 2023
+   read: IOPS=20.9k, BW=81.7MiB/s (85.6MB/s)(972MiB/11896msec)
+   bw (  KiB/s): min=37812, max=228392, per=100.00%, avg=83671.26, stdev=37193.76, samples=23
+   iops        : min= 9453, max=57098, avg=20917.78, stdev=9298.43, samples=23
+  write: IOPS=6988, BW=27.3MiB/s (28.6MB/s)(325MiB/11896msec)
+   bw (  KiB/s): min=12742, max=76160, per=100.00%, avg=27995.91, stdev=12419.04, samples=23
+   iops        : min= 3185, max=19040, avg=6998.96, stdev=3104.79, samples=23
+  cpu          : usr=9.49%, sys=43.70%, ctx=12196, majf=0, minf=621
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &gt;=64=0.0%
+     issued rwts: total=248744,83135,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=81.7MiB/s (85.6MB/s), 81.7MiB/s-81.7MiB/s (85.6MB/s-85.6MB/s), io=972MiB (1019MB), run=11896-11896msec
+  WRITE: bw=27.3MiB/s (28.6MB/s), 27.3MiB/s-27.3MiB/s (28.6MB/s-28.6MB/s), io=325MiB (341MB), run=11896-11896msec
+
+Disk stats (read/write):
+    dm-0: ios=248608/83097, merge=0/0, ticks=394513/131551, in_queue=526846, util=99.13%, aggrios=102971/47765, aggrmerge=0/0, aggrticks=199210/108608, aggrin_queue=308689, aggrutil=99.19%
+    dm-1: ios=308914/83135, merge=0/0, ticks=597630/123595, in_queue=722465, util=99.19%, aggrios=268795/83135, aggrmerge=40117/0, aggrticks=459858/123656, aggrin_queue=583529, aggrutil=99.12%
+  sdb: ios=268795/83135, merge=40117/0, ticks=459858/123656, in_queue=583529, util=99.12%
+  dm-2: ios=0/0, merge=0/0, ticks=0/0, in_queue=0, util=0.00%
+    dm-3: ios=0/60162, merge=0/0, ticks=0/202230, in_queue=203603, util=78.29%, aggrios=0/20043, aggrmerge=0/40108, aggrticks=0/64418, aggrin_queue=65072, aggrutil=78.16%
+  sda: ios=0/20043, merge=0/40108, ticks=0/64418, in_queue=65072, util=78.16%
+</code></pre></div>
+
+<h3>240G SSD</h3>
+<p>笔记本拆机sata ssd，忘记型号了。</p>
+<p>read: IOPS=4783, BW=18.7MiB/s (19.6MB/s)(2155MiB/115315msec)<br>
+   write: IOPS=1601, BW=6406KiB/s (6559kB/s)(721MiB/115315msec)  </p>
+<div class="highlight"><pre><span></span><code>fiotest: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=64
+fio-3.7
+Starting 1 process
+fiotest: Laying out IO file (1 file / 8192MiB)
+^Cbs: 1 (f=1): [m(1)][35.3%][r=17.3MiB/s,w=5788KiB/s][r=4432,w=1447 IOPS][eta 03m:33s]
+fio: terminating on signal 2
+
+fiotest: (groupid=0, jobs=1): err= 0: pid=42122: Thu Jul 13 11:38:30 2023
+   read: IOPS=4783, BW=18.7MiB/s (19.6MB/s)(2155MiB/115315msec)
+   bw (  KiB/s): min= 1248, max=53032, per=99.99%, avg=19133.55, stdev=14855.41, samples=230
+   iops        : min=  312, max=13258, avg=4783.33, stdev=3713.85, samples=230
+  write: IOPS=1601, BW=6406KiB/s (6559kB/s)(721MiB/115315msec)
+   bw (  KiB/s): min=  224, max=18216, per=99.98%, avg=6403.90, stdev=5020.15, samples=230
+   iops        : min=   56, max= 4554, avg=1600.93, stdev=1255.04, samples=230
+  cpu          : usr=2.83%, sys=11.27%, ctx=129066, majf=0, minf=767
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &gt;=64=0.0%
+     issued rwts: total=551663,184667,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=18.7MiB/s (19.6MB/s), 18.7MiB/s-18.7MiB/s (19.6MB/s-19.6MB/s), io=2155MiB (2260MB), run=115315-115315msec
+  WRITE: bw=6406KiB/s (6559kB/s), 6406KiB/s-6406KiB/s (6559kB/s-6559kB/s), io=721MiB (756MB), run=115315-115315msec
+
+Disk stats (read/write):
+    dm-0: ios=551623/184671, merge=0/0, ticks=5374110/1917689, in_queue=7304893, util=100.00%, aggrios=238513/116210, aggrmerge=0/0, aggrticks=3435302/2513779, aggrin_queue=5955870, aggrutil=99.65%
+    dm-1: ios=659752/228622, merge=0/0, ticks=6014019/7467533, in_queue=13501921, util=99.65%, aggrios=571964/193540, aggrmerge=87781/35177, aggrticks=5206035/3300917, aggrin_queue=8507150, aggrutil=99.63%
+  sdb: ios=571964/193540, merge=87781/35177, ticks=5206035/3300917, in_queue=8507150, util=99.63%
+  dm-2: ios=0/97, merge=0/0, ticks=0/12583, in_queue=12583, util=3.20%
+    dm-3: ios=55787/119912, merge=0/0, ticks=4291889/61221, in_queue=4353107, util=50.01%, aggrios=20645/32180, aggrmerge=35142/87732, aggrticks=1399374/15630, aggrin_queue=1414952, aggrutil=49.93%
+  sda: ios=20645/32180, merge=35142/87732, ticks=1399374/15630, in_queue=1414952, util=49.93%
+</code></pre></div>
+
+<h3>128G SSD</h3>
+<p>笔记本拆机sata ssd。</p>
+<p>read: IOPS=4714, BW=18.4MiB/s (19.3MB/s)(2494MiB/135421msec)<br>
+   write: IOPS=1579, BW=6319KiB/s (6470kB/s)(836MiB/135421msec  </p>
+<p>read: IOPS=4805, BW=18.8MiB/s (19.7MB/s)(6141MiB/327175msec<br>
+   write: IOPS=1604, BW=6419KiB/s (6573kB/s)(2051MiB/327175msec  </p>
+<div class="highlight"><pre><span></span><code>fiotest: Laying out IO file (1 file / 8192MiB)
+Jobs: 1 (f=1): [m(1)][100.0%][r=23.2MiB/s,w=7975KiB/s][r=5948,w=1993 IOPS][eta 00m:00s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=57813: Thu Jul 13 11:58:49 2023
+   read: IOPS=4805, BW=18.8MiB/s (19.7MB/s)(6141MiB/327175msec)
+   bw (  KiB/s): min= 6248, max=48080, per=99.93%, avg=19205.78, stdev=12598.96, samples=654
+   iops        : min= 1562, max=12020, avg=4801.42, stdev=3149.73, samples=654
+  write: IOPS=1604, BW=6419KiB/s (6573kB/s)(2051MiB/327175msec)
+   bw (  KiB/s): min= 1976, max=16280, per=99.93%, avg=6413.59, stdev=4223.81, samples=654
+   iops        : min=  494, max= 4070, avg=1603.38, stdev=1055.95, samples=654
+  cpu          : usr=3.06%, sys=12.80%, ctx=661831, majf=0, minf=1063
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &gt;=64=0.0%
+     issued rwts: total=1572145,525007,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=18.8MiB/s (19.7MB/s), 18.8MiB/s-18.8MiB/s (19.7MB/s-19.7MB/s), io=6141MiB (6440MB), run=327175-327175msec
+  WRITE: bw=6419KiB/s (6573kB/s), 6419KiB/s-6419KiB/s (6573kB/s-6573kB/s), io=2051MiB (2150MB), run=327175-327175msec
+
+Disk stats (read/write):
+    dm-0: ios=1569860/524263, merge=0/0, ticks=15852577/4869021, in_queue=20730282, util=100.00%, aggrios=601264/252260, aggrmerge=0/0, aggrticks=7045989/1734373, aggrin_queue=8781558, aggrutil=99.39%
+    dm-1: ios=1773240/544227, merge=0/0, ticks=18694929/5185817, in_queue=23884327, util=99.39%, aggrios=1664287/532332, aggrmerge=108953/11972, aggrticks=16974042/4996891, aggrin_queue=21970715, aggrutil=99.39%
+  sdb: ios=1664287/532332, merge=108953/11972, ticks=16974042/4996891, in_queue=21970715, util=99.39%
+  dm-2: ios=0/79, merge=0/0, ticks=0/419, in_queue=419, util=0.04%
+    dm-3: ios=30553/212475, merge=0/0, ticks=2443039/16883, in_queue=2459928, util=10.99%, aggrios=19527/107630, aggrmerge=11026/104845, aggrticks=1467981/9068, aggrin_queue=1476936, aggrutil=10.87%
+  sda: ios=19527/107630, merge=11026/104845, ticks=1467981/9068, in_queue=1476936, util=10.87%
+</code></pre></div>
+
+<h3>890G Intel SSD</h3>
+<p>企业级intel sata ssd</p>
+<p>read: IOPS=19.5k, BW=76.3MiB/s (80.0MB/s)(2778MiB/36395msec)<br>
+   write: IOPS=6536, BW=25.5MiB/s (26.8MB/s)(929MiB/36395msec  </p>
+<div class="highlight"><pre><span></span><code>Starting 1 process
+fiotest: Laying out IO file (1 file / 8192MiB)
+^Cbs: 1 (f=1): [m(1)][46.2%][r=15.1MiB/s,w=5005KiB/s][r=3871,w=1251 IOPS][eta 00m:43s] 00m:47s]
+fio: terminating on signal 2
+
+fiotest: (groupid=0, jobs=1): err= 0: pid=20853: Wed Jul 19 11:42:14 2023
+   read: IOPS=19.5k, BW=76.3MiB/s (80.0MB/s)(2778MiB/36395msec)
+   bw (  KiB/s): min=12072, max=135128, per=100.00%, avg=78829.97, stdev=32979.49, samples=72
+   iops        : min= 3018, max=33782, avg=19707.47, stdev=8244.85, samples=72
+  write: IOPS=6536, BW=25.5MiB/s (26.8MB/s)(929MiB/36395msec)
+   bw (  KiB/s): min= 3816, max=45560, per=100.00%, avg=26372.75, stdev=11117.47, samples=72
+   iops        : min=  954, max=11390, avg=6593.17, stdev=2779.35, samples=72
+  cpu          : usr=9.61%, sys=45.24%, ctx=52541, majf=0, minf=313
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &gt;=64=0.0%
+     issued rwts: total=711127,237910,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=76.3MiB/s (80.0MB/s), 76.3MiB/s-76.3MiB/s (80.0MB/s-80.0MB/s), io=2778MiB (2913MB), run=36395-36395msec
+  WRITE: bw=25.5MiB/s (26.8MB/s), 25.5MiB/s-25.5MiB/s (26.8MB/s-26.8MB/s), io=929MiB (974MB), run=36395-36395msec
+
+Disk stats (read/write):
+    dm-3: ios=711127/237928, merge=0/0, ticks=1039387/303713, in_queue=1343100, util=99.76%, aggrios=241532/83797, aggrmerge=0/0, aggrticks=391189/204710, aggrin_queue=595900, aggrutil=99.24%
+    dm-1: ios=1/9, merge=0/0, ticks=2/9, in_queue=11, util=0.02%, aggrios=736859/238847, aggrmerge=7/6, aggrticks=1295458/300504, aggrin_queue=1361540, aggrutil=99.42%
+  sda: ios=736859/238847, merge=7/6, ticks=1295458/300504, in_queue=1361540, util=99.42%
+    dm-2: ios=683/13026, merge=0/0, ticks=302/313396, in_queue=313698, util=70.16%, aggrios=1171/25992, aggrmerge=0/0, aggrticks=521/598100, aggrin_queue=589389, aggrutil=71.17%
+  sdb: ios=1171/25992, merge=0/0, ticks=521/598100, in_queue=589389, util=71.17%
+  dm-0: ios=723914/238356, merge=0/0, ticks=1173265/300727, in_queue=1473992, util=99.24%
+</code></pre></div>
+
+<h3>M2 转SATA，LITE256G</h3>
+<p>read: IOPS=14.8k, BW=57.9MiB/s (60.7MB/s)(6141MiB/106067msec)<br>
+   write: IOPS=4949, BW=19.3MiB/s (20.3MB/s)(2051MiB/106067msec)  </p>
+<div class="highlight"><pre><span></span><code>Jobs: 1 (f=1): [m(1)][100.0%][r=70.9MiB/s,w=23.8MiB/s][r=18.2k,w=6088 IOPS][eta 00m:00s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=31276: Tue Jul 25 18:07:34 2023
+   read: IOPS=14.8k, BW=57.9MiB/s (60.7MB/s)(6141MiB/106067msec)
+   bw (  KiB/s): min= 3568, max=132568, per=100.00%, avg=60133.22, stdev=20903.83, samples=209
+   iops        : min=  892, max=33142, avg=15033.25, stdev=5225.97, samples=209
+  write: IOPS=4949, BW=19.3MiB/s (20.3MB/s)(2051MiB/106067msec)
+   bw (  KiB/s): min= 1264, max=44216, per=100.00%, avg=20079.80, stdev=6936.10, samples=209
+   iops        : min=  316, max=11054, avg=5019.90, stdev=1734.01, samples=209
+  cpu          : usr=8.36%, sys=36.47%, ctx=268925, majf=0, minf=1319
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &gt;=64=0.0%
+     issued rwts: total=1572145,525007,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=57.9MiB/s (60.7MB/s), 57.9MiB/s-57.9MiB/s (60.7MB/s-60.7MB/s), io=6141MiB (6440MB), run=106067-106067msec
+  WRITE: bw=19.3MiB/s (20.3MB/s), 19.3MiB/s-19.3MiB/s (20.3MB/s-20.3MB/s), io=2051MiB (2150MB), run=106067-106067msec
+
+Disk stats (read/write):
+    dm-0: ios=1571473/524811, merge=0/0, ticks=5559849/416907, in_queue=5976756, util=99.94%, aggrios=555099/206074, aggrmerge=0/0, aggrticks=2011526/221758, aggrin_queue=2233284, aggrutil=99.44%
+    dm-1: ios=1665053/525143, merge=0/0, ticks=6031197/411037, in_queue=6442234, util=99.44%, aggrios=1665050/525149, aggrmerge=3/18, aggrticks=6019563/408492, aggrin_queue=5488645, aggrutil=99.44%
+  sdb: ios=1665050/525149, merge=3/18, ticks=6019563/408492, in_queue=5488645, util=99.44%
+  dm-2: ios=0/24, merge=0/0, ticks=0/17, in_queue=17, util=0.01%
+    dm-3: ios=244/93055, merge=0/0, ticks=3382/254221, in_queue=257603, util=70.01%, aggrios=244/93050, aggrmerge=0/0, aggrticks=3371/253941, aggrin_queue=231400, aggrutil=70.01%
+  sda: ios=244/93050, merge=0/0, ticks=3371/253941, in_queue=231400, util=70.01%
+</code></pre></div>
+
+<h3>M2 转 SATA，HFS128，LITE256</h3>
+<p>HFS128<br>
+  read: IOPS=5392, BW=21.1MiB/s (22.1MB/s)(1652MiB/78403msec)<br>
+  write: IOPS=1807, BW=7229KiB/s (7402kB/s)(553MiB/78403msec);   </p>
+<p>LITE256<br>
+  read: IOPS=7093, BW=27.7MiB/s (29.1MB/s)(1503MiB/54254msec)<br>
+ write: IOPS=2376, BW=9505KiB/s (9733kB/s)(504MiB/54254msec);  </p>
+<h3>淘宝20元M2转SATA，LITE128</h3>
+<p>read: IOPS=10.2k, BW=39.0MiB/s (41.9MB/s)(6141MiB/153649msec)<br>
+   write: IOPS=3416, BW=13.3MiB/s (13.0MB/s)(2051MiB/153649msec)</p>
+<div class="highlight"><pre><span></span><code>fiotest: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=64
+fio-3.7
+Starting 1 process
+fiotest: Laying out IO file (1 file / 8192MiB)
+Jobs: 1 (f=1): [m(1)][99.4%][r=50.5MiB/s,w=16.0MiB/s][r=12.9k,w=4350 IOPS][eta 00m:01s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=9475: Mon Aug 28 18:17:58 2023
+   read: IOPS=10.2k, BW=39.0MiB/s (41.9MB/s)(6141MiB/153649msec)
+   bw (  KiB/s): min=   16, max=58200, per=100.00%, avg=41310.11, stdev=16748.03, samples=304
+   iops        : min=    4, max=14550, avg=10327.51, stdev=4187.01, samples=304
+  write: IOPS=3416, BW=13.3MiB/s (13.0MB/s)(2051MiB/153649msec)
+   bw (  KiB/s): min=   40, max=19256, per=100.00%, avg=13840.74, stdev=5542.56, samples=303
+   iops        : min=   10, max= 4814, avg=3460.16, stdev=1385.63, samples=303
+  cpu          : usr=6.09%, sys=18.46%, ctx=204245, majf=0, minf=26
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &gt;=64=0.0%
+     issued rwts: total=1572145,525007,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=39.0MiB/s (41.9MB/s), 39.0MiB/s-39.0MiB/s (41.9MB/s-41.9MB/s), io=6141MiB (6440MB), run=153649-153649msec
+  WRITE: bw=13.3MiB/s (13.0MB/s), 13.3MiB/s-13.3MiB/s (13.0MB/s-13.0MB/s), io=2051MiB (2150MB), run=153649-153649msec
+
+Disk stats (read/write):
+  sdb: ios=1571481/527350, merge=0/48, ticks=8488777/1080773, in_queue=9568096, util=100.00%
+
+fiotest: Laying out IO file (1 file / 8192MiB)
+Jobs: 1 (f=1): [m(1)][99.2%][r=49.8MiB/s,w=16.6MiB/s][r=12.8k,w=4248 IOPS][eta 00m:01s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=9501: Mon Aug 28 18:27:02 2023
+   read: IOPS=12.4k, BW=48.4MiB/s (50.8MB/s)(6141MiB/126811msec)
+   bw (  KiB/s): min=11672, max=58432, per=99.96%, avg=49571.25, stdev=4673.00, samples=253
+   iops        : min= 2918, max=14608, avg=12392.81, stdev=1168.25, samples=253
+  write: IOPS=4140, BW=16.2MiB/s (16.0MB/s)(2051MiB/126811msec)
+   bw (  KiB/s): min= 4176, max=19736, per=99.96%, avg=16553.93, stdev=1554.00, samples=253
+   iops        : min= 1044, max= 4934, avg=4138.45, stdev=388.50, samples=253
+  cpu          : usr=7.32%, sys=21.91%, ctx=194103, majf=0, minf=26
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &gt;=64=0.0%
+     issued rwts: total=1572145,525007,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=48.4MiB/s (50.8MB/s), 48.4MiB/s-48.4MiB/s (50.8MB/s-50.8MB/s), io=6141MiB (6440MB), run=126811-126811msec
+  WRITE: bw=16.2MiB/s (16.0MB/s), 16.2MiB/s-16.2MiB/s (16.0MB/s-16.0MB/s), io=2051MiB (2150MB), run=126811-126811msec
+
+Disk stats (read/write):
+  sdb: ios=1568831/523974, merge=0/25, ticks=6819307/982445, in_queue=7801866, util=100.00%
+</code></pre></div>
+
+<h3>简单总结</h3>
+<ol>
+<li>lvmcache 效果不错；</li>
+<li>intel和三星的ssd 性能不错，ssd 一分钱一分货，差距明显；</li>
+<li>m2转sata，基本无性能损失，利旧m2 ssd的话，够用；</li>
+<li>淘宝的m2转sata，相比绿联的转盒，性能没啥差别，便宜3倍+；</li>
+<li>ssd lvmcache 突发/平均性能不错，但是方差极大，可能出现毛刺阻塞、性能毛刺；</li>
+</ol>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-09-27T00:00:00+08:00">
+      Wed 27 September 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/lvm.html">lvm </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+    </body>
+</html>

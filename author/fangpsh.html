@@ -27,6 +27,16 @@
 <h2>Articles by fangpsh</h2>
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-09-27.html" rel="bookmark" title="Permalink to lvmcache性能简单测试">lvmcache性能简单测试</a></h2> </header>
+                <div class="entry-content"> <p>测试命令：</p>
+<div class="highlight"><pre><span></span><code>fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75
+</code></pre></div>
+
+<p>数据绝对值不具备参考价值，可参考的是相对差值。</p>
+<h3>HDD</h3>
+<p>3块7200转HDD组的RAID5 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-09-26.html" rel="bookmark" title="Permalink to lvmcache 缓存盘掉盘处理">lvmcache 缓存盘掉盘处理</a></h2> </header>
                 <div class="entry-content"> <p>一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：<code>Warning: dracut-initqueue timeout - starting timeout scripts</code>，启动失败，自动进入了救援模式 …</p> </div><!-- entry-content -->
         </article>
@@ -74,10 +84,6 @@ fatal: [192.168.x.x]: FAILED! =&gt;
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-03-17.html" rel="bookmark" title="Permalink to 阿里云共享流量包单价对比">阿里云共享流量包单价对比</a></h2> </header>
                 <div class="entry-content"> <p>阿里云的共享流量包定价，不完全符合流量包越大单价越低，有效期越长单价越低的思维定式，阿里云产品经理是故意的 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-03-15.html" rel="bookmark" title="Permalink to MTR UDP模式固定丢包率的问题">MTR UDP模式固定丢包率的问题</a></h2> </header>
-                <div class="entry-content"> <p>不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 <code>1s/次</code>，会出现固定丢 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

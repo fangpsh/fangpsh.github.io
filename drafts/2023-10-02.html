@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Articles in lvm tag - fangpsh's blog</title>
+        <title>源站IP ACL绕过的风险 - fangpsh's blog</title>
         <meta charset="utf-8" />
         <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
         <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
@@ -18,35 +18,44 @@
                 <ul class="nav nav-pills pull-right">
                     <li class=""><a href="/">Home</a></li>
                     <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
-                    <li class="active"active><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
                 </ul>
                 <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
 				<h2 class="text-muted"></h2>
              </div>
-<section id="content" class="content">
-<h2>Articles with the lvm tag</h2>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/drafts/2023-10-02.html" rel="bookmark"
+         title="Permalink to 源站IP ACL绕过的风险">源站IP ACL绕过的风险</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>加了CDN 之后，为了保护源站，一般都会在</p>
+<p>利用 NGINX 1.19.4 后的新特性 ssl_reject_handshake on;，将其置于默认访问时配置中，IP 访问时会终止 TLS 握手，也就不会暴露域名了。</p>
+<p>IPACL 绕过问题
+CDN:
+https://tech-blog.cymetrics.io/posts/seadog007/dangers-in-cdn/
+ProxyProtocol
+https://help.aliyun.com/document_detail/300766.html
+TOA
+https://developer.aliyun.com/article/849252
+https://help.aliyun.com/document_detail/52477.html</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-10-02T00:00:00+08:00">
+      Mon 02 October 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/hack.html">hack </a>
+   <!--    -->
 
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-09-27.html" rel="bookmark" title="Permalink to lvmcache性能简单测试">lvmcache性能简单测试</a></h2> </header>
-                <div class="entry-content"> <p>测试命令：</p>
-<div class="highlight"><pre><span></span><code>fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75
-</code></pre></div>
-
-<p>数据绝对值不具备参考价值，可参考的是相对差值。</p>
-<h3>HDD</h3>
-<p>3块7200转HDD组的RAID5 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-09-26.html" rel="bookmark" title="Permalink to lvmcache 缓存盘掉盘处理">lvmcache 缓存盘掉盘处理</a></h2> </header>
-                <div class="entry-content"> <p>一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：<code>Warning: dracut-initqueue timeout - starting timeout scripts</code>，启动失败，自动进入了救援模式 …</p> </div><!-- entry-content -->
-        </article>
-<div class="pager">
-      <ul>
-                        <li class="previous disabled"><a>← Previous</a></li>
-                        <li class="next disabled"><a>Next →</a></li>
-      </ul>
-    </div>
-</section><!-- content -->
+  </footer><!-- /.post-info -->
+</section>
             <footer id="contentinfo" class="footer">
                     <nav class="pull-right bottom-nav">
                         <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>

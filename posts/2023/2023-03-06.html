@@ -61,7 +61,7 @@
 
 <p>问题就出在这里，innerHTML 赋值的时候，自动对<a href="https://toolstud.io/web/charmap.php?filter=*">特殊字符</a>进行了渲染：</p>
 <p>这个机制似乎无法绕过，我的解决办法是对在最后<code>&amp;</code> 字符进行提前替换，将<code>&amp;</code>字符替换为<code>&amp;amp;</code></p>
-<div class="highlight"><pre><span></span><code><span class="n">html</span><span class="o">:</span><span class="w"> </span><span class="n">parseObject</span><span class="o">(</span><span class="n">snatch</span><span class="o">).</span><span class="n">toString</span><span class="o">().</span><span class="n">replaceAll</span><span class="o">(</span><span class="s1">&#39;&amp;&#39;</span><span class="o">,</span><span class="s1">&#39;&amp;amp;&#39;</span><span class="o">),</span><span class="w"> </span><span class="n">valid</span><span class="o">:</span><span class="w"> </span><span class="o">!</span><span class="n">hasError</span>
+<div class="highlight"><pre><span></span><code>html: parseObject(snatch).toString().replaceAll(&#39;&amp;&#39;,&#39;&amp;amp;&#39;), valid: !hasError
 </code></pre></div>
 
 <p>效果如下

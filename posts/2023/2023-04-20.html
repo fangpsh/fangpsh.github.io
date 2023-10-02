@@ -99,7 +99,7 @@
 <p><img alt="encodeKey" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143840.png"></p>
 <p>出现一个关键信息：qrCodeKey，
 最后进行了AES 加密：</p>
-<div class="highlight"><pre><span></span><code><span class="k">return</span><span class="w"> </span><span class="nv">AESUtil</span>.<span class="nv">Encrypt</span><span class="ss">(</span><span class="nv">stringBuilder3</span>.<span class="nv">toString</span><span class="ss">()</span>,<span class="w"> </span><span class="nv">qrCodeKey</span>,<span class="w"> </span><span class="nv">qrCodeKey</span><span class="ss">)</span><span class="c1">;</span>
+<div class="highlight"><pre><span></span><code>return AESUtil.Encrypt(stringBuilder3.toString(), qrCodeKey, qrCodeKey);
 </code></pre></div>
 
 <p>先看一下AES 的加密模式和填充算法等，再回过来看这个str生成逻辑。</p>
@@ -121,9 +121,9 @@ UserID和mPassCode 不是直接拼凑，而是间隔交叉拼在一起。</p>
 <p><img alt="mPassCode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144057.png"></p>
 <p>从代码来看，只是简单的递增。这个时候，再去生成几个实际的二维码，用AES在线解密出，拿到mPassCode 的md5_16，丢到cmd5.com 里面看看：</p>
 <p><img alt="cmd5" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144121.png"></p>
-<div class="highlight"><pre><span></span><code><span class="n">e6e61673edb05342</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mo">00000171</span>
-<span class="mi">7</span><span class="n">a56b435986b1611</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">  </span><span class="mo">00000172</span>
-<span class="mi">651</span><span class="n">bac14cc8b1285</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">  </span><span class="mo">00000173</span>
+<div class="highlight"><pre><span></span><code>e6e61673edb05342 -&gt; 00000171
+7a56b435986b1611 -&gt;  00000172
+651bac14cc8b1285 -&gt;  00000173
 </code></pre></div>
 
 <p>确定只是简单递增，那么这个code 不是基于时间的OTP算法，猜测服务端会记录当前用到最大的code，以使之前的code 失效（后续实际验证也是如此）。</p>
@@ -141,68 +141,68 @@ A12300456700891001ABCE23ED6A474E79AA4FF6c9b62e572837d1b9B7.1.2
 </code></pre></div>
 
 <h2>PoC</h2>
-<div class="highlight"><pre><span></span><code><span class="s s-Atom">import</span> <span class="s s-Atom">hashlib</span>
-<span class="s s-Atom">import</span> <span class="s s-Atom">random</span>
-<span class="s s-Atom">import</span> <span class="s s-Atom">string</span>
+<div class="highlight"><pre><span></span><code>import hashlib
+import random
+import string
 
-<span class="s s-Atom">from</span> <span class="nv">Crypto</span><span class="p">.</span><span class="nv">Cipher</span> <span class="s s-Atom">import</span> <span class="nv">AES</span>  
-<span class="s s-Atom">from</span> <span class="s s-Atom">base64</span> <span class="s s-Atom">import</span> <span class="s s-Atom">b64decode</span><span class="p">,</span> <span class="s s-Atom">b64encode</span>
+from Crypto.Cipher import AES  
+from base64 import b64decode, b64encode
 
-<span class="nv">BLOCK_SIZE</span> <span class="o">=</span> <span class="nv">AES</span><span class="p">.</span><span class="s s-Atom">block_size</span>
-<span class="s s-Atom">pad</span> <span class="o">=</span> <span class="s s-Atom">lambda</span> <span class="s s-Atom">s</span><span class="p">:</span> <span class="s s-Atom">s</span> <span class="o">+</span> <span class="p">(</span><span class="nv">BLOCK_SIZE</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">s</span><span class="p">.</span><span class="nf">encode</span><span class="p">())</span> <span class="c1">% BLOCK_SIZE) * chr(BLOCK_SIZE - len(s.encode()) % BLOCK_SIZE)</span>
-<span class="s s-Atom">unpad</span> <span class="o">=</span> <span class="s s-Atom">lambda</span> <span class="s s-Atom">s</span><span class="p">:</span> <span class="s s-Atom">s</span><span class="p">[</span><span class="o">:-</span><span class="nf">ord</span><span class="p">(</span><span class="s s-Atom">s</span><span class="p">[</span><span class="nf">len</span><span class="p">(</span><span class="s s-Atom">s</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">:</span><span class="p">])]</span>
-
-
-<span class="s s-Atom">class</span> <span class="nv">AESCipher</span><span class="o">:</span>
-    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">secretkey</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">)</span><span class="o">:</span>
-        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">key</span> <span class="o">=</span> <span class="s s-Atom">secretkey</span>
-        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iv</span> <span class="o">=</span> <span class="s s-Atom">secretkey</span><span class="p">[</span><span class="mi">0</span><span class="o">:</span><span class="mi">16</span><span class="p">]</span>  <span class="s s-Atom">#</span> <span class="s s-Atom">偏移量</span>
-
-    <span class="s s-Atom">def</span> <span class="nf">encrypt</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">text</span><span class="p">)</span><span class="o">:</span>
-        <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        加密 ：先补位，再AES加密，后base64编码</span>
-<span class="s2">        :param text: 需加密的明文</span>
-<span class="s2">        :return:</span>
-<span class="s2">        &quot;&quot;&quot;</span>
-        <span class="s s-Atom">#</span> <span class="s s-Atom">text</span> <span class="o">=</span> <span class="nf">pad</span><span class="p">(</span><span class="s s-Atom">text</span><span class="p">)</span> <span class="s s-Atom">包pycrypto的写法，加密函数可以接受str也可以接受bytess</span>
-        <span class="s s-Atom">text</span> <span class="o">=</span> <span class="nf">pad</span><span class="p">(</span><span class="s s-Atom">text</span><span class="p">).</span><span class="nf">encode</span><span class="p">()</span>  <span class="s s-Atom">#</span> <span class="s s-Atom">包pycryptodome</span> <span class="s s-Atom">的加密函数不接受str</span>
-        <span class="s s-Atom">cipher</span> <span class="o">=</span> <span class="nv">AES</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s s-Atom">key</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">key</span><span class="p">.</span><span class="nf">encode</span><span class="p">(),</span> <span class="s s-Atom">mode</span><span class="o">=</span><span class="nv">AES</span><span class="p">.</span><span class="nv">MODE_CBC</span><span class="p">,</span> <span class="nv">IV</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iv</span><span class="p">.</span><span class="nf">encode</span><span class="p">())</span>
-        <span class="s s-Atom">encrypted_text</span> <span class="o">=</span> <span class="s s-Atom">cipher</span><span class="p">.</span><span class="nf">encrypt</span><span class="p">(</span><span class="s s-Atom">text</span><span class="p">)</span>
-        <span class="s s-Atom">#</span> <span class="s s-Atom">进行64位的编码</span><span class="p">,</span><span class="s s-Atom">返回得到加密后的bytes，decode成字符串</span>
-        <span class="s s-Atom">return</span> <span class="nf">b64encode</span><span class="p">(</span><span class="s s-Atom">encrypted_text</span><span class="p">).</span><span class="nf">decode</span><span class="p">(</span><span class="s s-Atom">&#39;utf-8&#39;</span><span class="p">)</span>
-
-    <span class="s s-Atom">def</span> <span class="nf">decrypt</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">encrypted_text</span><span class="p">)</span><span class="o">:</span>
-        <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        解密 ：偏移量为key[0:16]；先base64解，再AES解密，后取消补位</span>
-<span class="s2">        :param encrypted_text : 已经加密的密文</span>
-<span class="s2">        :return:</span>
-<span class="s2">        &quot;&quot;&quot;</span>
-        <span class="s s-Atom">encrypted_text</span> <span class="o">=</span> <span class="nf">b64decode</span><span class="p">(</span><span class="s s-Atom">encrypted_text</span><span class="p">)</span>
-        <span class="s s-Atom">cipher</span> <span class="o">=</span> <span class="nv">AES</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s s-Atom">key</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">key</span><span class="p">.</span><span class="nf">encode</span><span class="p">(),</span> <span class="s s-Atom">mode</span><span class="o">=</span><span class="nv">AES</span><span class="p">.</span><span class="nv">MODE_CBC</span><span class="p">,</span> <span class="nv">IV</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iv</span><span class="p">.</span><span class="nf">encode</span><span class="p">())</span>
-        <span class="s s-Atom">decrypted_text</span> <span class="o">=</span> <span class="s s-Atom">cipher</span><span class="p">.</span><span class="nf">decrypt</span><span class="p">(</span><span class="s s-Atom">encrypted_text</span><span class="p">)</span>
-        <span class="s s-Atom">return</span> <span class="nf">unpad</span><span class="p">(</span><span class="s s-Atom">decrypted_text</span><span class="p">).</span><span class="nf">decode</span><span class="p">(</span><span class="s s-Atom">&#39;utf-8&#39;</span><span class="p">)</span>
+BLOCK_SIZE = AES.block_size
+pad = lambda s: s + (BLOCK_SIZE - len(s.encode()) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s.encode()) % BLOCK_SIZE)
+unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 
 
-<span class="s s-Atom">code=&#39;00000123&#39;</span>
-<span class="s s-Atom">c1</span><span class="o">=</span><span class="s s-Atom">code</span><span class="p">[</span><span class="mi">0</span><span class="o">:</span><span class="mi">2</span><span class="p">]</span>
-<span class="s s-Atom">c2</span><span class="o">=</span><span class="s s-Atom">code</span><span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="mi">4</span><span class="p">]</span>
-<span class="s s-Atom">c3</span><span class="o">=</span><span class="s s-Atom">code</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">6</span><span class="p">]</span>
-<span class="s s-Atom">c4</span><span class="o">=</span><span class="s s-Atom">code</span><span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">8</span><span class="p">]</span>
+class AESCipher:
+    def __init__(self, secretkey: str):
+        self.key = secretkey
+        self.iv = secretkey[0:16]  # 偏移量
 
-<span class="s s-Atom">md5_16</span><span class="o">=</span><span class="s s-Atom">hashlib</span><span class="p">.</span><span class="nf">md5</span><span class="p">(</span><span class="s s-Atom">code</span><span class="p">.</span><span class="nf">encode</span><span class="p">(</span><span class="s s-Atom">&#39;utf-8&#39;</span><span class="p">)).</span><span class="nf">hexdigest</span><span class="p">()[</span><span class="mi">8</span><span class="o">:-</span><span class="mi">8</span><span class="p">]</span>
+    def encrypt(self, text):
+        &quot;&quot;&quot;
+        加密 ：先补位，再AES加密，后base64编码
+        :param text: 需加密的明文
+        :return:
+        &quot;&quot;&quot;
+        # text = pad(text) 包pycrypto的写法，加密函数可以接受str也可以接受bytess
+        text = pad(text).encode()  # 包pycryptodome 的加密函数不接受str
+        cipher = AES.new(key=self.key.encode(), mode=AES.MODE_CBC, IV=self.iv.encode())
+        encrypted_text = cipher.encrypt(text)
+        # 进行64位的编码,返回得到加密后的bytes，decode成字符串
+        return b64encode(encrypted_text).decode(&#39;utf-8&#39;)
 
-<span class="s s-Atom">uid=&#39;A12345678910ABCEED6A474E79AA4FF6&#39;</span>
+    def decrypt(self, encrypted_text):
+        &quot;&quot;&quot;
+        解密 ：偏移量为key[0:16]；先base64解，再AES解密，后取消补位
+        :param encrypted_text : 已经加密的密文
+        :return:
+        &quot;&quot;&quot;
+        encrypted_text = b64decode(encrypted_text)
+        cipher = AES.new(key=self.key.encode(), mode=AES.MODE_CBC, IV=self.iv.encode())
+        decrypted_text = cipher.decrypt(encrypted_text)
+        return unpad(decrypted_text).decode(&#39;utf-8&#39;)
 
-<span class="s s-Atom">u1</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">0</span><span class="o">:</span><span class="mi">4</span><span class="p">]</span>
-<span class="s s-Atom">u2</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">8</span><span class="p">]</span>
-<span class="s s-Atom">u3</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">8</span><span class="o">:</span><span class="mi">12</span><span class="p">]</span>
-<span class="s s-Atom">u4</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">12</span><span class="o">:</span><span class="mi">16</span><span class="p">]</span>
-<span class="s s-Atom">u5</span><span class="o">=</span><span class="s s-Atom">uid</span><span class="p">[</span><span class="mi">16</span><span class="o">:</span><span class="p">]</span>
-<span class="s s-Atom">sign_str</span><span class="o">=</span><span class="s s-Atom">f</span><span class="s2">&quot;{u1}{c1}{u2}{c2}{u3}{c3}{u4}{c4}{u5}{md5_16}B7.1.2&quot;</span>
-<span class="nf">print</span><span class="p">(</span><span class="s s-Atom">sign_str</span><span class="p">)</span>
 
-<span class="s s-Atom">encrypted_text</span> <span class="o">=</span> <span class="nv">AESCipher</span><span class="p">(</span><span class="s2">&quot;略&quot;</span><span class="p">).</span><span class="nf">encrypt</span><span class="p">(</span><span class="s s-Atom">sign_str</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="s s-Atom">encrypted_text</span><span class="p">)</span>
+code=&#39;00000123&#39;
+c1=code[0:2]
+c2=code[2:4]
+c3=code[4:6]
+c4=code[6:8]
+
+md5_16=hashlib.md5(code.encode(&#39;utf-8&#39;)).hexdigest()[8:-8]
+
+uid=&#39;A12345678910ABCEED6A474E79AA4FF6&#39;
+
+u1=uid[0:4]
+u2=uid[4:8]
+u3=uid[8:12]
+u4=uid[12:16]
+u5=uid[16:]
+sign_str=f&quot;{u1}{c1}{u2}{c2}{u3}{c3}{u4}{c4}{u5}{md5_16}B7.1.2&quot;
+print(sign_str)
+
+encrypted_text = AESCipher(&quot;略&quot;).encrypt(sign_str)
+print(encrypted_text)
 </code></pre></div>
 
 <p>再将encrypted_text 生成二维码即可。</p>

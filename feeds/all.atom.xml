@@ -1,5 +1,289 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-09-26T00:00:00+08:00</updated><entry><title>lvmcache 缓存盘掉盘处理</title><link href="https://fangpsh.github.io/posts/2023/2023-09-26.html" rel="alternate"></link><published>2023-09-26T00:00:00+08:00</published><updated>2023-09-26T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-26:/posts/2023/2023-09-26.html</id><summary type="html">&lt;p&gt;一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：&lt;code&gt;Warning: dracut-initqueue timeout - starting timeout scripts&lt;/code&gt;，启动失败，自动进入了救援模式 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：&lt;code&gt;Warning: dracut-initqueue timeout - starting timeout scripts&lt;/code&gt;，启动失败，自动进入了救援模式&lt;code&gt;dracut:/#&lt;/code&gt;&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-09-27T00:00:00+08:00</updated><entry><title>lvmcache性能简单测试</title><link href="https://fangpsh.github.io/posts/2023/2023-09-27.html" rel="alternate"></link><published>2023-09-27T00:00:00+08:00</published><updated>2023-09-27T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-27:/posts/2023/2023-09-27.html</id><summary type="html">&lt;p&gt;测试命令：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;数据绝对值不具备参考价值，可参考的是相对差值。&lt;/p&gt;
+&lt;h3&gt;HDD&lt;/h3&gt;
+&lt;p&gt;3块7200转HDD组的RAID5 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;测试命令：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;数据绝对值不具备参考价值，可参考的是相对差值。&lt;/p&gt;
+&lt;h3&gt;HDD&lt;/h3&gt;
+&lt;p&gt;3块7200转HDD组的RAID5，卡是H730。&lt;/p&gt;
+&lt;p&gt;read: IOPS=799, BW=3198KiB/s (3274kB/s)(259MiB/82977msec)&lt;br&gt;
+  write: IOPS=265, BW=1061KiB/s (1087kB/s)(86.0MiB/82977msec)     &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Jobs: 1 (f=1): [m(1)][3.8%][r=2598KiB/s,w=856KiB/s][r=649,w=214 IOPS][eta 31m:04s]
+fiotest: Laying out IO file (1 file / 8192MiB)
+^Cbs: 1 (f=1): [m(1)][4.2%][r=2660KiB/s,w=924KiB/s][r=665,w=231 IOPS][eta 31m:24s]
+fio: terminating on signal 2
+Jobs: 1 (f=1): [m(1)][4.2%][r=2614KiB/s,w=776KiB/s][r=653,w=194 IOPS][eta 31m:28s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=33271: Wed Jul 12 19:44:23 2023
+   read: IOPS=799, BW=3198KiB/s (3274kB/s)(259MiB/82977msec)
+   bw (  KiB/s): min= 1136, max= 5904, per=100.00%, avg=3200.67, stdev=1344.41, samples=165
+   iops        : min=  284, max= 1476, avg=800.12, stdev=336.10, samples=165
+  write: IOPS=265, BW=1061KiB/s (1087kB/s)(86.0MiB/82977msec)
+   bw (  KiB/s): min=  296, max= 2184, per=100.00%, avg=1064.34, stdev=460.66, samples=165
+   iops        : min=   74, max=  546, avg=266.03, stdev=115.20, samples=165
+  cpu          : usr=1.08%, sys=3.63%, ctx=81548, majf=0, minf=471
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &amp;gt;=64=99.9%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &amp;gt;=64=0.0%
+     issued rwts: total=66332,22020,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+Run status group 0 (all jobs):
+   READ: bw=3198KiB/s (3274kB/s), 3198KiB/s-3198KiB/s (3274kB/s-3274kB/s), io=259MiB (272MB), run=82977-82977msec
+  WRITE: bw=1061KiB/s (1087kB/s), 1061KiB/s-1061KiB/s (1087kB/s-1087kB/s), io=86.0MiB (90.2MB), run=82977-82977msec
+Disk stats (read/write):
+    dm-0: ios=66332/22040, merge=0/0, ticks=5244735/48626, in_queue=5298771, util=99.95%, aggrios=66332/22039, aggrmerge=0/5, aggrticks=5251175/48560, aggrin_queue=5299680, aggrutil=99.92%
+  sda: ios=66332/22039, merge=0/5, ticks=5251175/48560, in_queue=5299680, util=99.92%
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;900G  三星SSD&lt;/h3&gt;
+&lt;p&gt;read: IOPS=20.9k, BW=81.7MiB/s (85.6MB/s)(972MiB/11896msec)&lt;br&gt;
+   write: IOPS=6988, BW=27.3MiB/s (28.6MB/s)(325MiB/11896msec)  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fiotest: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=64
+fio-3.7
+Starting 1 process
+^Cbs: 1 (f=1): [m(1)][16.0%][r=75.0MiB/s,w=24.6MiB/s][r=19.2k,w=6305 IOPS][eta 01m:03s]
+fio: terminating on signal 2
+
+fiotest: (groupid=0, jobs=1): err= 0: pid=33739: Wed Jul 12 19:54:38 2023
+   read: IOPS=20.9k, BW=81.7MiB/s (85.6MB/s)(972MiB/11896msec)
+   bw (  KiB/s): min=37812, max=228392, per=100.00%, avg=83671.26, stdev=37193.76, samples=23
+   iops        : min= 9453, max=57098, avg=20917.78, stdev=9298.43, samples=23
+  write: IOPS=6988, BW=27.3MiB/s (28.6MB/s)(325MiB/11896msec)
+   bw (  KiB/s): min=12742, max=76160, per=100.00%, avg=27995.91, stdev=12419.04, samples=23
+   iops        : min= 3185, max=19040, avg=6998.96, stdev=3104.79, samples=23
+  cpu          : usr=9.49%, sys=43.70%, ctx=12196, majf=0, minf=621
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &amp;gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &amp;gt;=64=0.0%
+     issued rwts: total=248744,83135,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=81.7MiB/s (85.6MB/s), 81.7MiB/s-81.7MiB/s (85.6MB/s-85.6MB/s), io=972MiB (1019MB), run=11896-11896msec
+  WRITE: bw=27.3MiB/s (28.6MB/s), 27.3MiB/s-27.3MiB/s (28.6MB/s-28.6MB/s), io=325MiB (341MB), run=11896-11896msec
+
+Disk stats (read/write):
+    dm-0: ios=248608/83097, merge=0/0, ticks=394513/131551, in_queue=526846, util=99.13%, aggrios=102971/47765, aggrmerge=0/0, aggrticks=199210/108608, aggrin_queue=308689, aggrutil=99.19%
+    dm-1: ios=308914/83135, merge=0/0, ticks=597630/123595, in_queue=722465, util=99.19%, aggrios=268795/83135, aggrmerge=40117/0, aggrticks=459858/123656, aggrin_queue=583529, aggrutil=99.12%
+  sdb: ios=268795/83135, merge=40117/0, ticks=459858/123656, in_queue=583529, util=99.12%
+  dm-2: ios=0/0, merge=0/0, ticks=0/0, in_queue=0, util=0.00%
+    dm-3: ios=0/60162, merge=0/0, ticks=0/202230, in_queue=203603, util=78.29%, aggrios=0/20043, aggrmerge=0/40108, aggrticks=0/64418, aggrin_queue=65072, aggrutil=78.16%
+  sda: ios=0/20043, merge=0/40108, ticks=0/64418, in_queue=65072, util=78.16%
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;240G SSD&lt;/h3&gt;
+&lt;p&gt;笔记本拆机sata ssd，忘记型号了。&lt;/p&gt;
+&lt;p&gt;read: IOPS=4783, BW=18.7MiB/s (19.6MB/s)(2155MiB/115315msec)&lt;br&gt;
+   write: IOPS=1601, BW=6406KiB/s (6559kB/s)(721MiB/115315msec)  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fiotest: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=64
+fio-3.7
+Starting 1 process
+fiotest: Laying out IO file (1 file / 8192MiB)
+^Cbs: 1 (f=1): [m(1)][35.3%][r=17.3MiB/s,w=5788KiB/s][r=4432,w=1447 IOPS][eta 03m:33s]
+fio: terminating on signal 2
+
+fiotest: (groupid=0, jobs=1): err= 0: pid=42122: Thu Jul 13 11:38:30 2023
+   read: IOPS=4783, BW=18.7MiB/s (19.6MB/s)(2155MiB/115315msec)
+   bw (  KiB/s): min= 1248, max=53032, per=99.99%, avg=19133.55, stdev=14855.41, samples=230
+   iops        : min=  312, max=13258, avg=4783.33, stdev=3713.85, samples=230
+  write: IOPS=1601, BW=6406KiB/s (6559kB/s)(721MiB/115315msec)
+   bw (  KiB/s): min=  224, max=18216, per=99.98%, avg=6403.90, stdev=5020.15, samples=230
+   iops        : min=   56, max= 4554, avg=1600.93, stdev=1255.04, samples=230
+  cpu          : usr=2.83%, sys=11.27%, ctx=129066, majf=0, minf=767
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &amp;gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &amp;gt;=64=0.0%
+     issued rwts: total=551663,184667,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=18.7MiB/s (19.6MB/s), 18.7MiB/s-18.7MiB/s (19.6MB/s-19.6MB/s), io=2155MiB (2260MB), run=115315-115315msec
+  WRITE: bw=6406KiB/s (6559kB/s), 6406KiB/s-6406KiB/s (6559kB/s-6559kB/s), io=721MiB (756MB), run=115315-115315msec
+
+Disk stats (read/write):
+    dm-0: ios=551623/184671, merge=0/0, ticks=5374110/1917689, in_queue=7304893, util=100.00%, aggrios=238513/116210, aggrmerge=0/0, aggrticks=3435302/2513779, aggrin_queue=5955870, aggrutil=99.65%
+    dm-1: ios=659752/228622, merge=0/0, ticks=6014019/7467533, in_queue=13501921, util=99.65%, aggrios=571964/193540, aggrmerge=87781/35177, aggrticks=5206035/3300917, aggrin_queue=8507150, aggrutil=99.63%
+  sdb: ios=571964/193540, merge=87781/35177, ticks=5206035/3300917, in_queue=8507150, util=99.63%
+  dm-2: ios=0/97, merge=0/0, ticks=0/12583, in_queue=12583, util=3.20%
+    dm-3: ios=55787/119912, merge=0/0, ticks=4291889/61221, in_queue=4353107, util=50.01%, aggrios=20645/32180, aggrmerge=35142/87732, aggrticks=1399374/15630, aggrin_queue=1414952, aggrutil=49.93%
+  sda: ios=20645/32180, merge=35142/87732, ticks=1399374/15630, in_queue=1414952, util=49.93%
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;128G SSD&lt;/h3&gt;
+&lt;p&gt;笔记本拆机sata ssd。&lt;/p&gt;
+&lt;p&gt;read: IOPS=4714, BW=18.4MiB/s (19.3MB/s)(2494MiB/135421msec)&lt;br&gt;
+   write: IOPS=1579, BW=6319KiB/s (6470kB/s)(836MiB/135421msec  &lt;/p&gt;
+&lt;p&gt;read: IOPS=4805, BW=18.8MiB/s (19.7MB/s)(6141MiB/327175msec&lt;br&gt;
+   write: IOPS=1604, BW=6419KiB/s (6573kB/s)(2051MiB/327175msec  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fiotest: Laying out IO file (1 file / 8192MiB)
+Jobs: 1 (f=1): [m(1)][100.0%][r=23.2MiB/s,w=7975KiB/s][r=5948,w=1993 IOPS][eta 00m:00s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=57813: Thu Jul 13 11:58:49 2023
+   read: IOPS=4805, BW=18.8MiB/s (19.7MB/s)(6141MiB/327175msec)
+   bw (  KiB/s): min= 6248, max=48080, per=99.93%, avg=19205.78, stdev=12598.96, samples=654
+   iops        : min= 1562, max=12020, avg=4801.42, stdev=3149.73, samples=654
+  write: IOPS=1604, BW=6419KiB/s (6573kB/s)(2051MiB/327175msec)
+   bw (  KiB/s): min= 1976, max=16280, per=99.93%, avg=6413.59, stdev=4223.81, samples=654
+   iops        : min=  494, max= 4070, avg=1603.38, stdev=1055.95, samples=654
+  cpu          : usr=3.06%, sys=12.80%, ctx=661831, majf=0, minf=1063
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &amp;gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &amp;gt;=64=0.0%
+     issued rwts: total=1572145,525007,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=18.8MiB/s (19.7MB/s), 18.8MiB/s-18.8MiB/s (19.7MB/s-19.7MB/s), io=6141MiB (6440MB), run=327175-327175msec
+  WRITE: bw=6419KiB/s (6573kB/s), 6419KiB/s-6419KiB/s (6573kB/s-6573kB/s), io=2051MiB (2150MB), run=327175-327175msec
+
+Disk stats (read/write):
+    dm-0: ios=1569860/524263, merge=0/0, ticks=15852577/4869021, in_queue=20730282, util=100.00%, aggrios=601264/252260, aggrmerge=0/0, aggrticks=7045989/1734373, aggrin_queue=8781558, aggrutil=99.39%
+    dm-1: ios=1773240/544227, merge=0/0, ticks=18694929/5185817, in_queue=23884327, util=99.39%, aggrios=1664287/532332, aggrmerge=108953/11972, aggrticks=16974042/4996891, aggrin_queue=21970715, aggrutil=99.39%
+  sdb: ios=1664287/532332, merge=108953/11972, ticks=16974042/4996891, in_queue=21970715, util=99.39%
+  dm-2: ios=0/79, merge=0/0, ticks=0/419, in_queue=419, util=0.04%
+    dm-3: ios=30553/212475, merge=0/0, ticks=2443039/16883, in_queue=2459928, util=10.99%, aggrios=19527/107630, aggrmerge=11026/104845, aggrticks=1467981/9068, aggrin_queue=1476936, aggrutil=10.87%
+  sda: ios=19527/107630, merge=11026/104845, ticks=1467981/9068, in_queue=1476936, util=10.87%
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;890G Intel SSD&lt;/h3&gt;
+&lt;p&gt;企业级intel sata ssd&lt;/p&gt;
+&lt;p&gt;read: IOPS=19.5k, BW=76.3MiB/s (80.0MB/s)(2778MiB/36395msec)&lt;br&gt;
+   write: IOPS=6536, BW=25.5MiB/s (26.8MB/s)(929MiB/36395msec  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Starting 1 process
+fiotest: Laying out IO file (1 file / 8192MiB)
+^Cbs: 1 (f=1): [m(1)][46.2%][r=15.1MiB/s,w=5005KiB/s][r=3871,w=1251 IOPS][eta 00m:43s] 00m:47s]
+fio: terminating on signal 2
+
+fiotest: (groupid=0, jobs=1): err= 0: pid=20853: Wed Jul 19 11:42:14 2023
+   read: IOPS=19.5k, BW=76.3MiB/s (80.0MB/s)(2778MiB/36395msec)
+   bw (  KiB/s): min=12072, max=135128, per=100.00%, avg=78829.97, stdev=32979.49, samples=72
+   iops        : min= 3018, max=33782, avg=19707.47, stdev=8244.85, samples=72
+  write: IOPS=6536, BW=25.5MiB/s (26.8MB/s)(929MiB/36395msec)
+   bw (  KiB/s): min= 3816, max=45560, per=100.00%, avg=26372.75, stdev=11117.47, samples=72
+   iops        : min=  954, max=11390, avg=6593.17, stdev=2779.35, samples=72
+  cpu          : usr=9.61%, sys=45.24%, ctx=52541, majf=0, minf=313
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &amp;gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &amp;gt;=64=0.0%
+     issued rwts: total=711127,237910,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=76.3MiB/s (80.0MB/s), 76.3MiB/s-76.3MiB/s (80.0MB/s-80.0MB/s), io=2778MiB (2913MB), run=36395-36395msec
+  WRITE: bw=25.5MiB/s (26.8MB/s), 25.5MiB/s-25.5MiB/s (26.8MB/s-26.8MB/s), io=929MiB (974MB), run=36395-36395msec
+
+Disk stats (read/write):
+    dm-3: ios=711127/237928, merge=0/0, ticks=1039387/303713, in_queue=1343100, util=99.76%, aggrios=241532/83797, aggrmerge=0/0, aggrticks=391189/204710, aggrin_queue=595900, aggrutil=99.24%
+    dm-1: ios=1/9, merge=0/0, ticks=2/9, in_queue=11, util=0.02%, aggrios=736859/238847, aggrmerge=7/6, aggrticks=1295458/300504, aggrin_queue=1361540, aggrutil=99.42%
+  sda: ios=736859/238847, merge=7/6, ticks=1295458/300504, in_queue=1361540, util=99.42%
+    dm-2: ios=683/13026, merge=0/0, ticks=302/313396, in_queue=313698, util=70.16%, aggrios=1171/25992, aggrmerge=0/0, aggrticks=521/598100, aggrin_queue=589389, aggrutil=71.17%
+  sdb: ios=1171/25992, merge=0/0, ticks=521/598100, in_queue=589389, util=71.17%
+  dm-0: ios=723914/238356, merge=0/0, ticks=1173265/300727, in_queue=1473992, util=99.24%
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;M2 转SATA，LITE256G&lt;/h3&gt;
+&lt;p&gt;read: IOPS=14.8k, BW=57.9MiB/s (60.7MB/s)(6141MiB/106067msec)&lt;br&gt;
+   write: IOPS=4949, BW=19.3MiB/s (20.3MB/s)(2051MiB/106067msec)  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Jobs: 1 (f=1): [m(1)][100.0%][r=70.9MiB/s,w=23.8MiB/s][r=18.2k,w=6088 IOPS][eta 00m:00s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=31276: Tue Jul 25 18:07:34 2023
+   read: IOPS=14.8k, BW=57.9MiB/s (60.7MB/s)(6141MiB/106067msec)
+   bw (  KiB/s): min= 3568, max=132568, per=100.00%, avg=60133.22, stdev=20903.83, samples=209
+   iops        : min=  892, max=33142, avg=15033.25, stdev=5225.97, samples=209
+  write: IOPS=4949, BW=19.3MiB/s (20.3MB/s)(2051MiB/106067msec)
+   bw (  KiB/s): min= 1264, max=44216, per=100.00%, avg=20079.80, stdev=6936.10, samples=209
+   iops        : min=  316, max=11054, avg=5019.90, stdev=1734.01, samples=209
+  cpu          : usr=8.36%, sys=36.47%, ctx=268925, majf=0, minf=1319
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &amp;gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &amp;gt;=64=0.0%
+     issued rwts: total=1572145,525007,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=57.9MiB/s (60.7MB/s), 57.9MiB/s-57.9MiB/s (60.7MB/s-60.7MB/s), io=6141MiB (6440MB), run=106067-106067msec
+  WRITE: bw=19.3MiB/s (20.3MB/s), 19.3MiB/s-19.3MiB/s (20.3MB/s-20.3MB/s), io=2051MiB (2150MB), run=106067-106067msec
+
+Disk stats (read/write):
+    dm-0: ios=1571473/524811, merge=0/0, ticks=5559849/416907, in_queue=5976756, util=99.94%, aggrios=555099/206074, aggrmerge=0/0, aggrticks=2011526/221758, aggrin_queue=2233284, aggrutil=99.44%
+    dm-1: ios=1665053/525143, merge=0/0, ticks=6031197/411037, in_queue=6442234, util=99.44%, aggrios=1665050/525149, aggrmerge=3/18, aggrticks=6019563/408492, aggrin_queue=5488645, aggrutil=99.44%
+  sdb: ios=1665050/525149, merge=3/18, ticks=6019563/408492, in_queue=5488645, util=99.44%
+  dm-2: ios=0/24, merge=0/0, ticks=0/17, in_queue=17, util=0.01%
+    dm-3: ios=244/93055, merge=0/0, ticks=3382/254221, in_queue=257603, util=70.01%, aggrios=244/93050, aggrmerge=0/0, aggrticks=3371/253941, aggrin_queue=231400, aggrutil=70.01%
+  sda: ios=244/93050, merge=0/0, ticks=3371/253941, in_queue=231400, util=70.01%
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;M2 转 SATA，HFS128，LITE256&lt;/h3&gt;
+&lt;p&gt;HFS128&lt;br&gt;
+  read: IOPS=5392, BW=21.1MiB/s (22.1MB/s)(1652MiB/78403msec)&lt;br&gt;
+  write: IOPS=1807, BW=7229KiB/s (7402kB/s)(553MiB/78403msec);   &lt;/p&gt;
+&lt;p&gt;LITE256&lt;br&gt;
+  read: IOPS=7093, BW=27.7MiB/s (29.1MB/s)(1503MiB/54254msec)&lt;br&gt;
+ write: IOPS=2376, BW=9505KiB/s (9733kB/s)(504MiB/54254msec);  &lt;/p&gt;
+&lt;h3&gt;淘宝20元M2转SATA，LITE128&lt;/h3&gt;
+&lt;p&gt;read: IOPS=10.2k, BW=39.0MiB/s (41.9MB/s)(6141MiB/153649msec)&lt;br&gt;
+   write: IOPS=3416, BW=13.3MiB/s (13.0MB/s)(2051MiB/153649msec)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fiotest: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=64
+fio-3.7
+Starting 1 process
+fiotest: Laying out IO file (1 file / 8192MiB)
+Jobs: 1 (f=1): [m(1)][99.4%][r=50.5MiB/s,w=16.0MiB/s][r=12.9k,w=4350 IOPS][eta 00m:01s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=9475: Mon Aug 28 18:17:58 2023
+   read: IOPS=10.2k, BW=39.0MiB/s (41.9MB/s)(6141MiB/153649msec)
+   bw (  KiB/s): min=   16, max=58200, per=100.00%, avg=41310.11, stdev=16748.03, samples=304
+   iops        : min=    4, max=14550, avg=10327.51, stdev=4187.01, samples=304
+  write: IOPS=3416, BW=13.3MiB/s (13.0MB/s)(2051MiB/153649msec)
+   bw (  KiB/s): min=   40, max=19256, per=100.00%, avg=13840.74, stdev=5542.56, samples=303
+   iops        : min=   10, max= 4814, avg=3460.16, stdev=1385.63, samples=303
+  cpu          : usr=6.09%, sys=18.46%, ctx=204245, majf=0, minf=26
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &amp;gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &amp;gt;=64=0.0%
+     issued rwts: total=1572145,525007,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=39.0MiB/s (41.9MB/s), 39.0MiB/s-39.0MiB/s (41.9MB/s-41.9MB/s), io=6141MiB (6440MB), run=153649-153649msec
+  WRITE: bw=13.3MiB/s (13.0MB/s), 13.3MiB/s-13.3MiB/s (13.0MB/s-13.0MB/s), io=2051MiB (2150MB), run=153649-153649msec
+
+Disk stats (read/write):
+  sdb: ios=1571481/527350, merge=0/48, ticks=8488777/1080773, in_queue=9568096, util=100.00%
+
+fiotest: Laying out IO file (1 file / 8192MiB)
+Jobs: 1 (f=1): [m(1)][99.2%][r=49.8MiB/s,w=16.6MiB/s][r=12.8k,w=4248 IOPS][eta 00m:01s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=9501: Mon Aug 28 18:27:02 2023
+   read: IOPS=12.4k, BW=48.4MiB/s (50.8MB/s)(6141MiB/126811msec)
+   bw (  KiB/s): min=11672, max=58432, per=99.96%, avg=49571.25, stdev=4673.00, samples=253
+   iops        : min= 2918, max=14608, avg=12392.81, stdev=1168.25, samples=253
+  write: IOPS=4140, BW=16.2MiB/s (16.0MB/s)(2051MiB/126811msec)
+   bw (  KiB/s): min= 4176, max=19736, per=99.96%, avg=16553.93, stdev=1554.00, samples=253
+   iops        : min= 1044, max= 4934, avg=4138.45, stdev=388.50, samples=253
+  cpu          : usr=7.32%, sys=21.91%, ctx=194103, majf=0, minf=26
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, &amp;gt;=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, &amp;gt;=64=0.0%
+     issued rwts: total=1572145,525007,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: bw=48.4MiB/s (50.8MB/s), 48.4MiB/s-48.4MiB/s (50.8MB/s-50.8MB/s), io=6141MiB (6440MB), run=126811-126811msec
+  WRITE: bw=16.2MiB/s (16.0MB/s), 16.2MiB/s-16.2MiB/s (16.0MB/s-16.0MB/s), io=2051MiB (2150MB), run=126811-126811msec
+
+Disk stats (read/write):
+  sdb: ios=1568831/523974, merge=0/25, ticks=6819307/982445, in_queue=7801866, util=100.00%
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;简单总结&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;lvmcache 效果不错；&lt;/li&gt;
+&lt;li&gt;intel和三星的ssd 性能不错，ssd 一分钱一分货，差距明显；&lt;/li&gt;
+&lt;li&gt;m2转sata，基本无性能损失，利旧m2 ssd的话，够用；&lt;/li&gt;
+&lt;li&gt;淘宝的m2转sata，相比绿联的转盒，性能没啥差别，便宜3倍+；&lt;/li&gt;
+&lt;li&gt;ssd lvmcache 突发/平均性能不错，但是方差极大，可能出现毛刺阻塞、性能毛刺；&lt;/li&gt;
+&lt;/ol&gt;</content><category term="2023"></category><category term="lvm"></category></entry><entry><title>lvmcache 缓存盘掉盘处理</title><link href="https://fangpsh.github.io/posts/2023/2023-09-26.html" rel="alternate"></link><published>2023-09-26T00:00:00+08:00</published><updated>2023-09-26T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-26:/posts/2023/2023-09-26.html</id><summary type="html">&lt;p&gt;一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：&lt;code&gt;Warning: dracut-initqueue timeout - starting timeout scripts&lt;/code&gt;，启动失败，自动进入了救援模式 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;一块老旧的SSD，使用lvmcache 作为读写缓存，今天掉盘了，系统hang 住，重启后一堆报错：&lt;code&gt;Warning: dracut-initqueue timeout - starting timeout scripts&lt;/code&gt;，启动失败，自动进入了救援模式&lt;code&gt;dracut:/#&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;救援模式中，lvm 的变更操作都会报警：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Read-only locking type set. Write locks are prohibited.
 Can&amp;#39;t get lock for...
@@ -669,53 +953,53 @@ ip rule add fwmark 1 table 100
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;iptables，抄网友的，记得做持久化：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;F&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;X&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;nat&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;F&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;F&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;P&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;INPUT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ACCEPT&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;P&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;FORWARD&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ACCEPT&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;iptables -F
+iptables -X
+iptables -t nat -F
+iptables -t mangle -F
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
 
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;INPUT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;m&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;conntrack&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;ctstate&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ESTABLISHED&lt;/span&gt;,&lt;span class="nv"&gt;RELATED&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ACCEPT&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;INPUT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;p&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;tcp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;dport&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;22&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ACCEPT&lt;/span&gt;
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;INPUT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;127&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ACCEPT&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;INPUT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;192&lt;/span&gt;.&lt;span class="mi"&gt;168&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;p&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;tcp&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ACCEPT&lt;/span&gt;
+iptables -A INPUT -s 127.0.0.1 -j ACCEPT
+iptables -A INPUT -s 192.168.0.0/16 -p tcp  -j ACCEPT
 
-#&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LOCAL&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;AND&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LANS&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;127&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;169&lt;/span&gt;.&lt;span class="mi"&gt;254&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;172&lt;/span&gt;.&lt;span class="mi"&gt;16&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;192&lt;/span&gt;.&lt;span class="mi"&gt;168&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;192&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;192&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;2&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;198&lt;/span&gt;.&lt;span class="mi"&gt;18&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;198&lt;/span&gt;.&lt;span class="mi"&gt;51&lt;/span&gt;.&lt;span class="mi"&gt;100&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;203&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;113&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;255&lt;/span&gt;.&lt;span class="mi"&gt;255&lt;/span&gt;.&lt;span class="mi"&gt;255&lt;/span&gt;.&lt;span class="mi"&gt;255&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;32&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;.&lt;span class="mi"&gt;64&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;224&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;DROP&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;240&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-#&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;FORWARD&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ALL&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;p&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;udp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;TPROXY&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;on&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;port&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7891&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;tproxy&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;mark&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;p&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;tcp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;TPROXY&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;on&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;port&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7891&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;tproxy&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;mark&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+# RETURN LOCAL AND LANS
+iptables -t mangle -A clash -d 0.0.0.0/8 -j RETURN
+iptables -t mangle -A clash -d 10.0.0.0/8 -j RETURN
+iptables -t mangle -A clash -d 127.0.0.0/8 -j RETURN
+iptables -t mangle -A clash -d 169.254.0.0/16 -j RETURN
+iptables -t mangle -A clash -d 172.16.0.0/12 -j RETURN
+iptables -t mangle -A clash -d 192.168.0.0/16 -j RETURN
+iptables -t mangle -A clash -d 192.0.0.0/24 -j RETURN
+iptables -t mangle -A clash -d 192.0.2.0/24 -j RETURN
+iptables -t mangle -A clash -d 198.18.0.0/15 -j RETURN
+iptables -t mangle -A clash -d 198.51.100.0/24 -j RETURN
+iptables -t mangle -A clash -d 203.0.113.0/24 -j RETURN
+iptables -t mangle -A clash -d 255.255.255.255/32 -j RETURN
+iptables -t mangle -A clash -d 100.64.0.0/10 -j RETURN
+iptables -t mangle -A clash -d 224.0.0.0/4 -j DROP
+iptables -t mangle -A clash -d 240.0.0.0/4 -j RETURN
+# FORWARD ALL
+iptables -t mangle -A clash -p udp -j TPROXY --on-port 7891 --tproxy-mark 1
+iptables -t mangle -A clash -p tcp -j TPROXY --on-port 7891 --tproxy-mark 1
 
-#&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;OUTPUT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;PREROUTING&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;clash&lt;/span&gt;
+#iptables -t mangle -A OUTPUT -j clash
+iptables -t mangle -A PREROUTING -j clash
 
 
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;N&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LOCAL_DIVERT&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LOCAL_DIVERT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;192&lt;/span&gt;.&lt;span class="mi"&gt;168&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;RETURN&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LOCAL_DIVERT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;p&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;tcp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;MARK&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;set&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;mark&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LOCAL_DIVERT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;p&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;udp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;MARK&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;set&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;mark&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+iptables -t mangle -N LOCAL_DIVERT
+iptables -t mangle -A LOCAL_DIVERT -d 192.168.0.0/16 -j RETURN
+iptables -t mangle -A LOCAL_DIVERT -p tcp -j MARK --set-mark 1
+iptables -t mangle -A LOCAL_DIVERT -p udp -j MARK --set-mark 1
 
-&lt;span class="nv"&gt;iptables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mangle&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;OUTPUT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;m&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;owner&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="nv"&gt;gid&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;owner&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;{&lt;span class="w"&gt; &lt;/span&gt;运行&lt;span class="nv"&gt;clash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;程序的&lt;span class="nv"&gt;GID&lt;/span&gt;}&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;j&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LOCAL_DIVERT&lt;/span&gt;
+iptables -t mangle -A OUTPUT -m owner ! --gid-owner { 运行clash 程序的GID}  -j LOCAL_DIVERT
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;如果尝试写：&lt;code&gt;iptables -t mangle -A OUTPUT -j clash&lt;/code&gt; 会出现错误：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;iptables&lt;/span&gt; &lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;8.7&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;nf_tables&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;  &lt;span class="n"&gt;RULE_APPEND&lt;/span&gt; &lt;span class="n"&gt;failed&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Invalid&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt; &lt;span class="n"&gt;rule&lt;/span&gt; &lt;span class="n"&gt;in&lt;/span&gt; &lt;span class="n"&gt;chain&lt;/span&gt; &lt;span class="n"&gt;OUTPUT&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;iptables v1.8.7 (nf_tables):  RULE_APPEND failed (Invalid argument): rule in chain OUTPUT
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;网友解释：&lt;/p&gt;
@@ -743,76 +1027,76 @@ Details: cache-hkg17926-HKG
 &lt;p&gt;看起来和http2 长连接有关，暂时没精力（能力）细究，看到有一个&lt;a href="https://github.com/dlundquist/sniproxy/pull/98"&gt;PR&lt;/a&gt;是能针对特定域名指定一些，但是没合。&lt;/p&gt;
 &lt;p&gt;那就只能倒回去用网关的模式解决了。&lt;/p&gt;
 &lt;p&gt;dig 了下github.com 的域名，集中在这2个段，添加策略路由，把下一条指到代理机。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="mf"&gt;140.82.112.0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;22&lt;/span&gt;
-&lt;span class="mf"&gt;20.205.192.0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;18&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;140.82.112.0/22
+20.205.192.0/18
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;内网搭建一个uptime kuma 或者megaease/easeprobe，对github.com 进行curl 探测，发现异常再加新的IP。&lt;/p&gt;
 &lt;h2&gt;sniproxy+v2ray+redirect&lt;/h2&gt;
 &lt;p&gt;v2ray（dokodemo-door）+ redirect 也行，简单贴下配置：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;log&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;loglevel&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;warning&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;access&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/var/log/v2ray/access.log&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;error&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/var/log/v2ray/error.log&amp;quot;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;inbounds&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;tag&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;transparent&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;port&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;12345&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;protocol&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;dokodemo-door&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;settings&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;network&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;tcp,udp&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;followRedirect&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="bp"&gt;true&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;sniffing&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;enabled&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="bp"&gt;true&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;destOverride&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
-&lt;span class="w"&gt;                    &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;http&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;                    &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;tls&amp;quot;&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;streamSettings&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;sockopt&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;tproxy&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;redirect&amp;quot;&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;outbounds&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;protocol&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;vmess&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;settings&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;streamSettings&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;sockopt&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;                    &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;mark&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;255&lt;/span&gt;
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;tag&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;proxy&amp;quot;&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;{
+    &amp;quot;log&amp;quot;: {
+        &amp;quot;loglevel&amp;quot;: &amp;quot;warning&amp;quot;,
+        &amp;quot;access&amp;quot;: &amp;quot;/var/log/v2ray/access.log&amp;quot;,
+        &amp;quot;error&amp;quot;: &amp;quot;/var/log/v2ray/error.log&amp;quot;
+    },
+    &amp;quot;inbounds&amp;quot;: [
+        {
+            &amp;quot;tag&amp;quot;:&amp;quot;transparent&amp;quot;,
+            &amp;quot;port&amp;quot;: 12345,
+            &amp;quot;protocol&amp;quot;: &amp;quot;dokodemo-door&amp;quot;,
+            &amp;quot;settings&amp;quot;: {
+                &amp;quot;network&amp;quot;: &amp;quot;tcp,udp&amp;quot;,
+                &amp;quot;followRedirect&amp;quot;: true
+            },
+            &amp;quot;sniffing&amp;quot;: {
+                &amp;quot;enabled&amp;quot;: true,
+                &amp;quot;destOverride&amp;quot;: [
+                    &amp;quot;http&amp;quot;,
+                    &amp;quot;tls&amp;quot;
+                ]
+            },
+            &amp;quot;streamSettings&amp;quot;: {
+                &amp;quot;sockopt&amp;quot;: {
+                  &amp;quot;tproxy&amp;quot;: &amp;quot;redirect&amp;quot;
+                }
+            }
+        }
+    ],
+    &amp;quot;outbounds&amp;quot;: [
+        {
+            &amp;quot;protocol&amp;quot;: &amp;quot;vmess&amp;quot;,
+            &amp;quot;settings&amp;quot;: {
+                ...
+            },
+            &amp;quot;streamSettings&amp;quot;: {
+                &amp;quot;sockopt&amp;quot;: {
+                    &amp;quot;mark&amp;quot;: 255
+                }
+            },
+            &amp;quot;tag&amp;quot;: &amp;quot;proxy&amp;quot;
+        }
+    ]
+}
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#!/bin/bash
 
-iptables&lt;span class="w"&gt; &lt;/span&gt;-F
-iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;nat&lt;span class="w"&gt; &lt;/span&gt;-F
-iptables&lt;span class="w"&gt; &lt;/span&gt;-P&lt;span class="w"&gt; &lt;/span&gt;INPUT&lt;span class="w"&gt; &lt;/span&gt;ACCEPT
-iptables&lt;span class="w"&gt; &lt;/span&gt;-P&lt;span class="w"&gt; &lt;/span&gt;FORWARD&lt;span class="w"&gt; &lt;/span&gt;ACCEPT
+iptables -F
+iptables -t nat -F
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
 
 
-iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;nat&lt;span class="w"&gt; &lt;/span&gt;-N&lt;span class="w"&gt; &lt;/span&gt;V2RAY
-iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;nat&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;OUTPUT&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;tcp&lt;span class="w"&gt; &lt;/span&gt;-j&lt;span class="w"&gt; &lt;/span&gt;V2RAY
+iptables -t nat -N V2RAY
+iptables -t nat -A OUTPUT -p tcp -j V2RAY
 
-iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;nat&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;V2RAY&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.0.0/16&lt;span class="w"&gt; &lt;/span&gt;-j&lt;span class="w"&gt; &lt;/span&gt;RETURN
-iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;nat&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;V2RAY&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;.0.0.0/8&lt;span class="w"&gt; &lt;/span&gt;-j&lt;span class="w"&gt; &lt;/span&gt;RETURN
-iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;nat&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;V2RAY&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;tcp&lt;span class="w"&gt; &lt;/span&gt;-j&lt;span class="w"&gt; &lt;/span&gt;RETURN&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;mark&lt;span class="w"&gt; &lt;/span&gt;--mark&lt;span class="w"&gt; &lt;/span&gt;0xff
-iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;nat&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;V2RAY&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;tcp&lt;span class="w"&gt; &lt;/span&gt;-j&lt;span class="w"&gt; &lt;/span&gt;REDIRECT&lt;span class="w"&gt; &lt;/span&gt;--to-ports&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12345&lt;/span&gt;
+iptables -t nat -A V2RAY -d 192.168.0.0/16 -j RETURN
+iptables -t nat -A V2RAY -d 10.0.0.0/8 -j RETURN
+iptables -t nat -A V2RAY -p tcp -j RETURN -m mark --mark 0xff
+iptables -t nat -A V2RAY -p tcp -j REDIRECT --to-ports 12345
 
-iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;nat&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;PREROUTING&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;tcp&lt;span class="w"&gt; &lt;/span&gt;-j&lt;span class="w"&gt; &lt;/span&gt;V2RAY
+iptables -t nat -A PREROUTING -p tcp -j V2RAY
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h2&gt;容灾&lt;/h2&gt;
@@ -903,7 +1187,7 @@ iptables&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&g
 &lt;p&gt;&lt;img alt="encodeKey" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143840.png"&gt;&lt;/p&gt;
 &lt;p&gt;出现一个关键信息：qrCodeKey，
 最后进行了AES 加密：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;AESUtil&lt;/span&gt;.&lt;span class="nv"&gt;Encrypt&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;stringBuilder3&lt;/span&gt;.&lt;span class="nv"&gt;toString&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;qrCodeKey&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;qrCodeKey&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;return AESUtil.Encrypt(stringBuilder3.toString(), qrCodeKey, qrCodeKey);
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;先看一下AES 的加密模式和填充算法等，再回过来看这个str生成逻辑。&lt;/p&gt;
@@ -925,9 +1209,9 @@ UserID和mPassCode 不是直接拼凑，而是间隔交叉拼在一起。&lt;/p&
 &lt;p&gt;&lt;img alt="mPassCode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144057.png"&gt;&lt;/p&gt;
 &lt;p&gt;从代码来看，只是简单的递增。这个时候，再去生成几个实际的二维码，用AES在线解密出，拿到mPassCode 的md5_16，丢到cmd5.com 里面看看：&lt;/p&gt;
 &lt;p&gt;&lt;img alt="cmd5" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144121.png"&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;e6e61673edb05342&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mo"&gt;00000171&lt;/span&gt;
-&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;a56b435986b1611&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mo"&gt;00000172&lt;/span&gt;
-&lt;span class="mi"&gt;651&lt;/span&gt;&lt;span class="n"&gt;bac14cc8b1285&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="mo"&gt;00000173&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;e6e61673edb05342 -&amp;gt; 00000171
+7a56b435986b1611 -&amp;gt;  00000172
+651bac14cc8b1285 -&amp;gt;  00000173
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;确定只是简单递增，那么这个code 不是基于时间的OTP算法，猜测服务端会记录当前用到最大的code，以使之前的code 失效（后续实际验证也是如此）。&lt;/p&gt;
@@ -945,68 +1229,68 @@ A12300456700891001ABCE23ED6A474E79AA4FF6c9b62e572837d1b9B7.1.2
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h2&gt;PoC&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="s s-Atom"&gt;import&lt;/span&gt; &lt;span class="s s-Atom"&gt;hashlib&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;import&lt;/span&gt; &lt;span class="s s-Atom"&gt;random&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;import&lt;/span&gt; &lt;span class="s s-Atom"&gt;string&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;import hashlib
+import random
+import string
 
-&lt;span class="s s-Atom"&gt;from&lt;/span&gt; &lt;span class="nv"&gt;Crypto&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;Cipher&lt;/span&gt; &lt;span class="s s-Atom"&gt;import&lt;/span&gt; &lt;span class="nv"&gt;AES&lt;/span&gt;  
-&lt;span class="s s-Atom"&gt;from&lt;/span&gt; &lt;span class="s s-Atom"&gt;base64&lt;/span&gt; &lt;span class="s s-Atom"&gt;import&lt;/span&gt; &lt;span class="s s-Atom"&gt;b64decode&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s s-Atom"&gt;b64encode&lt;/span&gt;
+from Crypto.Cipher import AES  
+from base64 import b64decode, b64encode
 
-&lt;span class="nv"&gt;BLOCK_SIZE&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;AES&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="s s-Atom"&gt;block_size&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;pad&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s s-Atom"&gt;lambda&lt;/span&gt; &lt;span class="s s-Atom"&gt;s&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s s-Atom"&gt;s&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;BLOCK_SIZE&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nf"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt; &lt;span class="c1"&gt;% BLOCK_SIZE) * chr(BLOCK_SIZE - len(s.encode()) % BLOCK_SIZE)&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;unpad&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s s-Atom"&gt;lambda&lt;/span&gt; &lt;span class="s s-Atom"&gt;s&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s s-Atom"&gt;s&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;:-&lt;/span&gt;&lt;span class="nf"&gt;ord&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;s&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nf"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;s&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="p"&gt;])]&lt;/span&gt;
-
-
-&lt;span class="s s-Atom"&gt;class&lt;/span&gt; &lt;span class="nv"&gt;AESCipher&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-    &lt;span class="s s-Atom"&gt;def&lt;/span&gt; &lt;span class="k"&gt;__&lt;/span&gt;&lt;span class="nf"&gt;init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s s-Atom"&gt;secretkey&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s s-Atom"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="s s-Atom"&gt;key&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s s-Atom"&gt;secretkey&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="s s-Atom"&gt;iv&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s s-Atom"&gt;secretkey&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;  &lt;span class="s s-Atom"&gt;#&lt;/span&gt; &lt;span class="s s-Atom"&gt;偏移量&lt;/span&gt;
-
-    &lt;span class="s s-Atom"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;encrypt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s s-Atom"&gt;text&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        &lt;span class="s2"&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class="s2"&gt;        加密 ：先补位，再AES加密，后base64编码&lt;/span&gt;
-&lt;span class="s2"&gt;        :param text: 需加密的明文&lt;/span&gt;
-&lt;span class="s2"&gt;        :return:&lt;/span&gt;
-&lt;span class="s2"&gt;        &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;#&lt;/span&gt; &lt;span class="s s-Atom"&gt;text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nf"&gt;pad&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;text&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="s s-Atom"&gt;包pycrypto的写法，加密函数可以接受str也可以接受bytess&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nf"&gt;pad&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;text&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nf"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;  &lt;span class="s s-Atom"&gt;#&lt;/span&gt; &lt;span class="s s-Atom"&gt;包pycryptodome&lt;/span&gt; &lt;span class="s s-Atom"&gt;的加密函数不接受str&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;cipher&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;AES&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="s s-Atom"&gt;key&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="s s-Atom"&gt;mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;AES&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;MODE_CBC&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nv"&gt;IV&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="s s-Atom"&gt;iv&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;encrypted_text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s s-Atom"&gt;cipher&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;encrypt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;text&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;#&lt;/span&gt; &lt;span class="s s-Atom"&gt;进行64位的编码&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s s-Atom"&gt;返回得到加密后的bytes，decode成字符串&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;return&lt;/span&gt; &lt;span class="nf"&gt;b64encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;encrypted_text&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nf"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;&amp;#39;utf-8&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-    &lt;span class="s s-Atom"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decrypt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s s-Atom"&gt;encrypted_text&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        &lt;span class="s2"&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class="s2"&gt;        解密 ：偏移量为key[0:16]；先base64解，再AES解密，后取消补位&lt;/span&gt;
-&lt;span class="s2"&gt;        :param encrypted_text : 已经加密的密文&lt;/span&gt;
-&lt;span class="s2"&gt;        :return:&lt;/span&gt;
-&lt;span class="s2"&gt;        &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;encrypted_text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nf"&gt;b64decode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;encrypted_text&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;cipher&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;AES&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="s s-Atom"&gt;key&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="s s-Atom"&gt;mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;AES&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;MODE_CBC&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nv"&gt;IV&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="s s-Atom"&gt;iv&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;decrypted_text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s s-Atom"&gt;cipher&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;decrypt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;encrypted_text&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="s s-Atom"&gt;return&lt;/span&gt; &lt;span class="nf"&gt;unpad&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;decrypted_text&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nf"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;&amp;#39;utf-8&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+BLOCK_SIZE = AES.block_size
+pad = lambda s: s + (BLOCK_SIZE - len(s.encode()) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s.encode()) % BLOCK_SIZE)
+unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 
 
-&lt;span class="s s-Atom"&gt;code=&amp;#39;00000123&amp;#39;&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;c1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;code&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;c2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;code&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;c3&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;code&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;c4&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;code&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+class AESCipher:
+    def __init__(self, secretkey: str):
+        self.key = secretkey
+        self.iv = secretkey[0:16]  # 偏移量
 
-&lt;span class="s s-Atom"&gt;md5_16&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;hashlib&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;md5&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;code&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;&amp;#39;utf-8&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)).&lt;/span&gt;&lt;span class="nf"&gt;hexdigest&lt;/span&gt;&lt;span class="p"&gt;()[&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="o"&gt;:-&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    def encrypt(self, text):
+        &amp;quot;&amp;quot;&amp;quot;
+        加密 ：先补位，再AES加密，后base64编码
+        :param text: 需加密的明文
+        :return:
+        &amp;quot;&amp;quot;&amp;quot;
+        # text = pad(text) 包pycrypto的写法，加密函数可以接受str也可以接受bytess
+        text = pad(text).encode()  # 包pycryptodome 的加密函数不接受str
+        cipher = AES.new(key=self.key.encode(), mode=AES.MODE_CBC, IV=self.iv.encode())
+        encrypted_text = cipher.encrypt(text)
+        # 进行64位的编码,返回得到加密后的bytes，decode成字符串
+        return b64encode(encrypted_text).decode(&amp;#39;utf-8&amp;#39;)
 
-&lt;span class="s s-Atom"&gt;uid=&amp;#39;A12345678910ABCEED6A474E79AA4FF6&amp;#39;&lt;/span&gt;
+    def decrypt(self, encrypted_text):
+        &amp;quot;&amp;quot;&amp;quot;
+        解密 ：偏移量为key[0:16]；先base64解，再AES解密，后取消补位
+        :param encrypted_text : 已经加密的密文
+        :return:
+        &amp;quot;&amp;quot;&amp;quot;
+        encrypted_text = b64decode(encrypted_text)
+        cipher = AES.new(key=self.key.encode(), mode=AES.MODE_CBC, IV=self.iv.encode())
+        decrypted_text = cipher.decrypt(encrypted_text)
+        return unpad(decrypted_text).decode(&amp;#39;utf-8&amp;#39;)
 
-&lt;span class="s s-Atom"&gt;u1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;uid&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;u2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;uid&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;u3&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;uid&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;u4&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;uid&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;u5&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;uid&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="s s-Atom"&gt;sign_str&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s s-Atom"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;{u1}{c1}{u2}{c2}{u3}{c3}{u4}{c4}{u5}{md5_16}B7.1.2&amp;quot;&lt;/span&gt;
-&lt;span class="nf"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;sign_str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
-&lt;span class="s s-Atom"&gt;encrypted_text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;AESCipher&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;略&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nf"&gt;encrypt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;sign_str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nf"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s s-Atom"&gt;encrypted_text&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+code=&amp;#39;00000123&amp;#39;
+c1=code[0:2]
+c2=code[2:4]
+c3=code[4:6]
+c4=code[6:8]
+
+md5_16=hashlib.md5(code.encode(&amp;#39;utf-8&amp;#39;)).hexdigest()[8:-8]
+
+uid=&amp;#39;A12345678910ABCEED6A474E79AA4FF6&amp;#39;
+
+u1=uid[0:4]
+u2=uid[4:8]
+u3=uid[8:12]
+u4=uid[12:16]
+u5=uid[16:]
+sign_str=f&amp;quot;{u1}{c1}{u2}{c2}{u3}{c3}{u4}{c4}{u5}{md5_16}B7.1.2&amp;quot;
+print(sign_str)
+
+encrypted_text = AESCipher(&amp;quot;略&amp;quot;).encrypt(sign_str)
+print(encrypted_text)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;再将encrypted_text 生成二维码即可。&lt;/p&gt;
@@ -1059,28 +1343,28 @@ A12300456700891001ABCE23ED6A474E79AA4FF6c9b62e572837d1b9B7.1.2
 按照icmp ratelist 搜到了，找到了&lt;a href="https://man7.org/linux/man-pages/man7/icmp.7.html"&gt;答案&lt;/a&gt;。
 系统默认的&lt;code&gt;icmp_ratelimit&lt;/code&gt;是&lt;code&gt;1000&lt;/code&gt;，恰好是1s，那为何mtr ICMP 模式不会丢呢？
 因为还有一个参数&lt;code&gt;icmp_ratemask&lt;/code&gt; ，默认为以下几类包被限制：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="nt"&gt;icmp_ratemask&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;integer&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;default&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;see&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;below&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;since&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Linux&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;4&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;10&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;span class="w"&gt;              &lt;/span&gt;&lt;span class="nt"&gt;Mask&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;made&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;of&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;ICMP&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;types&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;which&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;rates&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;are&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;being&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;limited&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;       icmp_ratemask (integer; default: see below; since Linux 2.4.10)
+              Mask made of ICMP types for which rates are being limited.
 
-&lt;span class="w"&gt;              &lt;/span&gt;&lt;span class="nt"&gt;Significant&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;bits&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;IHGFEDCBA9876543210&lt;/span&gt;
-&lt;span class="w"&gt;              &lt;/span&gt;&lt;span class="nt"&gt;Default&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;mask&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="nt"&gt;0000001100000011000&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;0x1818&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+              Significant bits: IHGFEDCBA9876543210
+              Default mask:     0000001100000011000 (0x1818)
 
-&lt;span class="w"&gt;              &lt;/span&gt;&lt;span class="nt"&gt;Bit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;definitions&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;see&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Linux&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;kernel&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;file&lt;/span&gt;
-&lt;span class="w"&gt;              &lt;/span&gt;&lt;span class="nt"&gt;include&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;icmp&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;h&lt;/span&gt;&lt;span class="o"&gt;):&lt;/span&gt;
+              Bit definitions (see the Linux kernel source file
+              include/linux/icmp.h):
 
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Reply&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Destination&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Unreachable&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;4&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Quench&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;5&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Redirect&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;8&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Request&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;B&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Exceeded&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;C&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Parameter&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Problem&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;D&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Timestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Request&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;E&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Timestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Reply&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;F&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Request&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;G&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Reply&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;H&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Address&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Mask&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Request&lt;/span&gt;
-&lt;span class="w"&gt;                   &lt;/span&gt;&lt;span class="nt"&gt;I&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Address&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Mask&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;Reply&lt;/span&gt;
+                   0 Echo Reply
+                   3 Destination Unreachable *
+                   4 Source Quench *
+                   5 Redirect
+                   8 Echo Request
+                   B Time Exceeded *
+                   C Parameter Problem *
+                   D Timestamp Request
+                   E Timestamp Reply
+                   F Info Request
+                   G Info Reply
+                   H Address Mask Request
+                   I Address Mask Reply
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;IMCP 模式下回的包是&lt;code&gt;G Info Reply&lt;/code&gt;，未在&lt;code&gt;icmp_ratemask&lt;/code&gt; 标记范围内。
@@ -1113,7 +1397,7 @@ A12300456700891001ABCE23ED6A474E79AA4FF6c9b62e572837d1b9B7.1.2
 
 &lt;p&gt;问题就出在这里，innerHTML 赋值的时候，自动对&lt;a href="https://toolstud.io/web/charmap.php?filter=*"&gt;特殊字符&lt;/a&gt;进行了渲染：&lt;/p&gt;
 &lt;p&gt;这个机制似乎无法绕过，我的解决办法是对在最后&lt;code&gt;&amp;amp;&lt;/code&gt; 字符进行提前替换，将&lt;code&gt;&amp;amp;&lt;/code&gt;字符替换为&lt;code&gt;&amp;amp;amp;&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;html&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;parseObject&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;snatch&lt;/span&gt;&lt;span class="o"&gt;).&lt;/span&gt;&lt;span class="n"&gt;toString&lt;/span&gt;&lt;span class="o"&gt;().&lt;/span&gt;&lt;span class="n"&gt;replaceAll&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;amp;&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;amp;amp;&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;valid&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;hasError&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;html: parseObject(snatch).toString().replaceAll(&amp;#39;&amp;amp;&amp;#39;,&amp;#39;&amp;amp;amp;&amp;#39;), valid: !hasError
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;效果如下
