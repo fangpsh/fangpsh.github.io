@@ -26,7 +26,7 @@
 <section id="content" class="article content">
   <header>
     <h2 class="entry-title">
-      <a href="https://fangpsh.github.io/drafts/2023-10-02.html" rel="bookmark"
+      <a href="https://fangpsh.github.io/posts/2023/2023-10-02.html" rel="bookmark"
          title="Permalink to 源站IP ACL绕过的风险">源站IP ACL绕过的风险</a></h2>
  
   </header>
@@ -34,16 +34,26 @@
   <div id="toc">
   </div>     
   <div id="article-content" class="entry-content">
-    <p>加了CDN 之后，为了保护源站，一般都会在</p>
-<p>利用 NGINX 1.19.4 后的新特性 ssl_reject_handshake on;，将其置于默认访问时配置中，IP 访问时会终止 TLS 握手，也就不会暴露域名了。</p>
-<p>IPACL 绕过问题
-CDN:
-https://tech-blog.cymetrics.io/posts/seadog007/dangers-in-cdn/
-ProxyProtocol
-https://help.aliyun.com/document_detail/300766.html
-TOA
-https://developer.aliyun.com/article/849252
-https://help.aliyun.com/document_detail/52477.html</p>
+    <p>套上CDN 之后，CDN厂商一般会在回源时，将真实的客户端地址写入header 中，例如cloudflare 是<a href="https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-connecting-ip">CF-Connecting-IP</a>，阿里云是<a href="https://help.aliyun.com/zh/cdn/user-guide/configure-custom-request-headers">Ali-Cdn-Real-Ip</a>，当然也可以从X-Forwarded-For 中取。另外7层的负载均衡服务在转发时，也会携带此类header。</p>
+<p>如果源站是按照此类header 进行ACL 判定的话，容易被篡改绕过。</p>
+<p>例如：</p>
+<ol>
+<li>攻击者先用censys 过滤证书信息，找寻到可能的源站。</li>
+<li>按照目标站点cname 指向的域名找出对应的CDN厂商，找到对应的header 头；</li>
+<li>伪造header 头对源站发起探测；</li>
+</ol>
+<p>最保险的是在源站配置防火墙或ACL，只让CDN厂商的回源服务器段访问，参考<a href="https://developers.cloudflare.com/fundamentals/setup/allow-cloudflare-ip-addresses/">Allow Cloudflare IP addresses</a>。</p>
+<p>题外话，NGINX 1.19.4 有个新特性 <a href="http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_reject_handshake">ssl_reject_handshake on;</a>，开启后，IP 访问时会终止 TLS 握手，降低证书暴露的可能性。</p>
+<p>好文推荐：<a href="https://tech-blog.cymetrics.io/posts/seadog007/dangers-in-cdn/">那些隱藏在 CDN 中的危險：為什麼 CDN 可能沒有你想的那麼安全</a></p>
+<p>同样的风险，也存在与<a href="https://docs.nginx.com/nginx/admin-guide/load-balancer/using-proxy-protocol/">ProxyProtocol</a>协议，以及<a href="https://developer.aliyun.com/article/849252">TOA</a>等扩展协议中。</p>
+<p>这类协议，大多数都运行与内网之中。如果你的Nginx 在公网接收一个固定来源的ProxyProtocol，请务必开启网络层IP白名单。</p>
+<p>另外看产品介绍，阿里云的全站加速DCDN、以及<a href="https://help.aliyun.com/document_detail/52477.html">DDoS高防</a> ，腾讯<a href="https://cloud.tencent.com/document/product/297/94816">DDoS防护</a>均支持了TOA，TOA本身并无签名机制，所以也需要尽可能开启网络层白名单。</p>
+<p>最后，你可能会问，地址空间那么大，攻击者如何能猜测出我的来源地址白名单。</p>
+<p>试想一下：</p>
+<ol>
+<li>我们在写ACL 的时候，是不是都喜欢把保留地址段和回环地址写入；</li>
+<li>某些机构出口白名单并没那么隐秘，例如通过地址库或者关联主体的ASN号收集，或其他资产收集方式；</li>
+</ol>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
     Posted on <abbr class="published" title="2023-10-02T00:00:00+08:00">

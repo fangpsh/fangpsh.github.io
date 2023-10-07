@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-09-27T00:00:00+08:00</updated><entry><title>lvmcache性能简单测试</title><link href="https://fangpsh.github.io/posts/2023/2023-09-27.html" rel="alternate"></link><published>2023-09-27T00:00:00+08:00</published><updated>2023-09-27T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-27:/posts/2023/2023-09-27.html</id><summary type="html">&lt;p&gt;测试命令：&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2023-10-02T00:00:00+08:00</updated><entry><title>源站IP ACL绕过的风险</title><link href="https://fangpsh.github.io/posts/2023/2023-10-02.html" rel="alternate"></link><published>2023-10-02T00:00:00+08:00</published><updated>2023-10-02T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-10-02:/posts/2023/2023-10-02.html</id><summary type="html">&lt;p&gt;套上CDN 之后，CDN厂商一般会在回源时，将真实的客户端地址写入header 中，例如cloudflare 是&lt;a href="https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-connecting-ip"&gt;CF-Connecting-IP&lt;/a&gt;，阿里云是&lt;a href="https://help.aliyun.com/zh/cdn/user-guide/configure-custom-request-headers"&gt;Ali-Cdn-Real-Ip&lt;/a&gt;，当然也可以从X-Forwarded-For 中取。另外7层的负载均衡服务在转发时，也会携带此类header。&lt;/p&gt;
+&lt;p&gt;如果 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;套上CDN 之后，CDN厂商一般会在回源时，将真实的客户端地址写入header 中，例如cloudflare 是&lt;a href="https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-connecting-ip"&gt;CF-Connecting-IP&lt;/a&gt;，阿里云是&lt;a href="https://help.aliyun.com/zh/cdn/user-guide/configure-custom-request-headers"&gt;Ali-Cdn-Real-Ip&lt;/a&gt;，当然也可以从X-Forwarded-For 中取。另外7层的负载均衡服务在转发时，也会携带此类header。&lt;/p&gt;
+&lt;p&gt;如果源站是按照此类header 进行ACL 判定的话，容易被篡改绕过。&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;攻击者先用censys 过滤证书信息，找寻到可能的源站。&lt;/li&gt;
+&lt;li&gt;按照目标站点cname 指向的域名找出对应的CDN厂商，找到对应的header 头；&lt;/li&gt;
+&lt;li&gt;伪造header 头对源站发起探测；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;最保险的是在源站配置防火墙或ACL，只让CDN厂商的回源服务器段访问，参考&lt;a href="https://developers.cloudflare.com/fundamentals/setup/allow-cloudflare-ip-addresses/"&gt;Allow Cloudflare IP addresses&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;题外话，NGINX 1.19.4 有个新特性 &lt;a href="http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_reject_handshake"&gt;ssl_reject_handshake on;&lt;/a&gt;，开启后，IP 访问时会终止 TLS 握手，降低证书暴露的可能性。&lt;/p&gt;
+&lt;p&gt;好文推荐：&lt;a href="https://tech-blog.cymetrics.io/posts/seadog007/dangers-in-cdn/"&gt;那些隱藏在 CDN 中的危險：為什麼 CDN 可能沒有你想的那麼安全&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;同样的风险，也存在与&lt;a href="https://docs.nginx.com/nginx/admin-guide/load-balancer/using-proxy-protocol/"&gt;ProxyProtocol&lt;/a&gt;协议，以及&lt;a href="https://developer.aliyun.com/article/849252"&gt;TOA&lt;/a&gt;等扩展协议中。&lt;/p&gt;
+&lt;p&gt;这类协议，大多数都运行与内网之中。如果你的Nginx 在公网接收一个固定来源的ProxyProtocol，请务必开启网络层IP白名单。&lt;/p&gt;
+&lt;p&gt;另外看产品介绍，阿里云的全站加速DCDN、以及&lt;a href="https://help.aliyun.com/document_detail/52477.html"&gt;DDoS高防&lt;/a&gt; ，腾讯&lt;a href="https://cloud.tencent.com/document/product/297/94816"&gt;DDoS防护&lt;/a&gt;均支持了TOA，TOA本身并无签名机制，所以也需要尽可能开启网络层白名单。&lt;/p&gt;
+&lt;p&gt;最后，你可能会问，地址空间那么大，攻击者如何能猜测出我的来源地址白名单。&lt;/p&gt;
+&lt;p&gt;试想一下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;我们在写ACL 的时候，是不是都喜欢把保留地址段和回环地址写入；&lt;/li&gt;
+&lt;li&gt;某些机构出口白名单并没那么隐秘，例如通过地址库或者关联主体的ASN号收集，或其他资产收集方式；&lt;/li&gt;
+&lt;/ol&gt;</content><category term="2023"></category><category term="hack"></category></entry><entry><title>lvmcache性能简单测试</title><link href="https://fangpsh.github.io/posts/2023/2023-09-27.html" rel="alternate"></link><published>2023-09-27T00:00:00+08:00</published><updated>2023-09-27T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-27:/posts/2023/2023-09-27.html</id><summary type="html">&lt;p&gt;测试命令：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 

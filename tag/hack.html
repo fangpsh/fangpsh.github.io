@@ -27,6 +27,11 @@
 <h2>Articles with the hack tag</h2>
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-10-02.html" rel="bookmark" title="Permalink to 源站IP ACL绕过的风险">源站IP ACL绕过的风险</a></h2> </header>
+                <div class="entry-content"> <p>套上CDN 之后，CDN厂商一般会在回源时，将真实的客户端地址写入header 中，例如cloudflare 是<a href="https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-connecting-ip">CF-Connecting-IP</a>，阿里云是<a href="https://help.aliyun.com/zh/cdn/user-guide/configure-custom-request-headers">Ali-Cdn-Real-Ip</a>，当然也可以从X-Forwarded-For 中取。另外7层的负载均衡服务在转发时，也会携带此类header。</p>
+<p>如果 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-09-05.html" rel="bookmark" title="Permalink to DNS Cache投毒事件处理">DNS Cache投毒事件处理</a></h2> </header>
                 <div class="entry-content"> <p>最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明 …</p> </div><!-- entry-content -->
         </article>
