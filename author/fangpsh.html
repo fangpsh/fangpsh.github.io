@@ -27,6 +27,10 @@
 <h2>Articles by fangpsh</h2>
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-11-10.html" rel="bookmark" title="Permalink to 部分搜索引擎爬虫IP">部分搜索引擎爬虫IP</a></h2> </header>
+                <div class="entry-content"> <p>有个小项目套了一个<a href="https://waf-ce.chaitin.cn/">雷池WAF</a>，担心会影响到搜索引擎的爬虫，需要单独维护一个IP组，社区关联issue：<a href="https://github.com/chaitin/SafeLine/issues/374">[建议] 内置各大搜索引擎蜘 …</a></p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-10-02.html" rel="bookmark" title="Permalink to 源站IP ACL绕过的风险">源站IP ACL绕过的风险</a></h2> </header>
                 <div class="entry-content"> <p>套上CDN 之后，CDN厂商一般会在回源时，将真实的客户端地址写入header 中，例如cloudflare 是<a href="https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-connecting-ip">CF-Connecting-IP</a>，阿里云是<a href="https://help.aliyun.com/zh/cdn/user-guide/configure-custom-request-headers">Ali-Cdn-Real-Ip</a>，当然也可以从X-Forwarded-For 中取。另外7层的负载均衡服务在转发时，也会携带此类header。</p>
 <p>如果 …</p> </div><!-- entry-content -->
@@ -78,14 +82,6 @@ fatal: [192.168.x.x]: FAILED! =&gt;
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-04-23.html" rel="bookmark" title="Permalink to 轻量级办公室无感知跨境加速方案">轻量级办公室无感知跨境加速方案</a></h2> </header>
                 <div class="entry-content"> <p>之前逛V2EX 看到一个网友的帖子：“<a href="https://www.v2ex.com/t/928907">请教公司内部如何实现无感知跨境加速</a>”，把海外IP 全部走到代理网关，维护成本比较高。如 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-04-20.html" rel="bookmark" title="Permalink to 逆向办公大楼门禁APK，成功生成通行二维码">逆向办公大楼门禁APK，成功生成通行二维码</a></h2> </header>
-                <div class="entry-content"> <p>脱壳逆向，不必硬碰硬。大多数业务，迭代更新只是更新业务，但是加密的逻辑并无变化。</p>
-<p>对于攻击方：</p>
-<ol>
-<li>
-<p>不少业务不会在一开始 …</p></li></ol> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>
