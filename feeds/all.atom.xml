@@ -503,7 +503,7 @@
 &lt;p&gt;同样的风险，也存在与&lt;a href="https://docs.nginx.com/nginx/admin-guide/load-balancer/using-proxy-protocol/"&gt;ProxyProtocol&lt;/a&gt;协议，以及&lt;a href="https://developer.aliyun.com/article/849252"&gt;TOA&lt;/a&gt;等扩展协议中。&lt;/p&gt;
 &lt;p&gt;这类协议，大多数都运行与内网之中。如果你的Nginx 在公网接收一个固定来源的ProxyProtocol，请务必开启网络层IP白名单。&lt;/p&gt;
 &lt;p&gt;另外看产品介绍，阿里云的全站加速DCDN、以及&lt;a href="https://help.aliyun.com/document_detail/52477.html"&gt;DDoS高防&lt;/a&gt; ，腾讯&lt;a href="https://cloud.tencent.com/document/product/297/94816"&gt;DDoS防护&lt;/a&gt;均支持了TOA，TOA本身并无签名机制，所以也需要尽可能开启网络层白名单。&lt;/p&gt;
-&lt;p&gt;参考项目：&lt;a href="https://github.com/BeichenDream/FakeToa"&gt;BeichenDream/FakeToa&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;参考项目：&lt;a href="https://github.com/passwa11/FakeToa/tree/master"&gt;BeichenDream/FakeToa&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;最后，你可能会问，地址空间那么大，攻击者如何能猜测出我的来源地址白名单。&lt;/p&gt;
 &lt;p&gt;试想一下：&lt;/p&gt;
 &lt;ol&gt;

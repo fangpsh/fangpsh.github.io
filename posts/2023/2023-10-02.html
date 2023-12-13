@@ -48,7 +48,7 @@
 <p>同样的风险，也存在与<a href="https://docs.nginx.com/nginx/admin-guide/load-balancer/using-proxy-protocol/">ProxyProtocol</a>协议，以及<a href="https://developer.aliyun.com/article/849252">TOA</a>等扩展协议中。</p>
 <p>这类协议，大多数都运行与内网之中。如果你的Nginx 在公网接收一个固定来源的ProxyProtocol，请务必开启网络层IP白名单。</p>
 <p>另外看产品介绍，阿里云的全站加速DCDN、以及<a href="https://help.aliyun.com/document_detail/52477.html">DDoS高防</a> ，腾讯<a href="https://cloud.tencent.com/document/product/297/94816">DDoS防护</a>均支持了TOA，TOA本身并无签名机制，所以也需要尽可能开启网络层白名单。</p>
-<p>参考项目：<a href="https://github.com/BeichenDream/FakeToa">BeichenDream/FakeToa</a>。</p>
+<p>参考项目：<a href="https://github.com/passwa11/FakeToa/tree/master">BeichenDream/FakeToa</a>。</p>
 <p>最后，你可能会问，地址空间那么大，攻击者如何能猜测出我的来源地址白名单。</p>
 <p>试想一下：</p>
 <ol>
