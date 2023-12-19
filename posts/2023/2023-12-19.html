@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>fangpsh's blog - Authors</title>
+        <title>简易抗DDoS总结 - fangpsh's blog</title>
         <meta charset="utf-8" />
         <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
         <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
@@ -23,10 +23,39 @@
                 <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
 				<h2 class="text-muted"></h2>
              </div>
-    <h1>Authors on fangpsh's blog</h1>
-    <ul>
-        <li><a href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a> (97)</li>
-    </ul>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2023/2023-12-19.html" rel="bookmark"
+         title="Permalink to 简易抗DDoS总结">简易抗DDoS总结</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>以下所说的方法只能应对小打小闹，骚扰型、流量型 DDoS 攻击。</p>
+<ol>
+<li>核心思路：服务降级，白嫖资源；</li>
+<li>套CDN 之后，<a href="https://fangpsh.github.io/posts/2023/2023-10-02.html">做好源IP 隐藏</a>，源站避免暴露，注意证书导致的源站泄露；</li>
+<li>若业务一定要上私有协议，做好降级的设计，例如降级到 websocket，然后走 CDN，业务觉得改造协议麻烦那就在客户端埋个基于 websocket 的代理；</li>
+<li>利用好免费资源，进行降级处理，例如国内使用 AWS CN 的basic shield 免费抗一下3 层 4 层，海外aws、gcp、azure 等都有一定的免费额度。虽然厂商保留封禁权利，但是相比国内厂商的黑洞，对用户更友好，更不用说大菩萨 cloudflare 了；</li>
+<li>阿里、腾讯、华为等，可找客户经理（TAM、BP） 直接要求临时（免费）拉高原生防护阈值；</li>
+<li>抗D产品成本太高，不如专注降级，例如客户端预埋几个全链路加速服务的 SDK，业务改造成本低，用作紧急情况降级，这类产品也有按量付费，相比买抗 D，成本更低；</li>
+<li>真决定要采购DDoS产品，对折再对折，大刀砍，这类产品厂商利润率贼高；</li>
+</ol>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2023-12-19T00:00:00+08:00">
+      Tue 19 December 2023
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2023.html">2023</a> Tagged <a href="https://fangpsh.github.io/tag/ddos.html">ddos </a>
+   <!--    -->
+
+  </footer><!-- /.post-info -->
+</section>
             <footer id="contentinfo" class="footer">
                     <nav class="pull-right bottom-nav">
                         <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
