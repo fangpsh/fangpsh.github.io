@@ -525,14 +525,11 @@
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;数据绝对值不具备参考价值，仅供娱乐。&lt;/p&gt;
-&lt;h3&gt;HDD&lt;/h3&gt;
-&lt;p&gt;3块7200转HDD组的RAID5，卡是H730。&lt;/p&gt;
-&lt;p&gt;read: IOPS …&lt;/p&gt;</summary><content type="html">&lt;p&gt;测试命令：&lt;/p&gt;
+&lt;p&gt;数据绝对值不具备参考价值，仅供娱乐，一些结论在末尾 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;测试命令：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;数据绝对值不具备参考价值，仅供娱乐。&lt;/p&gt;
+&lt;p&gt;数据绝对值不具备参考价值，仅供娱乐，一些结论在末尾。&lt;/p&gt;
 &lt;h3&gt;HDD&lt;/h3&gt;
 &lt;p&gt;3块7200转HDD组的RAID5，卡是H730。&lt;/p&gt;
 &lt;p&gt;read: IOPS=799, BW=3198KiB/s (3274kB/s)(259MiB/82977msec)&lt;br&gt;
