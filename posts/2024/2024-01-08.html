@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
     <head>
         <title>虚拟机下USB Token使用问题 - fangpsh's blog</title>
         <meta charset="utf-8" />
@@ -8,7 +8,7 @@
         <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
         <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
         <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
         <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
     </head>
 
@@ -39,7 +39,7 @@
 <p>As of June 1, 2023, all publicly trusted code signing certificates' keys must be stored on cryptographically secure hardware (USB tokens, hardware security modules [HSMs], etc.). The goal here is to help organizations better secure their code signing certificates and keys against cybercriminals.
 https://codesigningstore.com/how-to-set-up-code-signing-hardware-token</p>
 </blockquote>
-<p>到的是 epass2003，原来的CICD 签名用的虚拟机，之前从 PVE 迁移到了 cloudpods，需要先配置下 USB 直通：<a href="https://www.cloudpods.org/docs/guides/onpremise/vminstance/passthrough/usb-passthrough">USB 透传</a>，按文档做即可。</p>
+<p>使用的是 epass2003，原来的CICD 签名用的虚拟机，之前从 PVE 迁移到了 cloudpods，需要先配置下 USB 直通：<a href="https://www.cloudpods.org/docs/guides/onpremise/vminstance/passthrough/usb-passthrough">USB 透传</a>，按文档做即可。</p>
 <p>安装完厂商给的驱动之后，RDP 远程桌面下，证书库找不到证书，
 cloudpods 比较小众，用 关键词： proxmox+USB Token 搜索，找到一个帖子：
 <a href="https://pve-user.pve.proxmox.narkive.com/t14b5XO7/pass-through-usb-etoken-device-on-px-5-2">[PVE-User] Pass through usb eToken device on PX 5.2</a>：</p>
@@ -53,7 +53,7 @@ load under a RDP session. Fortunately a Spice or noVNC consle works.</p>
 <p>使用 cloudpods 带的 vnc 进入，果然能正常找到证书。
 切换到SPICE，或者再安装个novnc 来替换 RDP 即可。</p>
 <p>更进一步扩展性、灵活性的问题，可以使用<a href="https://www.eltima.com/smart-card-reader-remote-access/">USB Network Gate</a>、<a href="https://www.virtualhere.com/">virtualhere</a>等方案，或者考虑上<a href="https://www.digi.com/products/networking/infrastructure-management/usb-connectivity/usb-over-ip/anywhereusb">Digi USB-Over-IP | AnywhereUSB Plus</a>、<a href="https://www.forwave.com/UkeyManager.html">国内特色：朝天椒 USB Server</a>。</p>
-<p>单独这个 code signing 的场景，还有<a href="https://www.ihuandu.com/product/101.html">DigiCert KeyLocker </a>， <a href="https://www.ssl.com/guide/supported-cloud-hsms-document-signing-ev-code-signing/">CloudHSM</a>。</p>
+<p>单独这个 code signing 的场景，还有<a href="https://www.ihuandu.com/product/101.html">DigiCert KeyLocker </a>， <a href="https://www.ssl.com/guide/supported-cloud-hsms-document-signing-ev-code-signing/">CloudHSM</a> 。</p>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
     Posted on <abbr class="published" title="2024-01-08T00:00:00+08:00">
