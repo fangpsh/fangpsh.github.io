@@ -8,7 +8,11 @@
         <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
         <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
         <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="linux" />
+<meta name="description" content="帮同事迁移一个N年前的wordpress站（ http://52ml.net ），迁移后数据库使用mariadb，mariadb的socket默认监听在 0.0.0.0:3306上，但是wp无法连接（本地和远程测试连接没问题），需要在/etc/my.cnf中添加：bind-address=localhost。另 …" />
+
         <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
     </head>
 
