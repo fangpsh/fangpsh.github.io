@@ -30,7 +30,7 @@
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;open(&amp;quot;/usr/lib/locale/UTF-8/LC_CTYPE&amp;quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
 kill(26689, SIGKILL)                    = -1 EPERM (Operation not permitted)
 write(2, &amp;quot;kill: &amp;quot;, 6kill: )                   = 6
-write(2, &amp;quot;sending signal to 26689 failed&amp;quot;, 30sending signal to 10088 failed) = 30
+write(2, &amp;quot;sending signal to 26689 failed&amp;quot;, 30sending signal to 26689 failed) = 30
 write(2, &amp;quot;: &amp;quot;, 2: )                       = 2
 write(2, &amp;quot;Operation not permitted\n&amp;quot;, 24Operation not permitted
 ) = 24
