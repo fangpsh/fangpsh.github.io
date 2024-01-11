@@ -28,6 +28,18 @@
 <h2>Articles with the linux tag</h2>
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2024/2024-01-11.html" rel="bookmark" title="Permalink to 为何无法杀死阿里云盾">为何无法杀死阿里云盾</a></h2> </header>
+                <div class="entry-content"> <p>输错 PID，给云盾进程发送了kill signal：</p>
+<div class="highlight"><pre><span></span><code>root     26689  0.3  0.1 113180  9420 ?        S&lt;sl 10:34   0:08 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDun
+...
+
+# kill -9 26689
+-bash: kill: (26689) - Operation not permitted
+</code></pre></div>
+
+<p>咦，怎么啥不死，我是 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-03-15.html" rel="bookmark" title="Permalink to MTR UDP模式固定丢包率的问题">MTR UDP模式固定丢包率的问题</a></h2> </header>
                 <div class="entry-content"> <p>不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 <code>1s/次</code>，会出现固定丢 …</p> </div><!-- entry-content -->
         </article>
@@ -95,11 +107,6 @@
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-05-23.html" rel="bookmark" title="Permalink to 记一个退出终端进程不退出的问题">记一个退出终端进程不退出的问题</a></h2> </header>
                 <div class="entry-content"> <p>某一天开发同学问了一个问题，他们在线上跑一个job，没用screen，nohup，把iTerm 窗口关了，job 没挂。再登录进去看，PPID 变成1，即进程被init …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2016/2016-04-03.html" rel="bookmark" title="Permalink to 集群的NTP 对时问题">集群的NTP 对时问题</a></h2> </header>
-                <div class="entry-content"> <h2>NTP 简单介绍</h2>
-<p>NTP 是互联网上设备之间进行对时的协议，如下图所表示，有多层NTP 服务器，下游服务器向上游进行对时（可以了 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

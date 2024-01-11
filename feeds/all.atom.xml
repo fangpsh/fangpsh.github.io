@@ -1,5 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-01-08T00:00:00+08:00</updated><entry><title>虚拟机下USB Token使用问题</title><link href="https://fangpsh.github.io/posts/2024/2024-01-08.html" rel="alternate"></link><published>2024-01-08T00:00:00+08:00</published><updated>2024-01-08T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-01-08:/posts/2024/2024-01-08.html</id><summary type="html">&lt;p&gt;23 年 6 月1 日之后，代码签名证书只能通过 USB Token等安全设备分发：&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-01-11T00:00:00+08:00</updated><entry><title>为何无法杀死阿里云盾</title><link href="https://fangpsh.github.io/posts/2024/2024-01-11.html" rel="alternate"></link><published>2024-01-11T00:00:00+08:00</published><updated>2024-01-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-01-11:/posts/2024/2024-01-11.html</id><summary type="html">&lt;p&gt;输错 PID，给云盾进程发送了kill signal：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;root     26689  0.3  0.1 113180  9420 ?        S&amp;lt;sl 10:34   0:08 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDun
+...
+
+# kill -9 26689
+-bash: kill: (26689) - Operation not permitted
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;咦，怎么啥不死，我是 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;输错 PID，给云盾进程发送了kill signal：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;root     26689  0.3  0.1 113180  9420 ?        S&amp;lt;sl 10:34   0:08 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDun
+...
+
+# kill -9 26689
+-bash: kill: (26689) - Operation not permitted
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;咦，怎么啥不死，我是 root 呀。再尝试下&lt;code&gt;systemctl stop aegis&lt;/code&gt;，状态是&lt;code&gt;inactive&lt;/code&gt;了，但是进程还在 👻。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;● aegis.service - Aegis Service
+   Loaded: loaded (/etc/systemd/system/aegis.service; enabled; vendor preset: disabled)
+   Active: inactive (dead) since Wed 2024-01-10 14:46:43 HKT; 24h ago
+   CGroup: /system.slice/aegis.service
+           ├─26627 /usr/local/aegis/aegis_update/AliYunDunUpdate
+           ├─26689 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDun
+           └─26700 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDunMonitor
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;好奇心来了，咋实现的呢？😯&lt;/p&gt;
+&lt;p&gt;strace 一下 &lt;code&gt;strace kill -9 26689&lt;/code&gt; 没什么收获，&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;open(&amp;quot;/usr/lib/locale/UTF-8/LC_CTYPE&amp;quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+kill(26689, SIGKILL)                    = -1 EPERM (Operation not permitted)
+write(2, &amp;quot;kill: &amp;quot;, 6kill: )                   = 6
+write(2, &amp;quot;sending signal to 26689 failed&amp;quot;, 30sending signal to 10088 failed) = 30
+write(2, &amp;quot;: &amp;quot;, 2: )                       = 2
+write(2, &amp;quot;Operation not permitted\n&amp;quot;, 24Operation not permitted
+) = 24
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;云盾的二进制文件也删不掉：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# rm -f /usr/local/aegis/aegis_client/aegis_11_81/AliYunDun
+rm: cannot remove &amp;#39;AliYunDun&amp;#39;: Operation not permitted
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;也对，这是个安全软件（HIDS），要是能这么简单被干掉，也太弱了。
+想起有网友介意这个类后面程序的，那我看大家的卸载清理指南不就可以了？&lt;/p&gt;
+&lt;p&gt;找到卸载脚本：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;http://update.aegis.aliyun.com/download/uninstall.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;stop_aegis_pkill()&lt;/code&gt; 就是普通的 kill 发个信号，不过接着执行的&lt;code&gt;wait_aegis_exit()&lt;/code&gt; 里面的语句：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;    echo &amp;quot;wait AliYunDun process exit fail, possibly due to self-protection, please uninstall aegis or disable self-protection from the aegis console.&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;意思就是在控制台关闭掉就可以被 kill 了，那这应该是云盾进程自己控制的。
+再往下看如何清理文件，看到了kprobe：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;    kprobeArr=(
+        &amp;quot;/sys/kernel/debug/tracing/instances/aegis_do_sys_open/set_event&amp;quot;
+        &amp;quot;/sys/kernel/debug/tracing/instances/aegis_inet_csk_accept/set_event&amp;quot;
+        &amp;quot;/sys/kernel/debug/tracing/instances/aegis_tcp_connect/set_event&amp;quot;
+        &amp;quot;/sys/kernel/debug/tracing/instances/aegis/set_event&amp;quot;
+        &amp;quot;/sys/kernel/debug/tracing/instances/aegis_/set_event&amp;quot;
+        &amp;quot;/sys/kernel/debug/tracing/instances/aegis_accept/set_event&amp;quot;
+        &amp;quot;/sys/kernel/debug/tracing/kprobe_events&amp;quot;
+        &amp;quot;/usr/local/aegis/aegis_debug/tracing/set_event&amp;quot;
+        &amp;quot;/usr/local/aegis/aegis_debug/tracing/kprobe_events&amp;quot;
+    )
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;看着眼熟，之前看动态调试相关的文章见过，没深入了解忘记了，原来如此。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;lsmod  |grep -i ali
+AliSecGuard            22400  2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;果然有一个配套的内核模块。&lt;/p&gt;
+&lt;p&gt;检查一下event：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#trace-cmd list   |grep -i aegis
+kprobes:aegis_cn_netlink_send
+kprobes:aegis_sys_execve
+kprobes:aegis_proc_fork_connector
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href="https://fast.v2ex.com/t/869181"&gt;v2ex这个帖子&lt;/a&gt;中，网友提到了用kprobe 检测系统调用是HIDS 的主流实现方式，是我菜鸡了。&lt;/p&gt;
+&lt;p&gt;既然如此，那找一个开源的 HIDS 学习一下。&lt;/p&gt;
+&lt;p&gt;看到了字节开源的：&lt;a href="https://github.com/bytedance/Elkeid"&gt;elkeid&lt;/a&gt;，看这个&lt;a href="https://mp.weixin.qq.com/s/rm_hXHb_YBWQqmifgAqfaw"&gt;原理介绍&lt;/a&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;AgentSmith是LKM（可加载内核模块）的方式hook住Linux内核一些函数。由于它是使用kprobe的方式，它hook的函数不只是系统调用，还可以hook内核内部一些函数，而这些内部函数是某些系统调用的关键点调用。&lt;/p&gt;
+&lt;p&gt;kill
+对kill/tkill系统调用挂钩，记录程序终止某个进程操作，
+记录信息：
+执行程序
+目标进程
+信号&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;先看这篇文章学习了下怎么写一个简单的 kprobe 例子，以便能略微看懂代码：&lt;br&gt;
+&lt;a href="https://blog.csdn.net/luckyapple1028/article/details/52972315"&gt;《Linux内核调试技术——kprobe使用与实现》&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;翻了下&lt;code&gt;Elkeid/driver/LKM/src/&lt;/code&gt;  找到了 &lt;a href="https://github.com/bytedance/Elkeid/blob/93a44936de68f351d967a66deca574fa0f8ea091/driver/LKM/src/smith_hook.c#L3895,L3903"&gt;kill_kprobe&lt;/a&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;struct kprobe kill_kprobe = {
+        .symbol_name = P_GET_SYSCALL_NAME(kill),
+        .pre_handler = kill_pre_handler,
+};
+
+struct kprobe tkill_kprobe = {
+        .symbol_name = P_GET_SYSCALL_NAME(tkill),
+        .pre_handler = tkill_pre_handler,
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;再顺着就可以找到&lt;code&gt;register_kill_kprobe&lt;/code&gt;、&lt;code&gt;kill_pre_handler()&lt;/code&gt;  等。&lt;/p&gt;
+&lt;p&gt;大概明白了逻辑，云盾是hook 了 kill 的系统调用，在里面实现了自保的逻辑。&lt;/p&gt;
+&lt;p&gt;也可以参考这个文章&lt;a href="https://www.gentoo.site/viewtopic.php?id=455"&gt;《 linux源码解读（十三）：内核驱动module加载kprobe&amp;amp;字节跳动Elkied简要分析》&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;这两篇译文写的也非常好，可以补充下 ftrace 的技能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://linux.cn/article-13752-1.html"&gt;《通过 ftrace 来分析 Linux 内核》&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://linux.cn/article-13852-1.html"&gt;《使用 trace-cmd 追踪内核》&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GUI 工具：&lt;a href="https://github.com/cunctator/traceshark"&gt;traceshark&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2024"></category><category term="linux"></category><category term="sec"></category></entry><entry><title>虚拟机下USB Token使用问题</title><link href="https://fangpsh.github.io/posts/2024/2024-01-08.html" rel="alternate"></link><published>2024-01-08T00:00:00+08:00</published><updated>2024-01-08T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-01-08:/posts/2024/2024-01-08.html</id><summary type="html">&lt;p&gt;23 年 6 月1 日之后，代码签名证书只能通过 USB Token等安全设备分发：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;As of June 1, 2023, all publicly trusted code signing certificates' keys must be stored on cryptographically secure hardware (USB tokens, hardware security modules [HSMs], etc.). The goal here is …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;p&gt;23 年 6 月1 日之后，代码签名证书只能通过 USB Token等安全设备分发：&lt;/p&gt;
 &lt;blockquote&gt;

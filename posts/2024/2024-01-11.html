@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>为何无法杀死阿里云盾 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="linux,sec" />
+<meta name="description" content="输错 PID，给云盾进程发送了kill signal： root 26689 0.3 0.1 113180 9420 ? S&lt;sl 10:34 0:08 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDun ... # kill -9 26689 -bash: kill: (26689) - Operation not permitted 咦，怎么啥不死，我是 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2024/2024-01-11.html" rel="bookmark"
+         title="Permalink to 为何无法杀死阿里云盾">为何无法杀死阿里云盾</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>输错 PID，给云盾进程发送了kill signal：</p>
+<div class="highlight"><pre><span></span><code>root     26689  0.3  0.1 113180  9420 ?        S&lt;sl 10:34   0:08 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDun
+...
+
+# kill -9 26689
+-bash: kill: (26689) - Operation not permitted
+</code></pre></div>
+
+<p>咦，怎么啥不死，我是 root 呀。再尝试下<code>systemctl stop aegis</code>，状态是<code>inactive</code>了，但是进程还在 👻。</p>
+<div class="highlight"><pre><span></span><code>● aegis.service - Aegis Service
+   Loaded: loaded (/etc/systemd/system/aegis.service; enabled; vendor preset: disabled)
+   Active: inactive (dead) since Wed 2024-01-10 14:46:43 HKT; 24h ago
+   CGroup: /system.slice/aegis.service
+           ├─26627 /usr/local/aegis/aegis_update/AliYunDunUpdate
+           ├─26689 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDun
+           └─26700 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDunMonitor
+</code></pre></div>
+
+<p>好奇心来了，咋实现的呢？😯</p>
+<p>strace 一下 <code>strace kill -9 26689</code> 没什么收获，</p>
+<div class="highlight"><pre><span></span><code>open(&quot;/usr/lib/locale/UTF-8/LC_CTYPE&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+kill(26689, SIGKILL)                    = -1 EPERM (Operation not permitted)
+write(2, &quot;kill: &quot;, 6kill: )                   = 6
+write(2, &quot;sending signal to 26689 failed&quot;, 30sending signal to 10088 failed) = 30
+write(2, &quot;: &quot;, 2: )                       = 2
+write(2, &quot;Operation not permitted\n&quot;, 24Operation not permitted
+) = 24
+</code></pre></div>
+
+<p>云盾的二进制文件也删不掉：</p>
+<div class="highlight"><pre><span></span><code># rm -f /usr/local/aegis/aegis_client/aegis_11_81/AliYunDun
+rm: cannot remove &#39;AliYunDun&#39;: Operation not permitted
+</code></pre></div>
+
+<p>也对，这是个安全软件（HIDS），要是能这么简单被干掉，也太弱了。
+想起有网友介意这个类后面程序的，那我看大家的卸载清理指南不就可以了？</p>
+<p>找到卸载脚本：</p>
+<div class="highlight"><pre><span></span><code>http://update.aegis.aliyun.com/download/uninstall.sh
+</code></pre></div>
+
+<p><code>stop_aegis_pkill()</code> 就是普通的 kill 发个信号，不过接着执行的<code>wait_aegis_exit()</code> 里面的语句：</p>
+<div class="highlight"><pre><span></span><code>    echo &quot;wait AliYunDun process exit fail, possibly due to self-protection, please uninstall aegis or disable self-protection from the aegis console.&quot;
+</code></pre></div>
+
+<p>意思就是在控制台关闭掉就可以被 kill 了，那这应该是云盾进程自己控制的。
+再往下看如何清理文件，看到了kprobe：</p>
+<div class="highlight"><pre><span></span><code>    kprobeArr=(
+        &quot;/sys/kernel/debug/tracing/instances/aegis_do_sys_open/set_event&quot;
+        &quot;/sys/kernel/debug/tracing/instances/aegis_inet_csk_accept/set_event&quot;
+        &quot;/sys/kernel/debug/tracing/instances/aegis_tcp_connect/set_event&quot;
+        &quot;/sys/kernel/debug/tracing/instances/aegis/set_event&quot;
+        &quot;/sys/kernel/debug/tracing/instances/aegis_/set_event&quot;
+        &quot;/sys/kernel/debug/tracing/instances/aegis_accept/set_event&quot;
+        &quot;/sys/kernel/debug/tracing/kprobe_events&quot;
+        &quot;/usr/local/aegis/aegis_debug/tracing/set_event&quot;
+        &quot;/usr/local/aegis/aegis_debug/tracing/kprobe_events&quot;
+    )
+</code></pre></div>
+
+<p>看着眼熟，之前看动态调试相关的文章见过，没深入了解忘记了，原来如此。</p>
+<div class="highlight"><pre><span></span><code>lsmod  |grep -i ali
+AliSecGuard            22400  2
+</code></pre></div>
+
+<p>果然有一个配套的内核模块。</p>
+<p>检查一下event：</p>
+<div class="highlight"><pre><span></span><code>#trace-cmd list   |grep -i aegis
+kprobes:aegis_cn_netlink_send
+kprobes:aegis_sys_execve
+kprobes:aegis_proc_fork_connector
+</code></pre></div>
+
+<p><a href="https://fast.v2ex.com/t/869181">v2ex这个帖子</a>中，网友提到了用kprobe 检测系统调用是HIDS 的主流实现方式，是我菜鸡了。</p>
+<p>既然如此，那找一个开源的 HIDS 学习一下。</p>
+<p>看到了字节开源的：<a href="https://github.com/bytedance/Elkeid">elkeid</a>，看这个<a href="https://mp.weixin.qq.com/s/rm_hXHb_YBWQqmifgAqfaw">原理介绍</a>：</p>
+<blockquote>
+<p>AgentSmith是LKM（可加载内核模块）的方式hook住Linux内核一些函数。由于它是使用kprobe的方式，它hook的函数不只是系统调用，还可以hook内核内部一些函数，而这些内部函数是某些系统调用的关键点调用。</p>
+<p>kill
+对kill/tkill系统调用挂钩，记录程序终止某个进程操作，
+记录信息：
+执行程序
+目标进程
+信号</p>
+</blockquote>
+<p>先看这篇文章学习了下怎么写一个简单的 kprobe 例子，以便能略微看懂代码：<br>
+<a href="https://blog.csdn.net/luckyapple1028/article/details/52972315">《Linux内核调试技术——kprobe使用与实现》</a>。</p>
+<p>翻了下<code>Elkeid/driver/LKM/src/</code>  找到了 <a href="https://github.com/bytedance/Elkeid/blob/93a44936de68f351d967a66deca574fa0f8ea091/driver/LKM/src/smith_hook.c#L3895,L3903">kill_kprobe</a>：</p>
+<div class="highlight"><pre><span></span><code>struct kprobe kill_kprobe = {
+        .symbol_name = P_GET_SYSCALL_NAME(kill),
+        .pre_handler = kill_pre_handler,
+};
+
+struct kprobe tkill_kprobe = {
+        .symbol_name = P_GET_SYSCALL_NAME(tkill),
+        .pre_handler = tkill_pre_handler,
+};
+</code></pre></div>
+
+<p>再顺着就可以找到<code>register_kill_kprobe</code>、<code>kill_pre_handler()</code>  等。</p>
+<p>大概明白了逻辑，云盾是hook 了 kill 的系统调用，在里面实现了自保的逻辑。</p>
+<p>也可以参考这个文章<a href="https://www.gentoo.site/viewtopic.php?id=455">《 linux源码解读（十三）：内核驱动module加载kprobe&amp;字节跳动Elkied简要分析》</a>。</p>
+<p>这两篇译文写的也非常好，可以补充下 ftrace 的技能：</p>
+<ul>
+<li><a href="https://linux.cn/article-13752-1.html">《通过 ftrace 来分析 Linux 内核》</a></li>
+<li><a href="https://linux.cn/article-13852-1.html">《使用 trace-cmd 追踪内核》</a></li>
+<li>GUI 工具：<a href="https://github.com/cunctator/traceshark">traceshark</a></li>
+</ul>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2024-01-11T00:00:00+08:00">
+      Thu 11 January 2024
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2024.html">2024</a> Tagged <a href="https://fangpsh.github.io/tag/linux.html">linux </a><a href="https://fangpsh.github.io/tag/sec.html">sec </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
