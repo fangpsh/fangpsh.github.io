@@ -21,7 +21,6 @@
             <div class="header">
                 <ul class="nav nav-pills pull-right">
                     <li class=""><a href="/">Home</a></li>
-                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
                     <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
                 </ul>
                 <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
@@ -73,7 +72,7 @@ rm: cannot remove &#39;AliYunDun&#39;: Operation not permitted
 </code></pre></div>
 
 <p>也对，这是个安全软件（HIDS），要是能这么简单被干掉，也太弱了。
-想起有网友介意这个类后面程序的，那我看大家的卸载清理指南不就可以了？</p>
+想起有网友介意这类程序的，那我看大家的卸载清理指南不就可以了？</p>
 <p>找到卸载脚本：</p>
 <div class="highlight"><pre><span></span><code>http://update.aegis.aliyun.com/download/uninstall.sh
 </code></pre></div>
@@ -98,13 +97,13 @@ rm: cannot remove &#39;AliYunDun&#39;: Operation not permitted
 </code></pre></div>
 
 <p>看着眼熟，之前看动态调试相关的文章见过，没深入了解忘记了，原来如此。</p>
-<div class="highlight"><pre><span></span><code>lsmod  |grep -i ali
+<div class="highlight"><pre><span></span><code># lsmod  |grep -i ali
 AliSecGuard            22400  2
 </code></pre></div>
 
 <p>果然有一个配套的内核模块。</p>
 <p>检查一下event：</p>
-<div class="highlight"><pre><span></span><code>#trace-cmd list   |grep -i aegis
+<div class="highlight"><pre><span></span><code># trace-cmd list   |grep -i aegis
 kprobes:aegis_cn_netlink_send
 kprobes:aegis_sys_execve
 kprobes:aegis_proc_fork_connector

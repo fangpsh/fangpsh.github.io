@@ -42,7 +42,7 @@ rm: cannot remove &amp;#39;AliYunDun&amp;#39;: Operation not permitted
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;也对，这是个安全软件（HIDS），要是能这么简单被干掉，也太弱了。
-想起有网友介意这个类后面程序的，那我看大家的卸载清理指南不就可以了？&lt;/p&gt;
+想起有网友介意这类程序的，那我看大家的卸载清理指南不就可以了？&lt;/p&gt;
 &lt;p&gt;找到卸载脚本：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;http://update.aegis.aliyun.com/download/uninstall.sh
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -67,13 +67,13 @@ rm: cannot remove &amp;#39;AliYunDun&amp;#39;: Operation not permitted
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;看着眼熟，之前看动态调试相关的文章见过，没深入了解忘记了，原来如此。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;lsmod  |grep -i ali
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# lsmod  |grep -i ali
 AliSecGuard            22400  2
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;果然有一个配套的内核模块。&lt;/p&gt;
 &lt;p&gt;检查一下event：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#trace-cmd list   |grep -i aegis
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# trace-cmd list   |grep -i aegis
 kprobes:aegis_cn_netlink_send
 kprobes:aegis_sys_execve
 kprobes:aegis_proc_fork_connector
