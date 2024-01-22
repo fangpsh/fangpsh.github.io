@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-01-11T00:00:00+08:00</updated><entry><title>为何无法杀死阿里云盾</title><link href="https://fangpsh.github.io/posts/2024/2024-01-11.html" rel="alternate"></link><published>2024-01-11T00:00:00+08:00</published><updated>2024-01-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-01-11:/posts/2024/2024-01-11.html</id><summary type="html">&lt;p&gt;输错 PID，给云盾进程发送了kill signal：&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-01-22T00:00:00+08:00</updated><entry><title>Type65 的未来</title><link href="https://fangpsh.github.io/posts/2024/2024-01-22.html" rel="alternate"></link><published>2024-01-22T00:00:00+08:00</published><updated>2024-01-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-01-22:/posts/2024/2024-01-22.html</id><summary type="html">&lt;p&gt;注：这是一篇 23 年8月的笔记，目前查看对应的&lt;a href="https://datatracker.ietf.org/doc/rfc9460/?include_text=1"&gt;RFC 9460&lt;/a&gt; 已经发布。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;前些日子在查看内网域名解析服务器时，发现新增了不少type65 的记录，反 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;注：这是一篇 23 年8月的笔记，目前查看对应的&lt;a href="https://datatracker.ietf.org/doc/rfc9460/?include_text=1"&gt;RFC 9460&lt;/a&gt; 已经发布。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;前些日子在查看内网域名解析服务器时，发现新增了不少type65 的记录，反向查到设备均是 iPhone 和 MacBook，苹果拥抱隐私保护总是走在前列。&lt;/p&gt;
+&lt;p&gt;type65是什么，可以阅读这篇文章，作者娓娓道来，写的非常好：&lt;a href="https://taoshu.in/dns/dns-svcb-https.html"&gt;DNS SVCB/HTTPS 记录介绍&lt;/a&gt;。和作者在结尾表达的随想不同，作者认为未来大江大湖，势不可挡，我却偏悲观。&lt;/p&gt;
+&lt;p&gt;如今家宽大多直接丢弃入向特定端口（80、443），而云商大多审查 http、https sni 阻断未接入备案的域名流量。&lt;/p&gt;
+&lt;p&gt;未来iOS、Android、Chrome 等阵营一定会大力支持 SVCB/HTTPS ，随着支持版本的覆盖，黑灰产等流量势必先开始推行此项新技术。&lt;/p&gt;
+&lt;p&gt;随机的QUIC端口分发，再叠加ECH，普通家庭和IDC的审查 成本无限增大，阻断策略只能更加激进。
+现在https sni 明文还可以阻断，以后不备案， 中间人无法识别，那云厂商该如何？限制个人用户注册，仅支持企业用户？&lt;/p&gt;
+&lt;p&gt;家庭用户或IDC等流量，默认 drop 掉入向 tcp 流量？但是 udp的 quic 呢？&lt;/p&gt;
+&lt;p&gt;或许，最后只能对域名解析下手，干扰污染此类记录类型，丢弃掉海外大型公开 dns 流量。而特色的微信浏览器等，也极有可能默认阉割不支持。&lt;/p&gt;
+&lt;p&gt;对于企业 IT 运维，几年前就应将境内、境外运营域名剥离，独立运营。如果还没做，要抓紧了。
+对于大陆运营的域名，如果注册商还在境外，建议尽快转移到大陆；如果权威解析在境外，也建议尽快迁到大陆。&lt;/p&gt;</content><category term="2024"></category><category term="dns"></category><category term="https"></category></entry><entry><title>为何无法杀死阿里云盾</title><link href="https://fangpsh.github.io/posts/2024/2024-01-11.html" rel="alternate"></link><published>2024-01-11T00:00:00+08:00</published><updated>2024-01-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-01-11:/posts/2024/2024-01-11.html</id><summary type="html">&lt;p&gt;输错 PID，给云盾进程发送了kill signal：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;root     26689  0.3  0.1 113180  9420 ?        S&amp;lt;sl 10:34   0:08 /usr/local/aegis/aegis_client/aegis_11_83/AliYunDun
 ...
 

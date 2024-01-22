@@ -27,6 +27,13 @@
 <section id="content" class="content">
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-07-24.html" rel="bookmark" title="Permalink to 无法添加cloudpods 计算节点的问题排查">无法添加cloudpods 计算节点的问题排查</a></h2> </header>
+                <div class="entry-content"> <p>给cloudpods 添加一个计算节点，出错：</p>
+<div class="highlight"><pre><span></span><code>TASK [worker-node : Use &#39;ocadm join 192.168.x.x:6443 --token howsjs.XXX --discovery-token-unsafe-skip-ca-verification --enable-host-agent --node-ip 192.168.x.x --enable-hugepage &#39;] ***
+fatal: [192.168.x.x]: FAILED! =&gt;
+ {&quot;changed&quot;: true, &quot;cmd&quot;: [&quot;/opt/yunion/bin/ocadm&quot;, &quot;join&quot;, &quot;192.168.x …</code></pre></div> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-06-12.html" rel="bookmark" title="Permalink to 威联通RAID1 磁盘数据导出">威联通RAID1 磁盘数据导出</a></h2> </header>
                 <div class="entry-content"> <p>公司用了多年的<a href="https://www.qnap.com/en/product/ts-651">TS-651</a> 坏了，修了没跑几天又坏（深圳市南山赛格新联创电脑经营部 👎 ），
 最开始搜索<code>qnap 硬盘导出</code>，首先看到<a href="https://post.smzdm.com/p/301806/">smzdm</a>的帖 …</p> </div><!-- entry-content -->
@@ -78,17 +85,6 @@
 <li>作者：Dani Hodovic</li>
 </ul>
 <p>在我使用的所有编程语言中，Python 的HTTP 库 <a href="https://requests.readthedocs.io/en/master/">requests</a> 是我最喜欢的HTTP 工具。它简单，直观，在Python 社区中无处不在 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2020/2020-09-09.html" rel="bookmark" title="Permalink to 一个双向MTR仅单向丢包的问题">一个双向MTR仅单向丢包的问题</a></h2> </header>
-                <div class="entry-content"> <p>现象:</p>
-<ol>
-<li>A 机器ping B 机器丢包，触发A MTR B，最后一跳丢包；</li>
-<li>B 机器ping A 机器丢包，触发B MTR A，最后一跳不丢包；</li>
-</ol>
-<p><img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png">
-<img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"></p>
-<p>按照之前的理解 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

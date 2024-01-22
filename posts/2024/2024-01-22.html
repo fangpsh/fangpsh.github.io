@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>Type65 的未来 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="dns,https" />
+<meta name="description" content="注：这是一篇 23 年8月的笔记，目前查看对应的RFC 9460 已经发布。 前些日子在查看内网域名解析服务器时，发现新增了不少type65 的记录，反 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2024/2024-01-22.html" rel="bookmark"
+         title="Permalink to Type65 的未来">Type65 的未来</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>注：这是一篇 23 年8月的笔记，目前查看对应的<a href="https://datatracker.ietf.org/doc/rfc9460/?include_text=1">RFC 9460</a> 已经发布。</p>
+<hr>
+<p>前些日子在查看内网域名解析服务器时，发现新增了不少type65 的记录，反向查到设备均是 iPhone 和 MacBook，苹果拥抱隐私保护总是走在前列。</p>
+<p>type65是什么，可以阅读这篇文章，作者娓娓道来，写的非常好：<a href="https://taoshu.in/dns/dns-svcb-https.html">DNS SVCB/HTTPS 记录介绍</a>。和作者在结尾表达的随想不同，作者认为未来大江大湖，势不可挡，我却偏悲观。</p>
+<p>如今家宽大多直接丢弃入向特定端口（80、443），而云商大多审查 http、https sni 阻断未接入备案的域名流量。</p>
+<p>未来iOS、Android、Chrome 等阵营一定会大力支持 SVCB/HTTPS ，随着支持版本的覆盖，黑灰产等流量势必先开始推行此项新技术。</p>
+<p>随机的QUIC端口分发，再叠加ECH，普通家庭和IDC的审查 成本无限增大，阻断策略只能更加激进。
+现在https sni 明文还可以阻断，以后不备案， 中间人无法识别，那云厂商该如何？限制个人用户注册，仅支持企业用户？</p>
+<p>家庭用户或IDC等流量，默认 drop 掉入向 tcp 流量？但是 udp的 quic 呢？</p>
+<p>或许，最后只能对域名解析下手，干扰污染此类记录类型，丢弃掉海外大型公开 dns 流量。而特色的微信浏览器等，也极有可能默认阉割不支持。</p>
+<p>对于企业 IT 运维，几年前就应将境内、境外运营域名剥离，独立运营。如果还没做，要抓紧了。
+对于大陆运营的域名，如果注册商还在境外，建议尽快转移到大陆；如果权威解析在境外，也建议尽快迁到大陆。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2024-01-22T00:00:00+08:00">
+      Mon 22 January 2024
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2024.html">2024</a> Tagged <a href="https://fangpsh.github.io/tag/dns.html">dns </a><a href="https://fangpsh.github.io/tag/https.html">https </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
