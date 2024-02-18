@@ -3,12 +3,6 @@
 &lt;p&gt;刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="rasproxy" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的差不多了，就开始用快代理之类的服务，不过速度慢，IP 也容易被封。那会在玩树莓派，外加公司给发了一个移动3G无线网卡， 有一天突然想到不如用树莓派+无线网卡做个代理池。&lt;/p&gt;
 &lt;p&gt;好处是只要重启就能换 IP， IP 来自本地运营商真实用户 IP 超大池，不容易被封，或者是说你要敢按段封，就会误伤用户。&lt;/p&gt;
-&lt;p&gt;如今搜索了下 19 年也有一些朋友在玩类似的，而且更省机器。当时做法是一个机器一个无线网卡，没想到可以用 docker +虚拟网卡的方式：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="https://mp.weixin.qq.com/s/xlm8biaUinNlNS5hBO7uLw"&gt;震惊，商业级4G代理居然只需要用这些...&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://mp.weixin.qq.com/s/YHLko6nw3AcPEaU_H15esQ"&gt;Docker竟然还能这么玩？商业级4G代理搭建实战！&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://github.com/NightTeam/cellular-network-proxy_docker/"&gt;项目代码&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 &lt;p&gt;看上面图片当时应该搞了快 100 个树莓派。无线网卡用华为 EC8201和E8231，不需要 ppp 拨号，还有 web 接口可以读取统计流量。插到 usb 口上，写一个类似这种udev rules，添加办公网路由，删除默认路由，外网流量走无线网卡：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#Huawei E8231
 ATTRS{idVendor}==&amp;quot;12d1&amp;quot;, ATTRS{idProduct}==&amp;quot;14db&amp;quot;, RUN+=&amp;quot;usb_modeswitch &amp;#39;%b/%k&amp;#39;&amp;quot;
@@ -27,7 +21,13 @@ ACTION==&amp;quot;add&amp;quot;, SUBSYSTEM==&amp;quot;usb&amp;quot;,ATTRS{idVend
 &lt;/li&gt;
 &lt;li&gt;节点远程重启管理等；&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;站在今天看，如果还要做类似项目，应该会用上面网友的容器方式，或者直接用二手安卓机改造，成本更低。&lt;/p&gt;</content><category term="2024"></category><category term="proxy"></category><category term="raspberrypi"></category></entry><entry><title>Type65 的未来</title><link href="https://fangpsh.github.io/posts/2024/2024-01-22.html" rel="alternate"></link><published>2024-01-22T00:00:00+08:00</published><updated>2024-01-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-01-22:/posts/2024/2024-01-22.html</id><summary type="html">&lt;p&gt;注：这是一篇 23 年8月的笔记，目前查看对应的&lt;a href="https://datatracker.ietf.org/doc/rfc9460/?include_text=1"&gt;RFC 9460&lt;/a&gt; 已经发布。&lt;/p&gt;
+&lt;p&gt;如今搜索了下 19 年也有一些朋友在玩类似的，而且更省机器。当时做法是一个机器插一个无线网卡，没想到可以用 docker +虚拟网卡的方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://mp.weixin.qq.com/s/xlm8biaUinNlNS5hBO7uLw"&gt;震惊，商业级4G代理居然只需要用这些...&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://mp.weixin.qq.com/s/YHLko6nw3AcPEaU_H15esQ"&gt;Docker竟然还能这么玩？商业级4G代理搭建实战！&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/NightTeam/cellular-network-proxy_docker/"&gt;项目代码&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果还要做类似项目，应该会用上面网友的容器方式，或者直接用二手安卓机改造，成本更低。&lt;/p&gt;</content><category term="2024"></category><category term="proxy"></category><category term="raspberrypi"></category></entry><entry><title>Type65 的未来</title><link href="https://fangpsh.github.io/posts/2024/2024-01-22.html" rel="alternate"></link><published>2024-01-22T00:00:00+08:00</published><updated>2024-01-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-01-22:/posts/2024/2024-01-22.html</id><summary type="html">&lt;p&gt;注：这是一篇 23 年8月的笔记，目前查看对应的&lt;a href="https://datatracker.ietf.org/doc/rfc9460/?include_text=1"&gt;RFC 9460&lt;/a&gt; 已经发布。&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;前些日子在查看内网域名解析服务器时，发现新增了不少type65 的记录，反 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;注：这是一篇 23 年8月的笔记，目前查看对应的&lt;a href="https://datatracker.ietf.org/doc/rfc9460/?include_text=1"&gt;RFC 9460&lt;/a&gt; 已经发布。&lt;/p&gt;
 &lt;hr&gt;
