@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>高质量4G代理池 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="proxy,raspberrypi" />
+<meta name="description" content="刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2024/2024-02-02.html" rel="bookmark"
+         title="Permalink to 高质量4G代理池">高质量4G代理池</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="rasproxy" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2024/20240218145733.jpg"></p>
+<p>刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的差不多了，就开始用快代理之类的服务，不过速度慢，IP 也容易被封。那会在玩树莓派，外加公司给发了一个移动3G无线网卡， 有一天突然想到不如用树莓派+无线网卡做个代理池。</p>
+<p>好处是只要重启就能换 IP， IP 来自本地运营商真实用户 IP 超大池，不容易被封，或者是说你要敢按段封，就会误伤用户。</p>
+<p>如今搜索了下 19 年也有一些朋友在玩类似的，而且更省机器。当时做法是一个机器一个无线网卡，没想到可以用 docker +虚拟网卡的方式：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/xlm8biaUinNlNS5hBO7uLw">震惊，商业级4G代理居然只需要用这些...</a></li>
+<li><a href="https://mp.weixin.qq.com/s/YHLko6nw3AcPEaU_H15esQ">Docker竟然还能这么玩？商业级4G代理搭建实战！</a></li>
+<li><a href="https://github.com/NightTeam/cellular-network-proxy_docker/">项目代码</a></li>
+</ul>
+<p>看上面图片当时应该搞了快 100 个树莓派。无线网卡用华为 EC8201和E8231，不需要 ppp 拨号，还有 web 接口可以读取统计流量。插到 usb 口上，写一个类似这种udev rules，添加办公网路由，删除默认路由，外网流量走无线网卡：</p>
+<div class="highlight"><pre><span></span><code>#Huawei E8231
+ATTRS{idVendor}==&quot;12d1&quot;, ATTRS{idProduct}==&quot;14db&quot;, RUN+=&quot;usb_modeswitch &#39;%b/%k&#39;&quot;
+ACTION==&quot;add&quot;, SUBSYSTEM==&quot;usb&quot;,ATTRS{idVendor}==&quot;12d1&quot;, ATTRS{idProduct}==&quot;14db&quot;, RUN+=&quot;/sbin/route add -net 10.0.0.0/8 dev eth0&quot;
+ACTION==&quot;add&quot;, SUBSYSTEM==&quot;usb&quot;,ATTRS{idVendor}==&quot;12d1&quot;, ATTRS{idProduct}==&quot;14db&quot;, RUN+=&quot;/sbin/route del default gw 10.0.1.1 dev eth0&quot;
+</code></pre></div>
+
+<p>每个节点上跑个tinyproxy 或 <code>ssh -D</code>，使用 supervisord 或systemd 管理好服务。</p>
+<p>再用 flask 写了一个青涩的服务端，在每个树莓派上跑一些定时脚本，上报统计信息。一些功能：</p>
+<ul>
+<li>流量不够了就自动下线；</li>
+<li>代理健康检查；</li>
+<li>服务端吐出可用的代理列表接口；<ul>
+<li>按流量计算，按链接数最小分配等</li>
+</ul>
+</li>
+<li>节点远程重启管理等；</li>
+</ul>
+<p>站在今天看，如果还要做类似项目，应该会用上面网友的容器方式，或者直接用二手安卓机改造，成本更低。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2024-02-02T00:00:00+08:00">
+      Fri 02 February 2024
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2024.html">2024</a> Tagged <a href="https://fangpsh.github.io/tag/proxy.html">proxy </a><a href="https://fangpsh.github.io/tag/raspberrypi.html">raspberrypi </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
