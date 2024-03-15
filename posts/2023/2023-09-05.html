@@ -120,8 +120,10 @@ a299197c08ba4f000.awsglobalaccelerator.com. 186 IN A 3.3.14.1
 <li>权威服务器的某个IP在某个域内BGP Leak 了？ 牵引了部分权威服务器的流量，然后进行抢答；</li>
 <li>DNS 缓存投毒（DNS cache poisoning）；</li>
 </ol>
-<p>~~个人觉得可能性比较大的是 dns 缓存投毒了 ，有人猜测了dns查询事务id，进行了抢答。~~
-由于此劫持时间超长，影响范围超广，让我怀疑不是黑客所谓，更倾向于原因 2，是的，就是你想的那个。@20240315</p>
+<p><s>
+个人觉得可能性比较大的是 dns 缓存投毒了 ，有人猜测了dns查询事务id，进行了抢答。 
+</s></p>
+<p>由于此劫持时间超长，影响范围超广，让我怀疑不是黑客所谓，更倾向于原因 2，是的，就是你想的那个。@20240315</p>
 <p>什么是DNS 缓存投毒，可参考：<a href="https://www.cloudflare.com/learning/dns/dns-cache-poisoning/">cloudflare: What is DNS cache poisoning? | DNS spoofing </a>，这个幻灯片讲解的比较详细 <a href="https://owasp.org/www-pdf-archive/DNS_Cache_Poisoning(OWASP_GHANA).pdf">Anatomy  of a DNS Cache Poisoning Attack</a>。</p>
 <p>规避方法，使用DNSSEC，或者不使用固定的源地址，随机源地址+随机事务ID，让攻击者更难猜测：</p>
 <div class="highlight"><pre><span></span><code>- UDP Source Port Randomization (UDP SPR): What this does is setting the UDP
