@@ -33,7 +33,7 @@ For specific disk models and vendors, it&amp;#39;s recommended to refer to their
 &lt;/blockquote&gt;
 &lt;p&gt;这个指标是不是包含磁盘出现故障的那一刻，出现大量的错误，合并全生命周期，累计平均出来的？如果是这样的话，最后大量的 错误会急剧拉高平均值？&lt;/p&gt;
 &lt;p&gt;举个例子，假设一架飞机永久执飞下去，30 年后出空难死了 300 个人。不能说这个飞机上每飞1年都可能会死10个人？&lt;/p&gt;
-&lt;p&gt;又有一些说法， 厂商的URE是最糟糕/极端的情况下测试的，实际没这么糟糕；URE 是一个概率，不代表一定会遇到，例如抛硬币可能 100 次都是正面；
+&lt;p&gt;又有一些说法， 厂商的URE是最糟糕/极端的情况下测试的，实际没这么糟糕；URE 是一个概率，不代表一定会遇到，例如抛硬币可能 10 次都是正面；
 &lt;a href="https://www.enricobassetti.it/2022/03/raid5-ure-and-the-probability/"&gt;RAID5, URE and the probability&lt;/a&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;- the URE probability is the max value declared by the constructor (worst case scenario - usually disks perform far better)
 - the URE can happen with the same probability among the whole disk (which is not true)
