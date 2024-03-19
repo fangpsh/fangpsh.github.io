@@ -137,9 +137,11 @@ bad sector – the colloquial name for the same thing
 <li>做好整列状态检查</li>
 <li>做好整理中磁盘的状态监控，包括 SMART、LSI PD MediaError 等；</li>
 <li>机房巡检</li>
+<li>BBU 监控</li>
 </ol>
 <p>这些工作都没做好，RAID10 也白扯。</p>
 <p>RAID5 我还是会用，只是为了计算节点坏盘不用停机。数据库节点不用RAID5。 </p>
+<p>另外一个控制存储池大小的原因是，重建过程会有性能下降的问题，生产环境要尽量缩短重建时间。</p>
 <p>还有，重要数据做备份，RAID 不是备份。</p>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
