@@ -129,7 +129,9 @@ bad sector – the colloquial name for the same thing
 <p>We also conclude that UER (uncorrectable error rate) is not the relevant metric for our needs. When an uncorrectable read error happens, there are typically several damaged storage blocks (and many uncorrectable read errors.) Also, some uncorrect- able read errors may be masked by the operating system. The more meaningful metric for data architects is Mean Time To Data Loss (MTTDL.)</p>
 </blockquote>
 <p>URE 会出现，但是和 厂商的UER 关联性不强，更建议参考 MTTDL。这可能是网友所说的尽量选择不同批次、不同平台磁盘组 RAID 的原因？同批次的磁盘 MTTDL 总是相近？</p>
-<p>URE 会影响到 RAID 重建成功率，但是重建过程中 LSE 的出现的概率并不能简单的用厂商的 URE 和磁盘容量来推算。</p>
+<p>MTTDL=MTBF，酷狼的 MTBF 是100万小时～114 年。如果随着时间推移，出现LSE的概率会越来越高。前 10 年的概率应该远小于后面100年？</p>
+<p>这也是为什么网友买二手磁盘要看 SMART 通电时间和写入数据量的底层原因？</p>
+<p>URE确实会影响到 RAID 重建成功率，但是重建过程中 LSE 的出现的概率并不能简单的用厂商的 URE 和磁盘容量来推算。</p>
 <p>LSE 那篇论文中也提到，开启阵列的巡读（patrol reading、巡检、scrub  等）对于自动修复 bit rot和提前 发现 LSE 非常重要。</p>
 <p>我见过太多运维机器上架，配置完 RAID 就不管了。至少还应该做好以下工作：</p>
 <ol>
