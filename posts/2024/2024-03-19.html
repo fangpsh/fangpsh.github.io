@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>关于磁盘URE的担忧 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="disk，raid" />
+<meta name="description" content="网络上常见关于 磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答raid5 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2024/2024-03-19.html" rel="bookmark"
+         title="Permalink to 关于磁盘URE的担忧">关于磁盘URE的担忧</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>网络上常见关于  磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答<a href="https://www.zhihu.com/question/20164654">raid5 磁盘阵列真的不安全么？</a>。</p>
+<p>这个概率和我自身在这么多年的运维工作中，raid5 重建失败的事件几乎没遇到。
+不过人的感觉是不准确的，数学才不会撒谎，例如生日悖论。</p>
+<p>先提几个问题：</p>
+<ol>
+<li>30 分钟内读取了 12TB 和 300 天读取了 12TB，URE 的概率一样吗？</li>
+<li>循环读取一个 10G 的文件达到 12TB，和遍历读盘达到 12TB， URE概率 一样吗？</li>
+<li>在无尘机房读取 12TB，和在出租车上读取 12TB，URE 概率一样吗</li>
+<li>一个硬盘断电放 1年读取 12TB，和一个硬盘上机1年后读取 12TB，URE 概率一样吗？</li>
+</ol>
+<p>既然出发点是 URE，那我们需要了解下 URE 的是什么，是如何计算得出的。</p>
+<p>搜索引擎翻了半天都没找到，chatgpt 给出的答复：</p>
+<div class="highlight"><pre><span></span><code>Vendors typically calculate the Unrecoverable Read Error (URE) based on extensive testing and statistical analysis. While the specific calculation method may vary among vendors, here is a general overview of how URE is typically calculated:
+
+The vendor conducts large-scale tests where they read a significant amount of data from the disk and record the number of errors encountered during the read process.
+
+The recorded error count is then compared to the total amount of data read.
+
+By dividing the error count by the total data read, the vendor can determine the rate or probability of Unrecoverable Read Errors. This is often expressed as the number of errors per a certain amount of data read, such as one error per 10^14 (or 10^15) bits read.
+
+The calculated rate or probability is then provided as the URE value by the vendor, which helps users assess the disk&#39;s reliability and error tolerance.
+
+It&#39;s important to note that the URE calculation is an estimation based on statistical samples and test data. The specific URE value and calculation method can vary depending on the vendor, disk model, and technology. Additionally, the URE value is typically calculated over the entire lifespan of the disk or during a specific amount of data read.
+
+For specific disk models and vendors, it&#39;s recommended to refer to their technical specifications and documentation for more detailed information on URE values and calculation methods.
+</code></pre></div>
+
+<p>作为一个统计指标，看起来和时间无关。</p>
+<p><a href="https://www.reddit.com/r/zfs/comments/3gpkm9/statistics_on_realworld_unrecoverable_read_error/">reddit:statistics_on_realworld_unrecoverable_read_error</a>：</p>
+<blockquote>
+<p>The spec does not mean that after every 12.5TB you will get an error, it means that on average across the lifespan of the drive's reads it will get that number of errors. It is possible and indeed very likely that you could read 100's of TB and get no errors, and then all of a sudden get a bunch of errors all together, averaging to 1 in 12.5TB. It's just statistics as to why they seem more reliable that the datasheet.</p>
+</blockquote>
+<p>这个指标是不是包含磁盘出现故障的那一刻，出现大量的错误，合并全生命周期，累计平均出来的？如果是这样的话，最后大量的 错误会急剧拉高平均值？</p>
+<p>举个例子，假设一架飞机永久执飞下去，30 年后出空难死了 300 个人。不能说这个飞机上每年都可能会死一个人？</p>
+<p>又有一些说法， 厂商的URE是最糟糕/极端的情况下测试的，实际没这么糟糕；URE 是一个概率，不代表一定会遇到，例如抛硬币可能 100 次都是正面；
+<a href="https://www.enricobassetti.it/2022/03/raid5-ure-and-the-probability/">RAID5, URE and the probability</a></p>
+<div class="highlight"><pre><span></span><code>- the URE probability is the max value declared by the constructor (worst case scenario - usually disks perform far better)
+- the URE can happen with the same probability among the whole disk (which is not true)
+- the URE will happen after 10^14 bits (which will not - again, it’s a probability)
+</code></pre></div>
+
+<p>但是归根结底，URE 到底和什么有关，是怎么计算产生的，都有哪些原因？</p>
+<p>上面知乎网友答案中提到的：</p>
+<div class="highlight"><pre><span></span><code>这个读错误产生的原因可能在于：
+
+数据写入硬盘时，数字信号转换为盘片上的模拟磁场信号过程中发生错误；
+数据存放过程中，因为外界的电磁干扰/宇宙射线/写入周围单元时磁头位置偏离导致的磁单元中部分磁性材料极性翻转；
+读取数据时，磁场信号转换为数字信号过程中发生错误；
+</code></pre></div>
+
+<p>这里面其实还有一个概念，叫<a href="https://en.wikipedia.org/wiki/Data_degradation">bit rot: 比特衰减</a>，bit rot 可能会导致 URE，但并不一定。</p>
+<p>就宇宙射线来说，一块磁盘 30 分钟读 12TB 被宇宙射线影响的概率和 30天读 12TB 一样吗？</p>
+<p><a href="https://heremystuff.wordpress.com/2020/08/25/the-case-of-the-12tb-ure/">The case of the 12TB URE: Explained and debunked</a>：</p>
+<div class="highlight"><pre><span></span><code>Another name for the unrecoverable read error is:
+
+LSE – Latent Sector Error
+Latent, because you don’t know it is there, until you try to read it.
+bad sector – the colloquial name for the same thing
+</code></pre></div>
+
+<p><a href="https://pages.cs.wisc.edu/~remzi/OSTEP/Chinese/44.pdf">第 44 章 数据完整性和保护</a></p>
+<div class="highlight"><pre><span></span><code>当磁盘扇区（或扇区组）以某种方式讹误时，会出现 LSE。例如，如果磁头由于某种
+原因接触到表面（磁头碰撞，head crash，在正常操作期间不应发生的情况），则可能会讹误
+表面，使得数据位不可读。宇宙射线也会导致数据位翻转，使内容不正确。幸运的是，驱
+动器使用磁盘内纠错码（Error Correcting Code，ECC）来确定块中的磁盘位是否良好，并且
+在某些情况下，修复它们。如果它们不好，并且驱动器没有足够的信息来修复错误，则在
+发出请求读取它们时，磁盘会返回错误。
+</code></pre></div>
+
+<p>对了，声音也会影响到磁盘，因为声音也是一种震动：</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=tDacjrSCeq4">Gregg 15 年前的测试：Shouting in the Datacenter</a></li>
+<li><a href="https://www.vice.com/en/article/8q8dqg/a-loud-sound-just-shut-down-a-banks-data-center-for-10-hours">A Loud Sound Just Shut Down a Bank's Data Center for 10 Hours</a></li>
+</ul>
+<p>说回正题，LSE 和读取数据量有关吗？</p>
+<p><a href="https://www.usenix.org/event/fast10/tech/full_papers/schroeder.pdf">《Understanding latent sector errors and how to protect against them》</a>：</p>
+<blockquote>
+<p>3.5 What causes LSEs?  </p>
+<p>This is obviously a broad question that we cannot hope to answer with the data we have. Nevertheless, we want to address this question briefly, since our observations in Section 3.3 might lead to hasty conclusions. In particu- lar, a possible explanation for the concentration of errors in certain parts of the drive might be that these areas see a higher utilization. While we do not have access to work- load data for NetApp’s systems, we have been able to obtain two years of data on workload, environmental fac- tors and LSE rates for five large (&gt; 50,000 drives each) clusters at Google containing five different drive models. None of the clusters showed a correlation between either the number of reads or the number of writes that a drive sees (as reported by the drive’s SMART parameters) and the number of LSEs it develops. We plan a detailed study of workload and environmental factors and how they im- pact LSEs as part of future work.</p>
+</blockquote>
+<p>结论：读写量和 LSE 无关。另外论文中提到，LSE 的出现在时间和空间上具有（聚集性）关联性，即很可能是同一事件触发的。</p>
+<blockquote>
+<p>These observations indicate that the errors in most bursts are likely caused by the same event and hence occurred at the same time.</p>
+</blockquote>
+<p>到这里，我们可以更好的理解，URE 描述的是磁盘一整个生命周期下的统计值，不是某个一时刻或者多少读写量的概率。</p>
+<p>再看微软团队的论文：<a href="https://arxiv.org/pdf/cs/0701166">《Empirical Measurements of Disk Failure Rates and Error Rates》</a>：</p>
+<blockquote>
+<p>We also conclude that UER (uncorrectable error rate) is not the relevant metric for our needs. When an uncorrectable read error happens, there are typically several damaged storage blocks (and many uncorrectable read errors.) Also, some uncorrect- able read errors may be masked by the operating system. The more meaningful metric for data architects is Mean Time To Data Loss (MTTDL.)</p>
+</blockquote>
+<p>URE 会出现，但是和 厂商的UER 关联性不强，更建议参考 MTTDL。这可能是网友所说的尽量选择不同批次、不同平台磁盘组 RAID 的原因？同批次的磁盘 MTTDL 总是相近？</p>
+<p>URE 会影响到 RAID 重建成功率，但是重建过程中 LSE 的出现的概率并不能简单的用厂商的 URE 和磁盘容量来推算。</p>
+<p>LSE 那篇论文中也提到，开启阵列的巡读（patrol reading、巡检、scrub  等）对于自动修复 bit rot和提前 发现 LSE 非常重要。</p>
+<p>我见过太多运维机器上架，配置完 RAID 就不管了。至少还应该做好以下工作：</p>
+<ol>
+<li>配置好巡读周期，软 raid 也有对应的功能；</li>
+<li>做好整列状态检查</li>
+<li>做好整理中磁盘的状态监控，包括 SMART、LSI PD MediaError 等；</li>
+<li>机房巡检</li>
+</ol>
+<p>这些工作都没做好，RAID10 也白扯。</p>
+<p>RAID5 我还是会用，只是为了计算节点生产环境坏盘不用停机，数据库节点不用。</p>
+<p>还有，重要数据做备份，RAID 不是备份。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2024-03-19T00:00:00+08:00">
+      Tue 19 March 2024
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2024.html">2024</a> Tagged <a href="https://fangpsh.github.io/tag/diskraid.html">disk，raid </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
