@@ -59,6 +59,7 @@ Latent, because you don’t know it is there, until you try to read it.
 bad sector – the colloquial name for the same thing
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
+&lt;p&gt;URE 就是遇到LSE的情况。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://pages.cs.wisc.edu/~remzi/OSTEP/Chinese/44.pdf"&gt;第 44 章 数据完整性和保护&lt;/a&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;当磁盘扇区（或扇区组）以某种方式讹误时，会出现 LSE。例如，如果磁头由于某种
 原因接触到表面（磁头碰撞，head crash，在正常操作期间不应发生的情况），则可能会讹误
