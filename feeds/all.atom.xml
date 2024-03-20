@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-03-19T00:00:00+08:00</updated><entry><title>关于磁盘URE的担忧</title><link href="https://fangpsh.github.io/posts/2024/2024-03-19.html" rel="alternate"></link><published>2024-03-19T00:00:00+08:00</published><updated>2024-03-19T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-03-19:/posts/2024/2024-03-19.html</id><summary type="html">&lt;p&gt;网络上常见关于  磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答&lt;a href="https://www.zhihu.com/question/20164654"&gt;raid5 …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;网络上常见关于  磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答&lt;a href="https://www.zhihu.com/question/20164654"&gt;raid5 磁盘阵列真的不安全么？&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;这个概率和我自身在这么多年的运维工作中，raid5 重建失败的事件几乎没遇到。
-不过人的感觉是不准确的，数学才不会撒谎，例如生日悖论。&lt;/p&gt;
+&lt;p&gt;这个概率和我自身在这么多年的运维工作中，raid5 重建失败的事件几乎没遇到的感觉不符。不过人的感觉是不准确的，数学才不会撒谎，例如生日悖论。&lt;/p&gt;
 &lt;p&gt;先提几个问题：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;30 分钟内读取了 12TB 和 300 天读取了 12TB，URE 的概率一样吗？&lt;/li&gt;
@@ -103,7 +102,7 @@ bad sector – the colloquial name for the same thing
 &lt;li&gt;BBU 监控&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;这些工作都没做好，RAID10 也白扯。&lt;/p&gt;
-&lt;p&gt;RAID5 我还是会用，只是为了计算节点坏盘不用停机。数据库节点不用RAID5。 &lt;/p&gt;
+&lt;p&gt;RAID5 我还是会用，只是为了计算节点换盘不用停机。数据库节点不用RAID5。 &lt;/p&gt;
 &lt;p&gt;另外一个控制存储池大小的原因是，重建过程会有性能下降的问题，生产环境要尽量缩短重建时间。&lt;/p&gt;
 &lt;p&gt;还有，重要数据做备份，RAID 不是备份。&lt;/p&gt;</content><category term="2024"></category><category term="disk，raid"></category></entry><entry><title>高质量4G代理池</title><link href="https://fangpsh.github.io/posts/2024/2024-02-02.html" rel="alternate"></link><published>2024-02-02T00:00:00+08:00</published><updated>2024-02-02T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-02-02:/posts/2024/2024-02-02.html</id><summary type="html">&lt;p&gt;&lt;img alt="rasproxy" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="rasproxy" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;

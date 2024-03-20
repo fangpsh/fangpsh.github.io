@@ -39,8 +39,7 @@
   </div>     
   <div id="article-content" class="entry-content">
     <p>网络上常见关于  磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答<a href="https://www.zhihu.com/question/20164654">raid5 磁盘阵列真的不安全么？</a>。</p>
-<p>这个概率和我自身在这么多年的运维工作中，raid5 重建失败的事件几乎没遇到。
-不过人的感觉是不准确的，数学才不会撒谎，例如生日悖论。</p>
+<p>这个概率和我自身在这么多年的运维工作中，raid5 重建失败的事件几乎没遇到的感觉不符。不过人的感觉是不准确的，数学才不会撒谎，例如生日悖论。</p>
 <p>先提几个问题：</p>
 <ol>
 <li>30 分钟内读取了 12TB 和 300 天读取了 12TB，URE 的概率一样吗？</li>
@@ -142,7 +141,7 @@ bad sector – the colloquial name for the same thing
 <li>BBU 监控</li>
 </ol>
 <p>这些工作都没做好，RAID10 也白扯。</p>
-<p>RAID5 我还是会用，只是为了计算节点坏盘不用停机。数据库节点不用RAID5。 </p>
+<p>RAID5 我还是会用，只是为了计算节点换盘不用停机。数据库节点不用RAID5。 </p>
 <p>另外一个控制存储池大小的原因是，重建过程会有性能下降的问题，生产环境要尽量缩短重建时间。</p>
 <p>还有，重要数据做备份，RAID 不是备份。</p>
   </div><!-- /.entry-content -->
