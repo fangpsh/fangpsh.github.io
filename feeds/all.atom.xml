@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-03-19T00:00:00+08:00</updated><entry><title>关于磁盘URE的担忧</title><link href="https://fangpsh.github.io/posts/2024/2024-03-19.html" rel="alternate"></link><published>2024-03-19T00:00:00+08:00</published><updated>2024-03-19T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-03-19:/posts/2024/2024-03-19.html</id><summary type="html">&lt;p&gt;网络上常见关于  磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答&lt;a href="https://www.zhihu.com/question/20164654"&gt;raid5 …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;网络上常见关于  磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答&lt;a href="https://www.zhihu.com/question/20164654"&gt;raid5 磁盘阵列真的不安全么？&lt;/a&gt;。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-03-30T00:00:00+08:00</updated><entry><title>注意DNS 悬挂记录问题</title><link href="https://fangpsh.github.io/posts/2024/2024-03-30.html" rel="alternate"></link><published>2024-03-30T00:00:00+08:00</published><updated>2024-03-30T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-03-30:/posts/2024/2024-03-30.html</id><summary type="html">&lt;p&gt;最近常常会收到这样的通知：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;经华为云核查，您的域名：xxx.cn并未进行备案，二级域名xh.xxx.cn实际解析华为云大陆服务器IP：139.159.xxx.xxx据工信部《互联网信息服务管理办法》(国务院292号令 …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;最近常常会收到这样的通知：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;经华为云核查，您的域名：xxx.cn并未进行备案，二级域名xh.xxx.cn实际解析华为云大陆服务器IP：139.159.xxx.xxx据工信部《互联网信息服务管理办法》(国务院292号令)和工信部令第33号《非经营性互联网信息服务备案管理办法》规定，国家对经营性互联网信息服务实行许可制度...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;让我想起来这个几年前看过的 DNS 悬挂问题，让小组同学在云资产合规平台扫描处理了下DNS 悬挂记录（dangling DNS record）。&lt;/p&gt;
+&lt;p&gt;什么是 DNS 悬挂记录，可以看这 2 个链接：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://zhuanlan.zhihu.com/p/30786805"&gt;知乎：Understanding the Security Threats of Dangling DNS Records - Week 8&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/subdomain-takeover"&gt;Prevent dangling DNS entries and avoid subdomain takeover&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;DNS 悬挂记录的危害除了上面微软文档中提到的，对子域名记录失去控制权（被置入广告）、钓鱼、Cookie泄露、CSRF 等等。在大陆环境中，还有一个让系统管理员无比惊恐的可能性，被电诈利用。&lt;/p&gt;
+&lt;p&gt;大陆有反电诈的国情存在，导致授信或者备案过的域名 ，能被利用已经是一种资源。用我们已经备案过的域名作为桥梁，绕过一些地方的检测，或增加诈骗成功的可能性。如果被利用，相关机构可以直接发指令给域名服务商 clienthold 或者省级运营商进行屏蔽域名，威胁到整个二级域名空间的安全。
+从各类消息来看，各个地方的相关机构权利非常大。&lt;/p&gt;
+&lt;p&gt;曾经发生过的有腾讯云 COS 域名被多个省封禁、LeanCloud 域名被禁事件等。所以目前国内云Pass 厂商，基本只让客户自带域名， CNAME接入。&lt;/p&gt;
+&lt;p&gt;然而 DNS 悬挂记录是一条非常容易漏网的鱼。&lt;/p&gt;
+&lt;p&gt;我们的做法是定期扫描所有域名记录，A /AAAA 等记录，指向检查是否在 资产系统（CMDB ）中。CNAME 记录，先检查指向的二级域名是否在维护的白名单（包含各类 CDN大厂 加速域名）中，如果不是，再检查是否在 资产系统中（存在 AWS ELB 等域名的情况）。&lt;/p&gt;</content><category term="2024"></category><category term="dns"></category><category term="hack"></category></entry><entry><title>关于磁盘URE的担忧</title><link href="https://fangpsh.github.io/posts/2024/2024-03-19.html" rel="alternate"></link><published>2024-03-19T00:00:00+08:00</published><updated>2024-03-19T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-03-19:/posts/2024/2024-03-19.html</id><summary type="html">&lt;p&gt;网络上常见关于  磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答&lt;a href="https://www.zhihu.com/question/20164654"&gt;raid5 …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;网络上常见关于  磁盘URE（Unrecoverable Read Error ）的担忧，按照厂商给出的 URE数据计算 RAID5 之类的重建失败概率非常之高，例如这位知乎网友的回答&lt;a href="https://www.zhihu.com/question/20164654"&gt;raid5 磁盘阵列真的不安全么？&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;这个概率和我自身在这么多年的运维工作中，raid5 重建失败的事件几乎没遇到的感觉不符。不过人的感觉是不准确的，数学才不会撒谎，例如生日悖论。&lt;/p&gt;
 &lt;p&gt;先提几个问题：&lt;/p&gt;
 &lt;ol&gt;
