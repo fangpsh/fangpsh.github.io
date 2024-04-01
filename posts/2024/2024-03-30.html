@@ -54,6 +54,9 @@
 <p>曾经发生过的有腾讯云 COS 域名被多个省封禁、LeanCloud 域名被禁事件等。所以目前国内云Pass 厂商，基本只让客户自带域名， CNAME接入。</p>
 <p>然而 DNS 悬挂记录是一条非常容易漏网的鱼。</p>
 <p>我们的做法是定期扫描所有域名记录，A /AAAA 等记录，指向检查是否在 资产系统（CMDB ）中。CNAME 记录，先检查指向的二级域名是否在维护的白名单（包含各类 CDN大厂 加速域名）中，如果不是，再检查是否在 资产系统中（存在 AWS ELB 等域名的情况）。</p>
+<p>攻击者在云平台批量申请IP，如何知道是否有域名指向该地址？
+    1. 开个 nginx，收集一段时间访问日志，看请求host头；
+    2. 查询 IP 的解析记录：http://viewdns.info ，以及各类 TI 平台历史解析，再做验证。</p>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
     Posted on <abbr class="published" title="2024-03-30T00:00:00+08:00">
