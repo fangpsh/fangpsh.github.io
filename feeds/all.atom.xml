@@ -2781,7 +2781,11 @@ config dhcp &amp;#39;lan&amp;#39;
 &lt;p&gt;2023年-06-27 更新：  &lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;如果ULA 是内网段（fd,fc ）又关闭了dhcpv4，安卓设备会无法连接，将ULA替换为公网段即可解决。  &lt;/li&gt;
-&lt;li&gt;现在，使用Jool 是最佳选择：https://openwrt.org/docs/guide-user/network/ipv6/nat64&lt;/li&gt;
+&lt;li&gt;现在，使用Jool 是最佳选择：&lt;ol&gt;
+&lt;li&gt;https://openwrt.org/docs/guide-user/network/ipv6/nat64&lt;/li&gt;
+&lt;li&gt;https://nicmx.github.io/Jool/en/openwrt.html&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
 &lt;/ol&gt;</content><category term="2020"></category><category term="OpenWrt"></category><category term="IPv6"></category><category term="DNS64"></category><category term="NAT64"></category></entry><entry><title>关于OpenSSH AuthorizedKeysCommand 的几个小问题</title><link href="https://fangpsh.github.io/posts/2020/2020-03-03.html" rel="alternate"></link><published>2020-03-03T00:00:00+08:00</published><updated>2020-03-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-03-03:/posts/2020/2020-03-03.html</id><summary type="html">&lt;p&gt;分享几个使用AuthorizedKeysCommand 遇到的问题。&lt;/p&gt;
 &lt;h1&gt;关闭SELinux&lt;/h1&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;... error: AuthorizedKeysCommand ...  returned status 126
