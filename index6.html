@@ -27,6 +27,13 @@
 <section id="content" class="content">
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-01-25.html" rel="bookmark" title="Permalink to drop_caches">drop_caches</a></h2> </header>
+                <div class="entry-content"> <p><img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png">
+<a href="https://www.linuxatemyram.com">Don't Panic! Your ram is fine!</a></p>
+<h2>问题排查</h2>
+<p>一台机器的CPU iowait 非常高，perf 分析发现耗时都在<code>isolate_freepages_block</code> 函数，iostat 看系统盘的iops 也达到瓶颈，free 查看机器内 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2018/2018-01-22.html" rel="bookmark" title="Permalink to 关于Bash 你需要知道的十件事">关于Bash 你需要知道的十件事</a></h2> </header>
                 <div class="entry-content"> <p>读到一篇文章<a href="https://zwischenzugs.com/2018/01/06/ten-things-i-wish-id-known-about-bash/">《Ten Things I Wish I’d Known About bash》</a>，所以有了这个畅销书式的标题，一些笔记。<br>
 感觉作者写这本书主要是为了推销他的新 …</p> </div><!-- entry-content -->
@@ -83,10 +90,6 @@
         <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2017/2017-10-13.html" rel="bookmark" title="Permalink to 写一个Terraform Provider">写一个Terraform Provider</a></h2> </header>
                 <div class="entry-content"> <p>上个月想给腾讯云写一个terraform provider，花了一周的时间入门Golang，参考现有的一些项目完成了<a href="https://cloud.tencent.com/product/clb">CLB</a> 的<a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a>。本来想做成和阿里云的provider 一 …</p> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2017/2017-08-30.html" rel="bookmark" title="Permalink to 基于OpenResty 的whoami.akaimai.net 实现">基于OpenResty 的whoami.akaimai.net 实现</a></h2> </header>
-                <div class="entry-content"> <p>上次收集整理[[170822 获取Local DNS 地址信息]]) 的时候看到akamai 的<code>whoami.akamai.net</code>，想起之前看到<a href="https://twitter.com/agentzh/status/767963492850601985">agentzh</a> 基于OpenResty实现了一个权威DNS 服务器，感觉可以用openresty 简单快速的实 …</p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

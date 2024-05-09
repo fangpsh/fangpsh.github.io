@@ -28,6 +28,10 @@
 <h2>Articles with the lvm tag</h2>
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2024/2024-05-09.html" rel="bookmark" title="Permalink to 主机掉电 lvm 异常处理">主机掉电 lvm 异常处理</a></h2> </header>
+                <div class="entry-content"> <p>五一期间，电力维护，机房UPS 异常，导致一批服务器掉电。送电后，其他机器基本都能正常维护，就 2 台 DELL R420 异常，整列卡是<code>PERC H310 …</code></p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-09-27.html" rel="bookmark" title="Permalink to lvmcache性能简单测试">lvmcache性能简单测试</a></h2> </header>
                 <div class="entry-content"> <p>测试命令：</p>
 <div class="highlight"><pre><span></span><code>fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=testfio --bs=4k --iodepth=64 --size=8G --readwrite=randrw --rwmixread=75

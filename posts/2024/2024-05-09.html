@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>主机掉电 lvm 异常处理 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="lvm" />
+<meta name="description" content="五一期间，电力维护，机房UPS 异常，导致一批服务器掉电。送电后，其他机器基本都能正常维护，就 2 台 DELL R420 异常，整列卡是PERC H310 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2024/2024-05-09.html" rel="bookmark"
+         title="Permalink to 主机掉电 lvm 异常处理">主机掉电 lvm 异常处理</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>五一期间，电力维护，机房UPS 异常，导致一批服务器掉电。送电后，其他机器基本都能正常维护，就 2 台 DELL R420 异常，整列卡是<code>PERC H310 Mini</code>，不带 BBU（电池），其他掉电的机器也都是 RAID5+lvmcache（JBOD），但是只有这 2 台 R420 出问题，难道是因为其他的 BBU 让写入数据正常落盘了，所以没异常？</p>
+<p>如果是这样的话，那是不是不建议在不带 BBU 的整列上开启 lvmcache 了。</p>
+<p>先说说怎么恢复，和之前的<a href="https://fangpsh.github.io/posts/2023/2023-09-26.html">ssd 故障掉盘恢复</a>不同。</p>
+<p>启动之后，直接报错：</p>
+<div class="highlight"><pre><span></span><code>dracut-initqueue timeout - starting timeout scripts
+....
+Warning: /dev/mapper/centos-root does not exist
+...
+</code></pre></div>
+
+<p>在<code>dracut：/#</code> 下识别不到 lvm，<code>/dev/mapper</code> 看不到任何信息，像是分区异常，但是数据盘大概率没损坏。于是尝试插U 盘用 livecd 进入，真不行按照<a href="https://zhuanlan.zhihu.com/p/620846286">lvm分区信息丢了还能这样恢复？
+</a> 手工维护。</p>
+<p>xfs 的建议用 centos 的 livecd， 一开始用了ubuntu ，发现不带 xfs_repair。</p>
+<p>进入之后，lvm 能正常识别到，移除 cache：</p>
+<div class="highlight"><pre><span></span><code>lvconvert --uncache centos/root
+</code></pre></div>
+
+<p>回刷数据用了挺久时间，结束之后<code>xfs_repair</code>一下，没异常，可以尝试启动了。</p>
+<p>不过启动又报错：<code>DMAR: DRHD: hangling fault status req xxx...PTE Read access is not set</code>，没头绪，google 了下，在grub 页面按<code>e</code> 编辑<code>intel_iommu=off</code>，  ok了。</p>
+<p>启动之后，又不得不把<code>lvmcache</code>加上了，谁让这🌶︎🐔 卡连缓存都没有。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2024-05-09T00:00:00+08:00">
+      Thu 09 May 2024
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2024.html">2024</a> Tagged <a href="https://fangpsh.github.io/tag/lvm.html">lvm </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
