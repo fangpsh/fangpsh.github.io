@@ -1,5 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-09T00:00:00+08:00</updated><entry><title>主机掉电 lvm 异常处理</title><link href="https://fangpsh.github.io/posts/2024/2024-05-09.html" rel="alternate"></link><published>2024-05-09T00:00:00+08:00</published><updated>2024-05-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-09:/posts/2024/2024-05-09.html</id><summary type="html">&lt;p&gt;五一期间，电力维护，机房UPS 异常，导致一批服务器掉电。送电后，其他机器基本都能正常维护，就 2 台 DELL R420 异常，整列卡是&lt;code&gt;PERC H310 …&lt;/code&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;五一期间，电力维护，机房UPS 异常，导致一批服务器掉电。送电后，其他机器基本都能正常维护，就 2 台 DELL R420 异常，整列卡是&lt;code&gt;PERC H310 Mini&lt;/code&gt;，不带 BBU（电池），其他掉电的机器也都是 RAID5+lvmcache（JBOD），但是只有这 2 台 R420 出问题，难道是因为其他的 BBU 让写入数据正常落盘了，所以没异常？&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-10T00:00:00+08:00</updated><entry><title>小型IDC虚拟化cloudpods体验与畅想</title><link href="https://fangpsh.github.io/posts/2024/2024-05-10.html" rel="alternate"></link><published>2024-05-10T00:00:00+08:00</published><updated>2024-05-10T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-10:/posts/2024/2024-05-10.html</id><summary type="html">&lt;p&gt;办公机房，由于建设时间不同，存在好几套不同的 PVE（Proxmox VE），PVE 简单，优雅，稳定，实在是小型虚拟化上上之选。&lt;/p&gt;
+&lt;p&gt;但是我们有几个需 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;办公机房，由于建设时间不同，存在好几套不同的 PVE（Proxmox VE），PVE 简单，优雅，稳定，实在是小型虚拟化上上之选。&lt;/p&gt;
+&lt;p&gt;但是我们有几个需求，没法被很好的满足，例如：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;跨 PVE 集群的主机查询（当然，我们需要一个 CMDB/DCIM，但是那会还没有）；&lt;/li&gt;
+&lt;li&gt;快速开机，PVE 创建主机还是太慢（当然，我们可以 手搓 API）；&lt;/li&gt;
+&lt;li&gt;集成必要的监控（当然，我们可以自建一套监控）；&lt;/li&gt;
+&lt;li&gt;如果这套虚拟化不够稳定，部分机器我们希望保留 PVE，即这套虚拟化系统能够接管 PVE；&lt;/li&gt;
+&lt;li&gt;能够接管异地办公室的PVE；&lt;/li&gt;
+&lt;li&gt;接管物理机（裸金属）；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;一些方案：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;继续PVE，对接 API，写个简单的控制台；&lt;/li&gt;
+&lt;li&gt;阿里腾讯私有化部署，问询下了价格，太贵了，因为我们机房就是一堆旧（垃圾）主机。&lt;/li&gt;
+&lt;li&gt;阿里，腾讯类似 aws outposts 的方案，很美好，但是我们还是想买二手主机，存量机器也没法处理；&lt;/li&gt;
+&lt;li&gt;openstack 太复杂了；&lt;/li&gt;
+&lt;li&gt;zstack 免费版太鸡肋；&lt;/li&gt;
+&lt;li&gt;飞致云 CloudExplorer 多云管理平台，没有私有云功能；&lt;/li&gt;
+&lt;li&gt;oVirt，看起来不错，但是已死，&lt;a href="https://www.reddit.com/r/ovirt/comments/z4abr6/about_ovirts_future/"&gt;About oVirt’s future&lt;/a&gt;；&lt;/li&gt;
+&lt;li&gt;xcp-ng，看起来不错，挺活跃；&lt;/li&gt;
+&lt;li&gt;opennebula，看起来不错，而且挺活跃，但是体验了下，有些概念太奇怪了（感觉像是从 openstack 时代遗留下来的），而且内部使用，页面需要二次开发；&lt;/li&gt;
+&lt;li&gt;cloudpods，看起来不错，all-in-one，开箱即用；&lt;/li&gt;
+&lt;li&gt;一些开源 KVM 面板，或者基于libkvm自己开发，但是这样不如选择方案 1；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;综合下来，选择的方案是 1，8，9，10。最终，基于性价比（懒）、速度（KPI），选择了 cloudpods。&lt;/p&gt;
+&lt;p&gt;说下体验，
+目前大概跑了接近1年左右，虚拟机接近 200 台，宿主机20 台，会遇到一些小毛病，整体还算稳定。小 bug 其实不少，另外使用经验和社区资料 PVE 都更多，所以我们对稳定性比较高的一套虚拟化， 还是用了 PVE 7，好处是 cloudpods 可以统一接管，非常赞。&lt;/p&gt;
+&lt;p&gt;官方开发活跃，基本一个月 release 一个版本，迄今为止，我们也一直保持在追，升级丝滑，当然会遇到引入的几个小 bug。&lt;/p&gt;
+&lt;p&gt;高可用版本部署需要引入 MySQL 主主结构，但是私有化场景，把MySQL 主主运维好，机器底座不仅要可靠，作为非 DBA 的运维，我还是有点犯怵，不过好歹稳定好了一年。我在想，直接用&lt;a href="https://pigsty.cc/"&gt;pigsty&lt;/a&gt; 拉起一个集群是不是更简单可靠，或者有没有其他 mysql 集群化方案，暂时没调研。opennebula 的&lt;a href="https://docs.opennebula.io/6.6/installation_and_configuration/ha/frontend_ha.html"&gt;高可用&lt;/a&gt;基于 raft自己做了事务同步，感觉相比 cloudpods让用户自建mariadb 主主，心智负担更低一些。&lt;/p&gt;
+&lt;p&gt;现在高可用方案的 keepalived 相比kubesphere 的方案差一点，提过一个 &lt;a href="https://github.com/yunionio/cloudpods/issues/17570"&gt;issue&lt;/a&gt;，不过改造工作量比较大，还未有进度。&lt;/p&gt;
+&lt;p&gt;官方文档还算丰富，要找的指南基本都有，但是偶尔会缺少一些细节，还是建议有一定的运维经验的同学来驾驭，不然可能会有一些吃力。不仅需要了解 cloudpods 基础组件，还需要有底座 k8s 的运维排错能力。&lt;/p&gt;
+&lt;p&gt;自定义监控，不太容易，起码没法在 cloudpods 的  WebUI 内 完成，能自己用 grafana 接 cloudpods 的vm。加指标，需要修改 telegraf。为了后续升级的平滑，我们没有侵入性的改。不过，官方的基础指标，大部分场景都是够用的。&lt;/p&gt;
+&lt;p&gt;作为一个开源（免费）的方案，虽然社区资料（经验）不像 PVE 那么丰富，但是官方支持（issue 问答）还算及时，着急的话加微信群催 issue，响应也挺快的。&lt;/p&gt;
+&lt;p&gt;从官方仓库看，贡献者大部分是公司员工，社区的热度和力量还不太强，但是团队能力非常强（原美团云团队），代码优雅，功力深厚，经验丰富，非常希望公司营收能跑的越来越好，带动cloudpods 走的更远。但我个人从一些迹象看，团队似乎还挺辛苦的。团队似乎也是从多云管理，转向投入到私有云。&lt;/p&gt;
+&lt;p&gt;多云管理（CMP）的市场其实已非常火热，在 onecloud 之前就已经有一些公司跑了一段时间， 例如ZStack 自己也做，大一点的公司自己内部直接建设，看看 B 站的&lt;a href="https://mp.weixin.qq.com/s/qsAve3D8RBW46Htzked0NA"&gt;B站多云管理平台建设
+&lt;/a&gt;，可知这个投入要多大，以及和内部业务建设发展绑定的非常深。
+多云管理大概率只能吃到腰部以下的小客户，但是这部分客户本身业务发展还没到成熟期，对多云部署的需求又有多少呢？&lt;/p&gt;
+&lt;p&gt;类似 zstack 这样从虚拟化占有率，上云，吃到多云管理，这条路径是通的；甚至公有云厂商（阿里，腾讯）自己下场做多云管理，也是通的。但是从头开始只做多云管理，营收推广有些困难。&lt;/p&gt;
+&lt;p&gt;从官方社区&lt;a href="https://github.com/yunionio/cloudpods/issues/11427"&gt;统计的用户&lt;/a&gt;，不缺一些大企业，场景大都私有云，我猜想大部分都是内部测试（非严肃）场景。如果我们需要一个生产环境虚拟化，说实话上 cloudpods 我是没信心的，除非买官方服务，但是这个时候阿里腾讯 vmware、zstack等的方案一定会被拉到一个平面 PK，成熟和稳定性名气等，cloudpods 可能无法占优通过评审。&lt;/p&gt;
+&lt;p&gt;按照这个思路，之前在群内和官方讨论过，建议他们做多云的合规基线扫描。类似selefra， Cloud Custodian，飞致的cloudexplorer-lite。公司到一定阶段，合规是强需求，但是前期建设起来的 CMDB 不一定能够响应符合合规需求。多云合规，授权卡接入扫描的实例数、规则数、自定义规则功能等，都是非常好的卡点。&lt;/p&gt;
+&lt;p&gt;一般公司安全合规团队的平台建设编码能力会偏弱一点，跨多云、自定义规则的合规检查，是大概率会遇到的需求。我们小组同学最近就做了一个多云的合规巡检系统。&lt;/p&gt;
+&lt;p&gt;而且这种系统是旁路巡检系统，对已有系统的入侵比较小，建设上线成本阻力也会小很多。官方也一直在推广 cloudpods 商业版账单合并分析的能力，其实与合规也非常像。都是到一定阶段需要治理的问题。好处是，需要合规的公司至少不是小鱼了。&lt;/p&gt;
+&lt;p&gt;总的来说，cloudpods 满足了我们IT 现当下的大部分需求，挺好的，但是严肃环境需谨慎（建议购买官方企业服务）。&lt;/p&gt;</content><category term="2024"></category><category term="cloudpods"></category></entry><entry><title>主机掉电 lvm 异常处理</title><link href="https://fangpsh.github.io/posts/2024/2024-05-09.html" rel="alternate"></link><published>2024-05-09T00:00:00+08:00</published><updated>2024-05-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-09:/posts/2024/2024-05-09.html</id><summary type="html">&lt;p&gt;五一期间，电力维护，机房UPS 异常，导致一批服务器掉电。送电后，其他机器基本都能正常维护，就 2 台 DELL R420 异常，整列卡是&lt;code&gt;PERC H310 …&lt;/code&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;五一期间，电力维护，机房UPS 异常，导致一批服务器掉电。送电后，其他机器基本都能正常维护，就 2 台 DELL R420 异常，整列卡是&lt;code&gt;PERC H310 Mini&lt;/code&gt;，不带 BBU（电池），其他掉电的机器也都是 RAID5+lvmcache（JBOD），但是只有这 2 台 R420 出问题，难道是因为其他的 BBU 让写入数据正常落盘了，所以没异常？&lt;/p&gt;
 &lt;p&gt;如果是这样的话，那是不是不建议在不带 BBU 的整列上开启 lvmcache 了。&lt;/p&gt;
 &lt;p&gt;先说说怎么恢复，和之前的&lt;a href="https://fangpsh.github.io/posts/2023/2023-09-26.html"&gt;ssd 故障掉盘恢复&lt;/a&gt;不同。&lt;/p&gt;
 &lt;p&gt;启动之后，直接报错：&lt;/p&gt;
