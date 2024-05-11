@@ -27,7 +27,7 @@
 
 &lt;p&gt;可以使用&lt;a href="https://docs.saltproject.io/en/latest/ref/file_server/all/salt.fileserver.gitfs.html"&gt;gitfs&lt;/a&gt; 将 sls 文件都托管在内部仓库中，进行跨部门协作，共同维护。&lt;/p&gt;
 &lt;p&gt;当 salt-minion state.highstate 应用时，可以按照当前机器在 CMDB 中所属的层次/角色，进行 动态应用 sls。&lt;/p&gt;
-&lt;p&gt;例如上文中的 server101，先应用从CDN 中心下的 sls，再应用静态分发平台下的 sls，一层一层往下（可以按需加更多的层级，例如 集群层级下再加角色等）。&lt;/p&gt;
+&lt;p&gt;例如上文中的 server101，先应用CDN 中心下的 sls，再应用静态分发平台下的 sls，一层一层往下（可以按需加更多的层级，例如 集群层级下再加角色等）。&lt;/p&gt;
 &lt;p&gt;要做到这个效果，首先CMDB 需要能输出机器的动态 pillar，在 salt-master 配置好&lt;a href="https://docs.saltproject.io/en/latest/ref/configuration/master.html#ext-pillar"&gt;ext_pillar&lt;/a&gt; ，可以指定shell 脚本：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;ext_pillar:
   - cmd_json: /path/get_cmdb_pillar.sh %s
