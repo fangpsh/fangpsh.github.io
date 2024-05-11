@@ -27,6 +27,23 @@
 <section id="content" class="content">
 
         <article class="hentry">
+                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2024/2024-05-11.html" rel="bookmark" title="Permalink to saltsatck 动态sls组织方式">saltsatck 动态sls组织方式</a></h2> </header>
+                <div class="entry-content"> <p>假设在 CMDB 中，有类似如下的树状结构：</p>
+<div class="highlight"><pre><span></span><code>- 中心/center
+    - 平台/platform
+        - 服务/service
+                - 集群/cluster
+                    - 服务器
+- CDN 中心
+    - 静态分发平台
+        - 边缘调度服务
+                - 集群 A
+                    - server101
+</code></pre></div>
+
+<p>可 …</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
                 <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2024/2024-05-10.html" rel="bookmark" title="Permalink to 小型IDC虚拟化cloudpods体验与畅想">小型IDC虚拟化cloudpods体验与畅想</a></h2> </header>
                 <div class="entry-content"> <p>办公机房，由于建设时间不同，存在好几套不同的 PVE（Proxmox VE），PVE 简单，优雅，稳定，实在是小型虚拟化上上之选。</p>
 <p>但是我们有几个需 …</p> </div><!-- entry-content -->
@@ -79,10 +96,6 @@
 <ol>
 <li>核心思路：服务降级，白嫖资源；</li>
 <li>套CDN 之后，<a href="https://fangpsh.github.io/posts/2023/2023-10-02.html">做好源IP 隐藏</a>，源站避免 …</li></ol> </div><!-- entry-content -->
-        </article>
-        <article class="hentry">
-                <header> <h2 class="entry-title"><a href="https://fangpsh.github.io/posts/2023/2023-11-10.html" rel="bookmark" title="Permalink to 部分搜索引擎爬虫IP">部分搜索引擎爬虫IP</a></h2> </header>
-                <div class="entry-content"> <p>有个小项目套了一个<a href="https://waf-ce.chaitin.cn/">雷池WAF</a>，担心会影响到搜索引擎的爬虫，需要单独维护一个IP组，社区关联issue：<a href="https://github.com/chaitin/SafeLine/issues/374">[建议] 内置各大搜索引擎蜘 …</a></p> </div><!-- entry-content -->
         </article>
 <div class="pager">
       <ul>

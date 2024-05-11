@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>saltsatck 动态sls组织方式 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="saltstack" />
+<meta name="description" content="假设在 CMDB 中，有类似如下的树状结构： - 中心/center - 平台/platform - 服务/service - 集群/cluster - 服务器 - CDN 中心 - 静态分发平台 - 边缘调度服务 - 集群 A - server101 可 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2024/2024-05-11.html" rel="bookmark"
+         title="Permalink to saltsatck 动态sls组织方式">saltsatck 动态sls组织方式</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>假设在 CMDB 中，有类似如下的树状结构：</p>
+<div class="highlight"><pre><span></span><code>- 中心/center
+    - 平台/platform
+        - 服务/service
+                - 集群/cluster
+                    - 服务器
+- CDN 中心
+    - 静态分发平台
+        - 边缘调度服务
+                - 集群 A
+                    - server101
+</code></pre></div>
+
+<p>可以使用<a href="https://docs.saltproject.io/en/latest/ref/file_server/all/salt.fileserver.gitfs.html">gitfs</a> 将 sls 文件都托管在内部仓库中，进行跨部门协作，共同维护。</p>
+<p>当 salt-minion state.highstate 应用时，可以按照当前机器在 CMDB 中所属的层次/角色，进行 动态应用 sls。</p>
+<p>例如上文中的 server101，先应用从CDN 中心下的 sls，再应用静态分发平台下的 sls，一层一层往下（可以按需加更多的层级，例如 集群层级下再加角色等）。</p>
+<p>要做到这个效果，首先CMDB 需要能输出机器的动态 pillar，在 salt-master 配置好<a href="https://docs.saltproject.io/en/latest/ref/configuration/master.html#ext-pillar">ext_pillar</a> ，可以指定shell 脚本：</p>
+<div class="highlight"><pre><span></span><code>ext_pillar:
+  - cmd_json: /path/get_cmdb_pillar.sh %s
+</code></pre></div>
+
+<p>机器的 pillar 输出：</p>
+<div class="highlight"><pre><span></span><code>{
+  &quot;center&quot;: [
+  cdn,
+  ...
+  ],
+  &quot;platform&quot;: [
+  &quot;cdn/static_cdn&quot;,
+  ...
+  ],
+  &quot;service&quot;: [
+  &quot;cdn/static_cdn/dispatch&quot;
+  ],
+  &quot;cluster&quot;: [
+  &quot;cdn/static_cdn/dispatch/mainland&quot;
+  ],
+  ....
+}
+</code></pre></div>
+
+<p>全局的 <a href="https://docs.saltproject.io/en/latest/ref/states/top.html">top.sls</a> 按照如下写法：</p>
+<div class="highlight"><pre><span></span><code>base:
+  &#39;*&#39;:
+    - base
+  {% set center_list = salt.pillar.get(&#39;center&#39;, [])-%}
+  {% if center_list -%}
+  {% for c in center_list -%}
+  {% if salt[&#39;state.sls_exists&#39;](&#39;{0}.base&#39;.format(c)) %}
+  &#39;center:{{ c }}&#39;:
+    - match: pillar
+    - {{ c }}.base
+  {% endif -%}
+  {% endfor -%}
+  {% endif -%}
+
+  {% set platform_list = salt.pillar.get(&#39;platform&#39;, [])-%}
+  {% if platform_list -%}
+  {% for p in platform_list -%}
+  {% if salt[&#39;state.sls_exists&#39;](&#39;{0}.base&#39;.format(p)) %}
+  &#39;platform:{{ p }}&#39;:
+    - match: pillar
+    - {{ p }}.base
+  {% endif -%}
+  {% endfor -%}
+  {% endif -%}
+
+   ..... 
+
+  {% endif -%}
+</code></pre></div>
+
+<p>当然，按如上写法，要对 sls 仓库目录进行一些约定，按每一个层级组织放置 sls，base 目录放每一层的公共基础 sls 。公共复用的 sls 抽象出来，例如放在 addon/ 之类的目录中。制定协作公约，在仓库 pr 流程中code review。</p>
+<div class="highlight"><pre><span></span><code>.
+├── addon                   addon sls，供其他sls include，分目录组织
+│   ├── x1
+│   └── x2
+├── base                    全局基础初始化sls
+│   ├── init.sls
+│   ├── c1.sls
+│   └── ...
+├── cdn                    CDN 中心
+│   ├── base               CDN 中心的全局初始化/基础sls
+│   │   └── init.sls
+│   └── static_cdn         静态 CDN 平台
+│       ├── base           平台的全局初始化/基础sl s
+│       └── dispatch       调度服务
+|          ├── base        调度服务的sls
+|          │   └── init.sls
+|          └── mainland     大陆集群
+|              |            大陆集群下的sls
+|              └── init.sls
+|
+
+└── top.sls                全局路由文件
+</code></pre></div>
+
+<p>最后达到的效果是，当运维人员给特定集群，或特定服务的机器安装某些软件包，或者渲染生成配置等，写好 sls 放在约定好的目录，就能自动关联上，非常简单。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2024-05-11T00:00:00+08:00">
+      Sat 11 May 2024
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2024.html">2024</a> Tagged <a href="https://fangpsh.github.io/tag/saltstack.html">saltstack </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>

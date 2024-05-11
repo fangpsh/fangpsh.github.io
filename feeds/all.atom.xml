@@ -1,5 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-10T00:00:00+08:00</updated><entry><title>小型IDC虚拟化cloudpods体验与畅想</title><link href="https://fangpsh.github.io/posts/2024/2024-05-10.html" rel="alternate"></link><published>2024-05-10T00:00:00+08:00</published><updated>2024-05-10T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-10:/posts/2024/2024-05-10.html</id><summary type="html">&lt;p&gt;办公机房，由于建设时间不同，存在好几套不同的 PVE（Proxmox VE），PVE 简单，优雅，稳定，实在是小型虚拟化上上之选。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-11T00:00:00+08:00</updated><entry><title>saltsatck 动态sls组织方式</title><link href="https://fangpsh.github.io/posts/2024/2024-05-11.html" rel="alternate"></link><published>2024-05-11T00:00:00+08:00</published><updated>2024-05-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-11:/posts/2024/2024-05-11.html</id><summary type="html">&lt;p&gt;假设在 CMDB 中，有类似如下的树状结构：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;- 中心/center
+    - 平台/platform
+        - 服务/service
+                - 集群/cluster
+                    - 服务器
+- CDN 中心
+    - 静态分发平台
+        - 边缘调度服务
+                - 集群 A
+                    - server101
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;可 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;假设在 CMDB 中，有类似如下的树状结构：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;- 中心/center
+    - 平台/platform
+        - 服务/service
+                - 集群/cluster
+                    - 服务器
+- CDN 中心
+    - 静态分发平台
+        - 边缘调度服务
+                - 集群 A
+                    - server101
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;可以使用&lt;a href="https://docs.saltproject.io/en/latest/ref/file_server/all/salt.fileserver.gitfs.html"&gt;gitfs&lt;/a&gt; 将 sls 文件都托管在内部仓库中，进行跨部门协作，共同维护。&lt;/p&gt;
+&lt;p&gt;当 salt-minion state.highstate 应用时，可以按照当前机器在 CMDB 中所属的层次/角色，进行 动态应用 sls。&lt;/p&gt;
+&lt;p&gt;例如上文中的 server101，先应用从CDN 中心下的 sls，再应用静态分发平台下的 sls，一层一层往下（可以按需加更多的层级，例如 集群层级下再加角色等）。&lt;/p&gt;
+&lt;p&gt;要做到这个效果，首先CMDB 需要能输出机器的动态 pillar，在 salt-master 配置好&lt;a href="https://docs.saltproject.io/en/latest/ref/configuration/master.html#ext-pillar"&gt;ext_pillar&lt;/a&gt; ，可以指定shell 脚本：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;ext_pillar:
+  - cmd_json: /path/get_cmdb_pillar.sh %s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;机器的 pillar 输出：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;{
+  &amp;quot;center&amp;quot;: [
+  cdn,
+  ...
+  ],
+  &amp;quot;platform&amp;quot;: [
+  &amp;quot;cdn/static_cdn&amp;quot;,
+  ...
+  ],
+  &amp;quot;service&amp;quot;: [
+  &amp;quot;cdn/static_cdn/dispatch&amp;quot;
+  ],
+  &amp;quot;cluster&amp;quot;: [
+  &amp;quot;cdn/static_cdn/dispatch/mainland&amp;quot;
+  ],
+  ....
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;全局的 &lt;a href="https://docs.saltproject.io/en/latest/ref/states/top.html"&gt;top.sls&lt;/a&gt; 按照如下写法：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;base:
+  &amp;#39;*&amp;#39;:
+    - base
+  {% set center_list = salt.pillar.get(&amp;#39;center&amp;#39;, [])-%}
+  {% if center_list -%}
+  {% for c in center_list -%}
+  {% if salt[&amp;#39;state.sls_exists&amp;#39;](&amp;#39;{0}.base&amp;#39;.format(c)) %}
+  &amp;#39;center:{{ c }}&amp;#39;:
+    - match: pillar
+    - {{ c }}.base
+  {% endif -%}
+  {% endfor -%}
+  {% endif -%}
+
+  {% set platform_list = salt.pillar.get(&amp;#39;platform&amp;#39;, [])-%}
+  {% if platform_list -%}
+  {% for p in platform_list -%}
+  {% if salt[&amp;#39;state.sls_exists&amp;#39;](&amp;#39;{0}.base&amp;#39;.format(p)) %}
+  &amp;#39;platform:{{ p }}&amp;#39;:
+    - match: pillar
+    - {{ p }}.base
+  {% endif -%}
+  {% endfor -%}
+  {% endif -%}
+
+   ..... 
+
+  {% endif -%}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;当然，按如上写法，要对 sls 仓库目录进行一些约定，按每一个层级组织放置 sls，base 目录放每一层的公共基础 sls 。公共复用的 sls 抽象出来，例如放在 addon/ 之类的目录中。制定协作公约，在仓库 pr 流程中code review。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;.
+├── addon                   addon sls，供其他sls include，分目录组织
+│   ├── x1
+│   └── x2
+├── base                    全局基础初始化sls
+│   ├── init.sls
+│   ├── c1.sls
+│   └── ...
+├── cdn                    CDN 中心
+│   ├── base               CDN 中心的全局初始化/基础sls
+│   │   └── init.sls
+│   └── static_cdn         静态 CDN 平台
+│       ├── base           平台的全局初始化/基础sl s
+│       └── dispatch       调度服务
+|          ├── base        调度服务的sls
+|          │   └── init.sls
+|          └── mainland     大陆集群
+|              |            大陆集群下的sls
+|              └── init.sls
+|
+
+└── top.sls                全局路由文件
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;最后达到的效果是，当运维人员给特定集群，或特定服务的机器安装某些软件包，或者渲染生成配置等，写好 sls 放在约定好的目录，就能自动关联上，非常简单。&lt;/p&gt;</content><category term="2024"></category><category term="saltstack"></category></entry><entry><title>小型IDC虚拟化cloudpods体验与畅想</title><link href="https://fangpsh.github.io/posts/2024/2024-05-10.html" rel="alternate"></link><published>2024-05-10T00:00:00+08:00</published><updated>2024-05-10T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-10:/posts/2024/2024-05-10.html</id><summary type="html">&lt;p&gt;办公机房，由于建设时间不同，存在好几套不同的 PVE（Proxmox VE），PVE 简单，优雅，稳定，实在是小型虚拟化上上之选。&lt;/p&gt;
 &lt;p&gt;但是我们有几个需 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;办公机房，由于建设时间不同，存在好几套不同的 PVE（Proxmox VE），PVE 简单，优雅，稳定，实在是小型虚拟化上上之选。&lt;/p&gt;
 &lt;p&gt;但是我们有几个需求，没法被很好的满足，例如：&lt;/p&gt;
 &lt;ol&gt;
