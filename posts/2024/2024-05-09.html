@@ -58,7 +58,7 @@ Warning: /dev/mapper/centos-root does not exist
 <p>回刷数据用了挺久时间，结束之后<code>xfs_repair</code>一下，没异常，可以尝试启动了。</p>
 <p>不过启动又报错：<code>DMAR: DRHD: hangling fault status req xxx...PTE Read access is not set</code>，没头绪，google 了下，在grub 页面按<code>e</code> 编辑<code>intel_iommu=off</code>，  ok了。</p>
 <p>后续：<a href="https://github.com/yunionio/cloudpods/issues/20242">[BUG] DELL R420 开启iommu启动异常 #20242
-</a>，从<a href="https://access.redhat.com/solutions/183373">redhat/183373</a> 是LSI  RAID 卡的问题。</p>
+</a>，从<a href="https://access.redhat.com/solutions/183373">redhat/183373</a> 是确定是<code>LSI MegaRAID SAS 2008</code>的问题。</p>
 <p>启动之后，又不得不把<code>lvmcache</code>加上了，谁让这🌶︎🐔 卡连缓存都没有。</p>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
