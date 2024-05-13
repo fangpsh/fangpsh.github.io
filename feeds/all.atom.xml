@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-13T00:00:00+08:00</updated><entry><title>出海境外云计算、IDC厂商推荐</title><link href="https://fangpsh.github.io/posts/2024/2024-05-13.html" rel="alternate"></link><published>2024-05-13T00:00:00+08:00</published><updated>2024-05-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-13:/posts/2024/2024-05-13.html</id><summary type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。这次罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
 &lt;p&gt;筛选标准：有境外计算 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。这次罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
-&lt;p&gt;筛选标准：有境外计算、资源，是国内主体，或者至少有境内代理（方便处理发票、付款、售后问题）。&lt;/p&gt;
+&lt;p&gt;筛选标准：有境外计算、带宽资源，国内主体或者至少有境内代理（方便处理发票、付款、售后问题）。&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;阿里、腾讯、华为、Ucloud、火山、金山等；&lt;ol&gt;
 &lt;li&gt;存在境外主体：例如华为国际，华为在某些地区有资源优势；&lt;/li&gt;
