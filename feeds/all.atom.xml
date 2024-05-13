@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-11T00:00:00+08:00</updated><entry><title>saltsatck 动态sls组织方式</title><link href="https://fangpsh.github.io/posts/2024/2024-05-11.html" rel="alternate"></link><published>2024-05-11T00:00:00+08:00</published><updated>2024-05-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-11:/posts/2024/2024-05-11.html</id><summary type="html">&lt;p&gt;假设在 CMDB 中，有类似如下的树状结构：&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-13T00:00:00+08:00</updated><entry><title>出海境外IDC厂商推荐</title><link href="https://fangpsh.github.io/posts/2024/2024-05-13.html" rel="alternate"></link><published>2024-05-13T00:00:00+08:00</published><updated>2024-05-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-13:/posts/2024/2024-05-13.html</id><summary type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
+&lt;p&gt;筛选标准：境外 IDC，国内主体 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
+&lt;p&gt;筛选标准：境外 IDC，国内主体，或者至少有境内代理（方便处理发票、付款、售后问题）。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;阿里、腾讯、华为、Ucloud、火山、金山等；&lt;ol&gt;
+&lt;li&gt;存在境外主体：例如华为国际，华为在某些地区有资源优势；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;电信、移动、联通；&lt;ol&gt;
+&lt;li&gt;电信有单独的电信国际，很贵，无性价比，傲慢；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;AWS、GCP、Azure等不多说；&lt;/li&gt;
+&lt;li&gt;百度：百度边缘杂糅了多家计算资源，也包含自建的；&lt;/li&gt;
+&lt;li&gt;IBM/Softlayer&lt;/li&gt;
+&lt;li&gt;Oracle，云里面成本相对便宜，纯计算流媒体推荐；&lt;/li&gt;
+&lt;li&gt;层峰/Zenlayer，出海第一选择；&lt;/li&gt;
+&lt;li&gt;网宿边缘云：网宿国际 CDN 机房改造而来，可用于补充层峰的节点，有犄角旮旯资源，平台稳定性一般；&lt;ol&gt;
+&lt;li&gt;可联系网宿国际；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;靠谱云：层峰竞争对手，近些年铺节点很快；&lt;ol&gt;
+&lt;li&gt;在南美和edgeuno合作，上点非常快；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;首都在线：海外大区有节点，技术落后，性价比高；&lt;/li&gt;
+&lt;li&gt;Linode：被akamai 收购后，国内沿用 akamai 代理；&lt;/li&gt;
+&lt;li&gt;digitalocean：国内也开始有代理，边缘云的替代；&lt;/li&gt;
+&lt;li&gt;FDC Server：国内有代理，微博和微信可以找到官方号，便宜量大；&lt;/li&gt;
+&lt;li&gt;ows.us：八爪章鱼云计算（上海），接触过，没合作，新公司，能搞到一些犄角旮旯国家的节点；&lt;/li&gt;
+&lt;li&gt;gcore：好像有代理记不清了，忘记是境内的，还是在新加坡；&lt;/li&gt;
+&lt;li&gt;朗桥维视：香港机房，可能有一定成本优势；&lt;/li&gt;
+&lt;li&gt;奥飞：价格和稳定性还可以，广州还有一堆 IDC 厂商，例如云下汇金等；&lt;/li&gt;
+&lt;li&gt;其他：太平洋电信、Equinix 其实也有计算资源卖，但是比较少，不占优势；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;有网友需要计算资源，可邮件联系引荐，争取折扣优惠。&lt;/p&gt;</content><category term="2024"></category><category term="IDC"></category><category term="cloud"></category></entry><entry><title>saltsatck 动态sls组织方式</title><link href="https://fangpsh.github.io/posts/2024/2024-05-11.html" rel="alternate"></link><published>2024-05-11T00:00:00+08:00</published><updated>2024-05-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-11:/posts/2024/2024-05-11.html</id><summary type="html">&lt;p&gt;假设在 CMDB 中，有类似如下的树状结构：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;- 中心/center
     - 平台/platform
         - 服务/service
