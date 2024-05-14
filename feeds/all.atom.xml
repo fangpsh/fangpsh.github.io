@@ -70,7 +70,23 @@ DefaultStartLimitBurst=5
 &lt;li&gt;奥飞国际：价格和稳定性还可以，广州还有一堆 IDC 厂商，例如云下汇金等；&lt;/li&gt;
 &lt;li&gt;其他：太平洋电信、Equinix 其实也有计算资源卖，但是比较少，不占优势；&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;有网友需要计算资源，可邮件联系引荐，争取折扣优惠。&lt;/p&gt;</content><category term="2024"></category><category term="IDC"></category><category term="cloud"></category></entry><entry><title>saltsatck 动态sls组织方式</title><link href="https://fangpsh.github.io/posts/2024/2024-05-11.html" rel="alternate"></link><published>2024-05-11T00:00:00+08:00</published><updated>2024-05-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-11:/posts/2024/2024-05-11.html</id><summary type="html">&lt;p&gt;假设在 CMDB 中，有类似如下的树状结构：&lt;/p&gt;
+&lt;p&gt;有网友需要计算资源，可邮件联系引荐，争取折扣优惠。&lt;/p&gt;</content><category term="2024"></category><category term="IDC"></category><category term="cloud"></category></entry><entry><title>静态博客添加 Newsletter 最简单的方案</title><link href="https://fangpsh.github.io/posts/2024/2024-05-12.html" rel="alternate"></link><published>2024-05-12T00:00:00+08:00</published><updated>2024-05-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-12:/posts/2024/2024-05-12.html</id><summary type="html">&lt;p&gt;想给博客加一个 newsletter，读网友22 年的文章：&lt;a href="https://irithys.com/blog-newsletter/"&gt;静态博客添加 Newsletter 的几种推荐方案&lt;/a&gt; 提到的方案：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Mailchimp 免费配额有点低，不想折腾（虽然极 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;想给博客加一个 newsletter，读网友22 年的文章：&lt;a href="https://irithys.com/blog-newsletter/"&gt;静态博客添加 Newsletter 的几种推荐方案&lt;/a&gt; 提到的方案：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Mailchimp 免费配额有点低，不想折腾（虽然极大可能我触碰不到 😂）；&lt;/li&gt;
+&lt;li&gt;Tinyletter，被关了；&lt;/li&gt;
+&lt;li&gt;Substack， 不能自动拉取 RSS更新，每次手工import 也太烦了；&lt;/li&gt;
+&lt;li&gt;Revue，被关了；&lt;/li&gt;
+&lt;li&gt;Briefcake，作者提到会插广告，有点烦；&lt;/li&gt;
+&lt;li&gt;竹白，内容肯定有审查，外加不支持支持注册，要申请；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;看来看去， 24 年，最简单的方式是注册 &lt;a href="https://hashnode.com/"&gt;hashnode&lt;/a&gt; 作为跳板，将 RSS 转为newsletter 。 管理面板中先打开Newsletter功能，再&lt;a href="https://support.hashnode.com/en/articles/6701069-import"&gt;导入RSS：Import-&amp;gt;RSS Importer&lt;/a&gt;，记得勾上：&lt;code&gt;Import automatically: Allow my future posts to be parsed and imported automatically&lt;/code&gt;。 效果见：&lt;a href="https://fangpsh.eu.org/newsletter"&gt;newsletter&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;2个缺憾：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;没有外挂组件，嵌入到原博客，读者需要点击转到 hashnode；&lt;/li&gt;
+&lt;li&gt;Newsletter 页面没看到导出功能，好像&lt;a href="https://townhall.hashnode.com/hashnode-newsletter-feature-for-busy-developers"&gt;有计划&lt;/a&gt;，不过21 年规划 24 年还没实现 🐶；&lt;/li&gt;
+&lt;/ol&gt;</content><category term="2024"></category><category term="blog"></category><category term="newsletter"></category></entry><entry><title>saltsatck 动态sls组织方式</title><link href="https://fangpsh.github.io/posts/2024/2024-05-11.html" rel="alternate"></link><published>2024-05-11T00:00:00+08:00</published><updated>2024-05-11T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-11:/posts/2024/2024-05-11.html</id><summary type="html">&lt;p&gt;假设在 CMDB 中，有类似如下的树状结构：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;- 中心/center
     - 平台/platform
         - 服务/service
