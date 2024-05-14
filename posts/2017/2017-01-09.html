@@ -88,7 +88,7 @@
 <p>gethostbyaddr() -- map an IP number or hostname to DNS info.</p>
 </blockquote>
 <p>拿到的结果应该就是一个反查IP的时候拿到的<a href="https://en.wikipedia.org/wiki/Reverse_DNS_lookup">PTR记录</a>。证实一下：</p>
-<p><img alt="salt-minion-id-dig-x" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164133.png"></p>
+<p><img alt="salt-minion-id-dig-x" src="/assets/images/2023/20230301164133.png"></p>
 <p>看来这个IP 之前有人用过，然后添加了一条PTR 记录，也没办法删了，再继续看看这个gethostbyaddr 的实现和工作原理，看看能怎么解决。</p>
 <p>关于这个函数更详细的介绍，来自<a href="https://docs.python.org/2/library/socket.html#socket.gethostbyaddr">python.org/2/library/socket</a>：</p>
 <blockquote>
@@ -140,7 +140,7 @@ hosts:      files dns myhostname
 <h2>hostname --all-fqdns</h2>
 <p>在返回来看看，一开始<code>hostname --all-fqdns</code> 的结果和<code>socket.getfqdn()</code> 一样，并再上文更改<code>nsswithc.conf</code> 的配置过程中，插件结果表现也是一致的。
 找Hostname 的<a href="https://packages.debian.org/source/stable/hostname">源代码</a>看下，<br>
-<img alt="hostname-getnameinfo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164145.png"></p>
+<img alt="hostname-getnameinfo" src="/assets/images/2023/20230301164145.png"></p>
 <blockquote>
 <p>getnameinfo  -  address-to-name  translation  in protocol-independent  manner</p>
 </blockquote>

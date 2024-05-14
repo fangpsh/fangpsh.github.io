@@ -40,7 +40,7 @@
   <div id="article-content" class="entry-content">
     <p>我在内网部署了一个 <a href="http://json.parser.online.fr/beta">json.parser.online.fr</a> 的破解版：<a href="https://github.com/hklcf/Json-Parser-Online-Nulled">Json-Parser-Online-Nulled</a>，今天有同事反馈，格式化后的文本发生了变化，发现是将<code>&amp;region</code> 变成了<code>®ion</code>
 复现一下：
-<img alt="reg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306184830.png"></p>
+<img alt="reg" src="/assets/images/2023/20230306184830.png"></p>
 <p>看起来是一个特殊字符：<a href="https://toolstud.io/web/charmap.php?encoded=reg">HTML character: ® = &reg;</a>，那是哪里引入的呢？</p>
 <p>走读了一遍代码，外加<code>console.log</code> 大法，<code>parse()</code>函数最后返回的地方：</p>
 <div class="highlight"><pre><span></span><code><span class="w">                </span><span class="nx">result</span><span class="o">=</span>
@@ -69,7 +69,7 @@
 </code></pre></div>
 
 <p>效果如下
-<img alt="reg01" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306190041.png"></p>
+<img alt="reg01" src="/assets/images/2023/20230306190041.png"></p>
 <p>另外发现如果输入<code>&lt;</code>和<code>&gt;</code> 也会被转换为<code>&amp;lt;</code> 和<code>&amp;gt;</code>，是由于作者的<a href="https://github.com/hklcf/Json-Parser-Online-Nulled/blob/master/script.js#L491,L492">转换</a>，不过我不太理解这个目的，注释掉这2行也一切正常。</p>
 <p>提个<a href="https://github.com/hklcf/Json-Parser-Online-Nulled/pull/1">PR</a>，下班回家。</p>
   </div><!-- /.entry-content -->

@@ -46,11 +46,11 @@
 MySQL 之类的优化工作，另外自己写一个对数据库的CRUD 操作的Web 界面并不困难，工作量也并不大。  </p>
 <h2>性能与架构</h2>
 <p>Bind DLZ 官方提供了一份<a href="http://bind-dlz.sourceforge.net/perf_tests.html">Performance Tests</a>，虽然是比较老的测试了，但是还是有不少参考价值。<br>
-<img alt="bind-dlz-perf-tests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163634.png"></p>
+<img alt="bind-dlz-perf-tests" src="/assets/images/2023/20230301163634.png"></p>
 <p>我自己使用queryperf 压测，结果与上图中类似，基本来说Bind DLZ MySQL 相比Bind 原生的方式，QPS 差20倍左右，因为MySQL 只能跑在单线程下。由于这个原因，建议采用Bind DLZ 作为Master，Bind 作为Slave的方式。多个Slave 结合LVS 做高可用和负载均衡，
 Master可以另外针对Bind DLZ 和MySQL 做高可用，这样的设计，可以发挥Bind 原生的高性能，也可以利用Bind DLZ 的灵活性。<br>
 <strong>但是这样会带来一个问题，在Master 上修改完记录之后，可能不会立即同步到Slave，会带来不一致的问题。不过这个问题可以通过自动发送Notify 来解决掉。</strong><br>
-<img alt="bind-dlz" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163644.png">  </p>
+<img alt="bind-dlz" src="/assets/images/2023/20230301163644.png">  </p>
 <p>另外可参考：</p>
 <ul>
 <li><a href="http://bind-dlz.sourceforge.net/best_practices.html">Best Practices</a></li>

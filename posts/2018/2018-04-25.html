@@ -41,7 +41,7 @@
     <p>入职腾讯的时候，同学们给我推荐了一个App：<a href="http://tongshiapp.com">同事</a>，
 这个App 为同事之间提供了匿名交流的平台，各种高压线、污秽色情的信息络绎不绝，相当刺激。  </p>
 <p>这个App 17年后期就出现HTTPS 证书过期、短信通道欠费收不到短信等问题，看起来要倒闭。有时候在想如果要搭建一个替代品，该如何平衡匿名性，又能验证是腾讯员工，我会怎么做，最后想了一个折中的办法。</p>
-<p><img alt="tongshiApp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165344.png"></p>
+<p><img alt="tongshiApp" src="/assets/images/2023/20230301165344.png"></p>
 <p><strong>前提：员工不信任论坛管理员。</strong></p>
 <h2>邮件列表</h2>
 <p>一开始的想法是通过邮件列表，因为邮箱还能匿名注册，而且有各种各样的移动客户端。怎么验证员工身份？无论是工作邮箱发验证码还是什么，只要涉及员工工作邮箱，服务端就有可能记录对应关系。或者通过邀请制度？又感觉不够收敛。做一个网站，只有内网可以访问，然后每日生成邀请码？Bingo，突然想到可以限制注册的来源，限制内网注册即可。</p>
@@ -60,7 +60,7 @@
 <ul>
 <li>
 <p>升级CloudFlare 套餐，使用<a href="https://support.cloudflare.com/hc/en-us/articles/115001595131-How-do-I-Lockdown-URLs-in-Cloudflare-">Zone lockdown</a>功能。
-<img alt="cloudflare_zone_lockdown" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165404.png"></p>
+<img alt="cloudflare_zone_lockdown" src="/assets/images/2023/20230301165404.png"></p>
 </li>
 <li>
 <p>CloudFlare 会把客户端IP 放在 <code>$http_cf_connecting_ip</code> 头里面，在Nginx 里面校验一下这个头。参考：<a href="https://support.cloudflare.com/hc/en-us/articles/200170706-How-do-I-restore-original-visitor-IP-with-Nginx-">How do I restore original visitor IP with Nginx?</a>。</p>
@@ -89,7 +89,7 @@
 </code></pre></div>
 
 <p>搞定。</p>
-<p><img alt="tongshi-tk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165416.png"></p>
+<p><img alt="tongshi-tk" src="/assets/images/2023/20230301165416.png"></p>
 <p>试验一下想法，过三天这台机器就到期，关了。</p>
 <p>总结一下思路，通过办公网出口IP 做注册限制，较宽松的员工认证手段，又保证了一定的匿名性。</p>
 <p>当然如果公司自己愿意做的话，在内网搭就非常简单了。然而这东西对于公司来说是洪水猛兽，审查还来不及。腾讯内网的乐问有匿名发帖功能，然而又有几个人信任匿名的安全性呢。</p>

@@ -38,7 +38,7 @@
   <div id="toc">
   </div>     
   <div id="article-content" class="entry-content">
-    <p><img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png">
+    <p><img alt="atemyram" src="/assets/images/2023/20230228184158.png">
 <a href="https://www.linuxatemyram.com">Don't Panic! Your ram is fine!</a></p>
 <h2>问题排查</h2>
 <p>一台机器的CPU iowait 非常高，perf 分析发现耗时都在<code>isolate_freepages_block</code> 函数，iostat 看系统盘的iops 也达到瓶颈，free 查看机器内存 buff/cache 占了很大一部分，free 快没了。网友的类似状况： <a href="http://www.yangguanjun.com/2016/09/12/ceph-node-high-workload-issue/">Ceph节点load很高问题的分析解决</a>。</p>

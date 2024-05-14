@@ -47,7 +47,7 @@
 1. 选择2台同机房的A，B ，A mtr B（公网IP），和反馈现象一致
 2. A mtr B （内网IP），和反馈现象一致</p>
 <p>当interval 是0.5 的时候，丢包率恰好是50%，在B 上抓包：
-<img alt="udp-loss" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230315173621.jpeg"></p>
+<img alt="udp-loss" src="/assets/images/2023/20230315173621.jpeg"></p>
 <p>B 的回ICMP: Destination Unreachable 是间隔性的。
 按照icmp ratelist 搜到了，找到了<a href="https://man7.org/linux/man-pages/man7/icmp.7.html">答案</a>。
 系统默认的<code>icmp_ratelimit</code>是<code>1000</code>，恰好是1s，那为何mtr ICMP 模式不会丢呢？
@@ -77,7 +77,7 @@
 </code></pre></div>
 
 <p>IMCP 模式下回的包是<code>G Info Reply</code>，未在<code>icmp_ratemask</code> 标记范围内。
-<img alt="icmp-reply" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230315174413.png"></p>
+<img alt="icmp-reply" src="/assets/images/2023/20230315174413.png"></p>
 <p>感谢细心的同事，又学习到了。</p>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">

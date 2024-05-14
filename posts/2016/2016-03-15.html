@@ -48,7 +48,7 @@
 <p>虚拟文件系统Initrd，启动到这一步之后，通过Switch-root 转到 Init 程序，即Systemd（也可以是Sysv 之类的），后面就是Systemd 如何启动服务进程的问题。<br>
 Initrd 这一步，Systemd 其实也可以接管，具体参考：<a href="https://www.freedesktop.org/software/systemd/man/bootup.html#Bootup%20in%20the%20Initial%20RAM%20Disk%20(initrd)">initrd with systemd</a>。  </p>
 <p>在传统的Sysv 中，有Runlevel（启动级别）的概念，在Systemd 里面有Target 的概念，如下图：</p>
-<p><img alt="runlevel" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161756.png"></p>
+<p><img alt="runlevel" src="/assets/images/2023/20230301161756.png"></p>
 <p>Systemd 有个单元文件（Unit）的概念，可以理解成一个单元文件就是一个服务单元，有很多类型的单元文件，Mount、Device、Service、Path、Timer 等，最常见的就是Service 单元：</p>
 <p>例：/usr/lib/systemd/system/named.service，具体的解释请看官方文档：</p>
 <div class="highlight"><pre><span></span><code>[Unit]
@@ -80,7 +80,7 @@ WantedBy=multi-user.target
 
 <p>Target 也是一种单元文件，但是它是引用和组织其他的单元文件，定义组织各种依赖关系。所以，Target 肯定可以实现Runlevel 的作用，只要定义六个Target 就可以了嘛。
 再看看下面这张图，就大致明白了启动的时候是怎么加载服务进程的：</p>
-<p><img alt="bootup" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161805.png"></p>
+<p><img alt="bootup" src="/assets/images/2023/20230301161805.png"></p>
 <p>更多细节，以及关机的过程请参考：<a href="https://www.freedesktop.org/software/systemd/man/bootup.html">bootup</a></p>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">

@@ -41,7 +41,7 @@
     <p>在网页中获取local dns 不太方便，看看大家是怎么做的。  </p>
 <h2>阿里云CDN 诊断工具</h2>
 <p>阿里云CDN提供的<a href="https://cdn.dns-detect.alicdn.com/https/doc.html">阿里昆仑用户诊断工具</a>：<br>
-<img alt="alicdn_local_dns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171842.png">  </p>
+<img alt="alicdn_local_dns" src="/assets/images/2023/20230301171842.png">  </p>
 <p>获取到local dns 的这个请求：</p>
 <div class="highlight"><pre><span></span><code>https://123-66-35-57-122894414.dns-detect.alicdn.com/api/cdnDetectHttps?method=commitDetectHttps&amp;detectId=122894414&amp;cb=jQuery110102821084573750223_1503489263656&amp;_=1503489263658
 
@@ -53,22 +53,22 @@ detectId=122894414
 
 <p>用户访问一个域名，浏览器给按照分配的local dns 发起dns 迭代查询，最后向域名的权威服务器名查询，最后这一步的时候可以得到local dns 的地址。</p>
 <p>如下图：</p>
-<p><img alt="microsoft-offical-course-20410c07-18-638" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171853.png"><br>
+<p><img alt="microsoft-offical-course-20410c07-18-638" src="/assets/images/2023/20230301171853.png"><br>
 <strong>图片来源：<a href="https://www.slideshare.net/gameaxt/microsoft-offical-course-20410c07">Microsoft Offical Course 20410C_07</a></strong></p>
 <p>要怎么把local dns 地址和用户对应起来呢？这就是前面那个奇怪的域名的作用，每次的域名都不同，当浏览器访问的时候，我们就可以根据这个唯一域名再结合域名服务器的信息，把对应的local dns 返回给用户。</p>
 <h2>腾讯华佗</h2>
 <p>腾讯的华佗分析系统<a href="http://utp.qq.com/">utp.qq.com</a>或<a href="http://ping.huatuo.qq.com/">ping.huatuo.qq.com</a>：<br>
-<img alt="qq_ldns_1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171906.png">  </p>
+<img alt="qq_ldns_1" src="/assets/images/2023/20230301171906.png">  </p>
 <p>腾讯这服务现在好像挂了。。不过不妨碍我们分析它的原理。</p>
 <div class="highlight"><pre><span></span><code>http://utp.qq.com/getldns.php?d=
 1503491352464.1724.sngdia.imtmp.net
 </code></pre></div>
 
 <p>这个<code>imtmp.net</code> 的域名看下whois 信息，属于腾讯：<br>
-<img alt="imtmp.net" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171920.png"></p>
+<img alt="imtmp.net" src="/assets/images/2023/20230301171920.png"></p>
 <p>前面这个数字看着像时间戳，做法应该和阿里的做法一样，那用户对这个域名的查询在哪里呢。</p>
 <p>翻下代码：<br>
-<img alt="qq_ldns_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171939.png"></p>
+<img alt="qq_ldns_2" src="/assets/images/2023/20230301171939.png"></p>
 <div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">getDNS</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;/getldns.php?d=&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">dns_domain</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">ldndsip</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -95,11 +95,11 @@ detectId=122894414
 </code></pre></div>
 
 <p>果然和时间戳有关。翻下前面，也找到了这个图片的请求：<br>
-<img alt="qq_ldns_3" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171950.png"></p>
+<img alt="qq_ldns_3" src="/assets/images/2023/20230301171950.png"></p>
 <p>多此一举？</p>
 <h2>网易DNS 检测工具</h2>
 <p>网易也有一个<a href="https://nstool.netease.com/">DNS检测工具</a>：</p>
-<p><img alt="netease_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172004.png"></p>
+<p><img alt="netease_ldns" src="/assets/images/2023/20230301172004.png"></p>
 <div class="highlight"><pre><span></span><code>&gt;GET https://only-425945-183-240-25-249.nstool.netease.com/
 &gt;Response: 您好，尊敬的网易用户&lt;br&gt;您的IP地址信息: 183.240.25.249 广东省广州市移动&lt;br&gt;您的DNS地址信息: 211.136.209.212 广东省广州市移动&lt;br&gt;您的DNS设置正确
 </code></pre></div>
@@ -107,11 +107,11 @@ detectId=122894414
 <p>也是类似的做法。</p>
 <h2>豆瓣用户检测工具</h2>
 <p>发现豆瓣也有一个<a href="http://doctor.douban.com/">检测工具</a>:<br>
-<img alt="douban_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172015.png"></p>
+<img alt="douban_ldns" src="/assets/images/2023/20230301172015.png"></p>
 <p>居然直接用阿里的接口。</p>
 <h2>whoami.akamai.net</h2>
 <p>akamai 提供了一个域名，直接ping 或者dig 就可以获取local dns地址，这个很酷，直接把local dns 当作查询结果返回：</p>
-<p><img alt="akamai_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172035.png"></p>
+<p><img alt="akamai_ldns" src="/assets/images/2023/20230301172035.png"></p>
 <h2>Anycast</h2>
 <p>使用以上工具多次检测，如果会发现检测到的地址不同，可能是由于local dns 做了<a href="https://en.wikipedia.org/wiki/Anycast">Anycast</a>，或者有出口IP 有多个造成。</p>
   </div><!-- /.entry-content -->

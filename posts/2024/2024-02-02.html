@@ -38,7 +38,7 @@
   <div id="toc">
   </div>     
   <div id="article-content" class="entry-content">
-    <p><img alt="rasproxy" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2024/20240218145733.jpg"></p>
+    <p><img alt="rasproxy" src="/assets/images/2024/20240218145733.jpg"></p>
 <p>刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的差不多了，就开始用快代理之类的服务，不过速度慢，IP 也容易被封。那会在玩树莓派，外加公司给发了一个移动3G无线网卡， 有一天突然想到不如用树莓派+无线网卡做个代理池。</p>
 <p>好处是只要重启就能换 IP， IP 来自本地运营商真实用户 IP 超大池，不容易被封，或者是说你要敢按段封，就会误伤用户。</p>
 <p>看上面图片当时应该搞了快 100 个树莓派。无线网卡用华为 EC8201和E8231，不需要 ppp 拨号，还有 web 接口可以读取统计流量。插到 usb 口上，写一个类似这种udev rules，添加办公网路由，删除默认路由，外网流量走无线网卡：</p>

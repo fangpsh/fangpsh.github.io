@@ -42,13 +42,13 @@
 <p>前端方面有一些关于图片加载速度的优化，例如CSS 画图，CSS 合并素材，甚至用CSS 把图片Base64 编码（不推荐），和这份笔记关系不大。</p>
 <h2>格式选择</h2>
 <p>不同的需求选择不同的格式, JPEG 能够满足的需求没必要选择PNG。</p>
-<p><img alt="format-tree" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155951.png"></p>
+<p><img alt="format-tree" src="/assets/images/2023/20230301155951.png"></p>
 <p>图片来源：<a href="http://jixianqianduan.com/frontend-weboptimize/2015/11/17/front-end-image-optmize.html">《web前端图片极限优化策略》</a>，原图是Google 的<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization">Image Optimization</a>。</p>
 <h3>WebP、SharpP</h3>
 <p>目前对于WebP 的支持已经很好了，所以新业务能够选择WebP，就选WebP。<br>
 豆瓣的相册切到了WebP，另外提供了一个让图片变清晰的思路：把图片尺寸拉大到2倍，然后缩小成1倍。<br>
 图片清晰度大大提升，还降低了图片大小：<code>2x WebP(73k) &lt; 1x JPG(119k)</code>，效果如下图（图片来源 豆瓣 波希米亚的日记）。</p>
-<p><img alt="douban.jpg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160002.png"></p>
+<p><img alt="douban.jpg" src="/assets/images/2023/20230301160002.png"></p>
 <p>不过采用WebP 之后，用户“另存为”不太方便，毕竟大家对PNG和JPEG 比较熟悉。</p>
 <p>豆瓣的WebP 实践：</p>
 <ul>
@@ -57,7 +57,7 @@
 </ul>
 <p>有趣的是，WebP 基于<a href="https://zh.wikipedia.org/wiki/VP8">VP8</a>，VP8 的下一代是<a href="https://zh.wikipedia.org/wiki/VP9">VP9</a>，VP9 的对手是<a href="https://zh.wikipedia.org/zh/%E9%AB%98%E6%95%88%E7%8E%87%E8%A7%86%E9%A2%91%E7%BC%96%E7%A0%81">HEVC/H.265</a>，<a href="https://zh.wikipedia.org/wiki/BPG">BGP</a> 基于HEVC，据说表现比WebP 好很多，不知为啥应用不多，因为专利？</p>
 <p>腾讯基于HEVC 搞出了一个SharpP 格式，听说秒天秒地，目前已在腾讯云CDN 上应用，不过接入的大都是腾讯自家的产品：</p>
-<p><img alt="SharpP.jpg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160018.png"></p>
+<p><img alt="SharpP.jpg" src="/assets/images/2023/20230301160018.png"></p>
 <p>图片模煳的没办法:( ，<br>
 图片来源：<a href="https://www.qcloud.com/community/article/164816001481011868">《图片流量节省大杀器：基于 CDN 的 sharpP 自适应图片技术实践》</a></p>
 <p>看起来确实不错，听说在移动端解码速度也很快，不过如此大规模使用估计花了不少专利费。第三方用户使用也不方便，得使用<a href="https://x5.tencent.com/tbs/">X5内核</a>，且只能用腾讯云的CDN，这样被活活绑死的事情，愿意的人应该不多。另外腾讯还搞了一个<a href="http://www.ifanr.com/832678">TPG</a>。</p>
@@ -75,9 +75,9 @@ If present and true, indicates that the encoder should make an extra pass over t
 <p>另外也还有其他优化方式，例如大名鼎鼎的<a href="https://tinypng.com/">Tinypng</a>，<a href="https://zhitu.isux.us/">智图</a> 等。推荐Pillow，Pillow 的效果不差，而且开源、免费。</p>
 <h3>选择渐进式（Progressive） JPEG</h3>
 <p>常见的JPEG 有2种，基本式（Baseline）和渐进式（Progressive），明显的区别是前者从上至下加载，后者加载过程从模煳到清晰。参考下图：
-<img alt="progressive" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160342.png"></p>
+<img alt="progressive" src="/assets/images/2023/20230301160342.png"></p>
 <p>渐进式一般会比基本式小一些，而且加载速度更快。</p>
-<p><img alt="speed" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160125.png"></p>
+<p><img alt="speed" src="/assets/images/2023/20230301160125.png"></p>
 <p>图片来源：<a href="http://www.zhangxinxu.com/wordpress/2013/01/progressive-jpeg-image-and-so-on/">《渐进式jpeg(progressive jpeg)图片及其相关》</a>。</p>
 <p>而且从用户体验上来说，从模煳到清晰比从空白展开到全部，前者体验更好。</p>
 <p>关于为何渐进式会更小，需要从JPEG 的原理说起（对这一块也一知半解），JPEG被按照8x8，从坐标变换，DCT 变换，重排列，最后量化，得到的结果左上角是大量正数，右下角聚集大量0，然后再Zig-Zag 扫描，再用霍夫曼编码压缩。渐进式的情况下，相当于分层了，前面的扫描包含着大量正数，后面的扫描关注更多细节，包含大量的0，这样导致0 一起出现的概率增加，从而更易于压缩。</p>
@@ -91,10 +91,10 @@ If present and true, indicates that the encoder should make an extra pass over t
 生成一份PNG 的缩略图，如果大于300KiB，再检查这个缩略图是否包含超过2^16 种不同的色彩。一般来说LOGO 的色彩都比较少和单一。</p>
 <h3>动态设置JPEG 质量因子（Quality）</h3>
 <p>JPEG 有一个质量因子，从0到100，表示图片的质量从差到好。Yelp 做了一个实验，发现在quality 在80~85 之间的时候，图片效果肉眼看基本没差别，<a href="https://zh.wikipedia.org/wiki/%E7%B5%90%E6%A7%8B%E7%9B%B8%E4%BC%BC%E6%80%A7">SSIM</a> 在0.9~0.95。SSIM 中文名称：结构相似性，用来判断两张图片的相似程度，拿一张压缩后的图片和原图比较，相似越高，说明失真越小，数学原理可以看维基百科，Yelp 用<a href="https://github.com/jterrace/pyssim/">pyssim</a>来计算SSIM。</p>
-<p><img alt="ssims-strategies" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160134.png"></p>
+<p><img alt="ssims-strategies" src="/assets/images/2023/20230301160134.png"></p>
 <p>质量设置为80~85 之间某一个值的时候，SSIM 还能保持在0.9到0.95，多奇妙啊。Yelp 提供了一段脚本来找出图片合适的quality 值：<a href="https://gist.github.com/thebostik/cfc9f059459cfefd1f61134b48291436">dynamic_quality.py</a>，用类似二分法猜数字的方法:P。</p>
 <p>不过个人觉得对于一些色彩比较单一的图片，可以激进一点，例如从20~85 开始找最合适的压缩比。为什么色彩单一的可以调低质量呢，因为肉眼看不出来啊。所以是不是可以延伸一下，用大量的训练数据，用AI 的方法找到最合适的quality ？想起来Google之前推出的<a href="https://www.blog.google/products/google-plus/saving-you-bandwidth-through-machine-learning/">RAISR</a>，非常厉害。</p>
-<p><img alt="RAISR" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160144.png"></p>
+<p><img alt="RAISR" src="/assets/images/2023/20230301160144.png"></p>
 <p>扯远了。</p>
 <p>Yelp 博客提到的其他两篇相关文章，类似的思路，并且文中都有成型的开源工具：</p>
 <ul>

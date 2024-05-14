@@ -38,7 +38,7 @@
   <div id="toc">
   </div>     
   <div id="article-content" class="entry-content">
-    <p><img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"></p>
+    <p><img alt="bookcover" src="/assets/images/2023/20230228164135.png"></p>
 <p>看<a href="https://book.douban.com/subject/25856314/">《Web 性能权威指南》</a>的起因是在看<a href="https://book.douban.com/subject/26869219/">《HTTPS 权威指南》</a>的时候，看到优化相关的，然后就延伸到想看一下这本书。<br>
 这本书，作者提供了免费的<a href="https://hpbn.co/">在线英文版</a>，建议还是看英文的，中文翻译版有些地方略生硬。</p>
 <h2>TCP 优化</h2>
@@ -53,7 +53,7 @@
 <h3>确保cwnd 大小为10；</h3>
 <p>增大拥塞窗口，10表示10个<a href="https://en.wikipedia.org/wiki/Maximum_segment_size">MSS</a>，以太网标准的MSS 是1460。<br>
 前面提到内核升级也可以带来好处，Linux 3.2+ 的内核，cwnd都是默认10。<br>
-<img alt="OS_CWND" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164224.png"><br>
+<img alt="OS_CWND" src="/assets/images/2023/20230228164224.png"><br>
 图片来源：cdnplanet.com</p>
 <p>关于更改initcwnd、查看系统的initcwnd，可以参考:<br>
 <a href="http://www.cdnplanet.com/blog/tune-tcp-initcwnd-for-optimum-performance/">Tuning initcwnd for optimum performance</a>。  </p>
@@ -96,8 +96,8 @@ Application may use keepalives when needed (minimum interval 15 seconds).
 <p>在保证兼容性的情况下，升级到新版的openSSL，可以有更好的性能。<br>
 HPBN的在这一章的建议是用物理机，纯CPU计算卸载，举了Google和Facebook为例。不过如果是使用的云服务的话，部分云厂商在负载均衡上都提供了SSL卸载的功能，不过感觉对ALPN这些协议的支持不知如何，所以还没试用过。云服务虚机+Nginx 来做卸载还是有少许压力的，高峰期的时候。Intel之类的硬件，甚至F5 这种，感觉成本有点高，不过性能确实非常好，如果有条件的话，可以上这类设备。不过使用了这些设备之后，算法升级、调优的自由度可能就不大了，需要综合考虑。  </p>
 <p>为了降低压力，可以对加密套件的选择进行优化，参考《HTTPS权威指南》一书的测试结果：<br>
-<img alt="TLS_Speed" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164304.png">  </p>
-<p><img alt="TLS_Speed_taobao" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164345.png">  </p>
+<img alt="TLS_Speed" src="/assets/images/2023/20230228164304.png">  </p>
+<p><img alt="TLS_Speed_taobao" src="/assets/images/2023/20230228164345.png">  </p>
 <p>建议：优先选择ECDHE，禁用DHE。</p>
 <h3>尽早握手</h3>
 <p>类似TCP的三次握手，TLS的握手过程也可以通过类似CDN的网络进行优化。在距离用户较近的地方搭建代理服务器，然后和后端保持长连接，这样降低用户到服务整个的握手时间。</p>

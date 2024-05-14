@@ -41,7 +41,7 @@
     <h2>问题背景</h2>
 <p>在部署HTTPS 的时候，2台Nginx 下都部署了多个域名的证书，即NginxA 部署了证书a.com 和b.com 的证书，NginxB 也部署了证书a.com 和b.com ，域名a.com 指向NginxA，域名b.com 指向NginxB。<br>
 在用<a href="https://www.ssllabs.com">SSL LABS</a> 检测的时候，发现b.com 会出现“This site works only in browsers with SNI support.”，而a.com 不会。<br>
-<img alt="SNI" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164029.png">  </p>
+<img alt="SNI" src="/assets/images/2023/20230301164029.png">  </p>
 <h3>SNI 介绍</h3>
 <p>关于<a href="https://en.wikipedia.org/wiki/Server_Name_Indication">SNI</a> 的简单介绍：</p>
 <blockquote>
@@ -216,7 +216,7 @@ pathnames are sorted.
 <p>所以，<code>glob</code> 函数在默认情况下，返回的结果是按照字母表排序的。即同时存在a.com.conf 和b.com.conf 两份配置，在同时include 的话，a.com.conf 会比b.com.conf 先加载。  </p>
 <p>最后，我把NginxA上的a.com.conf 改成 00-a.com.conf ，把NginxB 上的b.com.conf 改成 00-b.com.conf ，控制了他们的加载顺序。  </p>
 <p>题外话，想起了在用SySV Init 的时候，/etc/rcX.d 下那些 S01XXX，K02XXX 之类的文件，用来控制服务的起停顺序。  </p>
-<p><img alt="sysv_init_rcx.d" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164044.png"></p>
+<p><img alt="sysv_init_rcx.d" src="/assets/images/2023/20230301164044.png"></p>
 <p>图片<a href="http://www.jianshu.com/p/b4c38f44c4ea">来源网络</a> ，现在手头已经找不到用SySV 做Init 的机器了，冏。</p>
 <h2>Changeset 4943:1e2d5d3f9f6b</h2>
 <p><a href="https://trac.nginx.org/nginx/changeset/4943/nginx">Changeset 4943:1e2d5d3f9f6b in nginx</a>。</p>

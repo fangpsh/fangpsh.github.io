@@ -371,8 +371,8 @@ bad sector – the colloquial name for the same thing
 &lt;p&gt;这些工作都没做好，RAID10 也白扯。&lt;/p&gt;
 &lt;p&gt;RAID5 我还是会用，只是为了计算节点换盘不用停机。数据库节点不用RAID5。 &lt;/p&gt;
 &lt;p&gt;另外一个控制存储池大小的原因是，重建过程会有性能下降的问题，生产环境要尽量缩短重建时间。&lt;/p&gt;
-&lt;p&gt;还有，重要数据做备份，RAID 不是备份。&lt;/p&gt;</content><category term="2024"></category><category term="disk，raid"></category></entry><entry><title>高质量4G代理池</title><link href="https://fangpsh.github.io/posts/2024/2024-02-02.html" rel="alternate"></link><published>2024-02-02T00:00:00+08:00</published><updated>2024-02-02T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-02-02:/posts/2024/2024-02-02.html</id><summary type="html">&lt;p&gt;&lt;img alt="rasproxy" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
-&lt;p&gt;刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="rasproxy" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;还有，重要数据做备份，RAID 不是备份。&lt;/p&gt;</content><category term="2024"></category><category term="disk，raid"></category></entry><entry><title>高质量4G代理池</title><link href="https://fangpsh.github.io/posts/2024/2024-02-02.html" rel="alternate"></link><published>2024-02-02T00:00:00+08:00</published><updated>2024-02-02T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-02-02:/posts/2024/2024-02-02.html</id><summary type="html">&lt;p&gt;&lt;img alt="rasproxy" src="/assets/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="rasproxy" src="/assets/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的差不多了，就开始用快代理之类的服务，不过速度慢，IP 也容易被封。那会在玩树莓派，外加公司给发了一个移动3G无线网卡， 有一天突然想到不如用树莓派+无线网卡做个代理池。&lt;/p&gt;
 &lt;p&gt;好处是只要重启就能换 IP， IP 来自本地运营商真实用户 IP 超大池，不容易被封，或者是说你要敢按段封，就会误伤用户。&lt;/p&gt;
 &lt;p&gt;看上面图片当时应该搞了快 100 个树莓派。无线网卡用华为 EC8201和E8231，不需要 ppp 拨号，还有 web 接口可以读取统计流量。插到 usb 口上，写一个类似这种udev rules，添加办公网路由，删除默认路由，外网流量走无线网卡：&lt;/p&gt;
@@ -1504,14 +1504,14 @@ centos {
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;最后执行 &lt;code&gt;lvm vgcfgrestore -f 配置文件 vg名称&lt;/code&gt; 生效。&lt;/p&gt;</content><category term="2023"></category><category term="lvm"></category></entry><entry><title>DNS Cache投毒事件处理</title><link href="https://fangpsh.github.io/posts/2023/2023-09-05.html" rel="alternate"></link><published>2023-09-05T00:00:00+08:00</published><updated>2023-09-05T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-09-05:/posts/2023/2023-09-05.html</id><summary type="html">&lt;p&gt;最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明代理）：
-&lt;img alt="aws 被劫持" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905171716.jpg"&gt;&lt;/p&gt;
+&lt;img alt="aws 被劫持" src="/assets/images/2023/20230905171716.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;里面的域名是 djfidicjmwos.com，
 搜索这个域名，有一个类似的帖子：&lt;a href="http://www.0818tuan.com/xbhd/1733117.html"&gt;部分网站登录时不时提示“你的连接不是专用连接”，然后进不去后，等会又可以进&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;查看办公网的localdns，上游是深圳电信返回：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="localdns-log" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905172052.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="localdns-log" src="/assets/images/2023/20230905172052.png"&gt;&lt;/p&gt;
 &lt;p&gt;可疑IP：156.234.127.142&lt;/p&gt;
 &lt;p&gt;直接访问这个IP 的https端口，返回证书和劫持一致：
-&lt;img alt="证书报警" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905171559.jpeg"&gt;&lt;/p&gt;
+&lt;img alt="证书报警" src="/assets/images/2023/20230905171559.jpeg"&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;序列号 9F87F0D7AA5DAD293B3FAB5ADAE9606
 根证书 否
 算法  SHA384WithRSA
@@ -1524,7 +1524,7 @@ SHA256指纹    F3B1564D750EFE874AC166D427BC5ACF7E4554BEFCF3988B7F0EE069905A0B02
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;按这个IP查询ti.360.net ，看起来和博彩相关：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="ip 信息" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905172306.jpeg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ip 信息" src="/assets/images/2023/20230905172306.jpeg"&gt;&lt;/p&gt;
 &lt;p&gt;直接对202.96.128.166 发起请求，会间歇性返回这个IP，可能只是集群中某台服务器异常 ，
 这条记录的TTL特别长。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;dig  @202.96.128.166 ap-southeast-1.console.aws.amazon.com
@@ -1577,7 +1577,7 @@ a299197c08ba4f000.awsglobalaccelerator.com. 186 IN A 3.3.15.1
 a299197c08ba4f000.awsglobalaccelerator.com. 186 IN A 3.3.14.1
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img alt="fofa一下" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905174026.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="fofa一下" src="/assets/images/2023/20230905174026.png"&gt;&lt;/p&gt;
 &lt;p&gt;有人说可能aws 的系统出问题了，我觉得可能性不大。猜测几个可能的原因：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;电信某一组服务器被入侵？不太可能，114 也出现了类似情况；&lt;/li&gt;
@@ -2249,22 +2249,22 @@ iptables -t nat -A PREROUTING -p tcp -j V2RAY
 &lt;p&gt;dex 拖入jd-gui 之后，从哪里开始看呢？&lt;/p&gt;
 &lt;p&gt;用apktool 直接逆向到apk 包虽然没有关键代码，但是会包含一些变量名，可以作为线索。
 例如APP 上显示“扫码通行，点击刷新”，我们直接grep：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="grep" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143707.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="grep" src="/assets/images/2023/20230420143707.png"&gt;&lt;/p&gt;
 &lt;p&gt;关键词 &lt;code&gt;passcode&lt;/code&gt;，另外这是个二维码，也可以从先找&lt;code&gt;qrcode&lt;/code&gt; 相关函数，然后看看那些地方调用了它，倒着看。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="createQRCode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143726.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="QrCodeFragment" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143814.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="createQRCode" src="/assets/images/2023/20230420143726.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="QrCodeFragment" src="/assets/images/2023/20230420143814.png"&gt;&lt;/p&gt;
 &lt;p&gt;看到关键行：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;param1String = EncodeUtil.encodeKey(CacheUtils.getUserId(), QrCodeFragment.this.mPassCode, &amp;quot;A&amp;quot;, CacheUtils.getAppVersion());
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img alt="encodeKey" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143840.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="encodeKey" src="/assets/images/2023/20230420143840.png"&gt;&lt;/p&gt;
 &lt;p&gt;出现一个关键信息：qrCodeKey，
 最后进行了AES 加密：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;return AESUtil.Encrypt(stringBuilder3.toString(), qrCodeKey, qrCodeKey);
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;先看一下AES 的加密模式和填充算法等，再回过来看这个str生成逻辑。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="AESUtil" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143904.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AESUtil" src="/assets/images/2023/20230420143904.png"&gt;&lt;/p&gt;
 &lt;p&gt;ok，我们得到了，&lt;code&gt;AES/CBC/PKCS5Padding&lt;/code&gt;，也有密钥（qrCodeKey）了。&lt;/p&gt;
 &lt;p&gt;打开安装的APP，连续生成2，3张通行二维码，解析出二维码表示的字符串：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;l/YKQnk8F/JcCXI3k4uvf05a1hcpnZSmdgBV...ak9A/xPh7KsgPhUffKRjajLi/2u5IIOA==
@@ -2273,15 +2273,15 @@ l/YKQnk8F/JcCXI3k4uvf1VsKs6lu...3AtHsxb9I16t2vXJ0qpK+7DmEgADVBdw==
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;找一个&lt;a href="https://tool.lmeee.com/jiami/aes"&gt;AES 在线加解密&lt;/a&gt;的网站，试一试：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="aes-decrypt" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143926.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="aes-decrypt" src="/assets/images/2023/20230420143926.png"&gt;&lt;/p&gt;
 &lt;p&gt;ok，搞定了sign_str，有了这个sign_str 能方便我们后续校对sign_str 生成逻辑和编写poc。&lt;/p&gt;
 &lt;p&gt;同时在这一步，可以发现前半部分字符串和上文出现UserID 有类似的地方。接下来就是读懂前面encodeKey 函数的逻辑，以及传入mCode 的生成落。&lt;/p&gt;
 &lt;p&gt;UserID+mPassCode+md5_16(mPassCode)+"B"+版本号。
 UserID和mPassCode 不是直接拼凑，而是间隔交叉拼在一起。&lt;/p&gt;
 &lt;p&gt;再看下mPassCode的生成逻辑：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="mPassCode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144057.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="mPassCode" src="/assets/images/2023/20230420144057.png"&gt;&lt;/p&gt;
 &lt;p&gt;从代码来看，只是简单的递增。这个时候，再去生成几个实际的二维码，用AES在线解密出，拿到mPassCode 的md5_16，丢到cmd5.com 里面看看：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="cmd5" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144121.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="cmd5" src="/assets/images/2023/20230420144121.png"&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;e6e61673edb05342 -&amp;gt; 00000171
 7a56b435986b1611 -&amp;gt;  00000172
 651bac14cc8b1285 -&amp;gt;  00000173
@@ -2397,11 +2397,11 @@ print(encrypted_text)
 &lt;li&gt;亚太闲时和欧美全时，可以参考以下表格自行抉择。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;假设亚太全时 月平均流量消耗是300T，那最佳做法是写一个脚本，监控余量，自动补30T-6月包，而不是直接搞一个300T-6月包。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="亚太全时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142005.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="亚太闲时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142040.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="欧美全时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142125.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="亚太全时" src="/assets/images/2023/20230317142005.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="亚太闲时" src="/assets/images/2023/20230317142040.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="欧美全时" src="/assets/images/2023/20230317142125.png"&gt;&lt;/p&gt;
 &lt;p&gt;顺便看了下，腾讯上海全时的流量包情况，比较符合思维定式，时间越长，包越大，单价越低：
-&lt;img alt="腾讯上海全时" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230317142156.png"&gt;&lt;/p&gt;
+&lt;img alt="腾讯上海全时" src="/assets/images/2023/20230317142156.png"&gt;&lt;/p&gt;
 &lt;p&gt;如果需要获取这个表格，请点击 &lt;a href="https://docs.google.com/spreadsheets/d/1U4cff_GZILOqMl9ApcdmLjzQYIr_wWoY/edit?usp=sharing&amp;amp;ouid=118315519688232626252&amp;amp;rtpof=true&amp;amp;sd=true"&gt;阿里云流量&lt;/a&gt;。&lt;/p&gt;</content><category term="2023"></category><category term="cloud"></category><category term="aliyun"></category></entry><entry><title>MTR UDP模式固定丢包率的问题</title><link href="https://fangpsh.github.io/posts/2023/2023-03-15.html" rel="alternate"></link><published>2023-03-15T00:00:00+08:00</published><updated>2023-03-15T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-03-15:/posts/2023/2023-03-15.html</id><summary type="html">&lt;p&gt;不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 &lt;code&gt;1s/次&lt;/code&gt;，会出现固定丢 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;不愿意透露姓名的同事反馈，在任何一台A 服务器上，mtr 另外一台B 服务器，UDP 模式，发包频率只要大于 &lt;code&gt;1s/次&lt;/code&gt;，会出现固定丢包，并且丢包总是在最后一跳：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mtr -u {ip} -nz --interval 0.5
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -2411,7 +2411,7 @@ print(encrypted_text)
 1. 选择2台同机房的A，B ，A mtr B（公网IP），和反馈现象一致
 2. A mtr B （内网IP），和反馈现象一致&lt;/p&gt;
 &lt;p&gt;当interval 是0.5 的时候，丢包率恰好是50%，在B 上抓包：
-&lt;img alt="udp-loss" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230315173621.jpeg"&gt;&lt;/p&gt;
+&lt;img alt="udp-loss" src="/assets/images/2023/20230315173621.jpeg"&gt;&lt;/p&gt;
 &lt;p&gt;B 的回ICMP: Destination Unreachable 是间隔性的。
 按照icmp ratelist 搜到了，找到了&lt;a href="https://man7.org/linux/man-pages/man7/icmp.7.html"&gt;答案&lt;/a&gt;。
 系统默认的&lt;code&gt;icmp_ratelimit&lt;/code&gt;是&lt;code&gt;1000&lt;/code&gt;，恰好是1s，那为何mtr ICMP 模式不会丢呢？
@@ -2441,11 +2441,11 @@ print(encrypted_text)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;IMCP 模式下回的包是&lt;code&gt;G Info Reply&lt;/code&gt;，未在&lt;code&gt;icmp_ratemask&lt;/code&gt; 标记范围内。
-&lt;img alt="icmp-reply" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230315174413.png"&gt;&lt;/p&gt;
+&lt;img alt="icmp-reply" src="/assets/images/2023/20230315174413.png"&gt;&lt;/p&gt;
 &lt;p&gt;感谢细心的同事，又学习到了。&lt;/p&gt;</content><category term="2023"></category><category term="linux"></category><category term="network"></category></entry><entry><title>避免innerHTML 自动渲染特殊字符</title><link href="https://fangpsh.github.io/posts/2023/2023-03-06.html" rel="alternate"></link><published>2023-03-06T00:00:00+08:00</published><updated>2023-03-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2023-03-06:/posts/2023/2023-03-06.html</id><summary type="html">&lt;p&gt;我在内网部署了一个 &lt;a href="http://json.parser.online.fr/beta"&gt;json.parser.online.fr&lt;/a&gt; 的破解版：&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled"&gt;Json-Parser-Online-Nulled&lt;/a&gt;，今天有同事反馈，格式化后的文本发生了变化，发现是将&lt;code&gt;&amp;amp;region&lt;/code&gt; 变成了&lt;code&gt;®ion&lt;/code&gt;
 复现一下 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;我在内网部署了一个 &lt;a href="http://json.parser.online.fr/beta"&gt;json.parser.online.fr&lt;/a&gt; 的破解版：&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled"&gt;Json-Parser-Online-Nulled&lt;/a&gt;，今天有同事反馈，格式化后的文本发生了变化，发现是将&lt;code&gt;&amp;amp;region&lt;/code&gt; 变成了&lt;code&gt;®ion&lt;/code&gt;
 复现一下：
-&lt;img alt="reg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306184830.png"&gt;&lt;/p&gt;
+&lt;img alt="reg" src="/assets/images/2023/20230306184830.png"&gt;&lt;/p&gt;
 &lt;p&gt;看起来是一个特殊字符：&lt;a href="https://toolstud.io/web/charmap.php?encoded=reg"&gt;HTML character: ® = &amp;reg;&lt;/a&gt;，那是哪里引入的呢？&lt;/p&gt;
 &lt;p&gt;走读了一遍代码，外加&lt;code&gt;console.log&lt;/code&gt; 大法，&lt;code&gt;parse()&lt;/code&gt;函数最后返回的地方：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
@@ -2474,7 +2474,7 @@ print(encrypted_text)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;效果如下
-&lt;img alt="reg01" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306190041.png"&gt;&lt;/p&gt;
+&lt;img alt="reg01" src="/assets/images/2023/20230306190041.png"&gt;&lt;/p&gt;
 &lt;p&gt;另外发现如果输入&lt;code&gt;&amp;lt;&lt;/code&gt;和&lt;code&gt;&amp;gt;&lt;/code&gt; 也会被转换为&lt;code&gt;&amp;amp;lt;&lt;/code&gt; 和&lt;code&gt;&amp;amp;gt;&lt;/code&gt;，是由于作者的&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled/blob/master/script.js#L491,L492"&gt;转换&lt;/a&gt;，不过我不太理解这个目的，注释掉这2行也一切正常。&lt;/p&gt;
 &lt;p&gt;提个&lt;a href="https://github.com/hklcf/Json-Parser-Online-Nulled/pull/1"&gt;PR&lt;/a&gt;，下班回家。&lt;/p&gt;</content><category term="2023"></category><category term="html"></category></entry><entry><title>顺着网线找供应商</title><link href="https://fangpsh.github.io/posts/2022/2022-10-14.html" rel="alternate"></link><published>2022-10-14T00:00:00+08:00</published><updated>2022-10-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2022-10-14:/posts/2022/2022-10-14.html</id><summary type="html">&lt;p&gt;公司在逐渐开展国际业务，某些国家覆盖需要补点，涉及到找供应商。
 国际供应商在交流和商务方式和和国内供应商都有 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;公司在逐渐开展国际业务，某些国家覆盖需要补点，涉及到找供应商。
@@ -2484,7 +2484,7 @@ print(encrypted_text)
 &lt;p&gt;埃及：TE（埃及电信），沃达丰vodafone等。&lt;br&gt;
 主流运营商，你可以Google，或者看国家的AS ，然后按网段排序，IP 约多一般市场份额越大：
 http://whois.ipip.net/countries/EG&lt;/p&gt;
-&lt;p&gt;&lt;img alt="埃及IP地址" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230305202935.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="埃及IP地址" src="/assets/images/2023/20230305202935.png"&gt;&lt;/p&gt;
 &lt;p&gt;埃及电信No.1
  &lt;/p&gt;
 &lt;h2&gt;第二步：以某个主流运营商找到关键AS 号&lt;/h2&gt;
@@ -2497,7 +2497,7 @@ https://www.cidr-report.org/cgi-bin/as-report?as=AS8452&amp;amp;view=2.0&lt;br&g
 &lt;p&gt;downstream 就是得买transit，在一个国家正常开展业务，一般也绕不开topN 的运营商。
 不过一些情况是发现不了的，例如只能用运营商的IP ，像中国三大运营商的情况，那就通过其他路子了。&lt;/p&gt;
 &lt;p&gt;国内出海的公司，一般都有个美国、香港、新加坡之类的主体，所以重点看downstream 里面是这类国别的AS。 &lt;/p&gt;
-&lt;p&gt;&lt;img alt="downstream " src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230305203530.png"&gt;
+&lt;p&gt;&lt;img alt="downstream " src="/assets/images/2023/20230305203530.png"&gt;
 以TE AS8452 为例，眼熟的老朋友有：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;AS138915 KAOPU-HK Kaopu Cloud HK Limited, HK：靠谱云&lt;/li&gt;
@@ -2505,12 +2505,12 @@ https://www.cidr-report.org/cgi-bin/as-report?as=AS8452&amp;amp;view=2.0&lt;br&g
 &lt;li&gt;AS21859  ZEN-ECN, US：层峰&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2&gt;第四步：顺藤摸瓜&lt;/h2&gt;
-&lt;p&gt;按照第三步的AS 线索，浏览下AS 的注册domain，Google 名称，企查查，找找联系方式、官网等，一般都能找到了。&lt;/p&gt;</content><category term="2022"></category><category term="BGP"></category><category term="IDC"></category></entry><entry><title>Python requests 高级用法：timeouts、retries、hooks</title><link href="https://fangpsh.github.io/posts/2020/2020-10-04.html" rel="alternate"></link><published>2020-10-04T00:00:00+08:00</published><updated>2020-10-04T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-10-04:/posts/2020/2020-10-04.html</id><summary type="html">&lt;p&gt;&lt;img alt="python-requests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185617.png"&gt;&lt;/p&gt;
+&lt;p&gt;按照第三步的AS 线索，浏览下AS 的注册domain，Google 名称，企查查，找找联系方式、官网等，一般都能找到了。&lt;/p&gt;</content><category term="2022"></category><category term="BGP"></category><category term="IDC"></category></entry><entry><title>Python requests 高级用法：timeouts、retries、hooks</title><link href="https://fangpsh.github.io/posts/2020/2020-10-04.html" rel="alternate"></link><published>2020-10-04T00:00:00+08:00</published><updated>2020-10-04T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-10-04:/posts/2020/2020-10-04.html</id><summary type="html">&lt;p&gt;&lt;img alt="python-requests" src="/assets/images/2023/20230228185617.png"&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;原文地址：&lt;a href="https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/"&gt;findwork.dev&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;作者：Dani Hodovic&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;在我使用的所有编程语言中，Python 的HTTP 库 &lt;a href="https://requests.readthedocs.io/en/master/"&gt;requests&lt;/a&gt; 是我最喜欢的HTTP 工具。它简单，直观，在Python 社区中无处不在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="python-requests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185617.png"&gt;&lt;/p&gt;
+&lt;p&gt;在我使用的所有编程语言中，Python 的HTTP 库 &lt;a href="https://requests.readthedocs.io/en/master/"&gt;requests&lt;/a&gt; 是我最喜欢的HTTP 工具。它简单，直观，在Python 社区中无处不在 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="python-requests" src="/assets/images/2023/20230228185617.png"&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;原文地址：&lt;a href="https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/"&gt;findwork.dev&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;作者：Dani Hodovic&lt;/li&gt;
@@ -2789,15 +2789,15 @@ Available matches:
 &lt;li&gt;A 机器ping B 机器丢包，触发A MTR B，最后一跳丢包；&lt;/li&gt;
 &lt;li&gt;B 机器ping A 机器丢包，触发B MTR A，最后一跳不丢包；&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png"&gt;
-&lt;img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="mtr-a2b" src="/assets/images/2023/20230228185207.png"&gt;
+&lt;img alt="mtr-b2a" src="/assets/images/2023/20230228185227.png"&gt;&lt;/p&gt;
 &lt;p&gt;按照之前的理解 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;现象:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;A 机器ping B 机器丢包，触发A MTR B，最后一跳丢包；&lt;/li&gt;
 &lt;li&gt;B 机器ping A 机器丢包，触发B MTR A，最后一跳不丢包；&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="mtr-a2b" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185207.png"&gt;
-&lt;img alt="mtr-b2a" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185227.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="mtr-a2b" src="/assets/images/2023/20230228185207.png"&gt;
+&lt;img alt="mtr-b2a" src="/assets/images/2023/20230228185227.png"&gt;&lt;/p&gt;
 &lt;p&gt;按照之前的理解，A MTR B 和 B MTR ，最后一跳应该是镜像对等的：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;A  MTR B :
 
@@ -2908,9 +2908,9 @@ basepi commented on Dec 6, 2013&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;tcp_keepalive_idle: 60
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;重启，终于解决了。&lt;/p&gt;</content><category term="2020"></category><category term="azure"></category><category term="saltstack"></category></entry><entry><title>搭建IPv6 Only 测试环境</title><link href="https://fangpsh.github.io/posts/2020/2020-03-12.html" rel="alternate"></link><published>2020-03-12T00:00:00+08:00</published><updated>2020-03-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-03-12:/posts/2020/2020-03-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="baidu.com" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184346.png"&gt;&lt;/p&gt;
+&lt;p&gt;重启，终于解决了。&lt;/p&gt;</content><category term="2020"></category><category term="azure"></category><category term="saltstack"></category></entry><entry><title>搭建IPv6 Only 测试环境</title><link href="https://fangpsh.github.io/posts/2020/2020-03-12.html" rel="alternate"></link><published>2020-03-12T00:00:00+08:00</published><updated>2020-03-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2020-03-12:/posts/2020/2020-03-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="baidu.com" src="/assets/images/2023/20230228184346.png"&gt;&lt;/p&gt;
 &lt;p&gt;macOS 可以开启&lt;a href="https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/NetworkingOverview/UnderstandingandPreparingfortheIPv6Transition/UnderstandingandPreparingfortheIPv6Transition.html"&gt;DNS64/NAT64&lt;/a&gt;，
-简单快捷。但是mac mini 信号不太好，开发同学抱怨常常连不上，而且有多个组的同学要测试，再买几台mac mini 好 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="baidu.com" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184346.png"&gt;&lt;/p&gt;
+简单快捷。但是mac mini 信号不太好，开发同学抱怨常常连不上，而且有多个组的同学要测试，再买几台mac mini 好 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="baidu.com" src="/assets/images/2023/20230228184346.png"&gt;&lt;/p&gt;
 &lt;p&gt;macOS 可以开启&lt;a href="https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/NetworkingOverview/UnderstandingandPreparingfortheIPv6Transition/UnderstandingandPreparingfortheIPv6Transition.html"&gt;DNS64/NAT64&lt;/a&gt;，
 简单快捷。但是mac mini 信号不太好，开发同学抱怨常常连不上，而且有多个组的同学要测试，再买几台mac mini 好像有点费钱。&lt;/p&gt;
 &lt;p&gt;所以接了个活，用&lt;a href="https://openwrt.org/"&gt;OpenWrt&lt;/a&gt; 搭建几个IPv6 Only 测试环境。&lt;/p&gt;
@@ -3139,9 +3139,9 @@ Reading: 6 Writing: 179 Waiting: 106
 &lt;li&gt;饱和度&lt;/li&gt;
 &lt;li&gt;磁盘容量，静态文件较多&lt;/li&gt;
 &lt;li&gt;当前活跃连接数，距离nginx 设置的最大连接数&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2020"></category><category term="monitor"></category></entry><entry><title>第二届中国SD-WAN 广告峰会参会感想</title><link href="https://fangpsh.github.io/posts/2019/2019-11-16.html" rel="alternate"></link><published>2019-11-16T00:00:00+08:00</published><updated>2019-11-16T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-11-16:/posts/2019/2019-11-16.html</id><summary type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162425.png"&gt;&lt;/p&gt;
+&lt;/ul&gt;</content><category term="2020"></category><category term="monitor"></category></entry><entry><title>第二届中国SD-WAN 广告峰会参会感想</title><link href="https://fangpsh.github.io/posts/2019/2019-11-16.html" rel="alternate"></link><published>2019-11-16T00:00:00+08:00</published><updated>2019-11-16T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-11-16:/posts/2019/2019-11-16.html</id><summary type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="/assets/images/2023/20230301162425.png"&gt;&lt;/p&gt;
 &lt;p&gt;从&lt;a href="https://www.sdnlab.com/"&gt;SDNLAB&lt;/a&gt; 知道&lt;a href="https://www.bagevent.com/event/5443171/p/314542"&gt;第二届 2019 中国SD-WAN峰会&lt;/a&gt;，报名了会前的培训。&lt;/p&gt;
-&lt;p&gt;因为从事运维工作，一直和网络打交道，对BGP、骨干网、PoP、PE、SDN、SD-WAN等名称知道一些，但是终究因为 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162425.png"&gt;&lt;/p&gt;
+&lt;p&gt;因为从事运维工作，一直和网络打交道，对BGP、骨干网、PoP、PE、SDN、SD-WAN等名称知道一些，但是终究因为 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="sd-wan-define" src="/assets/images/2023/20230301162425.png"&gt;&lt;/p&gt;
 &lt;p&gt;从&lt;a href="https://www.sdnlab.com/"&gt;SDNLAB&lt;/a&gt; 知道&lt;a href="https://www.bagevent.com/event/5443171/p/314542"&gt;第二届 2019 中国SD-WAN峰会&lt;/a&gt;，报名了会前的培训。&lt;/p&gt;
 &lt;p&gt;因为从事运维工作，一直和网络打交道，对BGP、骨干网、PoP、PE、SDN、SD-WAN等名称知道一些，但是终究因为没有实操过，不太了解。
 底层网络应该属于通信，和计算机隔着一道门，借这次大会看看另外一个行业的人都在玩什么。&lt;/p&gt;
@@ -3157,10 +3157,10 @@ Reading: 6 Writing: 179 Waiting: 106
 &lt;p&gt;当然，SD-WAN里面不仅仅只是组网和通信选路的事，还有大量底层的工作，而通信/网络这个行业是有比较高的壁垒，这可能是这些SD-WAN公司的大佬大都是来自这2个行业的原因，这些行业经验也是它们的价值之一。&lt;/p&gt;
 &lt;p&gt;我想要的其实是一个更强的&lt;a href="https://github.com/slackhq/nebula"&gt;slack/nebula&lt;/a&gt;、&lt;a href="https://www.tinc-vpn.org/"&gt;tinc&lt;/a&gt;、&lt;a href="https://github.com/zerotier"&gt;ZeroTier&lt;/a&gt;，
 除了组网，同时还能智能选路、线路容灾等高级功能，选路起码得如下图：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="transport" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162504.png"&gt;&lt;/p&gt;
-&lt;p&gt;总结感受：广告真多，隔行如隔山，雾霾还是很厉害 😂&lt;/p&gt;</content><category term="2019"></category><category term="SD-WAN"></category></entry><entry><title>第一台NAS</title><link href="https://fangpsh.github.io/posts/2019/di-yi-tai-nas.html" rel="alternate"></link><published>2019-09-22T00:00:00+08:00</published><updated>2019-09-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-09-22:/posts/2019/di-yi-tai-nas.html</id><summary type="html">&lt;p&gt;&lt;img alt="qnap" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162325.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="transport" src="/assets/images/2023/20230301162504.png"&gt;&lt;/p&gt;
+&lt;p&gt;总结感受：广告真多，隔行如隔山，雾霾还是很厉害 😂&lt;/p&gt;</content><category term="2019"></category><category term="SD-WAN"></category></entry><entry><title>第一台NAS</title><link href="https://fangpsh.github.io/posts/2019/di-yi-tai-nas.html" rel="alternate"></link><published>2019-09-22T00:00:00+08:00</published><updated>2019-09-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-09-22:/posts/2019/di-yi-tai-nas.html</id><summary type="html">&lt;p&gt;&lt;img alt="qnap" src="/assets/images/2023/20230306162325.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;两年前在腾讯的时候，内部福利领取了一年的微云会员，就将女友旧电脑的一百多G的资源全部上传备份，然后处理掉了旧电脑。
-虽然当时知道 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="qnap" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162325.jpg"&gt;&lt;/p&gt;
+虽然当时知道 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="qnap" src="/assets/images/2023/20230306162325.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;两年前在腾讯的时候，内部福利领取了一年的微云会员，就将女友旧电脑的一百多G的资源全部上传备份，然后处理掉了旧电脑。
 虽然当时知道日后会离职会员会过期，不过看了产品协议记得是会员过期存储空间不回收，只是无法再上传罢了，类似Dropbox。&lt;/p&gt;
 &lt;p&gt;月初却收到了如下&lt;a href="https://www.weiyun.com/2019-announcement.html"&gt;通知&lt;/a&gt;：&lt;/p&gt;
@@ -3171,10 +3171,10 @@ Reading: 6 Writing: 179 Waiting: 106
 &lt;h2&gt;自己组还是买成品？&lt;/h2&gt;
 &lt;p&gt;买万由或者蜗牛星际，或者自己买机箱、配件组装，刷FreeNAS 或黑群晖，如果是五年前我估计还是会自己折腾，现在直接考虑买成品了，少了折腾的热情，数据重要，选专业的方案吧。&lt;/p&gt;
 &lt;h2&gt;群晖还是威联通？&lt;/h2&gt;
-&lt;p&gt;&lt;img alt="qnap-web" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162404.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="qnap-web" src="/assets/images/2023/20230306162404.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;公司在用威联通，登录后台体验过，UI感觉是有点挫。在群晖官网体验了群晖的控制台，看起来确实高大上一些。可是相同配置，群晖价格是威联通的两倍左右，
 两家充分竞争，在存储的功能上差别不会太大。威联通带有HDMI 输出，可以充当HTPC 的角色，这个功能我非常需要，不考虑了，选威联通，以后第二台再买群晖玩。  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="QNAP-HybridDesk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162425.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="QNAP-HybridDesk" src="/assets/images/2023/20230306162425.jpg"&gt;&lt;/p&gt;
 &lt;h2&gt;TS-453Bmini 还是 TS-551？&lt;/h2&gt;
 &lt;p&gt;威联通的型号，对于普通玩家，TS-453Bmini 是性价比最高的选择，在官方旗舰店，这款的销量也甩其他型号几条街。
 不过我感觉TS-453Bmini 有点丑，所以一直在找相近的型号，看到了TS-551。
@@ -3202,11 +3202,11 @@ Reading: 6 Writing: 179 Waiting: 106
 2个4T盘直接独立使用，通过RTRR 功能实时备份重要文件夹，对于家庭用户来说，是更具性价比和可靠的方案。
 又再买了一块便宜的闪迪SSD 240GB，230元，用来做系统盘。&lt;/p&gt;
 &lt;p&gt;最后的方案是，盘1 240GB SSD，盘2 4T酷狼，盘3 4T酷狼，盘4 空余机动。盘1 和盘2，Qtier。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="qnap-disk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162511.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="qnap-disk" src="/assets/images/2023/20230306162511.jpg"&gt;&lt;/p&gt;
 &lt;h2&gt;Transmission 还是Rtorrent？&lt;/h2&gt;
 &lt;p&gt;有一个很重要的需求，就是挂PT。之前看帖子发现QTS 4.3 移除了Trasnmission，虽然在qnapclub.eu 可以下到，不过使用体验上真是十分糟糕。
 相比rtorrent 强大很多，毕竟收费。
-&lt;img alt="qnap-rtorrent" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306162540.jpg"&gt;&lt;/p&gt;
+&lt;img alt="qnap-rtorrent" src="/assets/images/2023/20230306162540.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;另外还可以在Container Station 里安装&lt;a href="https://hub.docker.com/r/oldiy/rrshare64"&gt;人人影视客户端&lt;/a&gt;，非常赞。
 依靠Docker，有非常多的玩法，参考&lt;a href="https://odcn.top/2019/02/13/2509/%E6%95%B4%E7%90%86%E6%B1%87%E6%80%BB%E4%B8%80%E4%B8%8B%E6%9C%80%E8%BF%91%E6%9B%B4%E6%96%B0%E7%9A%84%E4%B8%80%E4%BA%9Bdocker%E9%95%9C%E5%83%8F/"&gt;这位网友的分享&lt;/a&gt;。&lt;/p&gt;
 &lt;h2&gt;END&lt;/h2&gt;
@@ -3282,7 +3282,7 @@ Jun 22 13:48:46 test nm-dispatcher[3006]: Dispatching action &amp;#39;hostname&a
 &lt;p&gt;最近看到&lt;a href="https://twitter.com/linuxtoy/status/957225197928525824"&gt;Linuxtoy 推文&lt;/a&gt;里面的这张图：&lt;/p&gt;
 &lt;p&gt;&lt;img alt="moving_cli" src="https://clementc.github.io/figures/moving_cli.png"&gt;&lt;/p&gt;
 &lt;p&gt;想起自从形成肌肉记忆之后，在浏览器地址栏等地方常常打&lt;code&gt;Alt-f&lt;/code&gt;,&lt;code&gt;Alt-b&lt;/code&gt; 这几个快捷键，会发现打出来的是奇怪的字符：&lt;code&gt;ƒ&lt;/code&gt;,&lt;code&gt;∫&lt;/code&gt;，如下图：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="ffffff" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162114.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ffffff" src="/assets/images/2023/20230301162114.png"&gt;&lt;/p&gt;
 &lt;p&gt;以为是系统限制，忍受了很久。今天搜索下，翻到一篇文章：&lt;a href="https://blog.sensible.io/2012/10/19/mac-os-x-emacs-style-keybindings-everywhere.html"&gt;Mac OS X: Emacs-like keybindings everywhere&lt;/a&gt;， 找到解决方法。&lt;/p&gt;
 &lt;p&gt;创建配置文件：&lt;code&gt;~/Library/KeyBindings/DefaultKeyBinding.dict&lt;/code&gt; （如果不存在这个&lt;code&gt;KeyBindings&lt;/code&gt; 目录，就新建一个）&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;{
@@ -3295,17 +3295,17 @@ Jun 22 13:48:46 test nm-dispatcher[3006]: Dispatching action &amp;#39;hostname&a
 &lt;p&gt;重启下相关App ，例如Chrome 浏览器，再试一试，发现OK了，居然这么简单！&lt;/p&gt;
 &lt;p&gt;随后在GitHub 发现一个很强大的项目&lt;a href="https://github.com/ttscoff/KeyBindings"&gt;ttscoff/KeyBindings&lt;/a&gt;，有空再折腾，其他键用的不多。&lt;/p&gt;</content><category term="2019"></category><category term="效率"></category><category term="MacOS"></category></entry><entry><title>糟糕的斑马旅游</title><link href="https://fangpsh.github.io/posts/2019/horrible-bmtrip.html" rel="alternate"></link><published>2019-03-10T00:00:00+08:00</published><updated>2019-03-10T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-03-10:/posts/2019/horrible-bmtrip.html</id><summary type="html">&lt;p&gt;2018 年的元旦和女友又去了一次泰国，这次由于我工作比较忙，没精力做攻略，逛了一圈携程、飞猪，选了&lt;a href="https://bmtrip.com/"&gt;斑马旅游&lt;/a&gt;（上海歌晨信 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;2018 年的元旦和女友又去了一次泰国，这次由于我工作比较忙，没精力做攻略，逛了一圈携程、飞猪，选了&lt;a href="https://bmtrip.com/"&gt;斑马旅游&lt;/a&gt;（上海歌晨信息技术有限公司）的产品。&lt;/p&gt;
 &lt;p&gt;携程上一片五星好评，官网和产品介绍上“高品质”、“轻奢品质”、“精品”、“管家服务”等字眼，促使让我快速下单，继续埋头工作，坐等出发，相信斑马旅游会对本次服务提供一个高品质，和我们付出价格相符的服务，没想到入了个大坑。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmstrip-1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307111242.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmstrip-1" src="/assets/images/2023/20230307111242.jpg"&gt;&lt;/p&gt;
 &lt;h2&gt;不违法的斑马旅游&lt;/h2&gt;
 &lt;p&gt;由于泰国免签，导致落地签人数暴增，排队等了快2个小时，所谓的管家服务，其实就是按照事先准备好的材料，实时在群里播报而已，微信客服人员，说的难听一些，就是个廉价机器人，并不会从具体行程的角度，为游客考虑一些细节。&lt;/p&gt;
 &lt;p&gt;终于排完队，出关了，斑马旅游采购的接机服务，让我们在语言不通的情况，在机场等了半小时，来回徘徊，找不到接机人。
 好不容易到达 入住的酒店：曼谷贝素坤逸12精品酒店(12th Avenue Hotel Bangkok)，该酒店在巷子深处，巷子四处一堆垃圾，出行非常不方便。&lt;/p&gt;
 &lt;p&gt;12月31日，夜间11点，房间正对泳池，泳池在放激烈的音乐，联系产品中提到的“24小时管家”，反应情况，斑马侧服务人员表示无法解决，严重影响休息。&lt;/p&gt;
 &lt;p&gt;1月1日，前往第二个酒店，芭堤雅莫杜斯海滨度假村(Pattaya Modus Beachfront Resort) ，才发现酒店处于荒野之中，步行10分钟之内都是一片荒地，垃圾成堆，野狗出没。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmstrip-03" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307120254.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmstrip-03" src="/assets/images/2023/20230307120254.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;之前承诺的酒店免费班车，斑马没有事先提供相关详情。索要班车单之后，后续乘坐所谓的酒店免费班车，酒店人员依然对我们进行了收费，平均都在150泰铢+，和斑马客服人员联系，请求帮忙和酒店沟通，无果。
 &lt;strong&gt;斑马旅游并未对该酒店进行细致的考察&lt;/strong&gt;，酒店的早餐楼层都能弄错，和宣传的高品质服务差距太大。后续2天，每次午餐，晚餐，由于酒店附近一片荒地，外加野狗成群，不安全，都需要打车外出就餐。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmtrip-4" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307140854.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-4" src="/assets/images/2023/20230307140854.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;1月3日 回程，斑马旅游告知师傅下午3点05 送机，我们2点30分在大堂等候，告知斑马我们已经在等候。一直到3点05分，没人举牌。
 询问斑马。斑马和本地送机服务商沟通之后，才知道师傅好久之前已经到了，体验糟糕。&lt;/p&gt;
 &lt;p&gt;终于发现所谓的高品质旅游，只是拼凑各类产品，接送机、机票酒店、本地团等等，他们的产品经理也不会整个行程真的从产品角度上进行考量。&lt;br&gt;
@@ -3319,10 +3319,10 @@ Jun 22 13:48:46 test nm-dispatcher[3006]: Dispatching action &amp;#39;hostname&a
 &lt;h2&gt;投诉投诉&lt;/h2&gt;
 &lt;p&gt;从第三天开始，就开始想着回家好了，斑马旅游毁掉了我和女朋友的年度旅游，回家再投诉。回国之后，提出经济赔偿，屎已经踩了，假期也毁了，斑马旅游的负责人说最多赔500，精神损失。。。并且示意我们拿了赔偿之后，闭嘴。我一万多都花了，不差你这几百块，拒绝。&lt;/p&gt;
 &lt;p&gt;大致就是&lt;a href="https://zhidao.baidu.com/question/1370162280692029979.html"&gt;这位网友&lt;/a&gt;的感觉：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmtrip-5" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141001.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-5" src="/assets/images/2023/20230307141001.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;随后向携程投诉，携程处理的倒挺快，表示他们和斑马只是合作商的关系，不是上下级，没有权限。。。说给我们400 的赔偿，作为精神损失。&lt;/p&gt;
 &lt;p&gt;再向斑马旅游所在的&lt;a href="http://lyw.sh.gov.cn/lyj_website/HTML/DefaultSite/lyj_zmhd_lyts/List/index.htm?mail=lyj_zmhd_lyts"&gt;上海市旅游局投诉&lt;/a&gt;，这次发现斑马旅游过去每个月几乎也都会被投诉。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmtrip-2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141028.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-2" src="/assets/images/2023/20230307141028.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;不过上海旅游局表示我们是和携程签的合同，投诉主体不对。回家之后年前很忙，就当倒霉了，今天整理资料，看到行程单等文件，才又气上心头，十分不爽。&lt;/p&gt;
 &lt;p&gt;36Kr 上有一篇他们的&lt;a href="https://36kr.com/p/5106337.html"&gt;公关稿&lt;/a&gt;，17年获得了Pre-A轮融资，看来他们的广告文案，讲故事的能力还骗到了一些傻子。所谓的好评、所谓的数据，都能够造假，都能刷，但是线下的体验是无法造假的。&lt;/p&gt;
 &lt;p&gt;总的来说：&lt;/p&gt;
@@ -3334,12 +3334,12 @@ Jun 22 13:48:46 test nm-dispatcher[3006]: Dispatching action &amp;#39;hostname&a
 想省心，还是报个大旅行社的团吧，远离这种“皮包”公司。&lt;/p&gt;
 &lt;h2&gt;花絮&lt;/h2&gt;
 &lt;p&gt;知乎&lt;a href="https://www.zhihu.com/question/28105489/answer/173499903"&gt;软广&lt;/a&gt;，&lt;a href="https://www.zhihu.com/people/yitiao-ban-ma-7"&gt;这人&lt;/a&gt; 看起来很明显是员工，也挺不容易的，写这么长的帖子，就为了这几句话：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmtrip-6" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141348.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-6" src="/assets/images/2023/20230307141348.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;在知乎搜斑马，发现一堆骂公司的&lt;a href="https://www.zhihu.com/question/61230719"&gt;帖&lt;/a&gt;，看起来乌烟瘴气，压榨员工。&lt;/p&gt;
 &lt;p&gt;想起和我对接的客服妹子，挺不容易的，她能做到的，都帮我了，斑马旅游拿她当廉价机器人使。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmtrip-9" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141613.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-9" src="/assets/images/2023/20230307141613.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;回来再仔细看了一些携程评价，有些好评似乎是旅游结束之后，客服妹子“催”，或者说是“求”出来的，类似&lt;a href="https://www.dianping.com/review/355995485"&gt;这位网友说的情况&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmtrip-8" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307141542.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmtrip-8" src="/assets/images/2023/20230307141542.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;我写了一个差评之后，斑马旅游直接下线了，&lt;a href="http://vacations.ctrip.com/tour/detail/p19877402s30.html"&gt;下线的&lt;/a&gt;，&lt;a href="http://vacations.ctrip.com/tour/detail/p20446619s2.html"&gt;替换上线的&lt;/a&gt;，内容行程一模一样，原来就是这样掩盖的。。我下回还是认真看差评吧。&lt;/p&gt;</content><category term="2019"></category><category term="trip"></category></entry><entry><title>ip_local_port_range 小问题</title><link href="https://fangpsh.github.io/posts/2019/2019-03-01.html" rel="alternate"></link><published>2019-03-01T00:00:00+08:00</published><updated>2019-03-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2019-03-01:/posts/2019/2019-03-01.html</id><summary type="html">&lt;p&gt;发现系统打印了一条日志，类似&lt;a href="https://access.redhat.com/solutions/2887631"&gt;redhat solution:2887631&lt;/a&gt;：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Jan 23 14:37:22 localhost kernel: ip_local_port_range: prefer different parity for start/end values.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -3481,14 +3481,14 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 
 &lt;p&gt;这个时候你再解析&lt;code&gt;a1.aaa.example.com&lt;/code&gt;，得到的实际是&lt;code&gt;a1.bbb.example.org&lt;/code&gt; 的结果。因为&lt;code&gt;aaa.example.com&lt;/code&gt; 节点包括其子节点都映射到了&lt;code&gt;bbb.example.org&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;更详细的例子可以参考台湾网友的这篇文章：&lt;a href="https://ssorc.tw/994"&gt;DNS的CNAME/DNAME傻傻分不清楚&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;另外DNAME 记录，国内的DNS 服务商也几乎都不支持╮(╯▽╰)╭ 。&lt;/p&gt;</content><category term="2018"></category><category term="DNS"></category></entry><entry><title>IPv6-Test DNS 测试</title><link href="https://fangpsh.github.io/posts/2018/2018-11-3.html" rel="alternate"></link><published>2018-11-03T00:00:00+08:00</published><updated>2018-11-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-11-03:/posts/2018/2018-11-3.html</id><summary type="html">&lt;p&gt;&lt;img alt="ipv6-test" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185431.png"&gt;&lt;/p&gt;
+&lt;p&gt;另外DNAME 记录，国内的DNS 服务商也几乎都不支持╮(╯▽╰)╭ 。&lt;/p&gt;</content><category term="2018"></category><category term="DNS"></category></entry><entry><title>IPv6-Test DNS 测试</title><link href="https://fangpsh.github.io/posts/2018/2018-11-3.html" rel="alternate"></link><published>2018-11-03T00:00:00+08:00</published><updated>2018-11-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-11-03:/posts/2018/2018-11-3.html</id><summary type="html">&lt;p&gt;&lt;img alt="ipv6-test" src="/assets/images/2023/20230228185431.png"&gt;&lt;/p&gt;
 &lt;p&gt;最近在折腾办公室的IPv6 环境，通过&lt;a href="http://ipv6-test.com/"&gt;ipv6-test.com&lt;/a&gt;测试的时候，对页面内的“DNS”的测试结果有点疑问。  &lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;DNS4 + IP6&lt;ul&gt;
 &lt;li&gt;Connectivity to an IPv6 address served by an IPv4-only name server&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;DNS6 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="ipv6-test" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228185431.png"&gt;&lt;/p&gt;
+&lt;li&gt;DNS6 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="ipv6-test" src="/assets/images/2023/20230228185431.png"&gt;&lt;/p&gt;
 &lt;p&gt;最近在折腾办公室的IPv6 环境，通过&lt;a href="http://ipv6-test.com/"&gt;ipv6-test.com&lt;/a&gt;测试的时候，对页面内的“DNS”的测试结果有点疑问。  &lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;DNS4 + IP6&lt;ul&gt;
@@ -3546,10 +3546,10 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;h2&gt;Dell&lt;/h2&gt;
 &lt;p&gt;Dell 的iDrac：BIOS》System Profile Settings》Performance&lt;/p&gt;
 &lt;p&gt;BIOS 中设置：
-&lt;img alt="idrac_bios" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161317.png"&gt;&lt;/p&gt;
+&lt;img alt="idrac_bios" src="/assets/images/2023/20230301161317.png"&gt;&lt;/p&gt;
 &lt;p&gt;iDrac Web 中设置：
-&lt;img alt="idrac_web1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161326.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="idrac_web2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161338.png"&gt;&lt;/p&gt;
+&lt;img alt="idrac_web1" src="/assets/images/2023/20230301161326.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="idrac_web2" src="/assets/images/2023/20230301161338.png"&gt;&lt;/p&gt;
 &lt;p&gt;参考资料：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://jaseywang.me/2013/09/22/nix-下-cpu-的能耗控制/"&gt;《*NIX 下 CPU 的能耗控制》&lt;/a&gt;  &lt;/li&gt;
@@ -3561,8 +3561,8 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;/ul&gt;
 &lt;h2&gt;浪潮/华为&lt;/h2&gt;
 &lt;p&gt;浪潮和华为的服务器大多用的&lt;a href="https://ami.com/"&gt;AMI BIOS &lt;/a&gt;，设置上差不多：
-&lt;img alt="ami_bios1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161352.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="ami_bios2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161403.png"&gt;&lt;/p&gt;
+&lt;img alt="ami_bios1" src="/assets/images/2023/20230301161352.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ami_bios2" src="/assets/images/2023/20230301161403.png"&gt;&lt;/p&gt;
 &lt;p&gt;Power Techology 选中Performance ，或者选中 Custom，再手动调整。&lt;/p&gt;
 &lt;p&gt;Power Policy Select 电源策略选择，菜单选项为：&lt;/p&gt;
 &lt;ul&gt;
@@ -3589,7 +3589,7 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;li&gt;Enhanced Halt State (C1E) 选中Disabled&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;ACPI T-States 选中Disbaled&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bmc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161415.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bmc" src="/assets/images/2023/20230301161415.png"&gt;&lt;/p&gt;
 &lt;p&gt;参考资料：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://support.huawei.com/enterprise/zh/doc/EDOC1000039566?section=j014"&gt;华为服务器 Brickland平台 BIOS：Advanced Power Management Configuration&lt;/a&gt;&lt;/li&gt;
@@ -3597,41 +3597,41 @@ a1.aaa.example.com CNAME  b1.bbb.example.org
 &lt;li&gt;&lt;a href="http://www.4008600011.com/archives/12499#Advanced_Power_Management_Configuration"&gt;SA5212M5-BIOS设置&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2&gt;HP&lt;/h2&gt;
-&lt;p&gt;&lt;img alt="hp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161426.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="hp" src="/assets/images/2023/20230301161426.png"&gt;&lt;/p&gt;
 &lt;p&gt;System Profiles 选择：Maxium Performance（最高性能）&lt;/p&gt;
 &lt;p&gt;iLo 设置：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="iLo_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161437.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="iLo_2" src="/assets/images/2023/20230301161437.png"&gt;&lt;/p&gt;
 &lt;p&gt;BIOS 设置：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="hp_bios" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161445.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="hp_bios2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161454.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="hp_bios" src="/assets/images/2023/20230301161445.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="hp_bios2" src="/assets/images/2023/20230301161454.png"&gt;&lt;/p&gt;
 &lt;h2&gt;IBM&lt;/h2&gt;
 &lt;p&gt;IBM 的服务器没接触过，不过都差不多，IBM 的管理卡似乎叫&lt;a href="https://www.ibm.com/support/knowledgecenter/TI0003N/p8hat/p8hat_partitioningwithanhmc.htm"&gt;HMC&lt;/a&gt;：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;启用固定最大频率模式：使处理器频率设置为可以指定的固定值。此选项允许您设置处理器频率的最大限制和系统的功耗。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img alt="hmc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161506.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="hmc" src="/assets/images/2023/20230301161506.png"&gt;&lt;/p&gt;
 &lt;p&gt;参考资料：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://www.ibm.com/support/knowledgecenter/zh/POWER8/p8ha1/11powermanagementtask.htm"&gt;IBM Knowledge Center - 电源管理&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Power%20Systems/page/POWER9%20EnergyScale%20-%20Configuration%20&amp;amp;%20Management"&gt;POWER9 EnergyScale - Configuration &amp;amp; Management&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://www-01.ibm.com/support/docview.wss?uid=isg3T1025318"&gt;Change Power Management settings&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content><category term="2018"></category><category term="服务器"></category></entry><entry><title>什么是Bogon？</title><link href="https://fangpsh.github.io/posts/2018/2018-09-19.html" rel="alternate"></link><published>2018-09-19T00:00:00+08:00</published><updated>2018-09-19T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-09-19:/posts/2018/2018-09-19.html</id><summary type="html">&lt;p&gt;在&lt;a href="https://bgp.he.net/"&gt;BGP.HE.NET&lt;/a&gt; 上查询IP 信息的时候，Announced By &lt;a href="https://bgp.he.net/AS4808"&gt;AS4808&lt;/a&gt;：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="AS4808" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162304.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AS4808" src="/assets/images/2023/20230301162304.png"&gt;&lt;/p&gt;
 &lt;p&gt;提示：&lt;a href="https://bgp.he.net/AS4808#_bogons"&gt;AS4808 announces bogons.&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="AS4804_Bogon" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162311.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="202.94.1.0" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162324.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AS4804_Bogon" src="/assets/images/2023/20230301162311.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="202.94.1.0" src="/assets/images/2023/20230301162324.png"&gt;&lt;/p&gt;
 &lt;p&gt;意思这个段还在APNIC 手里，未被分配，但是联通的这个AS 域广播了这个段 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;在&lt;a href="https://bgp.he.net/"&gt;BGP.HE.NET&lt;/a&gt; 上查询IP 信息的时候，Announced By &lt;a href="https://bgp.he.net/AS4808"&gt;AS4808&lt;/a&gt;：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="AS4808" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162304.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AS4808" src="/assets/images/2023/20230301162304.png"&gt;&lt;/p&gt;
 &lt;p&gt;提示：&lt;a href="https://bgp.he.net/AS4808#_bogons"&gt;AS4808 announces bogons.&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="AS4804_Bogon" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162311.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="202.94.1.0" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162324.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="AS4804_Bogon" src="/assets/images/2023/20230301162311.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="202.94.1.0" src="/assets/images/2023/20230301162324.png"&gt;&lt;/p&gt;
 &lt;p&gt;意思这个段还在APNIC 手里，未被分配，但是联通的这个AS 域广播了这个段。&lt;/p&gt;
 &lt;p&gt;继续查下：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;202/8    APNIC    1993-05    whois.apnic.net    https://rdap.apnic.net/    ALLOCATED&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;code&gt;202/8&lt;/code&gt; 分配给了APNIC。既然是联通，那就到CNNIC 查下：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="CNNIC" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162337.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="CNNIC" src="/assets/images/2023/20230301162337.png"&gt;&lt;/p&gt;
 &lt;p&gt;看起来确实没分给联通，不过在&lt;a href="https://www.ipip.net/ip.html"&gt;IPIP.NET&lt;/a&gt;查询，这个IP 归属显示是联通。&lt;/p&gt;
 &lt;p&gt;就像&lt;code&gt;10.0.0.0/8&lt;/code&gt; 这类私网保留地址，广播出去，大家应该都会丢弃掉。估计得等以后APNIC 开始分配使用这段地址，联通就不能广播了吧。  &lt;/p&gt;
 &lt;p&gt;Bogon&lt;code&gt;['bɔɡən]&lt;/code&gt; 这个单词好多词典都查不到，据说起源于bogus&lt;code&gt;bəuɡəs&lt;/code&gt;：假冒，伪造。&lt;/p&gt;
@@ -3696,9 +3696,9 @@ PATH=/home/www/example_env/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 &lt;p&gt;&lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html"&gt;man/systemd.service&lt;/a&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;For each of the specified commands, the first argument must be either an absolute path to an executable or a simple file name without any slashes.&lt;/p&gt;
-&lt;/blockquote&gt;</content><category term="2018"></category><category term="systemd"></category></entry><entry><title>修复Nintendo Switch Joycon 手柄自动漂移问题</title><link href="https://fangpsh.github.io/posts/2018/2018-06-23.html" rel="alternate"></link><published>2018-06-23T00:00:00+08:00</published><updated>2018-06-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-06-23:/posts/2018/2018-06-23.html</id><summary type="html">&lt;p&gt;&lt;img alt="joy-con" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306155958.jpg"&gt;&lt;br&gt;
+&lt;/blockquote&gt;</content><category term="2018"></category><category term="systemd"></category></entry><entry><title>修复Nintendo Switch Joycon 手柄自动漂移问题</title><link href="https://fangpsh.github.io/posts/2018/2018-06-23.html" rel="alternate"></link><published>2018-06-23T00:00:00+08:00</published><updated>2018-06-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-06-23:/posts/2018/2018-06-23.html</id><summary type="html">&lt;p&gt;&lt;img alt="joy-con" src="/assets/images/2023/20230306155958.jpg"&gt;&lt;br&gt;
 图片来源：&lt;a href="https://www.zhihu.com/question/263710934/answer/282957512"&gt;知乎-西装暴徒&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;去年买的Switch，最近发现左手柄出现自动漂移，林克时不时自动往左走。搜索了下，在贴吧和知乎发现 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="joy-con" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306155958.jpg"&gt;&lt;br&gt;
+&lt;p&gt;去年买的Switch，最近发现左手柄出现自动漂移，林克时不时自动往左走。搜索了下，在贴吧和知乎发现 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="joy-con" src="/assets/images/2023/20230306155958.jpg"&gt;&lt;br&gt;
 图片来源：&lt;a href="https://www.zhihu.com/question/263710934/answer/282957512"&gt;知乎-西装暴徒&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;去年买的Switch，最近发现左手柄出现自动漂移，林克时不时自动往左走。搜索了下，在贴吧和知乎发现挺常见的，例如&lt;a href="https://www.zhihu.com/question/263710934"&gt;Nintendo Switch左手柄Joy-con自动漂移问题，如何解决？&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;有人说用系统的校准摇杆的功能，实际上没用，那个校准只能应对电磁干扰。&lt;/p&gt;
@@ -3708,13 +3708,13 @@ PATH=/home/www/example_env/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 &lt;/blockquote&gt;
 &lt;p&gt;贴吧和知乎好多人拆手柄，然后换国产的摇杆模块，其实如果是一般的漂移，完全没必要。有人提到可以用吹气大发，牙签挑起摇杆下面半球形的橡胶，大吸一口，然后吹。我试了下，果然有点好使，不过一段时间之后又复发。证明了确实是粉末造成的。&lt;/p&gt;
 &lt;p&gt;接着看到说可以喷&lt;a href="http://www.wd40.com.cn/P_1.aspx"&gt;wd-40&lt;/a&gt;，能洗去灰尘。知乎有个答案提到wd-40 会硬化橡胶、塑料，Joycon 全是橡胶和塑料，所以先喷蓝瓶的wd-40，再喷精密电器清洁剂洗去wd-40。。。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="wd-40" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160027.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wd-40" src="/assets/images/2023/20230306160027.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;然后我查看了下答案了提到的wd-40精密仪器清洁剂：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="wd-40-specialist" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160044.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wd-40-specialist" src="/assets/images/2023/20230306160044.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;咦，有清洁功能呀，而且注明了可用于橡胶、塑料。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="wd40" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160057.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wd40" src="/assets/images/2023/20230306160057.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;所以先喷蓝瓶wd-40 是不是多此一举呢。那就买黑瓶的wd-40试一试。京东自营没货，只能去淘宝找，淘宝价格都在41 左右，发现有&lt;a href="https://m.tb.cn/h.eYWcgVg"&gt;一家&lt;/a&gt;还可以领-3块钱代金券+包邮，销量还很高。&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://m.tb.cn/h.eYWcgVg"&gt;&lt;img alt="wd-40-shop" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160149.jpg"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://m.tb.cn/h.eYWcgVg"&gt;&lt;img alt="wd-40-shop" src="/assets/images/2023/20230306160149.jpg"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;看瓶体说明似乎对人体有害，不过挥发性好，如果在室内的话喷，建议打开风扇。喷前摇匀，然后揭起摇杆下的橡胶皮，喷一发，转几圈摇杆，等几分钟挥发干净。&lt;/p&gt;
 &lt;p&gt;果然好了！林克终于不会自动跳崖了。。。&lt;/p&gt;
 &lt;p&gt;我猜测清理完一次之后，以后可能还会出现粉末导致漂移，不过这一瓶360ml 应该够用了。&lt;/p&gt;</content><category term="2018"></category><category term="nintendo"></category></entry><entry><title>《时间管理--给系统管理员》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-06-04.html" rel="alternate"></link><published>2018-06-04T00:00:00+08:00</published><updated>2018-06-04T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-06-04:/posts/2018/2018-06-04.html</id><summary type="html">&lt;p&gt;&lt;img alt="s2917003" src="https://img2.doubanio.com/view/subject/s/public/s2917003.jpg"&gt;&lt;/p&gt;
@@ -3748,9 +3748,9 @@ PATH=/home/www/example_env/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 &lt;h2&gt;说明文件、自动化&lt;/h2&gt;
 &lt;p&gt;建立Wiki 系统，这在今天非常常见，不过维护好Wiki，好好写文档，依然还是少见的。自动化，做运维的都懂，今天大家做的，也不仅仅是书中那种初级的自动化。&lt;/p&gt;
 &lt;hr&gt;
-&lt;p&gt;还有一个收获，就是知道了RAID (Redundant Array of Independent Disks, originally Redundant Array of Inexpensive Disks)，一开始是指廉价磁盘冗余阵列，后来才变成独立磁盘冗余阵列，见：&lt;a href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/1987/CSD-87-391.pdf"&gt;A Case for Redundant Arrays of Inexpensive Disks (RAID)&lt;/a&gt;。&lt;/p&gt;</content><category term="2018"></category><category term="book"></category><category term="gtd"></category></entry><entry><title>OpenLDAP 的SSHA</title><link href="https://fangpsh.github.io/posts/2018/2018-05-07.html" rel="alternate"></link><published>2018-05-07T00:00:00+08:00</published><updated>2018-05-07T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-05-07:/posts/2018/2018-05-07.html</id><summary type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"&gt;&lt;/p&gt;
+&lt;p&gt;还有一个收获，就是知道了RAID (Redundant Array of Independent Disks, originally Redundant Array of Inexpensive Disks)，一开始是指廉价磁盘冗余阵列，后来才变成独立磁盘冗余阵列，见：&lt;a href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/1987/CSD-87-391.pdf"&gt;A Case for Redundant Arrays of Inexpensive Disks (RAID)&lt;/a&gt;。&lt;/p&gt;</content><category term="2018"></category><category term="book"></category><category term="gtd"></category></entry><entry><title>OpenLDAP 的SSHA</title><link href="https://fangpsh.github.io/posts/2018/2018-05-07.html" rel="alternate"></link><published>2018-05-07T00:00:00+08:00</published><updated>2018-05-07T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-05-07:/posts/2018/2018-05-07.html</id><summary type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="/assets/images/2023/20230301161613.png"&gt;&lt;/p&gt;
 &lt;p&gt;最近折腾了一下&lt;a href="https://www.openldap.org"&gt;OpenLDAP&lt;/a&gt;，密码用的哈希算法是SSHA，SSHA 其实就是加盐的&lt;a href="https://zh.wikipedia.org/zh/SHA-1"&gt;SHA1&lt;/a&gt;：&lt;code&gt;salted SHA1&lt;/code&gt;，加盐增加了利用彩虹表碰撞的难度。&lt;/p&gt;
-&lt;p&gt;摘一段官网&lt;a href="https://www.openldap.org/faq/data/cache/347.html"&gt;FAQ …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161613.png"&gt;&lt;/p&gt;
+&lt;p&gt;摘一段官网&lt;a href="https://www.openldap.org/faq/data/cache/347.html"&gt;FAQ …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="LDAPworm.gif" src="/assets/images/2023/20230301161613.png"&gt;&lt;/p&gt;
 &lt;p&gt;最近折腾了一下&lt;a href="https://www.openldap.org"&gt;OpenLDAP&lt;/a&gt;，密码用的哈希算法是SSHA，SSHA 其实就是加盐的&lt;a href="https://zh.wikipedia.org/zh/SHA-1"&gt;SHA1&lt;/a&gt;：&lt;code&gt;salted SHA1&lt;/code&gt;，加盐增加了利用彩虹表碰撞的难度。&lt;/p&gt;
 &lt;p&gt;摘一段官网&lt;a href="https://www.openldap.org/faq/data/cache/347.html"&gt;FAQ&lt;/a&gt;的perl代码：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#! /usr/bin/perl&lt;/span&gt;
@@ -3827,7 +3827,7 @@ verify 函数。&lt;/p&gt;
 这个App 为同事之间提供了匿名交流的平台，各种高压线、污秽色情的信息 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;入职腾讯的时候，同学们给我推荐了一个App：&lt;a href="http://tongshiapp.com"&gt;同事&lt;/a&gt;，
 这个App 为同事之间提供了匿名交流的平台，各种高压线、污秽色情的信息络绎不绝，相当刺激。  &lt;/p&gt;
 &lt;p&gt;这个App 17年后期就出现HTTPS 证书过期、短信通道欠费收不到短信等问题，看起来要倒闭。有时候在想如果要搭建一个替代品，该如何平衡匿名性，又能验证是腾讯员工，我会怎么做，最后想了一个折中的办法。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="tongshiApp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165344.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="tongshiApp" src="/assets/images/2023/20230301165344.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;前提：员工不信任论坛管理员。&lt;/strong&gt;&lt;/p&gt;
 &lt;h2&gt;邮件列表&lt;/h2&gt;
 &lt;p&gt;一开始的想法是通过邮件列表，因为邮箱还能匿名注册，而且有各种各样的移动客户端。怎么验证员工身份？无论是工作邮箱发验证码还是什么，只要涉及员工工作邮箱，服务端就有可能记录对应关系。或者通过邀请制度？又感觉不够收敛。做一个网站，只有内网可以访问，然后每日生成邀请码？Bingo，突然想到可以限制注册的来源，限制内网注册即可。&lt;/p&gt;
@@ -3846,7 +3846,7 @@ verify 函数。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;升级CloudFlare 套餐，使用&lt;a href="https://support.cloudflare.com/hc/en-us/articles/115001595131-How-do-I-Lockdown-URLs-in-Cloudflare-"&gt;Zone lockdown&lt;/a&gt;功能。
-&lt;img alt="cloudflare_zone_lockdown" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165404.png"&gt;&lt;/p&gt;
+&lt;img alt="cloudflare_zone_lockdown" src="/assets/images/2023/20230301165404.png"&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;CloudFlare 会把客户端IP 放在 &lt;code&gt;$http_cf_connecting_ip&lt;/code&gt; 头里面，在Nginx 里面校验一下这个头。参考：&lt;a href="https://support.cloudflare.com/hc/en-us/articles/200170706-How-do-I-restore-original-visitor-IP-with-Nginx-"&gt;How do I restore original visitor IP with Nginx?&lt;/a&gt;。&lt;/p&gt;
@@ -3875,7 +3875,7 @@ verify 函数。&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;搞定。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="tongshi-tk" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165416.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="tongshi-tk" src="/assets/images/2023/20230301165416.png"&gt;&lt;/p&gt;
 &lt;p&gt;试验一下想法，过三天这台机器就到期，关了。&lt;/p&gt;
 &lt;p&gt;总结一下思路，通过办公网出口IP 做注册限制，较宽松的员工认证手段，又保证了一定的匿名性。&lt;/p&gt;
 &lt;p&gt;当然如果公司自己愿意做的话，在内网搭就非常简单了。然而这东西对于公司来说是洪水猛兽，审查还来不及。腾讯内网的乐问有匿名发帖功能，然而又有几个人信任匿名的安全性呢。&lt;/p&gt;</content><category term="2018"></category><category term="flarum"></category></entry><entry><title>记一次无比心累的个税申报过程</title><link href="https://fangpsh.github.io/posts/2018/2018-03-20.html" rel="alternate"></link><published>2018-03-20T00:00:00+08:00</published><updated>2018-03-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-03-20:/posts/2018/2018-03-20.html</id><summary type="html">&lt;blockquote&gt;
@@ -3896,7 +3896,7 @@ verify 函数。&lt;/p&gt;
 “阿里通信只支持淘宝、微博，还有个啥，三个平台，其他平台不保证支持”。。。。&lt;br&gt;
 上了贼床了。&lt;/p&gt;
 &lt;p&gt;自己研究一下请求：&lt;br&gt;
-&lt;img alt="szfesc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302151313.png"&gt;&lt;/p&gt;
+&lt;img alt="szfesc" src="/assets/images/2023/20230302151313.png"&gt;&lt;/p&gt;
 &lt;p&gt;猜测发送验证码接口的短信网关，170 等虚拟运营商的发送失败。地税局的网站跳转到认证网关的时候，会带一个merChikBillSn 号，认证网关这边对这个merChikBillSn 进行认证通过之后，才能在地税局那边进行开通。这个认证的接口：&lt;br&gt;
 &lt;code&gt;wyzf-gateway/RealNameVerification/checkConfim&lt;/code&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;merChkBillSn
@@ -3936,8 +3936,8 @@ banType
 声调有点高，引来一个男的，一个女阿姨，和我对战：“你们腾讯自己的问题，信息录错了”。
 拒绝，不想再跑一趟，另外一个小姐姐打了几个电话，提交工单，做信息更正。十分钟后，搞定！&lt;/p&gt;
 &lt;p&gt;联系HR8008，反应+吐槽，HR 小姐姐说检查了，没发现登记有误。。算了。&lt;/p&gt;
-&lt;p&gt;到公司，已经快11点。耗费2小时，orz。&lt;/p&gt;</content><category term="2018"></category><category term="hack"></category></entry><entry><title>《HTTP/2 基础教程》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="alternate"></link><published>2018-02-06T00:00:00+08:00</published><updated>2018-02-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-02-06:/posts/2018/2018-02-06.html</id><summary type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
-&lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="http2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;到公司，已经快11点。耗费2小时，orz。&lt;/p&gt;</content><category term="2018"></category><category term="hack"></category></entry><entry><title>《HTTP/2 基础教程》读书笔记</title><link href="https://fangpsh.github.io/posts/2018/2018-02-06.html" rel="alternate"></link><published>2018-02-06T00:00:00+08:00</published><updated>2018-02-06T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-02-06:/posts/2018/2018-02-06.html</id><summary type="html">&lt;p&gt;&lt;img alt="http2" src="/assets/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="http2" src="/assets/images/2023/20230227141517.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;最近拿到一本新书：&lt;a href="https://book.douban.com/subject/27665112/"&gt;《HTTP/2 基础教程》&lt;/a&gt;，薄薄一本，除去附录100页不到，卖的挺贵，49元。《精通正则表达式》的译者余晟为这书写了序，也在他的个人公众号上推荐，读完却觉得作为基础教程还不错，翻译上觉得略生硬。作点简单的笔记，方便以后“按图索骥”。&lt;/p&gt;
 &lt;h2&gt;3.1.2 关键性能指标&lt;/h2&gt;
 &lt;ul&gt;
@@ -4085,7 +4085,7 @@ banType
 &lt;li&gt;域名拆分：迁移到HTTP/2 需要收拢域名。&lt;/li&gt;
 &lt;li&gt;禁用cookie的域名：HTTP/2 中，头部信息会被压缩，无需再对特定域名禁用cookie。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img alt="null" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230227141750.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="null" src="/assets/images/2023/20230227141750.png"&gt;&lt;/p&gt;
 &lt;h2&gt;5. HTTP/2 协议&lt;/h2&gt;
 &lt;p&gt;第五章介绍了HTTP/2 协议的一些细节，帧结构、流、流量控制、优先级、服务端推送、首部压缩等内容，内容很多，每一块要理解透彻内容很多，具体还是得看书，外加查询其他资料。&lt;/p&gt;
 &lt;ul&gt;
@@ -4208,10 +4208,10 @@ handled 值略小于accepts，这说明有一部分请求被dropped：&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;定期&lt;code&gt;nginx -t&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://www.datadoghq.com/blog/how-to-monitor-nginx/"&gt;How to monitor NGINX&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2018"></category><category term="nginx"></category></entry><entry><title>drop_caches</title><link href="https://fangpsh.github.io/posts/2018/2018-01-25.html" rel="alternate"></link><published>2018-01-25T00:00:00+08:00</published><updated>2018-01-25T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-01-25:/posts/2018/2018-01-25.html</id><summary type="html">&lt;p&gt;&lt;img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png"&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="nginx"></category></entry><entry><title>drop_caches</title><link href="https://fangpsh.github.io/posts/2018/2018-01-25.html" rel="alternate"></link><published>2018-01-25T00:00:00+08:00</published><updated>2018-01-25T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2018-01-25:/posts/2018/2018-01-25.html</id><summary type="html">&lt;p&gt;&lt;img alt="atemyram" src="/assets/images/2023/20230228184158.png"&gt;
 &lt;a href="https://www.linuxatemyram.com"&gt;Don't Panic! Your ram is fine!&lt;/a&gt;&lt;/p&gt;
 &lt;h2&gt;问题排查&lt;/h2&gt;
-&lt;p&gt;一台机器的CPU iowait 非常高，perf 分析发现耗时都在&lt;code&gt;isolate_freepages_block&lt;/code&gt; 函数，iostat 看系统盘的iops 也达到瓶颈，free 查看机器内 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="atemyram" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228184158.png"&gt;
+&lt;p&gt;一台机器的CPU iowait 非常高，perf 分析发现耗时都在&lt;code&gt;isolate_freepages_block&lt;/code&gt; 函数，iostat 看系统盘的iops 也达到瓶颈，free 查看机器内 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="atemyram" src="/assets/images/2023/20230228184158.png"&gt;
 &lt;a href="https://www.linuxatemyram.com"&gt;Don't Panic! Your ram is fine!&lt;/a&gt;&lt;/p&gt;
 &lt;h2&gt;问题排查&lt;/h2&gt;
 &lt;p&gt;一台机器的CPU iowait 非常高，perf 分析发现耗时都在&lt;code&gt;isolate_freepages_block&lt;/code&gt; 函数，iostat 看系统盘的iops 也达到瓶颈，free 查看机器内存 buff/cache 占了很大一部分，free 快没了。网友的类似状况： &lt;a href="http://www.yangguanjun.com/2016/09/12/ceph-node-high-workload-issue/"&gt;Ceph节点load很高问题的分析解决&lt;/a&gt;。&lt;/p&gt;
@@ -4499,7 +4499,7 @@ cd !$:h
 
 &lt;p&gt;&lt;code&gt;!$:h&lt;/code&gt; 展开为 上一条命令最后一个参数的目录路径："/long/path/to/some/file/or"。&lt;/p&gt;
 &lt;h2&gt;9) 启动顺序&lt;/h2&gt;
-&lt;p&gt;&lt;img alt="shell-startup-actual" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228182436.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="shell-startup-actual" src="/assets/images/2023/20230228182436.png"&gt;&lt;/p&gt;
 &lt;p&gt;作者放了1个图，左边是Bash，右边是Zsh，来源是：&lt;a href="https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html"&gt;Shell startup scripts&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;非常有趣、直观，顺着一种颜色看，Bash 启动过程，期间加载的文件，一目了然。读这篇文章，最大的收获就是见到这张图。&lt;/p&gt;
 &lt;h2&gt;10) getopts (cheapci)&lt;/h2&gt;
@@ -4559,12 +4559,12 @@ cd !$:h
 &lt;p&gt;&lt;code&gt;listen&lt;/code&gt;, &lt;code&gt;server_name&lt;/code&gt; 这种是简单配置，以分号结尾；&lt;code&gt;server&lt;/code&gt;，&lt;code&gt;locaiton&lt;/code&gt; 这种为块配置，带一对小括号。写过nginx 插件或者看过&lt;a href="http://lxr.nginx.org/source/src/core/ngx_conf_file.c"&gt;ngx_conf_parse&lt;/a&gt; 对nginx 的配置加载会更了解一点。&lt;/p&gt;
 &lt;p&gt;毕业快3年，忽然十分想念编译原理老师，语法分析，词法分析，LR，yacc，lex  什么的。然而编译原理龙书早被我卖了，买鸡肉卷吃。听说快乐基倒闭了？？可惜可惜。&lt;/p&gt;
 &lt;p&gt;只能非常不优雅的解决，从上往下手动撸，处理好缩进，清楚多余的空格，再整一下左对齐就好了。吃一个鸡肉卷的时间就能撸好🐔 。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="ngxfmt" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164340.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ngxfmt" src="/assets/images/2023/20230301164340.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;log_format&lt;/code&gt; 这换行可以说是非常舒服了😌  ，&lt;code&gt;gzip_types&lt;/code&gt; 这对齐能让人高潮🎆 。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="ngxfmt-2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165631.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ngxfmt-2" src="/assets/images/2023/20230301165631.png"&gt;&lt;/p&gt;
 &lt;p&gt;在前公司曾经三个产品线要写到一个server 里面，&lt;code&gt;server_name&lt;/code&gt; 长到让人绝望😭 ，而且偶尔还得改改，这样换行就清爽多了🍃 。&lt;/p&gt;
 &lt;p&gt;相邻的配置项如果一样，对所有的值都进行左对齐处理，像这样⬇️  ：&lt;br&gt;
-&lt;img alt="ngxfmt-2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165710.png"&gt;&lt;/p&gt;
+&lt;img alt="ngxfmt-2" src="/assets/images/2023/20230301165710.png"&gt;&lt;/p&gt;
 &lt;p&gt;源代码🐙  ：&lt;a href="https://github.com/fangpsh/ngxfmt"&gt;fangpsh/ngxfmt&lt;/a&gt;，&lt;br&gt;
 有点乱，回头再看估计会被恶心到，就像一次性吃了3个鸡肉卷。&lt;/p&gt;
 &lt;p&gt;其他：&lt;/p&gt;
@@ -4572,9 +4572,9 @@ cd !$:h
 &lt;li&gt;&lt;a href="https://www.nginx.com/resources/wiki/start/topics/examples/full/"&gt;Full Example Configuration&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://github.com/chr4/nginx.vim/blob/master/syntax/nginx.vim"&gt;nginx.vim&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://www.kancloud.cn/digest/understandingnginx/202597"&gt;Nginx 配置解析&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2018"></category><category term="nginx"></category><category term="python"></category></entry><entry><title>抓取微博，同步到Twitter</title><link href="https://fangpsh.github.io/posts/2017/2017-12-21.html" rel="alternate"></link><published>2017-12-21T00:00:00+08:00</published><updated>2017-12-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-21:/posts/2017/2017-12-21.html</id><summary type="html">&lt;p&gt;&lt;img alt="zelda" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161433.jpg"&gt;&lt;/p&gt;
+&lt;/ul&gt;</content><category term="2018"></category><category term="nginx"></category><category term="python"></category></entry><entry><title>抓取微博，同步到Twitter</title><link href="https://fangpsh.github.io/posts/2017/2017-12-21.html" rel="alternate"></link><published>2017-12-21T00:00:00+08:00</published><updated>2017-12-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-21:/posts/2017/2017-12-21.html</id><summary type="html">&lt;p&gt;&lt;img alt="zelda" src="/assets/images/2023/20230306161433.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;前几个月买了&lt;a href="https://www.nintendo.co.jp/hardware/switch/"&gt;NintendoSwitch&lt;/a&gt;，沉迷于“塞尔达-荒野之息”不能自拔，同时也关注着NS 新游戏的资讯。
-微博上有几个帐号会发布各种NS 游戏 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="zelda" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161433.jpg"&gt;&lt;/p&gt;
+微博上有几个帐号会发布各种NS 游戏 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="zelda" src="/assets/images/2023/20230306161433.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;前几个月买了&lt;a href="https://www.nintendo.co.jp/hardware/switch/"&gt;NintendoSwitch&lt;/a&gt;，沉迷于“塞尔达-荒野之息”不能自拔，同时也关注着NS 新游戏的资讯。
 微博上有几个帐号会发布各种NS 游戏信息，不过微博做的和💩 一样，完全不想用。联系了那几个微博博主，询问是否考虑也同步发在Twitter，没理我，那就自己动手吧。&lt;/p&gt;
 &lt;h2&gt;爬取微博&lt;/h2&gt;
@@ -4583,11 +4583,11 @@ cd !$:h
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;https://m.weibo.cn/u/5084965647
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img alt="weibo1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161502.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="weibo1" src="/assets/images/2023/20230306161502.jpg"&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;https://m.weibo.cn/api/container/getIndex?containerid=1076035084965647&amp;amp;page=2
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img alt="weibo2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161516.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="weibo2" src="/assets/images/2023/20230306161516.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;结构挺清晰的，data-cards 就是每一条微博，不过会有不同的card-type，选出card-type=9 的即可。&lt;/p&gt;
 &lt;p&gt;每一个card 里面，主要关注：&lt;/p&gt;
 &lt;ul&gt;
@@ -4636,12 +4636,12 @@ cd !$:h
 &lt;/ul&gt;
 &lt;p&gt;写好之后，丢到VPS 上，15分钟运行一次即可。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;&lt;a href="https://twitter.com/NinSwitch_News"&gt;@NinSwitch_News&lt;/a&gt;&lt;/strong&gt;&lt;br&gt;
-&lt;img alt="ns_news" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306161552.jpg"&gt;&lt;/p&gt;
-&lt;p&gt;代码就不发了，写得很快很糙，也没啥难度。  &lt;/p&gt;</content><category term="2017"></category><category term="spider"></category></entry><entry><title>ioping</title><link href="https://fangpsh.github.io/posts/2017/2017-12-13.html" rel="alternate"></link><published>2017-12-13T00:00:00+08:00</published><updated>2017-12-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-13:/posts/2017/2017-12-13.html</id><summary type="html">&lt;p&gt;&lt;img alt="ioping" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306152430.jpg"&gt;&lt;/p&gt;
+&lt;img alt="ns_news" src="/assets/images/2023/20230306161552.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;代码就不发了，写得很快很糙，也没啥难度。  &lt;/p&gt;</content><category term="2017"></category><category term="spider"></category></entry><entry><title>ioping</title><link href="https://fangpsh.github.io/posts/2017/2017-12-13.html" rel="alternate"></link><published>2017-12-13T00:00:00+08:00</published><updated>2017-12-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-12-13:/posts/2017/2017-12-13.html</id><summary type="html">&lt;p&gt;&lt;img alt="ioping" src="/assets/images/2023/20230306152430.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;发现一个有趣的工具 - ioping，类似常用的ping 命令。ping 用来ping 网络，看延时、丢包等等，ioping 用来 “ping” IO，看IO 耗时，读写速度等等。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://github.com/koct9i/ioping"&gt;ioping&lt;/a&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;simple disk I …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="ioping" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306152430.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;simple disk I …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="ioping" src="/assets/images/2023/20230306152430.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;发现一个有趣的工具 - ioping，类似常用的ping 命令。ping 用来ping 网络，看延时、丢包等等，ioping 用来 “ping” IO，看IO 耗时，读写速度等等。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://github.com/koct9i/ioping"&gt;ioping&lt;/a&gt;&lt;/p&gt;
 &lt;blockquote&gt;
@@ -4718,10 +4718,10 @@ cd !$:h
 &lt;li&gt;发表时间：2017-08-28&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;当你把网站迁移到性能更好的HTTP/2 协议时，可能会出现Chrome 没法加载页面的问题，取而代之是一个显示&lt;strong&gt;This site can’t be reached&lt;/strong&gt;，以及错误信息为&lt;code&gt;ERR_SPDY_PROTOCOL_ERROR&lt;/code&gt; 的页面。错误信息里面没有提到HTTP/2， 可能是因为 HTTP/2 是从SPDY 协议发展而来，所以错误信息还是老的SPDY。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="chrome_err_spdy_protocol_error" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160946.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="chrome_err_spdy_protocol_error" src="/assets/images/2023/20230301160946.png"&gt;&lt;/p&gt;
 &lt;p&gt;出现&lt;code&gt;ERR_SPDY_PROTOCOL_ERROR&lt;/code&gt; 可能是因为服务器发送了一个无效的HTTP header。Chrome 处理二进制的HTTP/2 协议时有一些严格，不会处理以空格代替破折号的header（例如用&lt;code&gt;Referrer Policy&lt;/code&gt; 代替&lt;code&gt;Referrer-Policy&lt;/code&gt;），也不会处理带着2个冒号的header（例如&lt;code&gt;Content-Security-Policy:: ...&lt;/code&gt;），所以检查下你的header 是否准确。Firefox 会忽略这些无效的header，正常显示页面。&lt;/p&gt;
 &lt;p&gt;给出一个如何找到这些有问题的header 的方法。访问&lt;code&gt;chrome://net-internals/#events&lt;/code&gt;（这链接没法点击，只能复制然后粘贴到地址栏再访问），在搜索框输入你的域名（我以&lt;code&gt;example.com&lt;/code&gt;为例），然后在其他标签中打开出问题的网站。返回&lt;code&gt;chrome://net-internals/#events&lt;/code&gt; ，选中Source Type 是&lt;code&gt;HTTP2_SESSION&lt;/code&gt; 的行。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="chrome-events-http2_session" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228211536.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="chrome-events-http2_session" src="/assets/images/2023/20230228211536.png"&gt;&lt;/p&gt;
 &lt;p&gt;在右边，可以看到HTTP/2 协议的详细信息，重点部分如下：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;t=50413 [st=7]  HTTP2_SESSION_RECV_INVALID_HEADER
                 --&amp;gt; header_name = &amp;quot;referrer policy&amp;quot;
@@ -5131,21 +5131,21 @@ ndefined reference to `MMDB_strerror&amp;#39;
 &lt;/ul&gt;
 &lt;p&gt;以及自己用wireshark 抓包分析。&lt;/p&gt;
 &lt;p&gt;对着文档一个一个bit 校对，对任何DNS 查询报文，都拿出它的IP，然后返回一条A记录就好了，效果如下：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="whoami" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155214.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="whoami" src="/assets/images/2023/20230301155214.png"&gt;&lt;/p&gt;
 &lt;h2&gt;上线&lt;/h2&gt;
 &lt;p&gt;我在个人的VPS 上部署了一个，再添加一条NS 记录，注意需要是域名，不能添加IP：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="whoami_ns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155222.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="whoami_ns" src="/assets/images/2023/20230301155222.png"&gt;&lt;/p&gt;
 &lt;p&gt;再 &lt;code&gt;dig whoami.example.com&lt;/code&gt; 或者 &lt;code&gt;ping whoami.example.com&lt;/code&gt; 即可。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="whoami_dig" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155233.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="whoami_dig" src="/assets/images/2023/20230301155233.png"&gt;&lt;/p&gt;
 &lt;h2&gt;代码&lt;/h2&gt;
 &lt;p&gt;实现代码: &lt;a href="https://gist.github.com/fangpsh/c7de2d718f6c50befe389eb646e60426"&gt;whoami.lua&lt;/a&gt;&lt;/p&gt;</content><category term="2017"></category><category term="openresty"></category><category term="dns"></category></entry><entry><title>获取Local DNS 地址信息</title><link href="https://fangpsh.github.io/posts/2017/2017-08-22.html" rel="alternate"></link><published>2017-08-22T00:00:00+08:00</published><updated>2017-08-22T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-08-22:/posts/2017/2017-08-22.html</id><summary type="html">&lt;p&gt;在网页中获取local dns 不太方便，看看大家是怎么做的。  &lt;/p&gt;
 &lt;h2&gt;阿里云CDN 诊断工具&lt;/h2&gt;
 &lt;p&gt;阿里云CDN提供的&lt;a href="https://cdn.dns-detect.alicdn.com/https/doc.html"&gt;阿里昆仑用户诊断工具&lt;/a&gt;：&lt;br&gt;
-&lt;img alt="alicdn_local_dns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171842.png"&gt;  &lt;/p&gt;
+&lt;img alt="alicdn_local_dns" src="/assets/images/2023/20230301171842.png"&gt;  &lt;/p&gt;
 &lt;p&gt;获取到local dns 的这 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;在网页中获取local dns 不太方便，看看大家是怎么做的。  &lt;/p&gt;
 &lt;h2&gt;阿里云CDN 诊断工具&lt;/h2&gt;
 &lt;p&gt;阿里云CDN提供的&lt;a href="https://cdn.dns-detect.alicdn.com/https/doc.html"&gt;阿里昆仑用户诊断工具&lt;/a&gt;：&lt;br&gt;
-&lt;img alt="alicdn_local_dns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171842.png"&gt;  &lt;/p&gt;
+&lt;img alt="alicdn_local_dns" src="/assets/images/2023/20230301171842.png"&gt;  &lt;/p&gt;
 &lt;p&gt;获取到local dns 的这个请求：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;https://123-66-35-57-122894414.dns-detect.alicdn.com/api/cdnDetectHttps?method=commitDetectHttps&amp;amp;detectId=122894414&amp;amp;cb=jQuery110102821084573750223_1503489263656&amp;amp;_=1503489263658
 
@@ -5157,22 +5157,22 @@ detectId=122894414
 
 &lt;p&gt;用户访问一个域名，浏览器给按照分配的local dns 发起dns 迭代查询，最后向域名的权威服务器名查询，最后这一步的时候可以得到local dns 的地址。&lt;/p&gt;
 &lt;p&gt;如下图：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="microsoft-offical-course-20410c07-18-638" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171853.png"&gt;&lt;br&gt;
+&lt;p&gt;&lt;img alt="microsoft-offical-course-20410c07-18-638" src="/assets/images/2023/20230301171853.png"&gt;&lt;br&gt;
 &lt;strong&gt;图片来源：&lt;a href="https://www.slideshare.net/gameaxt/microsoft-offical-course-20410c07"&gt;Microsoft Offical Course 20410C_07&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;要怎么把local dns 地址和用户对应起来呢？这就是前面那个奇怪的域名的作用，每次的域名都不同，当浏览器访问的时候，我们就可以根据这个唯一域名再结合域名服务器的信息，把对应的local dns 返回给用户。&lt;/p&gt;
 &lt;h2&gt;腾讯华佗&lt;/h2&gt;
 &lt;p&gt;腾讯的华佗分析系统&lt;a href="http://utp.qq.com/"&gt;utp.qq.com&lt;/a&gt;或&lt;a href="http://ping.huatuo.qq.com/"&gt;ping.huatuo.qq.com&lt;/a&gt;：&lt;br&gt;
-&lt;img alt="qq_ldns_1" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171906.png"&gt;  &lt;/p&gt;
+&lt;img alt="qq_ldns_1" src="/assets/images/2023/20230301171906.png"&gt;  &lt;/p&gt;
 &lt;p&gt;腾讯这服务现在好像挂了。。不过不妨碍我们分析它的原理。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;http://utp.qq.com/getldns.php?d=
 1503491352464.1724.sngdia.imtmp.net
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;这个&lt;code&gt;imtmp.net&lt;/code&gt; 的域名看下whois 信息，属于腾讯：&lt;br&gt;
-&lt;img alt="imtmp.net" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171920.png"&gt;&lt;/p&gt;
+&lt;img alt="imtmp.net" src="/assets/images/2023/20230301171920.png"&gt;&lt;/p&gt;
 &lt;p&gt;前面这个数字看着像时间戳，做法应该和阿里的做法一样，那用户对这个域名的查询在哪里呢。&lt;/p&gt;
 &lt;p&gt;翻下代码：&lt;br&gt;
-&lt;img alt="qq_ldns_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171939.png"&gt;&lt;/p&gt;
+&lt;img alt="qq_ldns_2" src="/assets/images/2023/20230301171939.png"&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;getDNS&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
 
 &lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;$&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/getldns.php?d=&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;dns_domain&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;ldndsip&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
@@ -5199,11 +5199,11 @@ detectId=122894414
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;果然和时间戳有关。翻下前面，也找到了这个图片的请求：&lt;br&gt;
-&lt;img alt="qq_ldns_3" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171950.png"&gt;&lt;/p&gt;
+&lt;img alt="qq_ldns_3" src="/assets/images/2023/20230301171950.png"&gt;&lt;/p&gt;
 &lt;p&gt;多此一举？&lt;/p&gt;
 &lt;h2&gt;网易DNS 检测工具&lt;/h2&gt;
 &lt;p&gt;网易也有一个&lt;a href="https://nstool.netease.com/"&gt;DNS检测工具&lt;/a&gt;：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="netease_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172004.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="netease_ldns" src="/assets/images/2023/20230301172004.png"&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;GET https://only-425945-183-240-25-249.nstool.netease.com/
 &amp;gt;Response: 您好，尊敬的网易用户&amp;lt;br&amp;gt;您的IP地址信息: 183.240.25.249 广东省广州市移动&amp;lt;br&amp;gt;您的DNS地址信息: 211.136.209.212 广东省广州市移动&amp;lt;br&amp;gt;您的DNS设置正确
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -5211,20 +5211,20 @@ detectId=122894414
 &lt;p&gt;也是类似的做法。&lt;/p&gt;
 &lt;h2&gt;豆瓣用户检测工具&lt;/h2&gt;
 &lt;p&gt;发现豆瓣也有一个&lt;a href="http://doctor.douban.com/"&gt;检测工具&lt;/a&gt;:&lt;br&gt;
-&lt;img alt="douban_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172015.png"&gt;&lt;/p&gt;
+&lt;img alt="douban_ldns" src="/assets/images/2023/20230301172015.png"&gt;&lt;/p&gt;
 &lt;p&gt;居然直接用阿里的接口。&lt;/p&gt;
 &lt;h2&gt;whoami.akamai.net&lt;/h2&gt;
 &lt;p&gt;akamai 提供了一个域名，直接ping 或者dig 就可以获取local dns地址，这个很酷，直接把local dns 当作查询结果返回：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="akamai_ldns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301172035.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="akamai_ldns" src="/assets/images/2023/20230301172035.png"&gt;&lt;/p&gt;
 &lt;h2&gt;Anycast&lt;/h2&gt;
 &lt;p&gt;使用以上工具多次检测，如果会发现检测到的地址不同，可能是由于local dns 做了&lt;a href="https://en.wikipedia.org/wiki/Anycast"&gt;Anycast&lt;/a&gt;，或者有出口IP 有多个造成。&lt;/p&gt;</content><category term="2017"></category><category term="dns"></category><category term="web"></category></entry><entry><title>给Pelican 添加Twitter Card</title><link href="https://fangpsh.github.io/posts/2017/2017-08-21.html" rel="alternate"></link><published>2017-08-21T00:00:00+08:00</published><updated>2017-08-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-08-21:/posts/2017/2017-08-21.html</id><summary type="html">&lt;p&gt;之前发Tweet 的时候，发现有些链接能够被识别出内容，带着一个“卡片”。&lt;/p&gt;
 &lt;p&gt;例如：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="twitter_card_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165513.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="twitter_card_demo_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165525.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_demo" src="/assets/images/2023/20230301165513.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_demo_2" src="/assets/images/2023/20230301165525.png"&gt;&lt;/p&gt;
 &lt;p&gt;一开始以为是Twitter 对某些网站的特殊照顾，最近喵了 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前发Tweet 的时候，发现有些链接能够被识别出内容，带着一个“卡片”。&lt;/p&gt;
 &lt;p&gt;例如：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="twitter_card_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165513.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="twitter_card_demo_2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165525.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_demo" src="/assets/images/2023/20230301165513.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_demo_2" src="/assets/images/2023/20230301165525.png"&gt;&lt;/p&gt;
 &lt;p&gt;一开始以为是Twitter 对某些网站的特殊照顾，最近喵了下某个网址的源码，才明白是需要自己设置的。&lt;/p&gt;
 &lt;p&gt;&lt;img alt="twitter_card_meta" src="twitter_card_meta.jpg"&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -5238,9 +5238,9 @@ detectId=122894414
 &lt;p&gt;对于我的个人博客来说，summary 类似的卡片就够用了，给每篇文章找个配图也挺累的。&lt;/p&gt;
 &lt;p&gt;博客是用Pelican 生成的，找了一下插件，果然有一个，我fork 了下，修了一个bug ：&lt;a href="https://github.com/fangpeishi/twitter_card"&gt;twitter_card&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;按照插件的说明搞完之后，测试一下，可以用这个工具：&lt;a href="https://cards-dev.twitter.com/validator"&gt;Card validator&lt;/a&gt;：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="twitter_card_validator" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165545.png"&gt;&lt;/p&gt;
-&lt;p&gt;搞定，然而并没有什么卵用。&lt;/p&gt;</content><category term="2017"></category><category term="pelican"></category></entry><entry><title>英文缩写字典</title><link href="https://fangpsh.github.io/posts/2017/2017-07-18.html" rel="alternate"></link><published>2017-07-18T00:00:00+08:00</published><updated>2017-07-18T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-07-18:/posts/2017/2017-07-18.html</id><summary type="html">&lt;p&gt;&lt;img alt="abbreviations_dictionary" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165301.png"&gt;&lt;/p&gt;
-&lt;p&gt;好久之前在V2EX 见过网友分享的 &lt;a href="https://www.v2ex.com/t/227197"&gt;发现一个查单词缩写的网站，妈妈再也不用担心我给变量命名了！&lt;/a&gt;，一直收藏着挺好用，不过 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="abbreviations_dictionary" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165301.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="twitter_card_validator" src="/assets/images/2023/20230301165545.png"&gt;&lt;/p&gt;
+&lt;p&gt;搞定，然而并没有什么卵用。&lt;/p&gt;</content><category term="2017"></category><category term="pelican"></category></entry><entry><title>英文缩写字典</title><link href="https://fangpsh.github.io/posts/2017/2017-07-18.html" rel="alternate"></link><published>2017-07-18T00:00:00+08:00</published><updated>2017-07-18T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-07-18:/posts/2017/2017-07-18.html</id><summary type="html">&lt;p&gt;&lt;img alt="abbreviations_dictionary" src="/assets/images/2023/20230301165301.png"&gt;&lt;/p&gt;
+&lt;p&gt;好久之前在V2EX 见过网友分享的 &lt;a href="https://www.v2ex.com/t/227197"&gt;发现一个查单词缩写的网站，妈妈再也不用担心我给变量命名了！&lt;/a&gt;，一直收藏着挺好用，不过 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="abbreviations_dictionary" src="/assets/images/2023/20230301165301.png"&gt;&lt;/p&gt;
 &lt;p&gt;好久之前在V2EX 见过网友分享的 &lt;a href="https://www.v2ex.com/t/227197"&gt;发现一个查单词缩写的网站，妈妈再也不用担心我给变量命名了！&lt;/a&gt;，一直收藏着挺好用，不过由于个人一直在用的是Mac OS 自带的Dictionary App，如果能做个专门查缩写的字典库，就更方便了。&lt;/p&gt;
 &lt;p&gt;先要看看怎么创建一个Mac Dictionary App 的字典文件。&lt;/p&gt;
 &lt;p&gt;参考资料：&lt;/p&gt;
@@ -5277,13 +5277,13 @@ invoked after all the generators are executed and just before pelican exits usef
 &lt;p&gt;前端方面有一些关于图片加载速度的优化，例如CSS 画图，CSS 合并素材，甚至用CSS 把图片Base64 编码（不推荐），和这份笔记关系不大。&lt;/p&gt;
 &lt;h2&gt;格式选择&lt;/h2&gt;
 &lt;p&gt;不同的需求选择不同的格式, JPEG 能够满足的需求没必要选择PNG。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="format-tree" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155951.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="format-tree" src="/assets/images/2023/20230301155951.png"&gt;&lt;/p&gt;
 &lt;p&gt;图片来源：&lt;a href="http://jixianqianduan.com/frontend-weboptimize/2015/11/17/front-end-image-optmize.html"&gt;《web前端图片极限优化策略》&lt;/a&gt;，原图是Google 的&lt;a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization"&gt;Image Optimization&lt;/a&gt;。&lt;/p&gt;
 &lt;h3&gt;WebP、SharpP&lt;/h3&gt;
 &lt;p&gt;目前对于WebP 的支持已经很好了，所以新业务能够选择WebP，就选WebP。&lt;br&gt;
 豆瓣的相册切到了WebP，另外提供了一个让图片变清晰的思路：把图片尺寸拉大到2倍，然后缩小成1倍。&lt;br&gt;
 图片清晰度大大提升，还降低了图片大小：&lt;code&gt;2x WebP(73k) &amp;lt; 1x JPG(119k)&lt;/code&gt;，效果如下图（图片来源 豆瓣 波希米亚的日记）。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="douban.jpg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160002.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="douban.jpg" src="/assets/images/2023/20230301160002.png"&gt;&lt;/p&gt;
 &lt;p&gt;不过采用WebP 之后，用户“另存为”不太方便，毕竟大家对PNG和JPEG 比较熟悉。&lt;/p&gt;
 &lt;p&gt;豆瓣的WebP 实践：&lt;/p&gt;
 &lt;ul&gt;
@@ -5292,7 +5292,7 @@ invoked after all the generators are executed and just before pelican exits usef
 &lt;/ul&gt;
 &lt;p&gt;有趣的是，WebP 基于&lt;a href="https://zh.wikipedia.org/wiki/VP8"&gt;VP8&lt;/a&gt;，VP8 的下一代是&lt;a href="https://zh.wikipedia.org/wiki/VP9"&gt;VP9&lt;/a&gt;，VP9 的对手是&lt;a href="https://zh.wikipedia.org/zh/%E9%AB%98%E6%95%88%E7%8E%87%E8%A7%86%E9%A2%91%E7%BC%96%E7%A0%81"&gt;HEVC/H.265&lt;/a&gt;，&lt;a href="https://zh.wikipedia.org/wiki/BPG"&gt;BGP&lt;/a&gt; 基于HEVC，据说表现比WebP 好很多，不知为啥应用不多，因为专利？&lt;/p&gt;
 &lt;p&gt;腾讯基于HEVC 搞出了一个SharpP 格式，听说秒天秒地，目前已在腾讯云CDN 上应用，不过接入的大都是腾讯自家的产品：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="SharpP.jpg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160018.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="SharpP.jpg" src="/assets/images/2023/20230301160018.png"&gt;&lt;/p&gt;
 &lt;p&gt;图片模煳的没办法:( ，&lt;br&gt;
 图片来源：&lt;a href="https://www.qcloud.com/community/article/164816001481011868"&gt;《图片流量节省大杀器：基于 CDN 的 sharpP 自适应图片技术实践》&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;看起来确实不错，听说在移动端解码速度也很快，不过如此大规模使用估计花了不少专利费。第三方用户使用也不方便，得使用&lt;a href="https://x5.tencent.com/tbs/"&gt;X5内核&lt;/a&gt;，且只能用腾讯云的CDN，这样被活活绑死的事情，愿意的人应该不多。另外腾讯还搞了一个&lt;a href="http://www.ifanr.com/832678"&gt;TPG&lt;/a&gt;。&lt;/p&gt;
@@ -5310,9 +5310,9 @@ If present and true, indicates that the encoder should make an extra pass over t
 &lt;p&gt;另外也还有其他优化方式，例如大名鼎鼎的&lt;a href="https://tinypng.com/"&gt;Tinypng&lt;/a&gt;，&lt;a href="https://zhitu.isux.us/"&gt;智图&lt;/a&gt; 等。推荐Pillow，Pillow 的效果不差，而且开源、免费。&lt;/p&gt;
 &lt;h3&gt;选择渐进式（Progressive） JPEG&lt;/h3&gt;
 &lt;p&gt;常见的JPEG 有2种，基本式（Baseline）和渐进式（Progressive），明显的区别是前者从上至下加载，后者加载过程从模煳到清晰。参考下图：
-&lt;img alt="progressive" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160342.png"&gt;&lt;/p&gt;
+&lt;img alt="progressive" src="/assets/images/2023/20230301160342.png"&gt;&lt;/p&gt;
 &lt;p&gt;渐进式一般会比基本式小一些，而且加载速度更快。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="speed" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160125.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="speed" src="/assets/images/2023/20230301160125.png"&gt;&lt;/p&gt;
 &lt;p&gt;图片来源：&lt;a href="http://www.zhangxinxu.com/wordpress/2013/01/progressive-jpeg-image-and-so-on/"&gt;《渐进式jpeg(progressive jpeg)图片及其相关》&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;而且从用户体验上来说，从模煳到清晰比从空白展开到全部，前者体验更好。&lt;/p&gt;
 &lt;p&gt;关于为何渐进式会更小，需要从JPEG 的原理说起（对这一块也一知半解），JPEG被按照8x8，从坐标变换，DCT 变换，重排列，最后量化，得到的结果左上角是大量正数，右下角聚集大量0，然后再Zig-Zag 扫描，再用霍夫曼编码压缩。渐进式的情况下，相当于分层了，前面的扫描包含着大量正数，后面的扫描关注更多细节，包含大量的0，这样导致0 一起出现的概率增加，从而更易于压缩。&lt;/p&gt;
@@ -5326,10 +5326,10 @@ If present and true, indicates that the encoder should make an extra pass over t
 生成一份PNG 的缩略图，如果大于300KiB，再检查这个缩略图是否包含超过2^16 种不同的色彩。一般来说LOGO 的色彩都比较少和单一。&lt;/p&gt;
 &lt;h3&gt;动态设置JPEG 质量因子（Quality）&lt;/h3&gt;
 &lt;p&gt;JPEG 有一个质量因子，从0到100，表示图片的质量从差到好。Yelp 做了一个实验，发现在quality 在80~85 之间的时候，图片效果肉眼看基本没差别，&lt;a href="https://zh.wikipedia.org/wiki/%E7%B5%90%E6%A7%8B%E7%9B%B8%E4%BC%BC%E6%80%A7"&gt;SSIM&lt;/a&gt; 在0.9~0.95。SSIM 中文名称：结构相似性，用来判断两张图片的相似程度，拿一张压缩后的图片和原图比较，相似越高，说明失真越小，数学原理可以看维基百科，Yelp 用&lt;a href="https://github.com/jterrace/pyssim/"&gt;pyssim&lt;/a&gt;来计算SSIM。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="ssims-strategies" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160134.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ssims-strategies" src="/assets/images/2023/20230301160134.png"&gt;&lt;/p&gt;
 &lt;p&gt;质量设置为80~85 之间某一个值的时候，SSIM 还能保持在0.9到0.95，多奇妙啊。Yelp 提供了一段脚本来找出图片合适的quality 值：&lt;a href="https://gist.github.com/thebostik/cfc9f059459cfefd1f61134b48291436"&gt;dynamic_quality.py&lt;/a&gt;，用类似二分法猜数字的方法:P。&lt;/p&gt;
 &lt;p&gt;不过个人觉得对于一些色彩比较单一的图片，可以激进一点，例如从20~85 开始找最合适的压缩比。为什么色彩单一的可以调低质量呢，因为肉眼看不出来啊。所以是不是可以延伸一下，用大量的训练数据，用AI 的方法找到最合适的quality ？想起来Google之前推出的&lt;a href="https://www.blog.google/products/google-plus/saving-you-bandwidth-through-machine-learning/"&gt;RAISR&lt;/a&gt;，非常厉害。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="RAISR" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160144.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="RAISR" src="/assets/images/2023/20230301160144.png"&gt;&lt;/p&gt;
 &lt;p&gt;扯远了。&lt;/p&gt;
 &lt;p&gt;Yelp 博客提到的其他两篇相关文章，类似的思路，并且文中都有成型的开源工具：&lt;/p&gt;
 &lt;ul&gt;
@@ -5372,7 +5372,7 @@ If present and true, indicates that the encoder should make an extra pass over t
 &lt;p&gt;大家也都说，学习事物的最好方式是通过教别人。&lt;/p&gt;
 &lt;h2&gt;Ubuntu Server 16.04 x64 上的htop&lt;/h2&gt;
 &lt;p&gt;这是一张我要解释的htop 截图。&lt;br&gt;
-&lt;img alt="canyoukillit-before" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153350.png"&gt;&lt;/p&gt;
+&lt;img alt="canyoukillit-before" src="/assets/images/2023/20230301153350.png"&gt;&lt;/p&gt;
 &lt;h2&gt;Uptime&lt;/h2&gt;
 &lt;p&gt;Uptime 显示系统已经正常运行了多久。&lt;br&gt;
 你可以通过运行&lt;code&gt;uptime&lt;/code&gt; 命令看到同样的内容：&lt;/p&gt;
@@ -6041,7 +6041,7 @@ child    Child used extra 2M        5216 0
 你真的需要它们吗？&lt;/p&gt;
 &lt;p&gt;我在Digital Ocean 新启动了一台Ubuntu Server 16.04.1 LTS x64 ，这是关于它的开机启动程序的调研笔记。&lt;/p&gt;
 &lt;h3&gt;开始之前&lt;/h3&gt;
-&lt;p&gt;&lt;img alt="canyoukillit-before" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153424.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="canyoukillit-before" src="/assets/images/2023/20230301153424.png"&gt;&lt;/p&gt;
 &lt;h3&gt;/sbin/init&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;The /sbin/init program (also called init) coordinates the rest of the boot process and configures the environment for the user.&lt;/p&gt;
@@ -6418,7 +6418,7 @@ sudo rm /lib/systemd/system/getty@.service
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;当我重启服务器之后，我还能够通过SSH 连接上，不过没法通过Digital Ocean web 终端登录。&lt;br&gt;
-&lt;img alt="htop-login" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153446.png"&gt;&lt;/p&gt;
+&lt;img alt="htop-login" src="/assets/images/2023/20230301153446.png"&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://manpages.ubuntu.com/manpages/xenial/man8/getty.8.html"&gt;http://manpages.ubuntu.com/manpages/xenial/man8/getty.8.html&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Getty_(Unix)"&gt;https://en.wikipedia.org/wiki/Getty_(Unix)&lt;/a&gt;&lt;/li&gt;
@@ -6444,7 +6444,7 @@ sudo apt remove accountsservice -y --purge
 sudo apt remove policykit-1 -y --purge
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img alt="canyoukillit-after" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153459.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="canyoukillit-after" src="/assets/images/2023/20230301153459.png"&gt;&lt;/p&gt;
 &lt;p&gt;极限版：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;sudo apt remove dbus -y --purge
 sudo apt remove rsyslog -y --purge
@@ -6454,10 +6454,10 @@ sudo rm /etc/systemd/system/getty.target.wants/getty@tty1.service
 sudo rm /lib/systemd/system/getty@.service
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img alt="canyoukillit-after-extreme" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153514.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="canyoukillit-after-extreme" src="/assets/images/2023/20230301153514.png"&gt;&lt;/p&gt;
 &lt;p&gt;我按照我的博客文章&lt;a href="https://peteris.rocks/blog/unattended-installation-of-wordpress-on-ubuntu-server/"&gt;about unattended installation of WordPress on Ubuntu Server &lt;/a&gt;的步骤安装，成功了。&lt;/p&gt;
 &lt;p&gt;这是nginx，PHP7 和MySQL。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="canyoukillit-after-extreme-wp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153534.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="canyoukillit-after-extreme-wp" src="/assets/images/2023/20230301153534.png"&gt;&lt;/p&gt;
 &lt;h2&gt;附录&lt;/h2&gt;
 &lt;h3&gt;源代码&lt;/h3&gt;
 &lt;p&gt;有时候只看&lt;code&gt;strace&lt;/code&gt; 是不够的。 &lt;br&gt;
@@ -6491,7 +6491,7 @@ procps: /usr/bin/uptime
 &lt;li&gt;选择Both 单选按钮&lt;/li&gt;
 &lt;li&gt;点击应用&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img alt="putty-settings" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153557.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="putty-settings" src="/assets/images/2023/20230301153557.png"&gt;&lt;/p&gt;
 &lt;h3&gt;C 写的Shell&lt;/h3&gt;
 &lt;p&gt;让我们用C 写一个非常简单的shell，显示下使用&lt;code&gt;fork&lt;/code&gt;/&lt;code&gt;exec&lt;/code&gt;/&lt;code&gt;wait&lt;/code&gt;系统调用。这是程序&lt;code&gt;shell.c&lt;/code&gt;。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;
@@ -6591,10 +6591,10 @@ $ # press Enter
 &lt;li&gt;Explain CPU and memory color bars (Dec 7, 2016)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2&gt;后记&lt;/h2&gt;
-&lt;p&gt;如果这篇文章有错误请让我知道！我很乐意更正它。&lt;/p&gt;</content><category term="2017"></category><category term="htop"></category><category term="linux"></category></entry><entry><title>《极客与团队》读书笔记</title><link href="https://fangpsh.github.io/posts/2017/2017-01-28.html" rel="alternate"></link><published>2017-01-28T20:00:30+08:00</published><updated>2017-01-28T20:00:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-01-28:/posts/2017/2017-01-28.html</id><summary type="html">&lt;p&gt;&lt;img alt="team_geek_cover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302132558.png"&gt;&lt;/p&gt;
+&lt;p&gt;如果这篇文章有错误请让我知道！我很乐意更正它。&lt;/p&gt;</content><category term="2017"></category><category term="htop"></category><category term="linux"></category></entry><entry><title>《极客与团队》读书笔记</title><link href="https://fangpsh.github.io/posts/2017/2017-01-28.html" rel="alternate"></link><published>2017-01-28T20:00:30+08:00</published><updated>2017-01-28T20:00:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2017-01-28:/posts/2017/2017-01-28.html</id><summary type="html">&lt;p&gt;&lt;img alt="team_geek_cover" src="/assets/images/2023/20230302132558.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://book.douban.com/subject/21372237/"&gt;《极客与团队》&lt;/a&gt;这本书是在看&lt;a href="https://blog.youxu.info/2015/05/17/tech-lead-1/"&gt;《技术管理猪鸡-1 开篇》&lt;/a&gt;注意到的：&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Google 的芝加哥 office 有两个技术领导：Brian Fitzpatrick 和 Ben Collins-Sussman。他们合写了一本书 …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="team_geek_cover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302132558.png"&gt;&lt;/p&gt;
+&lt;p&gt;Google 的芝加哥 office 有两个技术领导：Brian Fitzpatrick 和 Ben Collins-Sussman。他们合写了一本书 …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="team_geek_cover" src="/assets/images/2023/20230302132558.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://book.douban.com/subject/21372237/"&gt;《极客与团队》&lt;/a&gt;这本书是在看&lt;a href="https://blog.youxu.info/2015/05/17/tech-lead-1/"&gt;《技术管理猪鸡-1 开篇》&lt;/a&gt;注意到的：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Google 的芝加哥 office 有两个技术领导：Brian Fitzpatrick 和 Ben Collins-Sussman。他们合写了一本书，叫做 Team Geek。&lt;/p&gt;
@@ -6625,7 +6625,7 @@ $ # press Enter
 &lt;blockquote&gt;
 &lt;p&gt;要相信别人的能力和判断力，在适当的时候懂得放权。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img alt="HRT" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171735.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="HRT" src="/assets/images/2023/20230301171735.png"&gt;&lt;/p&gt;
 &lt;h3&gt;HRT 实战&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;放下自负&lt;/li&gt;
@@ -6829,7 +6829,7 @@ $ # press Enter
 &lt;p&gt;gethostbyaddr() -- map an IP number or hostname to DNS info.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;拿到的结果应该就是一个反查IP的时候拿到的&lt;a href="https://en.wikipedia.org/wiki/Reverse_DNS_lookup"&gt;PTR记录&lt;/a&gt;。证实一下：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="salt-minion-id-dig-x" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164133.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="salt-minion-id-dig-x" src="/assets/images/2023/20230301164133.png"&gt;&lt;/p&gt;
 &lt;p&gt;看来这个IP 之前有人用过，然后添加了一条PTR 记录，也没办法删了，再继续看看这个gethostbyaddr 的实现和工作原理，看看能怎么解决。&lt;/p&gt;
 &lt;p&gt;关于这个函数更详细的介绍，来自&lt;a href="https://docs.python.org/2/library/socket.html#socket.gethostbyaddr"&gt;python.org/2/library/socket&lt;/a&gt;：&lt;/p&gt;
 &lt;blockquote&gt;
@@ -6881,20 +6881,20 @@ hosts:      files dns myhostname
 &lt;h2&gt;hostname --all-fqdns&lt;/h2&gt;
 &lt;p&gt;在返回来看看，一开始&lt;code&gt;hostname --all-fqdns&lt;/code&gt; 的结果和&lt;code&gt;socket.getfqdn()&lt;/code&gt; 一样，并再上文更改&lt;code&gt;nsswithc.conf&lt;/code&gt; 的配置过程中，插件结果表现也是一致的。
 找Hostname 的&lt;a href="https://packages.debian.org/source/stable/hostname"&gt;源代码&lt;/a&gt;看下，&lt;br&gt;
-&lt;img alt="hostname-getnameinfo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164145.png"&gt;&lt;/p&gt;
+&lt;img alt="hostname-getnameinfo" src="/assets/images/2023/20230301164145.png"&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;getnameinfo  -  address-to-name  translation  in protocol-independent  manner&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;getnameinfo() 的功能和 gethostbyaddr() 类似，具体见:&lt;a href="http://man7.org/linux/man-pages/man3/getnameinfo.3.html"&gt;GETNAMEINFO(3) &lt;/a&gt;，也可以通过&lt;code&gt;nsswitch.conf&lt;/code&gt; 配置hosts 的查询顺序。&lt;/p&gt;</content><category term="2017"></category><category term="saltstack"></category><category term="fqdn"></category><category term="dns"></category></entry><entry><title>HAProxy 最佳实践笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-12-09.html" rel="alternate"></link><published>2016-12-09T15:30:00+08:00</published><updated>2016-12-09T15:30:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-12-09:/posts/2016/2016-12-09.html</id><summary type="html">&lt;p&gt;&lt;img alt="haproxy_best_practice" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164657.png"&gt;  &lt;/p&gt;
+&lt;p&gt;getnameinfo() 的功能和 gethostbyaddr() 类似，具体见:&lt;a href="http://man7.org/linux/man-pages/man3/getnameinfo.3.html"&gt;GETNAMEINFO(3) &lt;/a&gt;，也可以通过&lt;code&gt;nsswitch.conf&lt;/code&gt; 配置hosts 的查询顺序。&lt;/p&gt;</content><category term="2017"></category><category term="saltstack"></category><category term="fqdn"></category><category term="dns"></category></entry><entry><title>HAProxy 最佳实践笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-12-09.html" rel="alternate"></link><published>2016-12-09T15:30:00+08:00</published><updated>2016-12-09T15:30:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-12-09:/posts/2016/2016-12-09.html</id><summary type="html">&lt;p&gt;&lt;img alt="haproxy_best_practice" src="/assets/images/2023/20230301164657.png"&gt;  &lt;/p&gt;
 &lt;p&gt;这篇笔记内容主要来自Haproxy官方团队分享的一个幻灯片:&lt;a href="http://www.slideshare.net/haproxytech/haproxy-best-practice"&gt;《Haproxy best practice》&lt;/a&gt;，介绍了一些常规的配置方式和优化手段。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;不要盲目使用文中出现的所有技巧。&lt;/strong&gt;  &lt;/p&gt;
-&lt;h2&gt;Haproxy 是如何 …&lt;/h2&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="haproxy_best_practice" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164657.png"&gt;  &lt;/p&gt;
+&lt;h2&gt;Haproxy 是如何 …&lt;/h2&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="haproxy_best_practice" src="/assets/images/2023/20230301164657.png"&gt;  &lt;/p&gt;
 &lt;p&gt;这篇笔记内容主要来自Haproxy官方团队分享的一个幻灯片:&lt;a href="http://www.slideshare.net/haproxytech/haproxy-best-practice"&gt;《Haproxy best practice》&lt;/a&gt;，介绍了一些常规的配置方式和优化手段。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;不要盲目使用文中出现的所有技巧。&lt;/strong&gt;  &lt;/p&gt;
 &lt;h2&gt;Haproxy 是如何工作的&lt;/h2&gt;
 &lt;p&gt;关于Haproxy 团队介绍，以及一些特性介绍直接看前面几张幻灯片即可。
 Haproxy 的主要用作代理请求，工作流程如下：&lt;br&gt;
-&lt;img alt="haproxy_proxy_mode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164706.png"&gt;  &lt;/p&gt;
+&lt;img alt="haproxy_proxy_mode" src="/assets/images/2023/20230301164706.png"&gt;  &lt;/p&gt;
 &lt;p&gt;client 和Haproxy 建立连接，Haproxy 再和对应的后端server 建立连接，然后作为中间人，转发请求。
 在Haproxy 配置中，对一个代理，会划分为2层，frontend（前端） 和backend（后端），这和上文说的Haproxy 的工作流程也是对应的。  &lt;/p&gt;
 &lt;!-- more --&gt;
@@ -6917,7 +6917,7 @@ backend be
   server s2 10.0.0.102:80 check
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img alt="haproxy_frontend_backend" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164718.png"&gt;  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="haproxy_frontend_backend" src="/assets/images/2023/20230301164718.png"&gt;  &lt;/p&gt;
 &lt;p&gt;frontend:监听端口、协议代理定义，HTTP认证，后端选择等；&lt;br&gt;
 backend:监控server，负载均衡，队列。&lt;br&gt;
 可以看出，在frontend 中定义了要绑定的地址和端口，以及证书等，在backend，罗列了后端的IP和端口。不过要把2者合在一起写，也是可以的，使用listen 即可，如下：  &lt;/p&gt;
@@ -7289,8 +7289,8 @@ ping&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&l
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;把这个脚本命名为pin, 放到 &lt;code&gt;/bin&lt;/code&gt; 之类的目录下面即可（本来想做成alias，没成功），最终效果如下：&lt;br&gt;
-&lt;img alt="pin" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302145701.jpg"&gt;&lt;/p&gt;</content><category term="2016"></category><category term="shell"></category></entry><entry><title>写一个Pelican 插件：Read More Link</title><link href="https://fangpsh.github.io/posts/2016/2016-11-15.html" rel="alternate"></link><published>2016-11-15T22:00:30+08:00</published><updated>2016-11-15T22:00:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-11-15:/posts/2016/2016-11-15.html</id><summary type="html">&lt;p&gt;&lt;img alt="another_read_more_link_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165914.png"&gt;&lt;/p&gt;
-&lt;p&gt;之前用&lt;a href="http://octopress.org/"&gt;Octopress&lt;/a&gt; 搭建博客的时候，用过一个很酷的功能，在文章中插入&lt;code&gt;&amp;lt;!-- more --&amp;gt;&lt;/code&gt;之后，首页的文章列表只会显示这个标记之前的内容，然 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="another_read_more_link_demo" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165914.png"&gt;&lt;/p&gt;
+&lt;img alt="pin" src="/assets/images/2023/20230302145701.jpg"&gt;&lt;/p&gt;</content><category term="2016"></category><category term="shell"></category></entry><entry><title>写一个Pelican 插件：Read More Link</title><link href="https://fangpsh.github.io/posts/2016/2016-11-15.html" rel="alternate"></link><published>2016-11-15T22:00:30+08:00</published><updated>2016-11-15T22:00:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-11-15:/posts/2016/2016-11-15.html</id><summary type="html">&lt;p&gt;&lt;img alt="another_read_more_link_demo" src="/assets/images/2023/20230301165914.png"&gt;&lt;/p&gt;
+&lt;p&gt;之前用&lt;a href="http://octopress.org/"&gt;Octopress&lt;/a&gt; 搭建博客的时候，用过一个很酷的功能，在文章中插入&lt;code&gt;&amp;lt;!-- more --&amp;gt;&lt;/code&gt;之后，首页的文章列表只会显示这个标记之前的内容，然 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="another_read_more_link_demo" src="/assets/images/2023/20230301165914.png"&gt;&lt;/p&gt;
 &lt;p&gt;之前用&lt;a href="http://octopress.org/"&gt;Octopress&lt;/a&gt; 搭建博客的时候，用过一个很酷的功能，在文章中插入&lt;code&gt;&amp;lt;!-- more --&amp;gt;&lt;/code&gt;之后，首页的文章列表只会显示这个标记之前的内容，然后添加一个类似继续阅读的链接。后来有一段时间切到Wordpress，也有类似的功能，但是在Pelican 上没见到。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Inserting a &amp;lt;!-- more --&amp;gt; comment into your post will prevent the post content
 below this mark from being displayed on the index page for the blog posts,
@@ -7372,8 +7372,8 @@ a &amp;quot;Continue →&amp;quot; button links to the full post.
 
 &lt;p&gt;效果见上文图片。&lt;/p&gt;
 &lt;p&gt;插件源码：&lt;a href="https://github.com/fangpsh/another_read_more_link"&gt;another_read_more_link&lt;/a&gt; ， &lt;br&gt;
-因为新手上路，源码上参考read_more_link，外加功能也类似，所以起了这么一个名字 :P&lt;/p&gt;</content><category term="2016"></category><category term="pelican"></category></entry><entry><title>《软技能-代码之外的生存指南》读书笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-11-08.html" rel="alternate"></link><published>2016-11-08T11:51:30+08:00</published><updated>2016-11-08T11:51:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-11-08:/posts/2016/2016-11-08.html</id><summary type="html">&lt;p&gt;&lt;img alt="soft_skills.jpg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171643.png"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://book.douban.com/subject/26835090/"&gt;《软技能-代码之外的生产指南》&lt;/a&gt;这本书出来的时候，在Twitter 上收到很大的关注。之前个人对这类书籍是有点不屑的，有点成功学 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="soft_skills.jpg" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171643.png"&gt;&lt;/p&gt;
+因为新手上路，源码上参考read_more_link，外加功能也类似，所以起了这么一个名字 :P&lt;/p&gt;</content><category term="2016"></category><category term="pelican"></category></entry><entry><title>《软技能-代码之外的生存指南》读书笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-11-08.html" rel="alternate"></link><published>2016-11-08T11:51:30+08:00</published><updated>2016-11-08T11:51:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-11-08:/posts/2016/2016-11-08.html</id><summary type="html">&lt;p&gt;&lt;img alt="soft_skills.jpg" src="/assets/images/2023/20230301171643.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://book.douban.com/subject/26835090/"&gt;《软技能-代码之外的生产指南》&lt;/a&gt;这本书出来的时候，在Twitter 上收到很大的关注。之前个人对这类书籍是有点不屑的，有点成功学 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="soft_skills.jpg" src="/assets/images/2023/20230301171643.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://book.douban.com/subject/26835090/"&gt;《软技能-代码之外的生产指南》&lt;/a&gt;这本书出来的时候，在Twitter 上收到很大的关注。之前个人对这类书籍是有点不屑的，有点成功学的味道。我之前也是不喜欢做职业规划的，只是希望按照个人的兴趣选择发展。不过毕业一年多，日复一日的上班，让我考虑，得计划一下自己的人生，整理一下了。&lt;/p&gt;
 &lt;h2&gt;职业&lt;/h2&gt;
 &lt;h3&gt;职业规划和制定目标&lt;/h3&gt;
@@ -7516,9 +7516,9 @@ a &amp;quot;Continue →&amp;quot; button links to the full post.
 &lt;p&gt;乐观，积极面对失败。&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;这是一本为程序员定制的“成功学指南”，或者说是一本“生活指南”，涉及了理财、饮食、健身等各个方面，书中的道理都来自作者的人生经历，之前一直觉得类似《人性的弱点》、《富爸爸、穷爸爸》这些书籍没啥意义，只是大众读物，现在看来，这种看法是伎术人常见的偏见。&lt;br&gt;
-总之，愿勿忘初心的同时应该多学习，接触更多领域的知识，特别是理财、健康营养、人际交往、心理健康等，努力让生活变的更好。  &lt;/p&gt;</content><category term="2016"></category><category term="book"></category></entry><entry><title>《Web 性能权威指南》读书笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-11-01.html" rel="alternate"></link><published>2016-11-01T00:00:00+08:00</published><updated>2016-11-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-11-01:/posts/2016/2016-11-01.html</id><summary type="html">&lt;p&gt;&lt;img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"&gt;&lt;/p&gt;
+总之，愿勿忘初心的同时应该多学习，接触更多领域的知识，特别是理财、健康营养、人际交往、心理健康等，努力让生活变的更好。  &lt;/p&gt;</content><category term="2016"></category><category term="book"></category></entry><entry><title>《Web 性能权威指南》读书笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-11-01.html" rel="alternate"></link><published>2016-11-01T00:00:00+08:00</published><updated>2016-11-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-11-01:/posts/2016/2016-11-01.html</id><summary type="html">&lt;p&gt;&lt;img alt="bookcover" src="/assets/images/2023/20230228164135.png"&gt;&lt;/p&gt;
 &lt;p&gt;看&lt;a href="https://book.douban.com/subject/25856314/"&gt;《Web 性能权威指南》&lt;/a&gt;的起因是在看&lt;a href="https://book.douban.com/subject/26869219/"&gt;《HTTPS 权威指南》&lt;/a&gt;的时候，看到优化相关的，然后就延伸到想看一下这本书。&lt;br&gt;
-这本书，作者提供了 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="bookcover" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164135.png"&gt;&lt;/p&gt;
+这本书，作者提供了 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="bookcover" src="/assets/images/2023/20230228164135.png"&gt;&lt;/p&gt;
 &lt;p&gt;看&lt;a href="https://book.douban.com/subject/25856314/"&gt;《Web 性能权威指南》&lt;/a&gt;的起因是在看&lt;a href="https://book.douban.com/subject/26869219/"&gt;《HTTPS 权威指南》&lt;/a&gt;的时候，看到优化相关的，然后就延伸到想看一下这本书。&lt;br&gt;
 这本书，作者提供了免费的&lt;a href="https://hpbn.co/"&gt;在线英文版&lt;/a&gt;，建议还是看英文的，中文翻译版有些地方略生硬。&lt;/p&gt;
 &lt;h2&gt;TCP 优化&lt;/h2&gt;
@@ -7533,7 +7533,7 @@ a &amp;quot;Continue →&amp;quot; button links to the full post.
 &lt;h3&gt;确保cwnd 大小为10；&lt;/h3&gt;
 &lt;p&gt;增大拥塞窗口，10表示10个&lt;a href="https://en.wikipedia.org/wiki/Maximum_segment_size"&gt;MSS&lt;/a&gt;，以太网标准的MSS 是1460。&lt;br&gt;
 前面提到内核升级也可以带来好处，Linux 3.2+ 的内核，cwnd都是默认10。&lt;br&gt;
-&lt;img alt="OS_CWND" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164224.png"&gt;&lt;br&gt;
+&lt;img alt="OS_CWND" src="/assets/images/2023/20230228164224.png"&gt;&lt;br&gt;
 图片来源：cdnplanet.com&lt;/p&gt;
 &lt;p&gt;关于更改initcwnd、查看系统的initcwnd，可以参考:&lt;br&gt;
 &lt;a href="http://www.cdnplanet.com/blog/tune-tcp-initcwnd-for-optimum-performance/"&gt;Tuning initcwnd for optimum performance&lt;/a&gt;。  &lt;/p&gt;
@@ -7576,8 +7576,8 @@ Application may use keepalives when needed (minimum interval 15 seconds).
 &lt;p&gt;在保证兼容性的情况下，升级到新版的openSSL，可以有更好的性能。&lt;br&gt;
 HPBN的在这一章的建议是用物理机，纯CPU计算卸载，举了Google和Facebook为例。不过如果是使用的云服务的话，部分云厂商在负载均衡上都提供了SSL卸载的功能，不过感觉对ALPN这些协议的支持不知如何，所以还没试用过。云服务虚机+Nginx 来做卸载还是有少许压力的，高峰期的时候。Intel之类的硬件，甚至F5 这种，感觉成本有点高，不过性能确实非常好，如果有条件的话，可以上这类设备。不过使用了这些设备之后，算法升级、调优的自由度可能就不大了，需要综合考虑。  &lt;/p&gt;
 &lt;p&gt;为了降低压力，可以对加密套件的选择进行优化，参考《HTTPS权威指南》一书的测试结果：&lt;br&gt;
-&lt;img alt="TLS_Speed" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164304.png"&gt;  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="TLS_Speed_taobao" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230228164345.png"&gt;  &lt;/p&gt;
+&lt;img alt="TLS_Speed" src="/assets/images/2023/20230228164304.png"&gt;  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="TLS_Speed_taobao" src="/assets/images/2023/20230228164345.png"&gt;  &lt;/p&gt;
 &lt;p&gt;建议：优先选择ECDHE，禁用DHE。&lt;/p&gt;
 &lt;h3&gt;尽早握手&lt;/h3&gt;
 &lt;p&gt;类似TCP的三次握手，TLS的握手过程也可以通过类似CDN的网络进行优化。在距离用户较近的地方搭建代理服务器，然后和后端保持长连接，这样降低用户到服务整个的握手时间。&lt;/p&gt;
@@ -7628,7 +7628,7 @@ HPBN的在这一章的建议是用物理机，纯CPU计算卸载，举了Google�
 &lt;p&gt;在部署HTTPS 的时候，2台Nginx 下都部署了多个域名的证书，即NginxA 部署了证书a.com 和b.com 的证书，NginxB 也部署了证书a.com 和b …&lt;/p&gt;</summary><content type="html">&lt;h2&gt;问题背景&lt;/h2&gt;
 &lt;p&gt;在部署HTTPS 的时候，2台Nginx 下都部署了多个域名的证书，即NginxA 部署了证书a.com 和b.com 的证书，NginxB 也部署了证书a.com 和b.com ，域名a.com 指向NginxA，域名b.com 指向NginxB。&lt;br&gt;
 在用&lt;a href="https://www.ssllabs.com"&gt;SSL LABS&lt;/a&gt; 检测的时候，发现b.com 会出现“This site works only in browsers with SNI support.”，而a.com 不会。&lt;br&gt;
-&lt;img alt="SNI" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164029.png"&gt;  &lt;/p&gt;
+&lt;img alt="SNI" src="/assets/images/2023/20230301164029.png"&gt;  &lt;/p&gt;
 &lt;h3&gt;SNI 介绍&lt;/h3&gt;
 &lt;p&gt;关于&lt;a href="https://en.wikipedia.org/wiki/Server_Name_Indication"&gt;SNI&lt;/a&gt; 的简单介绍：&lt;/p&gt;
 &lt;blockquote&gt;
@@ -7803,7 +7803,7 @@ pathnames are sorted.
 &lt;p&gt;所以，&lt;code&gt;glob&lt;/code&gt; 函数在默认情况下，返回的结果是按照字母表排序的。即同时存在a.com.conf 和b.com.conf 两份配置，在同时include 的话，a.com.conf 会比b.com.conf 先加载。  &lt;/p&gt;
 &lt;p&gt;最后，我把NginxA上的a.com.conf 改成 00-a.com.conf ，把NginxB 上的b.com.conf 改成 00-b.com.conf ，控制了他们的加载顺序。  &lt;/p&gt;
 &lt;p&gt;题外话，想起了在用SySV Init 的时候，/etc/rcX.d 下那些 S01XXX，K02XXX 之类的文件，用来控制服务的起停顺序。  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="sysv_init_rcx.d" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164044.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="sysv_init_rcx.d" src="/assets/images/2023/20230301164044.png"&gt;&lt;/p&gt;
 &lt;p&gt;图片&lt;a href="http://www.jianshu.com/p/b4c38f44c4ea"&gt;来源网络&lt;/a&gt; ，现在手头已经找不到用SySV 做Init 的机器了，冏。&lt;/p&gt;
 &lt;h2&gt;Changeset 4943:1e2d5d3f9f6b&lt;/h2&gt;
 &lt;p&gt;&lt;a href="https://trac.nginx.org/nginx/changeset/4943/nginx"&gt;Changeset 4943:1e2d5d3f9f6b in nginx&lt;/a&gt;。&lt;/p&gt;
@@ -7819,14 +7819,14 @@ alphabetical sorting is not guaranteed for FindFirsFile?()/FindNextFile?()
 Approved by Igor Sysoev, prodded by many.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2016"></category><category term="nginx"></category><category term="glob"></category></entry><entry><title>TLS Record Size 优化笔记</title><link href="https://fangpsh.github.io/posts/2016/2016-10-10.html" rel="alternate"></link><published>2016-10-10T17:39:55+08:00</published><updated>2016-10-10T17:39:55+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-10-10:/posts/2016/2016-10-10.html</id><summary type="html">&lt;h2&gt;从淘宝说起&lt;/h2&gt;
 &lt;p&gt;从&lt;a href="http://velocity.oreilly.com.cn/2015/ppts/lizhenyu.pdf"&gt;《淘宝全站HTTPS实践》&lt;/a&gt;开始说：  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="taobao-https" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160434.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="taobao-https" src="/assets/images/2023/20230301160434.png"&gt;&lt;/p&gt;
 &lt;p&gt;怎么优化呢，调大还是调小。&lt;br&gt;
 视频：17min分钟左右:  &lt;/p&gt;
 &lt;p&gt;&lt;embed src='http://player.youku.com/player.php/sid/XMTM0MTUzMTk1Mg==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'&gt;&lt;/embed&gt;&lt;/p&gt;
 &lt;p&gt;提到Google 动态调，然后一般设置4k，恩,到底怎样。&lt;/p&gt;
 &lt;p&gt;看看野狗 …&lt;/p&gt;</summary><content type="html">&lt;h2&gt;从淘宝说起&lt;/h2&gt;
 &lt;p&gt;从&lt;a href="http://velocity.oreilly.com.cn/2015/ppts/lizhenyu.pdf"&gt;《淘宝全站HTTPS实践》&lt;/a&gt;开始说：  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="taobao-https" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301160434.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="taobao-https" src="/assets/images/2023/20230301160434.png"&gt;&lt;/p&gt;
 &lt;p&gt;怎么优化呢，调大还是调小。&lt;br&gt;
 视频：17min分钟左右:  &lt;/p&gt;
 &lt;p&gt;&lt;embed src='http://player.youku.com/player.php/sid/XMTM0MTUzMTk1Mg==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'&gt;&lt;/embed&gt;&lt;/p&gt;
@@ -7918,7 +7918,7 @@ downloads where overall throughput is a priority.
 
 &lt;!-- more --&gt;
 
-&lt;p&gt;&lt;img alt="dns_soa_serial_number" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301171412.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="dns_soa_serial_number" src="/assets/images/2023/20230301171412.png"&gt;&lt;/p&gt;
 &lt;p&gt;一个OpenFalcon 的监控脚本：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#!/usr/bin/env bash&lt;/span&gt;
 &lt;span class="c1"&gt;#author: fangpsh&lt;/span&gt;
@@ -7963,7 +7963,7 @@ Websocket 协议可以分为2个阶段，先用HTTP 握手，然后建立长连�
 &lt;p&gt;TUN：tunnel（option http-tunnel）：这是 1.0 ~ 1.5-dev21 的默认模式，类似于隧道，HAProxy 仅处理第一个请求和响应，剩余的报文将直接转发而不进行处理。尽量不要使用这个模式，因为它在日志记录和 HTTP 处理上有很多问题。 --来源：liaoph.com&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;涉及到的timeout 见下图：&lt;br&gt;
-&lt;img alt="timeout_websocket" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163942.png"&gt;&lt;br&gt;
+&lt;img alt="timeout_websocket" src="/assets/images/2023/20230301163942.png"&gt;&lt;br&gt;
 图片来源：www.yuangguo.info&lt;/p&gt;
 &lt;p&gt;我们遇到的需要频繁重连的情况，其实是由于timeout tunnel 设置不合理导致的。官方给的关于&lt;a href="https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4.2-timeout%20tunnel"&gt;timeout tunnel&lt;/a&gt; 的解释： &lt;/p&gt;
 &lt;blockquote&gt;
@@ -7992,7 +7992,7 @@ specified&lt;/strong&gt;......&lt;/p&gt;
 &lt;p&gt;参考：
  - &lt;a href="https://github.com/shadowsocks/shadowsocks/wiki/Setup-a-Shadowsocks-relay"&gt;Setup a Shadowsocks relay&lt;/a&gt;
  - &lt;a href="http://www.yangguo.info/2014/06/25/haproxy实现websocket负载均衡/"&gt;Haproxy之websocket的负载均衡方案&lt;/a&gt;
- - &lt;a href="http://liaoph.com/haproxy-tutorial/"&gt;HAProxy 反向代理的使用&lt;/a&gt;&lt;/p&gt;</content><category term="2016"></category><category term="haproxy"></category><category term="websocket"></category></entry><entry><title>ElasticSearch 用于日志记录</title><link href="https://fangpsh.github.io/posts/2016/elasticsearch-for-logging_zh.html" rel="alternate"></link><published>2016-06-15T11:40:00+08:00</published><updated>2016-06-15T11:40:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-06-15:/posts/2016/elasticsearch-for-logging_zh.html</id><summary type="html">&lt;p&gt;&lt;img alt="EdgeofSanity" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302133726.png"&gt;&lt;/p&gt;
+ - &lt;a href="http://liaoph.com/haproxy-tutorial/"&gt;HAProxy 反向代理的使用&lt;/a&gt;&lt;/p&gt;</content><category term="2016"></category><category term="haproxy"></category><category term="websocket"></category></entry><entry><title>ElasticSearch 用于日志记录</title><link href="https://fangpsh.github.io/posts/2016/elasticsearch-for-logging_zh.html" rel="alternate"></link><published>2016-06-15T11:40:00+08:00</published><updated>2016-06-15T11:40:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-06-15:/posts/2016/elasticsearch-for-logging_zh.html</id><summary type="html">&lt;p&gt;&lt;img alt="EdgeofSanity" src="/assets/images/2023/20230302133726.png"&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://edgeofsanity.net/article/2012/12/26/elasticsearch-for-logging.html"&gt;原文地址&lt;/a&gt;：&lt;ul&gt;
 &lt;li&gt;http://edgeofsanity.net/article/2012/12/26/elasticsearch-for-logging.html&lt;/li&gt;
@@ -8001,7 +8001,7 @@ specified&lt;/strong&gt;......&lt;/p&gt;
 &lt;li&gt;已获得原文作者翻译许可，本文遵循原文许可协议。&lt;/li&gt;
 &lt;li&gt;原文发表时间：2012-12-26&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;在我工作中，我们在Web …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="EdgeofSanity" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302133726.png"&gt;&lt;/p&gt;
+&lt;p&gt;在我工作中，我们在Web …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="EdgeofSanity" src="/assets/images/2023/20230302133726.png"&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://edgeofsanity.net/article/2012/12/26/elasticsearch-for-logging.html"&gt;原文地址&lt;/a&gt;：&lt;ul&gt;
 &lt;li&gt;http://edgeofsanity.net/article/2012/12/26/elasticsearch-for-logging.html&lt;/li&gt;
@@ -8224,11 +8224,11 @@ mailwarn        off
 &lt;p&gt;注意CentOS 7 默认将&lt;code&gt;huponexit&lt;/code&gt; 设为&lt;code&gt;off&lt;/code&gt; 了，这样在用户将Shell 退出结束会话时，系统不会发送 SIGHUP 给所有进程，这效果其实类似使用了nohup，nohup 的作用就是忽略HUP 信号。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;huponexit
   If set, bash will send SIGHUP to all jobs when an interactive login shell exits.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2016"></category><category term="shell"></category><category term="linux"></category></entry><entry><title>豆瓣FM 红心歌曲导入网易云音乐</title><link href="https://fangpsh.github.io/posts/2016/2016-05-16.html" rel="alternate"></link><published>2016-05-16T12:08:30+08:00</published><updated>2016-05-16T12:08:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-05-16:/posts/2016/2016-05-16.html</id><summary type="html">&lt;p&gt;&lt;img alt="NeteaseMusic" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306155230.png"&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2016"></category><category term="shell"></category><category term="linux"></category></entry><entry><title>豆瓣FM 红心歌曲导入网易云音乐</title><link href="https://fangpsh.github.io/posts/2016/2016-05-16.html" rel="alternate"></link><published>2016-05-16T12:08:30+08:00</published><updated>2016-05-16T12:08:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-05-16:/posts/2016/2016-05-16.html</id><summary type="html">&lt;p&gt;&lt;img alt="NeteaseMusic" src="/assets/images/2023/20230306155230.png"&gt;&lt;/p&gt;
 &lt;p&gt;从豆瓣FM 转用网易云音乐的几个原因：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;版权大战，豆瓣FM 里面的歌曲大部分都播放不了了；&lt;/li&gt;
-&lt;li&gt;豆瓣FM 音质太烂，相比QQ，网易，虾 …&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="NeteaseMusic" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306155230.png"&gt;&lt;/p&gt;
+&lt;li&gt;豆瓣FM 音质太烂，相比QQ，网易，虾 …&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="NeteaseMusic" src="/assets/images/2023/20230306155230.png"&gt;&lt;/p&gt;
 &lt;p&gt;从豆瓣FM 转用网易云音乐的几个原因：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;版权大战，豆瓣FM 里面的歌曲大部分都播放不了了；&lt;/li&gt;
@@ -8309,11 +8309,11 @@ done
 MySQL 之类的优化工作，另外自己写一个对数据库的CRUD 操作的Web 界面并不困难，工作量也并不大。  &lt;/p&gt;
 &lt;h2&gt;性能与架构&lt;/h2&gt;
 &lt;p&gt;Bind DLZ 官方提供了一份&lt;a href="http://bind-dlz.sourceforge.net/perf_tests.html"&gt;Performance Tests&lt;/a&gt;，虽然是比较老的测试了，但是还是有不少参考价值。&lt;br&gt;
-&lt;img alt="bind-dlz-perf-tests" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163634.png"&gt;&lt;/p&gt;
+&lt;img alt="bind-dlz-perf-tests" src="/assets/images/2023/20230301163634.png"&gt;&lt;/p&gt;
 &lt;p&gt;我自己使用queryperf 压测，结果与上图中类似，基本来说Bind DLZ MySQL 相比Bind 原生的方式，QPS 差20倍左右，因为MySQL 只能跑在单线程下。由于这个原因，建议采用Bind DLZ 作为Master，Bind 作为Slave的方式。多个Slave 结合LVS 做高可用和负载均衡，
 Master可以另外针对Bind DLZ 和MySQL 做高可用，这样的设计，可以发挥Bind 原生的高性能，也可以利用Bind DLZ 的灵活性。&lt;br&gt;
 &lt;strong&gt;但是这样会带来一个问题，在Master 上修改完记录之后，可能不会立即同步到Slave，会带来不一致的问题。不过这个问题可以通过自动发送Notify 来解决掉。&lt;/strong&gt;&lt;br&gt;
-&lt;img alt="bind-dlz" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163644.png"&gt;  &lt;/p&gt;
+&lt;img alt="bind-dlz" src="/assets/images/2023/20230301163644.png"&gt;  &lt;/p&gt;
 &lt;p&gt;另外可参考：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://bind-dlz.sourceforge.net/best_practices.html"&gt;Best Practices&lt;/a&gt;&lt;/li&gt;
@@ -8579,7 +8579,7 @@ Google 了下，Stackoverflow 看到一问题：&lt;br&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;大功告成，效果如下：&lt;br&gt;
-&lt;img alt="pelican_toc" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301170301.png"&gt;&lt;/p&gt;</content><category term="2016"></category><category term="pelican"></category></entry><entry><title>Google Shell 编程风格指南</title><link href="https://fangpsh.github.io/posts/2016/2016-04-13.html" rel="alternate"></link><published>2016-04-13T00:00:00+08:00</published><updated>2016-04-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-04-13:/posts/2016/2016-04-13.html</id><summary type="html">&lt;p&gt;google shell编程风格指南翻译&lt;/p&gt;</summary><content type="html">&lt;ul&gt;
+&lt;img alt="pelican_toc" src="/assets/images/2023/20230301170301.png"&gt;&lt;/p&gt;</content><category term="2016"></category><category term="pelican"></category></entry><entry><title>Google Shell 编程风格指南</title><link href="https://fangpsh.github.io/posts/2016/2016-04-13.html" rel="alternate"></link><published>2016-04-13T00:00:00+08:00</published><updated>2016-04-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-04-13:/posts/2016/2016-04-13.html</id><summary type="html">&lt;p&gt;google shell编程风格指南翻译&lt;/p&gt;</summary><content type="html">&lt;ul&gt;
 &lt;li&gt;原文：&lt;a href="https://google.github.io/styleguide/shell.xml"&gt;https://google.github.io/styleguide/shell.xml&lt;/a&gt;  &lt;/li&gt;
 &lt;li&gt;修订版：1.26&lt;/li&gt;
 &lt;li&gt;作者：Paul Armstrong 等&lt;/li&gt;
@@ -9155,9 +9155,9 @@ substitution=&amp;quot;$(echo &amp;quot;${string}&amp;quot; | sed -e &amp;#39;s/
 &lt;/blockquote&gt;</content><category term="2016"></category><category term="Shell"></category></entry><entry><title>集群的NTP 对时问题</title><link href="https://fangpsh.github.io/posts/2016/2016-04-03.html" rel="alternate"></link><published>2016-04-03T22:55:30+08:00</published><updated>2016-04-03T22:55:30+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2016-04-03:/posts/2016/2016-04-03.html</id><summary type="html">&lt;h2&gt;NTP 简单介绍&lt;/h2&gt;
 &lt;p&gt;NTP 是互联网上设备之间进行对时的协议，如下图所表示，有多层NTP 服务器，下游服务器向上游进行对时（可以了 …&lt;/p&gt;</summary><content type="html">&lt;h2&gt;NTP 简单介绍&lt;/h2&gt;
 &lt;p&gt;NTP 是互联网上设备之间进行对时的协议，如下图所表示，有多层NTP 服务器，下游服务器向上游进行对时（可以了解一下stratum 值）。&lt;br&gt;
-&lt;img alt="NTP" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163444.png"&gt;&lt;/p&gt;
+&lt;img alt="NTP" src="/assets/images/2023/20230301163444.png"&gt;&lt;/p&gt;
 &lt;p&gt;我们假设上游的服务器时间是可靠的，我们所要做的就是尽量使本地计算机时间和上游服务器时间一致，原理如下图（图片来自wikipedia）：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="NTP-Algorithm" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163455.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="NTP-Algorithm" src="/assets/images/2023/20230301163455.png"&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;t0 是客户端发送请求包时的客户端时间戳；&lt;/li&gt;
 &lt;li&gt;t1 是服务端收到请求包时的服务端时间戳；&lt;/li&gt;
@@ -9226,7 +9226,7 @@ ntp.sjtu.edu.cn
 &lt;p&gt;虚拟文件系统Initrd，启动到这一步之后，通过Switch-root 转到 Init 程序，即Systemd（也可以是Sysv 之类的），后面就是Systemd 如何启动服务进程的问题。&lt;br&gt;
 Initrd 这一步，Systemd 其实也可以接管，具体参考：&lt;a href="https://www.freedesktop.org/software/systemd/man/bootup.html#Bootup%20in%20the%20Initial%20RAM%20Disk%20(initrd)"&gt;initrd with systemd&lt;/a&gt;。  &lt;/p&gt;
 &lt;p&gt;在传统的Sysv 中，有Runlevel（启动级别）的概念，在Systemd 里面有Target 的概念，如下图：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="runlevel" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161756.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="runlevel" src="/assets/images/2023/20230301161756.png"&gt;&lt;/p&gt;
 &lt;p&gt;Systemd 有个单元文件（Unit）的概念，可以理解成一个单元文件就是一个服务单元，有很多类型的单元文件，Mount、Device、Service、Path、Timer 等，最常见的就是Service 单元：&lt;/p&gt;
 &lt;p&gt;例：/usr/lib/systemd/system/named.service，具体的解释请看官方文档：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;[Unit]
@@ -9258,7 +9258,7 @@ WantedBy=multi-user.target
 
 &lt;p&gt;Target 也是一种单元文件，但是它是引用和组织其他的单元文件，定义组织各种依赖关系。所以，Target 肯定可以实现Runlevel 的作用，只要定义六个Target 就可以了嘛。
 再看看下面这张图，就大致明白了启动的时候是怎么加载服务进程的：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bootup" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301161805.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bootup" src="/assets/images/2023/20230301161805.png"&gt;&lt;/p&gt;
 &lt;p&gt;更多细节，以及关机的过程请参考：&lt;a href="https://www.freedesktop.org/software/systemd/man/bootup.html"&gt;bootup&lt;/a&gt;&lt;/p&gt;</content><category term="2016"></category><category term="Linux"></category><category term="Systemd"></category></entry><entry><title>Docker与虚拟机等的SSH权限管理控制解决方案</title><link href="https://fangpsh.github.io/posts/2015/2015-11-26.html" rel="alternate"></link><published>2015-11-26T15:59:00+08:00</published><updated>2015-11-26T15:59:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-11-26:/posts/2015/2015-11-26.html</id><summary type="html">&lt;p&gt;Docker和VM一类的云平台的权限控制如果采用常见的方式，把登录者的公钥写入&lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt;, 由于企业内部的人员流动和权限变更，往往不是十分便利。  &lt;/p&gt;
 &lt;p&gt;特别是如果还选择把authorized_keys 打到镜像 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Docker和VM一类的云平台的权限控制如果采用常见的方式，把登录者的公钥写入&lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt;, 由于企业内部的人员流动和权限变更，往往不是十分便利。  &lt;/p&gt;
 &lt;p&gt;特别是如果还选择把authorized_keys 打到镜像中的话，管理起来就会十分蛋疼。不过对于Docker这种容器，如果还需要开发登录进去进行Debug或者做其他操作的话，姿势上其实是不对的，不符合它的设计哲学，但是按照目前接触的国内使用Docker做内部云的厂商来看的话，大都是把Docker当作一个轻量级的VM来用而已，很多更是为了用Docker而用Docker。  &lt;/p&gt;
@@ -9296,9 +9296,9 @@ WantedBy=multi-user.target
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;效果如下，基本的HTTP Authentication对话框：  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="opengrok_ldap" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302145512.png"&gt;  &lt;/p&gt;</content><category term="2015"></category><category term="OpenGrok"></category><category term="LDAP"></category></entry><entry><title>重温 IPv6</title><link href="https://fangpsh.github.io/posts/2015/2015-09-13.html" rel="alternate"></link><published>2015-09-13T21:48:00+08:00</published><updated>2015-09-13T21:48:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-09-13:/posts/2015/2015-09-13.html</id><summary type="html">&lt;p&gt;&lt;img alt="ipv6" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302145336.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="opengrok_ldap" src="/assets/images/2023/20230302145512.png"&gt;  &lt;/p&gt;</content><category term="2015"></category><category term="OpenGrok"></category><category term="LDAP"></category></entry><entry><title>重温 IPv6</title><link href="https://fangpsh.github.io/posts/2015/2015-09-13.html" rel="alternate"></link><published>2015-09-13T21:48:00+08:00</published><updated>2015-09-13T21:48:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-09-13:/posts/2015/2015-09-13.html</id><summary type="html">&lt;p&gt;&lt;img alt="ipv6" src="/assets/images/2023/20230302145336.png"&gt;&lt;/p&gt;
 &lt;p&gt;今晚在&lt;a href="https://v2ex.com/t/220352"&gt;该帖子&lt;/a&gt;中见到网友说 塞尔的ipv6服务实际上包的openvpn，虽然官方只提供了Windows下的安装包，那岂不是可以拿出密钥文件和配置等，在Linux或者OSX上玩？&lt;/p&gt;
-&lt;p&gt;到六年级的&lt;a href="http://6nianji.cn/"&gt;官网 …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="ipv6" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302145336.png"&gt;&lt;/p&gt;
+&lt;p&gt;到六年级的&lt;a href="http://6nianji.cn/"&gt;官网 …&lt;/a&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="ipv6" src="/assets/images/2023/20230302145336.png"&gt;&lt;/p&gt;
 &lt;p&gt;今晚在&lt;a href="https://v2ex.com/t/220352"&gt;该帖子&lt;/a&gt;中见到网友说 塞尔的ipv6服务实际上包的openvpn，虽然官方只提供了Windows下的安装包，那岂不是可以拿出密钥文件和配置等，在Linux或者OSX上玩？&lt;/p&gt;
 &lt;p&gt;到六年级的&lt;a href="http://6nianji.cn/"&gt;官网&lt;/a&gt;注册，购买个人免费套餐，邮箱会收到主题为"New Account Information”的邮件，记下Username（即个人注册的邮箱地址）和官网生成的Password，后续用于登录。&lt;/p&gt;
 &lt;p&gt;下载六年级客户端，运行安装，到安装目录（默认为 C:/Program/六年级）可见到一个Link文件夹，其中的部分内容就是我们需要的，拷贝出来备用，dll和exe文件不需要。（注：也可以不拷贝，而复制我下文中提供的）&lt;/p&gt;
@@ -9980,15 +9980,15 @@ One-line include in Perl CGI, Python CGI and PHP scripts automatically handles E
 &lt;/blockquote&gt;</content><category term="2015"></category><category term="Web"></category><category term="Cache"></category></entry><entry><title>14年下半年的奇葩经历</title><link href="https://fangpsh.github.io/posts/2015/2015-01-21.html" rel="alternate"></link><published>2015-01-21T00:00:00+08:00</published><updated>2015-01-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2015-01-21:/posts/2015/2015-01-21.html</id><summary type="html">&lt;p&gt;回家两天了，想着该整理下下半年来的经历，从深圳回到学校待了一段时间后，因为一位师兄的推荐，收到网易HR的电话让过去实习，工资虽然 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;回家两天了，想着该整理下下半年来的经历，从深圳回到学校待了一段时间后，因为一位师兄的推荐，收到网易HR的电话让过去实习，工资虽然少的可怜，不过想想学校这边校招基本都结束了不如先回去了，反正快年底了也要回家，顺便也看看网易杭州研究院是个什么样子，起了个这么牛逼的名字，笑。
 实习的过程不算愉快，后面慢慢吐槽，一天看某招聘网站，投了百姓网和另外一家北京公司的SA岗，拿到两家offer的时候，也就离职回家了，北京公司的电话面试较快捷舒服，没太多好说的，百姓网的面试经历还是十分有趣的，有让人赞的点也有让人不舒服的地方。&lt;/p&gt;
 &lt;h3&gt;网易杭州研究院实习经历&lt;/h3&gt;
-&lt;p&gt;&lt;img alt="听说这是伞哥" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302150939.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="听说这是伞哥" src="/assets/images/2023/20230302150939.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;最早听说网易研究院是在&lt;a href="http://teahour.fm/2014/03/17/interview-with-binghe.html"&gt;teahour听冰河的访谈&lt;/a&gt;，想这地方应该不错，至少在实习期间是可以学到点东西。本来不应该在离职之后说“坏话”，为了各种各样的顾忌，不过我不觉得我说的是所谓的坏话，以下只是基于我自身经历的实话，而且也是对事不对人。当然也没有全部表述，有些事情只是我主观的猜想，还是不说了。  &lt;/p&gt;
 &lt;p&gt;这边部门易主，部门调整，进的系统运维组，五个在职员工，一开始就我一个实习生。听说是小组原本七人，开了一个人，转岗一个人，又接了一堆乱七八糟的业务，难怪大家都忙成狗。先说说做了哪些事情，学习了内部的基础文档，写了几份内部需求的shell脚本，练手了一些主机的基础操作，这些两三天就做好的事情，经历了一个月，说白了，还是没人管我，带我的导师忙的很，我也就管自己查阅和吸收内部能够看到的文档资料（能吸收的就吸收，虽然日后要走的，不能吸收也没复制留存，职业道德还是要有的），看的没有东西看了，就开始看毕业设计相关的文档了。  &lt;/p&gt;
 &lt;p&gt;后面看实在太没趣了，也不能吃白饭嘛，就要求值班，即当客服。。一开始还挺有新鲜劲，每当QA妹子找我的时候，都激动不已，细心服务，最喜欢一些非技术部门的妹子，上班无聊的时候聊聊天也是极好的。不过偶尔也会遇到不少傻逼开发人员（当然都是男的，女的那叫蠢萌蠢萌）上来问怎么ssh登陆、nginx规则怎么配置等等问题。想想自己如果在这种地方入职，要做值班客服至少一、两年，还好当初没有直接给我发offer让我签三方，谢天谢地。在这种大公司，还是业务为先，KPI为先，他们好像就是喜欢让工作变的无趣，同时因为一些历史原因、历史包袱，很多明摆着的问题没人愿意去推动解决。  &lt;/p&gt;
 &lt;p&gt;拿到其他offer，萌发离职回家过年的意愿，恰好总监大人说我和后面来实习的妹子对比态度不够好（每天6点准时下班太早了，在杭研，12点前的加班都不算是加班你们造吗）不想再看到我，于是马上走人。  &lt;/p&gt;
 &lt;p&gt;另外在这边也遇到一个醉人的部门秘书，见下图：
-&lt;img alt="实习生真的很无辜。。" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302151026.jpg"&gt;&lt;/p&gt;
+&lt;img alt="实习生真的很无辜。。" src="/assets/images/2023/20230302151026.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;实习期间还收到阿里淘宝技术保障部的面试，走了几轮，前后历时2个多月，最后再三催校照客服，一分钟内给了我个拒信，要原因，先是说第二批招聘薪资审核下不来（审批不下来你招个啥子人嘛），再问，改口说综合评定我能力问题，他说不行就不行吧，20多岁也不着急往阿里这个红色大熔炉跳，倒是浪费了我很多电话费。HR面的HR姐姐来擦屁股做了很多工作，不想给她再添麻烦，其他细节就不说了。
-&lt;img alt="话说有同学面的轮数比我多吗" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230302151051.jpg"&gt;&lt;/p&gt;
+&lt;img alt="话说有同学面的轮数比我多吗" src="/assets/images/2023/20230302151051.jpg"&gt;&lt;/p&gt;
 &lt;h3&gt;百姓网面试经历&lt;/h3&gt;
 &lt;p&gt;最早了解到百姓网是因为v2ex上的一些招聘帖子，看起来氛围还挺不错的，本身也比较喜欢这种规模的和氛围的公司，让人向往。&lt;br&gt;
 在某招聘网站上投了简历，HR发来笔试题，笔试题目如下，感觉相比某些公司的智力题出的还是不错的。  &lt;/p&gt;
@@ -10388,11 +10388,11 @@ CONFFLAGS_deb = \
         --enable-introspection \
         --enable-gtk-doc
 ...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2014"></category><category term="Systemd"></category><category term="Debian"></category></entry><entry><title>Scrum 初探</title><link href="https://fangpsh.github.io/posts/2014/2014-08-20.html" rel="alternate"></link><published>2014-08-20T00:00:00+08:00</published><updated>2014-08-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-08-20:/posts/2014/2014-08-20.html</id><summary type="html">&lt;p&gt;&lt;img alt="scrum01" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110136.jpg"&gt;&lt;/p&gt;
-&lt;p&gt;三月份参加腾讯广研创新班的时候，在华工大学城校区上了一节主题为敏捷迭代开发的课程，第一次接触到 Scrum ，广研的导 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="scrum01" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110136.jpg"&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2014"></category><category term="Systemd"></category><category term="Debian"></category></entry><entry><title>Scrum 初探</title><link href="https://fangpsh.github.io/posts/2014/2014-08-20.html" rel="alternate"></link><published>2014-08-20T00:00:00+08:00</published><updated>2014-08-20T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-08-20:/posts/2014/2014-08-20.html</id><summary type="html">&lt;p&gt;&lt;img alt="scrum01" src="/assets/images/2023/20230307110136.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;三月份参加腾讯广研创新班的时候，在华工大学城校区上了一节主题为敏捷迭代开发的课程，第一次接触到 Scrum ，广研的导 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="scrum01" src="/assets/images/2023/20230307110136.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;三月份参加腾讯广研创新班的时候，在华工大学城校区上了一节主题为敏捷迭代开发的课程，第一次接触到 Scrum ，广研的导师讲的挺好，用视频配合腾讯内部实际情况介绍了 Scrum。前段时间看美剧 “Silicon Valley “(硅谷)，第一季的第五集里遇到了 Scrum，Jared 建立了一个叫“争球”的管理体系。&lt;/p&gt;
 &lt;p&gt;借着美剧纸上谈兵的学习下Scrum。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="scrum02" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110151.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum02" src="/assets/images/2023/20230307110151.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;Wikipedia的定义：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Scrum是一种迭代式增量软件开发过程，通常用于敏捷软件开发。Scrum在英语里是橄榄球运动中争球的意思。&lt;/p&gt;
@@ -10404,13 +10404,13 @@ CONFFLAGS_deb = \
 &lt;p&gt;好吧，英文有点复杂和抽象，简单来说争球（争个球啊，这翻译实在太逗了：P）是一个适合团队进行敏捷迭代开发的框架。在剧中Jared提到要改善团队的沟通，Scrum 正有改善团队沟通的好处，另外更重要的是提高团队效率，对团队成员有激励作用等，可以更好的适应需求的变更。&lt;/p&gt;
 &lt;h3&gt;Sprint&lt;/h3&gt;
 &lt;p&gt;Scrum 由一系列的 Srpint（冲刺）组成，在橄榄球比赛中也正是由不断的冲刺进攻以达到胜利的目标，也有点像接力比赛中的每段赛程，见下图（图片来源：wikipedia）：
-&lt;img alt="sprint" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110237.jpg"&gt;&lt;/p&gt;
+&lt;img alt="sprint" src="/assets/images/2023/20230307110237.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;由上图可以看出一个Sprint是30天，实际上一般是一周到一个月，典型的是2周时间。一次冲刺的时间虽然短，但是每一个冲刺完成的时候都是真正的 “完成”，即除了相关模块功能的完成，相关文档与测试工作也同期完成。&lt;/p&gt;
 &lt;p&gt;每个Sprint由一个Sprint 计划会议而开始，确定冲刺的工作量、完成日期等。上图中小圈的24h是指每日的例会（站立会议），即每天一次小冲刺，回顾和了解团队成员当天的完成情况等。关于会议的类型和简介后文继续。&lt;/p&gt;
 &lt;p&gt;管理Scrum的过程可以在任务板上使用便利贴等。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="scrum03" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110248.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum03" src="/assets/images/2023/20230307110248.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;看到这个任务板，让我想起了流行的团队管理工具–Trello，可以在Trello上应用Scrum框架,把Trello的Board当作任务板：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="scrum04" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110302.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum04" src="/assets/images/2023/20230307110302.jpg"&gt;&lt;/p&gt;
 &lt;h2&gt;Scrum 主要包含 三个角色、三个文档、四个会议。&lt;/h2&gt;
 &lt;h3&gt;角色&lt;/h3&gt;
 &lt;ul&gt;
@@ -10419,20 +10419,20 @@ CONFFLAGS_deb = \
 &lt;li&gt;开发团队&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4&gt;Scrum主管&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="scrum05" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110314.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum05" src="/assets/images/2023/20230307110314.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;Scrum 主管像是球队中的教练。&lt;/p&gt;
 &lt;p&gt;Scrum 主管不是团队领导，即教练不是一个俱乐部的管理阶层一样，Scrum主要负责清理团队的障碍，保证团队进度的推荐，不受外界干扰。主管会检查项目的进度，协调团队工作等等。&lt;/p&gt;
 &lt;h4&gt;产品负责人&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="scrum06" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110335.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum06" src="/assets/images/2023/20230307110335.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;产品负责人类似球队俱乐部的经理。&lt;/p&gt;
 &lt;p&gt;产品负责人主要负责产品功能的设计、决定任务优先级、决定产品发布日期与功能等等。在剧中感觉 Richard 更像是产品负责人，但是其实他也是下文说到的开发团队的一员。Richard 是整个团队的CEO，他对团队的功能和各项业务作出最终决策。&lt;/p&gt;
 &lt;h4&gt;开发团队&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="scrum07" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110355.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum07" src="/assets/images/2023/20230307110355.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;开发团队就像球队的成员，他们负责完成整个比赛，负责拼搏和冲刺。&lt;/p&gt;
 &lt;p&gt;开发团队（设计、测试、编码等）负责团队主要的开发任务。&lt;/p&gt;
 &lt;p&gt;在剧中就是上图三者为开发人员，负责不同的部分，后边临时出现过一个负责云计算的天才黑客小孩，就当是外包人员吧~。&lt;/p&gt;
 &lt;h4&gt;其他&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="scrum08" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110410.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum08" src="/assets/images/2023/20230307110410.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;至于剧中这个二货，我也不知道怎么归类，他为团队提供孵化空间（免费住宿，获取%10股份），为想产品名称吃大量大麻，为产品logo请街头涂鸦人，和天使投资谈判，上台做产品展示等等，他付出挺多的，可是还是不知道怎么归类，归为开发团队感觉对不起其他队员。&lt;/p&gt;
 &lt;h3&gt;文档&lt;/h3&gt;
 &lt;ul&gt;
@@ -10449,13 +10449,13 @@ CONFFLAGS_deb = \
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;冲刺订单（sprint backlog）是大大细化了的文档，包含团队如何实现下一个冲刺的需求的信息。任务被分解为以小时为单位，没有任务可以超过16个小时。如果一个任务超过16个小时，那么它就应该被进一步分解。冲刺订单上的任务不会被分派，而是由团队成员签名认领他们喜爱的任务。
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img alt="scrum09" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110430.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum09" src="/assets/images/2023/20230307110430.jpg"&gt;&lt;/p&gt;
 &lt;h4&gt;燃尽图&lt;/h4&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;一个公开展示的图表，显示当前冲刺中未完成的任务数目，或在冲刺订单上未完成的订单项的数目
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;下图 （源自：wikipedia）直观的反映了工作量的情况，X轴是时间，Y轴是剩余工作量：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="scrum10" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110447.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum10" src="/assets/images/2023/20230307110447.jpg"&gt;&lt;/p&gt;
 &lt;h3&gt;会议&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;Sprint 计划会议&lt;/li&gt;
@@ -10482,14 +10482,14 @@ CONFFLAGS_deb = \
 &lt;li&gt;明天你打算做什么？&lt;/li&gt;
 &lt;li&gt;完成你的目标是否存在什么障碍？（Scrum主管需要记下这些障碍）&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img alt="scrum11" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110513.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum11" src="/assets/images/2023/20230307110513.jpg"&gt;&lt;/p&gt;
 &lt;h4&gt;Sprint 评审会议&lt;/h4&gt;
 &lt;p&gt;顾名思意，即产品负责人对产品进行评审。评审会议主要是将产品展示给产品负责人，当然也团队其他人员也可以参加。&lt;/p&gt;
 &lt;h4&gt;Sprint 回顾会议&lt;/h4&gt;
 &lt;p&gt;每一个冲刺完成后，都会举行一次冲刺回顾会议，在会议上所有团队成员都要反思这个冲刺。举行冲刺回顾会议是为了进行持续过程改进。会议的时间限制在4小时。&lt;/p&gt;
 &lt;h2&gt;最后：&lt;/h2&gt;
 &lt;p&gt;利用 Scrum，Richard的团队有条不紊的进行着Pied Piper 的开发，Gilfoyle和Dinesh互相较劲，“争球”争得不亦乐乎。当然第六集开头 Scrum就出现了点问题，Richard搞不定云计算部分，导致其他子任务堆积，托慢了进度（像一大坨大便堵住了下水道），这是后话。  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="scrum_end" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230307110529.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scrum_end" src="/assets/images/2023/20230307110529.jpg"&gt;&lt;/p&gt;
 &lt;h3&gt;参考资料&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Scrum_%28software_development%29"&gt;Scrum (software development&lt;/a&gt;&lt;/li&gt;
@@ -10497,12 +10497,12 @@ CONFFLAGS_deb = \
 &lt;li&gt;&lt;a href="http://www.ithome.com.tw/node/69366"&gt;每天用15分钟掌握团队进度&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://www.dotblogs.com.tw/greengem/archive/2011/05/08/24500.aspx"&gt;SCRUM 初探&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;视频： &lt;a href="https://www.youtube.com/watch?v=XU0llRltyFM"&gt;Intro to Agile Scrum in Under 10 Minutes – What is Scrum?&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><category term="2014"></category><category term="scrum"></category></entry><entry><title>搭建树莓派集群</title><link href="https://fangpsh.github.io/posts/2014/2014-01-12.html" rel="alternate"></link><published>2014-01-12T00:00:00+08:00</published><updated>2014-01-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-12:/posts/2014/2014-01-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="Raspberry Pi Cluster" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306153041.jpg"&gt;&lt;/p&gt;
+&lt;/ul&gt;</content><category term="2014"></category><category term="scrum"></category></entry><entry><title>搭建树莓派集群</title><link href="https://fangpsh.github.io/posts/2014/2014-01-12.html" rel="alternate"></link><published>2014-01-12T00:00:00+08:00</published><updated>2014-01-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-12:/posts/2014/2014-01-12.html</id><summary type="html">&lt;p&gt;&lt;img alt="Raspberry Pi Cluster" src="/assets/images/2023/20230306153041.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;大三上学期，有幸在小马哥的帮助下申请到资金搭建树莓派集群。粗糙记录下过程。&lt;/p&gt;
 &lt;h2&gt;初识树莓派&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://web.archive.org/web/20140811213050/http://www.leiphone.com/raspberry-pi-hands-on.html"&gt;《树莓派上手报告》&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://zh.wikipedia.org/wiki/树莓派"&gt;Wikipedia:树莓派 …&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="Raspberry Pi Cluster" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306153041.jpg"&gt;&lt;/p&gt;
+&lt;li&gt;&lt;a href="http://zh.wikipedia.org/wiki/树莓派"&gt;Wikipedia:树莓派 …&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="Raspberry Pi Cluster" src="/assets/images/2023/20230306153041.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;大三上学期，有幸在小马哥的帮助下申请到资金搭建树莓派集群。粗糙记录下过程。&lt;/p&gt;
 &lt;h2&gt;初识树莓派&lt;/h2&gt;
 &lt;ul&gt;
@@ -10747,12 +10747,12 @@ PATH=...#查看PATH的命令：echo $PATH
 */10 * * * * flock -xn /var/lock/mirror/rubygems.lock -c &amp;quot; bash /root/scripts/bin/rubygems &amp;quot;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;6.注意需要配置同步锁。可用上例代码中的flock。&lt;/p&gt;</content><category term="2014"></category><category term="pypi"></category><category term="rugygems"></category></entry><entry><title>搭建开源镜像站</title><link href="https://fangpsh.github.io/posts/2014/2014-01-01.html" rel="alternate"></link><published>2014-01-01T00:00:00+08:00</published><updated>2014-01-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-01:/posts/2014/2014-01-01.html</id><summary type="html">&lt;p&gt;&lt;img alt="SYSU Mirror" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160359.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;6.注意需要配置同步锁。可用上例代码中的flock。&lt;/p&gt;</content><category term="2014"></category><category term="pypi"></category><category term="rugygems"></category></entry><entry><title>搭建开源镜像站</title><link href="https://fangpsh.github.io/posts/2014/2014-01-01.html" rel="alternate"></link><published>2014-01-01T00:00:00+08:00</published><updated>2014-01-01T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2014-01-01:/posts/2014/2014-01-01.html</id><summary type="html">&lt;p&gt;&lt;img alt="SYSU Mirror" src="/assets/images/2023/20230306160359.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;根据2013 SFD 广州聚会上的演讲《简单介绍如何搭建一个开源镜像站》幻灯片补充整理而成。
 内容：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;简介中山大学镜像站&lt;/li&gt;
-&lt;li&gt;搭建开 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="SYSU Mirror" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230306160359.jpg"&gt;&lt;/p&gt;
+&lt;li&gt;搭建开 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="SYSU Mirror" src="/assets/images/2023/20230306160359.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;根据2013 SFD 广州聚会上的演讲《简单介绍如何搭建一个开源镜像站》幻灯片补充整理而成。
 内容：&lt;/p&gt;
 &lt;ol&gt;

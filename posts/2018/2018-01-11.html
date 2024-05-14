@@ -61,12 +61,12 @@
 <p><code>listen</code>, <code>server_name</code> 这种是简单配置，以分号结尾；<code>server</code>，<code>locaiton</code> 这种为块配置，带一对小括号。写过nginx 插件或者看过<a href="http://lxr.nginx.org/source/src/core/ngx_conf_file.c">ngx_conf_parse</a> 对nginx 的配置加载会更了解一点。</p>
 <p>毕业快3年，忽然十分想念编译原理老师，语法分析，词法分析，LR，yacc，lex  什么的。然而编译原理龙书早被我卖了，买鸡肉卷吃。听说快乐基倒闭了？？可惜可惜。</p>
 <p>只能非常不优雅的解决，从上往下手动撸，处理好缩进，清楚多余的空格，再整一下左对齐就好了。吃一个鸡肉卷的时间就能撸好🐔 。</p>
-<p><img alt="ngxfmt" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164340.png"></p>
+<p><img alt="ngxfmt" src="/assets/images/2023/20230301164340.png"></p>
 <p><code>log_format</code> 这换行可以说是非常舒服了😌  ，<code>gzip_types</code> 这对齐能让人高潮🎆 。</p>
-<p><img alt="ngxfmt-2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165631.png"></p>
+<p><img alt="ngxfmt-2" src="/assets/images/2023/20230301165631.png"></p>
 <p>在前公司曾经三个产品线要写到一个server 里面，<code>server_name</code> 长到让人绝望😭 ，而且偶尔还得改改，这样换行就清爽多了🍃 。</p>
 <p>相邻的配置项如果一样，对所有的值都进行左对齐处理，像这样⬇️  ：<br>
-<img alt="ngxfmt-2" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301165710.png"></p>
+<img alt="ngxfmt-2" src="/assets/images/2023/20230301165710.png"></p>
 <p>源代码🐙  ：<a href="https://github.com/fangpsh/ngxfmt">fangpsh/ngxfmt</a>，<br>
 有点乱，回头再看估计会被恶心到，就像一次性吃了3个鸡肉卷。</p>
 <p>其他：</p>

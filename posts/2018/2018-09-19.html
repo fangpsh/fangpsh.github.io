@@ -39,17 +39,17 @@
   </div>     
   <div id="article-content" class="entry-content">
     <p>在<a href="https://bgp.he.net/">BGP.HE.NET</a> 上查询IP 信息的时候，Announced By <a href="https://bgp.he.net/AS4808">AS4808</a>：</p>
-<p><img alt="AS4808" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162304.png"></p>
+<p><img alt="AS4808" src="/assets/images/2023/20230301162304.png"></p>
 <p>提示：<a href="https://bgp.he.net/AS4808#_bogons">AS4808 announces bogons.</a></p>
-<p><img alt="AS4804_Bogon" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162311.png"></p>
-<p><img alt="202.94.1.0" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162324.png"></p>
+<p><img alt="AS4804_Bogon" src="/assets/images/2023/20230301162311.png"></p>
+<p><img alt="202.94.1.0" src="/assets/images/2023/20230301162324.png"></p>
 <p>意思这个段还在APNIC 手里，未被分配，但是联通的这个AS 域广播了这个段。</p>
 <p>继续查下：</p>
 <blockquote>
 <p>202/8    APNIC    1993-05    whois.apnic.net    https://rdap.apnic.net/    ALLOCATED</p>
 </blockquote>
 <p><code>202/8</code> 分配给了APNIC。既然是联通，那就到CNNIC 查下：</p>
-<p><img alt="CNNIC" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301162337.png"></p>
+<p><img alt="CNNIC" src="/assets/images/2023/20230301162337.png"></p>
 <p>看起来确实没分给联通，不过在<a href="https://www.ipip.net/ip.html">IPIP.NET</a>查询，这个IP 归属显示是联通。</p>
 <p>就像<code>10.0.0.0/8</code> 这类私网保留地址，广播出去，大家应该都会丢弃掉。估计得等以后APNIC 开始分配使用这段地址，联通就不能广播了吧。  </p>
 <p>Bogon<code>['bɔɡən]</code> 这个单词好多词典都查不到，据说起源于bogus<code>bəuɡəs</code>：假冒，伪造。</p>

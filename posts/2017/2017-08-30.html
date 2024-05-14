@@ -76,12 +76,12 @@ ndefined reference to `MMDB_strerror&#39;
 </ul>
 <p>以及自己用wireshark 抓包分析。</p>
 <p>对着文档一个一个bit 校对，对任何DNS 查询报文，都拿出它的IP，然后返回一条A记录就好了，效果如下：</p>
-<p><img alt="whoami" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155214.png"></p>
+<p><img alt="whoami" src="/assets/images/2023/20230301155214.png"></p>
 <h2>上线</h2>
 <p>我在个人的VPS 上部署了一个，再添加一条NS 记录，注意需要是域名，不能添加IP：</p>
-<p><img alt="whoami_ns" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155222.png"></p>
+<p><img alt="whoami_ns" src="/assets/images/2023/20230301155222.png"></p>
 <p>再 <code>dig whoami.example.com</code> 或者 <code>ping whoami.example.com</code> 即可。</p>
-<p><img alt="whoami_dig" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301155233.png"></p>
+<p><img alt="whoami_dig" src="/assets/images/2023/20230301155233.png"></p>
 <h2>代码</h2>
 <p>实现代码: <a href="https://gist.github.com/fangpsh/c7de2d718f6c50befe389eb646e60426">whoami.lua</a></p>
   </div><!-- /.entry-content -->

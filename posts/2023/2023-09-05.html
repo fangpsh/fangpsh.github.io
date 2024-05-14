@@ -39,14 +39,14 @@
   </div>     
   <div id="article-content" class="entry-content">
     <p>最近同事在办公网登录 aws 控制台（ap-southeast-1.console.aws.amazon.com），浏览器提示证书异常，怀疑IT做了劫持（我们做过一些网站的劫持，劫持到sniproxy，进行透明代理）：
-<img alt="aws 被劫持" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905171716.jpg"></p>
+<img alt="aws 被劫持" src="/assets/images/2023/20230905171716.jpg"></p>
 <p>里面的域名是 djfidicjmwos.com，
 搜索这个域名，有一个类似的帖子：<a href="http://www.0818tuan.com/xbhd/1733117.html">部分网站登录时不时提示“你的连接不是专用连接”，然后进不去后，等会又可以进</a>。</p>
 <p>查看办公网的localdns，上游是深圳电信返回：</p>
-<p><img alt="localdns-log" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905172052.png"></p>
+<p><img alt="localdns-log" src="/assets/images/2023/20230905172052.png"></p>
 <p>可疑IP：156.234.127.142</p>
 <p>直接访问这个IP 的https端口，返回证书和劫持一致：
-<img alt="证书报警" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905171559.jpeg"></p>
+<img alt="证书报警" src="/assets/images/2023/20230905171559.jpeg"></p>
 <div class="highlight"><pre><span></span><code>序列号 9F87F0D7AA5DAD293B3FAB5ADAE9606
 根证书 否
 算法  SHA384WithRSA
@@ -59,7 +59,7 @@ SHA256指纹    F3B1564D750EFE874AC166D427BC5ACF7E4554BEFCF3988B7F0EE069905A0B02
 </code></pre></div>
 
 <p>按这个IP查询ti.360.net ，看起来和博彩相关：</p>
-<p><img alt="ip 信息" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905172306.jpeg"></p>
+<p><img alt="ip 信息" src="/assets/images/2023/20230905172306.jpeg"></p>
 <p>直接对202.96.128.166 发起请求，会间歇性返回这个IP，可能只是集群中某台服务器异常 ，
 这条记录的TTL特别长。</p>
 <div class="highlight"><pre><span></span><code>dig  @202.96.128.166 ap-southeast-1.console.aws.amazon.com
@@ -112,7 +112,7 @@ a299197c08ba4f000.awsglobalaccelerator.com. 186 IN A 3.3.15.1
 a299197c08ba4f000.awsglobalaccelerator.com. 186 IN A 3.3.14.1
 </code></pre></div>
 
-<p><img alt="fofa一下" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230905174026.png"></p>
+<p><img alt="fofa一下" src="/assets/images/2023/20230905174026.png"></p>
 <p>有人说可能aws 的系统出问题了，我觉得可能性不大。猜测几个可能的原因：</p>
 <ol>
 <li>电信某一组服务器被入侵？不太可能，114 也出现了类似情况；</li>

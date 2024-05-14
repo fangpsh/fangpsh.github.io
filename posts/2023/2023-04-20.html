@@ -92,22 +92,22 @@
 <p>dex 拖入jd-gui 之后，从哪里开始看呢？</p>
 <p>用apktool 直接逆向到apk 包虽然没有关键代码，但是会包含一些变量名，可以作为线索。
 例如APP 上显示“扫码通行，点击刷新”，我们直接grep：</p>
-<p><img alt="grep" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143707.png"></p>
+<p><img alt="grep" src="/assets/images/2023/20230420143707.png"></p>
 <p>关键词 <code>passcode</code>，另外这是个二维码，也可以从先找<code>qrcode</code> 相关函数，然后看看那些地方调用了它，倒着看。</p>
-<p><img alt="createQRCode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143726.png"></p>
-<p><img alt="QrCodeFragment" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143814.png"></p>
+<p><img alt="createQRCode" src="/assets/images/2023/20230420143726.png"></p>
+<p><img alt="QrCodeFragment" src="/assets/images/2023/20230420143814.png"></p>
 <p>看到关键行：</p>
 <div class="highlight"><pre><span></span><code>param1String = EncodeUtil.encodeKey(CacheUtils.getUserId(), QrCodeFragment.this.mPassCode, &quot;A&quot;, CacheUtils.getAppVersion());
 </code></pre></div>
 
-<p><img alt="encodeKey" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143840.png"></p>
+<p><img alt="encodeKey" src="/assets/images/2023/20230420143840.png"></p>
 <p>出现一个关键信息：qrCodeKey，
 最后进行了AES 加密：</p>
 <div class="highlight"><pre><span></span><code>return AESUtil.Encrypt(stringBuilder3.toString(), qrCodeKey, qrCodeKey);
 </code></pre></div>
 
 <p>先看一下AES 的加密模式和填充算法等，再回过来看这个str生成逻辑。</p>
-<p><img alt="AESUtil" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143904.png"></p>
+<p><img alt="AESUtil" src="/assets/images/2023/20230420143904.png"></p>
 <p>ok，我们得到了，<code>AES/CBC/PKCS5Padding</code>，也有密钥（qrCodeKey）了。</p>
 <p>打开安装的APP，连续生成2，3张通行二维码，解析出二维码表示的字符串：</p>
 <div class="highlight"><pre><span></span><code>l/YKQnk8F/JcCXI3k4uvf05a1hcpnZSmdgBV...ak9A/xPh7KsgPhUffKRjajLi/2u5IIOA==
@@ -116,15 +116,15 @@ l/YKQnk8F/JcCXI3k4uvf1VsKs6lu...3AtHsxb9I16t2vXJ0qpK+7DmEgADVBdw==
 </code></pre></div>
 
 <p>找一个<a href="https://tool.lmeee.com/jiami/aes">AES 在线加解密</a>的网站，试一试：</p>
-<p><img alt="aes-decrypt" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420143926.png"></p>
+<p><img alt="aes-decrypt" src="/assets/images/2023/20230420143926.png"></p>
 <p>ok，搞定了sign_str，有了这个sign_str 能方便我们后续校对sign_str 生成逻辑和编写poc。</p>
 <p>同时在这一步，可以发现前半部分字符串和上文出现UserID 有类似的地方。接下来就是读懂前面encodeKey 函数的逻辑，以及传入mCode 的生成落。</p>
 <p>UserID+mPassCode+md5_16(mPassCode)+"B"+版本号。
 UserID和mPassCode 不是直接拼凑，而是间隔交叉拼在一起。</p>
 <p>再看下mPassCode的生成逻辑：</p>
-<p><img alt="mPassCode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144057.png"></p>
+<p><img alt="mPassCode" src="/assets/images/2023/20230420144057.png"></p>
 <p>从代码来看，只是简单的递增。这个时候，再去生成几个实际的二维码，用AES在线解密出，拿到mPassCode 的md5_16，丢到cmd5.com 里面看看：</p>
-<p><img alt="cmd5" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230420144121.png"></p>
+<p><img alt="cmd5" src="/assets/images/2023/20230420144121.png"></p>
 <div class="highlight"><pre><span></span><code>e6e61673edb05342 -&gt; 00000171
 7a56b435986b1611 -&gt;  00000172
 651bac14cc8b1285 -&gt;  00000173

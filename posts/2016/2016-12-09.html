@@ -38,13 +38,13 @@
   <div id="toc">
   </div>     
   <div id="article-content" class="entry-content">
-    <p><img alt="haproxy_best_practice" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164657.png">  </p>
+    <p><img alt="haproxy_best_practice" src="/assets/images/2023/20230301164657.png">  </p>
 <p>这篇笔记内容主要来自Haproxy官方团队分享的一个幻灯片:<a href="http://www.slideshare.net/haproxytech/haproxy-best-practice">《Haproxy best practice》</a>，介绍了一些常规的配置方式和优化手段。</p>
 <p><strong>不要盲目使用文中出现的所有技巧。</strong>  </p>
 <h2>Haproxy 是如何工作的</h2>
 <p>关于Haproxy 团队介绍，以及一些特性介绍直接看前面几张幻灯片即可。
 Haproxy 的主要用作代理请求，工作流程如下：<br>
-<img alt="haproxy_proxy_mode" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164706.png">  </p>
+<img alt="haproxy_proxy_mode" src="/assets/images/2023/20230301164706.png">  </p>
 <p>client 和Haproxy 建立连接，Haproxy 再和对应的后端server 建立连接，然后作为中间人，转发请求。
 在Haproxy 配置中，对一个代理，会划分为2层，frontend（前端） 和backend（后端），这和上文说的Haproxy 的工作流程也是对应的。  </p>
 <!-- more -->
@@ -67,7 +67,7 @@ backend be
   server s2 10.0.0.102:80 check
 </code></pre></div>
 
-<p><img alt="haproxy_frontend_backend" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301164718.png">  </p>
+<p><img alt="haproxy_frontend_backend" src="/assets/images/2023/20230301164718.png">  </p>
 <p>frontend:监听端口、协议代理定义，HTTP认证，后端选择等；<br>
 backend:监控server，负载均衡，队列。<br>
 可以看出，在frontend 中定义了要绑定的地址和端口，以及证书等，在backend，罗列了后端的IP和端口。不过要把2者合在一起写，也是可以的，使用listen 即可，如下：  </p>

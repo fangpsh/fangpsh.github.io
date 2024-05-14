@@ -57,7 +57,7 @@
 <p>大家也都说，学习事物的最好方式是通过教别人。</p>
 <h2>Ubuntu Server 16.04 x64 上的htop</h2>
 <p>这是一张我要解释的htop 截图。<br>
-<img alt="canyoukillit-before" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153350.png"></p>
+<img alt="canyoukillit-before" src="/assets/images/2023/20230301153350.png"></p>
 <h2>Uptime</h2>
 <p>Uptime 显示系统已经正常运行了多久。<br>
 你可以通过运行<code>uptime</code> 命令看到同样的内容：</p>
@@ -726,7 +726,7 @@ child    Child used extra 2M        5216 0
 你真的需要它们吗？</p>
 <p>我在Digital Ocean 新启动了一台Ubuntu Server 16.04.1 LTS x64 ，这是关于它的开机启动程序的调研笔记。</p>
 <h3>开始之前</h3>
-<p><img alt="canyoukillit-before" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153424.png"></p>
+<p><img alt="canyoukillit-before" src="/assets/images/2023/20230301153424.png"></p>
 <h3>/sbin/init</h3>
 <blockquote>
 <p>The /sbin/init program (also called init) coordinates the rest of the boot process and configures the environment for the user.</p>
@@ -1103,7 +1103,7 @@ sudo rm /lib/systemd/system/getty@.service
 </code></pre></div>
 
 <p>当我重启服务器之后，我还能够通过SSH 连接上，不过没法通过Digital Ocean web 终端登录。<br>
-<img alt="htop-login" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153446.png"></p>
+<img alt="htop-login" src="/assets/images/2023/20230301153446.png"></p>
 <ul>
 <li><a href="http://manpages.ubuntu.com/manpages/xenial/man8/getty.8.html">http://manpages.ubuntu.com/manpages/xenial/man8/getty.8.html</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Getty_(Unix)">https://en.wikipedia.org/wiki/Getty_(Unix)</a></li>
@@ -1129,7 +1129,7 @@ sudo apt remove accountsservice -y --purge
 sudo apt remove policykit-1 -y --purge
 </code></pre></div>
 
-<p><img alt="canyoukillit-after" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153459.png"></p>
+<p><img alt="canyoukillit-after" src="/assets/images/2023/20230301153459.png"></p>
 <p>极限版：</p>
 <div class="highlight"><pre><span></span><code>sudo apt remove dbus -y --purge
 sudo apt remove rsyslog -y --purge
@@ -1139,10 +1139,10 @@ sudo rm /etc/systemd/system/getty.target.wants/getty@tty1.service
 sudo rm /lib/systemd/system/getty@.service
 </code></pre></div>
 
-<p><img alt="canyoukillit-after-extreme" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153514.png"></p>
+<p><img alt="canyoukillit-after-extreme" src="/assets/images/2023/20230301153514.png"></p>
 <p>我按照我的博客文章<a href="https://peteris.rocks/blog/unattended-installation-of-wordpress-on-ubuntu-server/">about unattended installation of WordPress on Ubuntu Server </a>的步骤安装，成功了。</p>
 <p>这是nginx，PHP7 和MySQL。</p>
-<p><img alt="canyoukillit-after-extreme-wp" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153534.png"></p>
+<p><img alt="canyoukillit-after-extreme-wp" src="/assets/images/2023/20230301153534.png"></p>
 <h2>附录</h2>
 <h3>源代码</h3>
 <p>有时候只看<code>strace</code> 是不够的。 <br>
@@ -1176,7 +1176,7 @@ procps: /usr/bin/uptime
 <li>选择Both 单选按钮</li>
 <li>点击应用</li>
 </ul>
-<p><img alt="putty-settings" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301153557.png"></p>
+<p><img alt="putty-settings" src="/assets/images/2023/20230301153557.png"></p>
 <h3>C 写的Shell</h3>
 <p>让我们用C 写一个非常简单的shell，显示下使用<code>fork</code>/<code>exec</code>/<code>wait</code>系统调用。这是程序<code>shell.c</code>。</p>
 <div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>

@@ -44,7 +44,7 @@ Websocket 协议可以分为2个阶段，先用HTTP 握手，然后建立长连�
 <p>TUN：tunnel（option http-tunnel）：这是 1.0 ~ 1.5-dev21 的默认模式，类似于隧道，HAProxy 仅处理第一个请求和响应，剩余的报文将直接转发而不进行处理。尽量不要使用这个模式，因为它在日志记录和 HTTP 处理上有很多问题。 --来源：liaoph.com</p>
 </blockquote>
 <p>涉及到的timeout 见下图：<br>
-<img alt="timeout_websocket" src="https://raw.githubusercontent.com/roOtPasswd/test/public-images/images/2023/20230301163942.png"><br>
+<img alt="timeout_websocket" src="/assets/images/2023/20230301163942.png"><br>
 图片来源：www.yuangguo.info</p>
 <p>我们遇到的需要频繁重连的情况，其实是由于timeout tunnel 设置不合理导致的。官方给的关于<a href="https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4.2-timeout%20tunnel">timeout tunnel</a> 的解释： </p>
 <blockquote>
