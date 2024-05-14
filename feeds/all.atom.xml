@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-13T00:00:00+08:00</updated><entry><title>出海境外云计算、IDC厂商推荐</title><link href="https://fangpsh.github.io/posts/2024/2024-05-13.html" rel="alternate"></link><published>2024-05-13T00:00:00+08:00</published><updated>2024-05-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-13:/posts/2024/2024-05-13.html</id><summary type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。这次罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2024-05-14T00:00:00+08:00</updated><entry><title>Systemd Restart=always不一定always</title><link href="https://fangpsh.github.io/posts/2024/2024-05-14.html" rel="alternate"></link><published>2024-05-14T00:00:00+08:00</published><updated>2024-05-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-14:/posts/2024/2024-05-14.html</id><summary type="html">&lt;p&gt;整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解）了 Systemd 的 Restart。&lt;/p&gt;
+&lt;p&gt;简单来说 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解）了 Systemd 的 Restart。&lt;/p&gt;
+&lt;p&gt;简单来说，不能简单的 认为在 Systemd Service Unit  中配置一个&lt;code&gt;Restart=always&lt;/code&gt; 后，服务能够在任何失败的情况下自动重启。这样配置，如果遇到配置错误、服务依赖等各种情况，几秒内重启失败，直接进入失败状态，日志显示：&lt;code&gt;repeated too quickly&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;这是因为还有另外几个参数，即 systemd 的默认行为，不允许无限重启的情况出现。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;RestartSec：重启前暂停几秒）&lt;/li&gt;
+&lt;li&gt;StartLimitIntervalSec  和StartLimitBurst 联合控制，在 StartLimitIntervalSec 最多启动和StartLimitBurst次，如果失败，直接进入 failed 状态。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;你可能会说吗，都没设置这些呀，对了，就是因为没配置（不知道配置），systemd 有默认值：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;DefaultRestartSec=100ms
+DefaultStartLimitInterval=10s
+DefaultStartLimitBurst=5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;每次重启前就等待 100ms，进入失败，再次尝试，再失败，再等待。如果启动后进入失败的速度非常快（配置错误、循坏依赖等情况），等于 100ms 重试一次，5次机会在 1s 内 肯定就耗完了。这之后，systemd 不会再尝试重启服务，除非经过了&lt;code&gt;StartLimitInterval&lt;/code&gt;之后，你手工重启了服务。或者&lt;code&gt;systemctl reset-failed&lt;/code&gt; 清空计数器。&lt;/p&gt;
+&lt;p&gt;可能我们理想的是 systemd  几秒钟尝试重启一次我们的服务，永远尝试下去，直到成功。&lt;/p&gt;
+&lt;p&gt;几种方式：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在默认systemd配置下， 指定RestartSec，例如等于 3 秒，&lt;code&gt;3*5&amp;gt;DefaultStartLimitInterval(10s)&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;精细化控制每个 服务的RestartSec、StartLimitBurst、StartLimitInterval&lt;ol&gt;
+&lt;li&gt;例如将StartLimitInterval设置为 0，表示没有限制，无限时间内尝试重启&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;修改全局默认的 3 个参数（谨慎）；&lt;ol&gt;
+&lt;li&gt;DefaultRestartSec太大，服务可能无法立即恢复，SLA 是按秒计算的；&lt;/li&gt;
+&lt;li&gt;直接将DefaultStartLimitInterval设置为 0，可能导致大量CPU 时间浪费在重启服务上；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;看完Hacker News 上的讨论&lt;a href="https://news.ycombinator.com/item?id=39032752"&gt;Systemd: Enable indefinite service restarts (stapelberg.ch)&lt;/a&gt;，我倾向于认为这种默认设置是对的，systemd 首先要保证重启时，服务要尽快拉起，RestartSec 需要尽可能小。在这个前提下，如果存在默认无限重启的策略，可能导致 CPU资源耗费在重启上。例如讨论中提到的移动端电池的问题。&lt;br&gt;
+在生产环境中，服务启动，可能还伴随着一系列的 IO 行为（清理日志、准备缓存等），或与其他服务通信（葱外部拉取配置，发送信息等），控制不好，非常容易变成 DoS。&lt;/p&gt;
+&lt;p&gt;所以当我们主动设置为无限重启时，也需要注意是否会带来副作用。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;在互联网上搜索，有大量的用户落入这个想当然的逻辑，我怀疑这个设计上不符合用户直觉。&lt;/p&gt;
+&lt;p&gt;如果 Systemd 采用另外一种逻辑：在StartLimitInterval 时间尝试StartLimitBurst 之后，不进入永久失败状态，而是等待StartLimitInterval 结束之后，在新的一轮中，再次尝试呢？或者说经过一轮重启失败后，等待的时间间隔可以让用户指定，是等待固定间隔，还是递增，亦或指数增长。&lt;/p&gt;
+&lt;p&gt;即当用户指定 &lt;code&gt;Restart=&lt;/code&gt; 时，需要再配合上述间隔等待时间才可生效。&lt;/p&gt;</content><category term="2024"></category><category term="systemd"></category></entry><entry><title>出海境外云计算、IDC厂商推荐</title><link href="https://fangpsh.github.io/posts/2024/2024-05-13.html" rel="alternate"></link><published>2024-05-13T00:00:00+08:00</published><updated>2024-05-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-13:/posts/2024/2024-05-13.html</id><summary type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。这次罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
 &lt;p&gt;筛选标准：有境外计算 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。这次罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
 &lt;p&gt;筛选标准：有境外计算、带宽资源，国内主体或者至少有境内代理（方便处理发票、付款、售后问题）。&lt;/p&gt;
 &lt;ol&gt;

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>Systemd Restart=always不一定always - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="systemd" />
+<meta name="description" content="整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解）了 Systemd 的 Restart。 简单来说 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2024/2024-05-14.html" rel="bookmark"
+         title="Permalink to Systemd Restart=always不一定always">Systemd Restart=always不一定always</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解）了 Systemd 的 Restart。</p>
+<p>简单来说，不能简单的 认为在 Systemd Service Unit  中配置一个<code>Restart=always</code> 后，服务能够在任何失败的情况下自动重启。这样配置，如果遇到配置错误、服务依赖等各种情况，几秒内重启失败，直接进入失败状态，日志显示：<code>repeated too quickly</code>。</p>
+<p>这是因为还有另外几个参数，即 systemd 的默认行为，不允许无限重启的情况出现。</p>
+<ol>
+<li>RestartSec：重启前暂停几秒）</li>
+<li>StartLimitIntervalSec  和StartLimitBurst 联合控制，在 StartLimitIntervalSec 最多启动和StartLimitBurst次，如果失败，直接进入 failed 状态。</li>
+</ol>
+<p>你可能会说吗，都没设置这些呀，对了，就是因为没配置（不知道配置），systemd 有默认值：</p>
+<div class="highlight"><pre><span></span><code>DefaultRestartSec=100ms
+DefaultStartLimitInterval=10s
+DefaultStartLimitBurst=5
+</code></pre></div>
+
+<p>每次重启前就等待 100ms，进入失败，再次尝试，再失败，再等待。如果启动后进入失败的速度非常快（配置错误、循坏依赖等情况），等于 100ms 重试一次，5次机会在 1s 内 肯定就耗完了。这之后，systemd 不会再尝试重启服务，除非经过了<code>StartLimitInterval</code>之后，你手工重启了服务。或者<code>systemctl reset-failed</code> 清空计数器。</p>
+<p>可能我们理想的是 systemd  几秒钟尝试重启一次我们的服务，永远尝试下去，直到成功。</p>
+<p>几种方式：</p>
+<ol>
+<li>在默认systemd配置下， 指定RestartSec，例如等于 3 秒，<code>3*5&gt;DefaultStartLimitInterval(10s)</code>。</li>
+<li>精细化控制每个 服务的RestartSec、StartLimitBurst、StartLimitInterval<ol>
+<li>例如将StartLimitInterval设置为 0，表示没有限制，无限时间内尝试重启</li>
+</ol>
+</li>
+<li>修改全局默认的 3 个参数（谨慎）；<ol>
+<li>DefaultRestartSec太大，服务可能无法立即恢复，SLA 是按秒计算的；</li>
+<li>直接将DefaultStartLimitInterval设置为 0，可能导致大量CPU 时间浪费在重启服务上；</li>
+</ol>
+</li>
+</ol>
+<p>看完Hacker News 上的讨论<a href="https://news.ycombinator.com/item?id=39032752">Systemd: Enable indefinite service restarts (stapelberg.ch)</a>，我倾向于认为这种默认设置是对的，systemd 首先要保证重启时，服务要尽快拉起，RestartSec 需要尽可能小。在这个前提下，如果存在默认无限重启的策略，可能导致 CPU资源耗费在重启上。例如讨论中提到的移动端电池的问题。<br>
+在生产环境中，服务启动，可能还伴随着一系列的 IO 行为（清理日志、准备缓存等），或与其他服务通信（葱外部拉取配置，发送信息等），控制不好，非常容易变成 DoS。</p>
+<p>所以当我们主动设置为无限重启时，也需要注意是否会带来副作用。</p>
+<hr>
+<p>在互联网上搜索，有大量的用户落入这个想当然的逻辑，我怀疑这个设计上不符合用户直觉。</p>
+<p>如果 Systemd 采用另外一种逻辑：在StartLimitInterval 时间尝试StartLimitBurst 之后，不进入永久失败状态，而是等待StartLimitInterval 结束之后，在新的一轮中，再次尝试呢？或者说经过一轮重启失败后，等待的时间间隔可以让用户指定，是等待固定间隔，还是递增，亦或指数增长。</p>
+<p>即当用户指定 <code>Restart=</code> 时，需要再配合上述间隔等待时间才可生效。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2024-05-14T00:00:00+08:00">
+      Tue 14 May 2024
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2024.html">2024</a> Tagged <a href="https://fangpsh.github.io/tag/systemd.html">systemd </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
