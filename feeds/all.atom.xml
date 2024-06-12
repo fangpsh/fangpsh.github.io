@@ -33,7 +33,7 @@ DefaultStartLimitBurst=5
 &lt;p&gt;所以当我们主动设置为无限重启时，也需要注意是否会带来副作用。&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;在互联网上搜索，有大量的用户落入这个想当然的逻辑，我怀疑这个设计上不符合用户直觉。&lt;/p&gt;
-&lt;p&gt;我怀疑作者这么设计，是因为底层的流控算法思维习惯，往上变成了产品逻辑，从下往上思考，而不是从用户角度倒推。&lt;/p&gt;
+&lt;p&gt;我猜想作者这么设计，是因为底层的流控算法思维习惯，往上变成了产品逻辑，从下往上思考，而不是从用户角度倒推。&lt;/p&gt;
 &lt;p&gt;如果 Systemd 采用另外一种逻辑：在StartLimitInterval 时间尝试StartLimitBurst 之后，不进入永久失败状态，而是等待StartLimitInterval 结束之后，在新的一轮中，再次尝试呢？或者说经过一轮重启失败后，等待的时间间隔可以让用户指定，是等待固定间隔，还是递增，亦或指数增长。&lt;/p&gt;
 &lt;p&gt;即当用户指定 &lt;code&gt;Restart=&lt;/code&gt; 时，需要再配合上述间隔等待时间才可生效。&lt;/p&gt;</content><category term="2024"></category><category term="systemd"></category></entry><entry><title>出海境外云计算、IDC厂商推荐</title><link href="https://fangpsh.github.io/posts/2024/2024-05-13.html" rel="alternate"></link><published>2024-05-13T00:00:00+08:00</published><updated>2024-05-13T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-13:/posts/2024/2024-05-13.html</id><summary type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。这次罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
 &lt;p&gt;筛选标准：有境外计算 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;之前写过一篇如何&lt;a href="https://fangpsh.github.io/posts/2022/2022-10-14.html"&gt;顺着网线找供应商&lt;/a&gt;。这次罗列下常见的，在境内可接触到有境外计算资源的厂商。&lt;/p&gt;
@@ -70,7 +70,7 @@ DefaultStartLimitBurst=5
 &lt;li&gt;奥飞国际：价格和稳定性还可以，广州还有一堆 IDC 厂商，例如云下汇金等；&lt;/li&gt;
 &lt;li&gt;其他：太平洋电信、Equinix 其实也有计算资源卖，但是比较少，不占优势；&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;有网友需要计算资源，可邮件联系引荐，争取折扣优惠。&lt;/p&gt;</content><category term="2024"></category><category term="IDC"></category><category term="cloud"></category></entry><entry><title>静态博客添加 Newsletter 最简单的方案</title><link href="https://fangpsh.github.io/posts/2024/2024-05-12.html" rel="alternate"></link><published>2024-05-12T00:00:00+08:00</published><updated>2024-05-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-12:/posts/2024/2024-05-12.html</id><summary type="html">&lt;p&gt;想给博客加一个 newsletter，读网友22 年的文章：&lt;a href="https://irithys.com/blog-newsletter/"&gt;静态博客添加 Newsletter 的几种推荐方案&lt;/a&gt; 提到的方案：&lt;/p&gt;
+&lt;p&gt;有网友需要计算资源，可邮件联系引荐。&lt;/p&gt;</content><category term="2024"></category><category term="IDC"></category><category term="cloud"></category></entry><entry><title>静态博客添加 Newsletter 最简单的方案</title><link href="https://fangpsh.github.io/posts/2024/2024-05-12.html" rel="alternate"></link><published>2024-05-12T00:00:00+08:00</published><updated>2024-05-12T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-12:/posts/2024/2024-05-12.html</id><summary type="html">&lt;p&gt;想给博客加一个 newsletter，读网友22 年的文章：&lt;a href="https://irithys.com/blog-newsletter/"&gt;静态博客添加 Newsletter 的几种推荐方案&lt;/a&gt; 提到的方案：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Mailchimp 免费配额有点低，不想折腾（虽然极 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;想给博客加一个 newsletter，读网友22 年的文章：&lt;a href="https://irithys.com/blog-newsletter/"&gt;静态博客添加 Newsletter 的几种推荐方案&lt;/a&gt; 提到的方案：&lt;/p&gt;
 &lt;ol&gt;
