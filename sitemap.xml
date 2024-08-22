@@ -5,14 +5,14 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>https://fangpsh.github.io/</loc>
-<lastmod>2024-06-12T11:48:02-00:00</lastmod>
+<lastmod>2024-08-22T17:49:58-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>https://fangpsh.github.io/pages/about.html</loc>
-<lastmod>2024-06-12T11:48:02-00:00</lastmod>
+<lastmod>2024-08-22T17:49:58-00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -263,7 +263,7 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
-<loc>https://fangpsh.github.io/posts/2019/di-yi-tai-nas.html</loc>
+<loc>https://fangpsh.github.io/posts/2019/2019-09-22.html</loc>
 <lastmod>2019-09-22T00:00:00+08:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
