@@ -94,6 +94,22 @@
        configuration: autonegotiation=on broadcast=yes driver=r8168 driverversion=8.051.02-NAPI duplex=full ip=192.168... latency=0 link=yes multicast=yes port=twisted pair speed=1Gbit/s
        resources: irq:17 ioport:3000(size=256) memory:c2204000-c2204fff memory:c2200000-c2203fff
 </code></pre></div>
+
+<hr>
+<p>241122更新：期间重启了一次系统之后，又恢复异常原样了。
+搜了一圈，关闭网卡2的TSO 之后，恢复。</p>
+<div class="highlight"><pre><span></span><code>&gt; ethtool  --show-offload   enp3s0  # 查看tso是否开启
+&gt; ethtool  -K enp3s0 tso off        # 关闭tso
+&gt; ethtool  -K enp3s0 gso off        # 顺便关了gso
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>#持久化，修改/etc/network/interfaces, 添加：
+auto enp3s0
+  iface enp3s0 inet dhcp
+  metric 100
+  offload-tso off
+  offload-gso off
+</code></pre></div>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
     Posted on <abbr class="published" title="2024-10-30T00:00:00+08:00">

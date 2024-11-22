@@ -54,6 +54,22 @@
        capabilities: pm msi pciexpress msix bus_master cap_list ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt-fd autonegotiation
        configuration: autonegotiation=on broadcast=yes driver=r8168 driverversion=8.051.02-NAPI duplex=full ip=192.168... latency=0 link=yes multicast=yes port=twisted pair speed=1Gbit/s
        resources: irq:17 ioport:3000(size=256) memory:c2204000-c2204fff memory:c2200000-c2203fff
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;hr&gt;
+&lt;p&gt;241122更新：期间重启了一次系统之后，又恢复异常原样了。
+搜了一圈，关闭网卡2的TSO 之后，恢复。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt; ethtool  --show-offload   enp3s0  # 查看tso是否开启
+&amp;gt; ethtool  -K enp3s0 tso off        # 关闭tso
+&amp;gt; ethtool  -K enp3s0 gso off        # 顺便关了gso
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;#持久化，修改/etc/network/interfaces, 添加：
+auto enp3s0
+  iface enp3s0 inet dhcp
+  metric 100
+  offload-tso off
+  offload-gso off
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="2024"></category><category term="linux"></category><category term="network"></category></entry><entry><title>Systemd Restart=always不一定always</title><link href="https://fangpsh.github.io/posts/2024/2024-05-14.html" rel="alternate"></link><published>2024-05-14T00:00:00+08:00</published><updated>2024-05-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-05-14:/posts/2024/2024-05-14.html</id><summary type="html">&lt;p&gt;整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解）了 Systemd 的 Restart。&lt;/p&gt;
 &lt;p&gt;简单来说 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解）了 Systemd 的 Restart。&lt;/p&gt;
 &lt;p&gt;简单来说，不能简单的 认为在 Systemd Service Unit  中配置一个&lt;code&gt;Restart=always&lt;/code&gt; 后，服务能够在任何失败的情况下自动重启。这样配置，如果遇到配置错误、服务依赖等各种情况，几秒内重启失败，直接进入失败状态，日志显示：&lt;code&gt;repeated too quickly&lt;/code&gt;。&lt;/p&gt;
