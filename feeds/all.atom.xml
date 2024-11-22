@@ -57,7 +57,7 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;hr&gt;
-&lt;p&gt;241122更新：期间重启了一次系统之后，又恢复异常原样了。
+&lt;p&gt;2024-11-22更新：期间重启了一次系统之后，又恢复异常原样了。
 搜了一圈，关闭网卡2的TSO 之后，恢复。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt; ethtool  --show-offload   enp3s0  # 查看tso是否开启
 &amp;gt; ethtool  -K enp3s0 tso off        # 关闭tso
