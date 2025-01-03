@@ -1,29 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-01-03T00:00:00+08:00</updated><entry><title>省间结算对我们的可能影响</title><link href="https://fangpsh.github.io/posts/2025/2025-01-03.html" rel="alternate"></link><published>2025-01-03T00:00:00+08:00</published><updated>2025-01-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-01-03:/posts/2025/2025-01-03.html</id><summary type="html">&lt;h2&gt;- isp&lt;/h2&gt;
-&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业 …&lt;/p&gt;</summary><content type="html">&lt;h2&gt;- isp&lt;/h2&gt;
-&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务有点影响，不过那会刚刚被拥抱变化，去提一嘴好像狗拿耗子。听说几个月之后某些地区的机器互通遇到了QoS，影响了业务。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-01-03T00:00:00+08:00</updated><entry><title>省间结算对我们的可能影响</title><link href="https://fangpsh.github.io/posts/2025/2025-01-03.html" rel="alternate"></link><published>2025-01-03T00:00:00+08:00</published><updated>2025-01-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-01-03:/posts/2025/2025-01-03.html</id><summary type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务有点影响，不过那会刚刚被拥抱变化，去提一嘴好像狗拿耗子。听说几个月之后某些地区的机器互通遇到了QoS，影响了业务。&lt;/p&gt;
 &lt;p&gt;12月份网上热传深圳联通要客户签订协议保证书，明目张胆、霸王条款。我们一条联通的商宽上行一直很满，客户经理也找过我们几次，解释了是正常业务，也暂时没为难。&lt;/p&gt;
 &lt;p&gt;最近做饭的时候听了一期老韩在&lt;a href="https://www.xiaoyuzhoufm.com/episode/676833509e0c2b849ceb9973"&gt;津津乐道&lt;/a&gt;的节目，讲pcdn和省间结算的事。&lt;/p&gt;
 &lt;p&gt;一些总结和发散的猜想，记录一下。&lt;/p&gt;
-&lt;p&gt;省间结算实行一年后几个后果：
-1. 流量流出大省，运营商逐步开始提价；
-2. 跨省流量会被运营商主动QoS，质量下降；
-3. 部分客户规避省间费用与QoS，主动走（挤）三网交换中心，导致三网交换质量劣化；
-    1. 听说声网原来的调度策略，似乎是全局的质量探测形式，利用了原来跨网的质量保证，降低成本，例如用移动和联通来覆盖电信。
-4. 工信部约谈头部企业禁止采购pcdn
-    1. 如果供需不变的情况下，cdn需求变大，可能导致带宽产品涨价？；&lt;/p&gt;
-&lt;p&gt;对业务的可能影响：
-1. 提升本省覆盖率，不能再以成本优先调度；
-    1. 不仅不能成本优先调度，原来一些按大区的调度策略，例如单独建立的高带宽泄洪节点，需要另外评估QoS风险；
-    2. 调度上，对IP库的准确性要求提高，省份识别错误，或者降级调度，可能需要更加保守；
-    3. 省间结算，看一些通知，好像一定级别的机房不受影响，具体还得和运营商沟通了；
-2. 跨省质量监测，QoS监测；
-    1. RTC机器之间的级联推拉流，CDN的多级跨区回源，都得注意了；
-3. 面粉即将涨价，面包也跑不了，前几年价格战搞出来的产品深度折扣可能要收紧，新签续签客户进行预防式上调价格；
-4. 如果有转售业务，例如云商CDN类等产品可能会涨价，背靠背协议得小心；
-    1. 因为过去几年他们调度一直是按照成本优先，例如深圳调度到西安；
-5. 多地办公区互联的QoS问题；
-    1. 这个我们影响不到，因为是星状组网，中心点在云上BGP；&lt;/p&gt;
+&lt;p&gt;省间结算实行一年后几个后果：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;流量流出大省，运营商逐步开始提价；&lt;/li&gt;
+&lt;li&gt;跨省流量会被运营商主动QoS，质量下降；&lt;/li&gt;
+&lt;li&gt;部分客户规避省间费用与QoS，主动走（挤）三网交换中心，导致三网交换质量劣化；&lt;ol&gt;
+&lt;li&gt;听说声网原来的调度策略，似乎是全局的质量探测形式，利用了原来跨网的质量保证，降低成本，例如用移动和联通来覆盖电信。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;工信部约谈头部企业禁止采购pcdn&lt;ol&gt;
+&lt;li&gt;如果供需不变的情况下，cdn需求变大，可能导致带宽产品涨价？；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;对业务的可能影响：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;提升本省覆盖率，不能再以成本优先调度；&lt;ol&gt;
+&lt;li&gt;不仅不能成本优先调度，原来一些按大区的调度策略，例如单独建立的高带宽泄洪节点，需要另外评估QoS风险；&lt;/li&gt;
+&lt;li&gt;调度上，对IP库的准确性要求提高，省份识别错误，或者降级调度，可能需要更加保守；&lt;/li&gt;
+&lt;li&gt;省间结算，看一些通知，好像一定级别的机房不受影响，具体还得和运营商沟通了；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;跨省质量监测，QoS监测；&lt;ol&gt;
+&lt;li&gt;RTC机器之间的级联推拉流，CDN的多级跨区回源，都得注意了；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;面粉即将涨价，面包也跑不了，前几年价格战搞出来的产品深度折扣可能要收紧，新签续签客户进行预防式上调价格；&lt;/li&gt;
+&lt;li&gt;如果有转售业务，例如云商CDN类等产品可能会涨价，背靠背协议得小心；&lt;ol&gt;
+&lt;li&gt;因为过去几年他们调度一直是按照成本优先，例如深圳调度到西安；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;多地办公区互联的QoS问题；&lt;ol&gt;
+&lt;li&gt;这个我们影响不到，因为是星状组网，中心点在云上BGP；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
 &lt;p&gt;题外话，这期节目中主持人和嘉宾对pcdn的观点不太正面，但是我在&lt;a href="https://dao.fm/%e4%b9%b1%e7%82%96%e6%96%b0%e9%b2%9c%e4%ba%8b%e5%84%bf/"&gt;津津乐道官网&lt;/a&gt;浏览时点击了下载节目，发现调到了这么个的地址，金山云CDN的域名：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;https://153-99-2-115-adfc9a47.ksyungslb.com:8043/media-dao.wavpub.com/85/31/09/20241130010146-UMRLmZHwZfcQpZnG.mp3?kstype=L&amp;amp;ksnode=dgct63&amp;amp;kssessionid=9ab878e59fb640d5fbd85f3e7181f23e&amp;amp;ksmark=LXxMU3wtfC18LXwtfC18LXwtfC18S0Y&amp;amp;kslunar=haun21
 
@@ -31,7 +45,7 @@ ip: 153.99.2.115
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;这看起来有点像是pcdn的节点，结合&lt;a href="https://x.threatbook.com/v5/ip/153.99.2.115"&gt;微步&lt;/a&gt;提示是住宅用户，更像了。。。
-金山云前几年收购了云帆加速，&lt;a href="https://mp.weixin.qq.com/s/GjtmeLh1OTAmSmrft-9qAw"&gt;原创 Paper | 失控的 PCDN：观察 PCDN 技术现状与案例分析&lt;/a&gt;。&lt;/p&gt;</content><category term="2025"></category></entry><entry><title>再次踩到r8169的坑</title><link href="https://fangpsh.github.io/posts/2024/2024-10-30.html" rel="alternate"></link><published>2024-10-30T00:00:00+08:00</published><updated>2024-10-30T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-10-30:/posts/2024/2024-10-30.html</id><summary type="html">&lt;p&gt;有一台Linux机器，双网卡，网卡1（板载的千兆 Realtek RTL8111/8168/8411）接内网，网卡2（PCIE扩展，也是千兆Realtek RTL8111/8168/8411）接特定WAN出口，盘路一个IP。跑了几天，发现速 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;有一台Linux机器，双网卡，网卡1（板载的千兆 Realtek RTL8111/8168/8411）接内网，网卡2（PCIE扩展，也是千兆Realtek RTL8111/8168/8411）接特定WAN出口，盘路一个IP。跑了几天，发现速度特别慢，压在500KB/s 以下。&lt;/p&gt;
+金山云前几年收购了云帆加速，&lt;a href="https://mp.weixin.qq.com/s/GjtmeLh1OTAmSmrft-9qAw"&gt;原创 Paper | 失控的 PCDN：观察 PCDN 技术现状与案例分析&lt;/a&gt;。&lt;/p&gt;</content><category term="2025"></category><category term="isp"></category></entry><entry><title>再次踩到r8169的坑</title><link href="https://fangpsh.github.io/posts/2024/2024-10-30.html" rel="alternate"></link><published>2024-10-30T00:00:00+08:00</published><updated>2024-10-30T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-10-30:/posts/2024/2024-10-30.html</id><summary type="html">&lt;p&gt;有一台Linux机器，双网卡，网卡1（板载的千兆 Realtek RTL8111/8168/8411）接内网，网卡2（PCIE扩展，也是千兆Realtek RTL8111/8168/8411）接特定WAN出口，盘路一个IP。跑了几天，发现速 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;有一台Linux机器，双网卡，网卡1（板载的千兆 Realtek RTL8111/8168/8411）接内网，网卡2（PCIE扩展，也是千兆Realtek RTL8111/8168/8411）接特定WAN出口，盘路一个IP。跑了几天，发现速度特别慢，压在500KB/s 以下。&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;ethtool 看网卡速度都是千兆，没降速；看端口没跑满；&lt;/li&gt;
 &lt;li&gt;关闭网卡1，流量直接全部走网卡2，现象依旧；&lt;/li&gt;
