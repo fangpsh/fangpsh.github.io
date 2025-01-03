@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-01-03T00:00:00+08:00</updated><entry><title>省间结算对我们的可能影响</title><link href="https://fangpsh.github.io/posts/2025/2025-01-03.html" rel="alternate"></link><published>2025-01-03T00:00:00+08:00</published><updated>2025-01-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-01-03:/posts/2025/2025-01-03.html</id><summary type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务有点影响，不过那会刚刚被拥抱变化，去提一嘴好像狗拿耗子。听说几个月之后某些地区的机器互通遇到了QoS，影响了业务。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-01-03T00:00:00+08:00</updated><entry><title>省间结算对业务的可能影响</title><link href="https://fangpsh.github.io/posts/2025/2025-01-03.html" rel="alternate"></link><published>2025-01-03T00:00:00+08:00</published><updated>2025-01-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-01-03:/posts/2025/2025-01-03.html</id><summary type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务有点影响，不过那会刚刚被拥抱变化，去提一嘴好像狗拿耗子。听说几个月之后某些地区的机器互通遇到了QoS，影响了业务。&lt;/p&gt;
 &lt;p&gt;12月份网上热传深圳联通要客户签订协议保证书，明目张胆、霸王条款。我们一条联通的商宽上行一直很满，客户经理也找过我们几次，解释了是正常业务，也暂时没为难。&lt;/p&gt;
 &lt;p&gt;最近做饭的时候听了一期老韩在&lt;a href="https://www.xiaoyuzhoufm.com/episode/676833509e0c2b849ceb9973"&gt;津津乐道&lt;/a&gt;的节目，讲pcdn和省间结算的事。&lt;/p&gt;
 &lt;p&gt;一些总结和发散的猜想，记录一下。&lt;/p&gt;
@@ -19,7 +19,7 @@
 &lt;p&gt;对业务的可能影响：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;提升本省覆盖率，不能再以成本优先调度；&lt;ol&gt;
-&lt;li&gt;不仅不能成本优先调度，原来一些按大区的调度策略，例如单独建立的高带宽泄洪节点，需要另外评估QoS风险；&lt;/li&gt;
+&lt;li&gt;不仅不能成本优先调度，原来一些按大区的调度策略，例如单独建立的高带宽泄洪节点，需要另外评估QoS风险。别带宽准备好了，被运营商拦住了🤡；&lt;/li&gt;
 &lt;li&gt;调度上，对IP库的准确性要求提高，省份识别错误，或者降级调度，可能需要更加保守；&lt;/li&gt;
 &lt;li&gt;省间结算，看一些通知，好像一定级别的机房不受影响，具体还得和运营商沟通了；&lt;/li&gt;
 &lt;/ol&gt;
