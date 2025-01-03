@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>省间结算对我们的可能影响 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="description" content="- isp 23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2025/2025-01-03.html" rel="bookmark"
+         title="Permalink to 省间结算对我们的可能影响">省间结算对我们的可能影响</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <h2>- isp</h2>
+<p>23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务有点影响，不过那会刚刚被拥抱变化，去提一嘴好像狗拿耗子。听说几个月之后某些地区的机器互通遇到了QoS，影响了业务。</p>
+<p>12月份网上热传深圳联通要客户签订协议保证书，明目张胆、霸王条款。我们一条联通的商宽上行一直很满，客户经理也找过我们几次，解释了是正常业务，也暂时没为难。</p>
+<p>最近做饭的时候听了一期老韩在<a href="https://www.xiaoyuzhoufm.com/episode/676833509e0c2b849ceb9973">津津乐道</a>的节目，讲pcdn和省间结算的事。</p>
+<p>一些总结和发散的猜想，记录一下。</p>
+<p>省间结算实行一年后几个后果：
+1. 流量流出大省，运营商逐步开始提价；
+2. 跨省流量会被运营商主动QoS，质量下降；
+3. 部分客户规避省间费用与QoS，主动走（挤）三网交换中心，导致三网交换质量劣化；
+    1. 听说声网原来的调度策略，似乎是全局的质量探测形式，利用了原来跨网的质量保证，降低成本，例如用移动和联通来覆盖电信。
+4. 工信部约谈头部企业禁止采购pcdn
+    1. 如果供需不变的情况下，cdn需求变大，可能导致带宽产品涨价？；</p>
+<p>对业务的可能影响：
+1. 提升本省覆盖率，不能再以成本优先调度；
+    1. 不仅不能成本优先调度，原来一些按大区的调度策略，例如单独建立的高带宽泄洪节点，需要另外评估QoS风险；
+    2. 调度上，对IP库的准确性要求提高，省份识别错误，或者降级调度，可能需要更加保守；
+    3. 省间结算，看一些通知，好像一定级别的机房不受影响，具体还得和运营商沟通了；
+2. 跨省质量监测，QoS监测；
+    1. RTC机器之间的级联推拉流，CDN的多级跨区回源，都得注意了；
+3. 面粉即将涨价，面包也跑不了，前几年价格战搞出来的产品深度折扣可能要收紧，新签续签客户进行预防式上调价格；
+4. 如果有转售业务，例如云商CDN类等产品可能会涨价，背靠背协议得小心；
+    1. 因为过去几年他们调度一直是按照成本优先，例如深圳调度到西安；
+5. 多地办公区互联的QoS问题；
+    1. 这个我们影响不到，因为是星状组网，中心点在云上BGP；</p>
+<p>题外话，这期节目中主持人和嘉宾对pcdn的观点不太正面，但是我在<a href="https://dao.fm/%e4%b9%b1%e7%82%96%e6%96%b0%e9%b2%9c%e4%ba%8b%e5%84%bf/">津津乐道官网</a>浏览时点击了下载节目，发现调到了这么个的地址，金山云CDN的域名：</p>
+<div class="highlight"><pre><span></span><code>https://153-99-2-115-adfc9a47.ksyungslb.com:8043/media-dao.wavpub.com/85/31/09/20241130010146-UMRLmZHwZfcQpZnG.mp3?kstype=L&amp;ksnode=dgct63&amp;kssessionid=9ab878e59fb640d5fbd85f3e7181f23e&amp;ksmark=LXxMU3wtfC18LXwtfC18LXwtfC18S0Y&amp;kslunar=haun21
+
+ip: 153.99.2.115
+</code></pre></div>
+
+<p>这看起来有点像是pcdn的节点，结合<a href="https://x.threatbook.com/v5/ip/153.99.2.115">微步</a>提示是住宅用户，更像了。。。
+金山云前几年收购了云帆加速，<a href="https://mp.weixin.qq.com/s/GjtmeLh1OTAmSmrft-9qAw">原创 Paper | 失控的 PCDN：观察 PCDN 技术现状与案例分析</a>。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2025-01-03T00:00:00+08:00">
+      Fri 03 January 2025
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2025.html">2025</a> Tagged 
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
