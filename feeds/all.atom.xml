@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-01-03T00:00:00+08:00</updated><entry><title>省间结算对业务的可能影响</title><link href="https://fangpsh.github.io/posts/2025/2025-01-03.html" rel="alternate"></link><published>2025-01-03T00:00:00+08:00</published><updated>2025-01-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-01-03:/posts/2025/2025-01-03.html</id><summary type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务有点影响，不过那会刚刚被拥抱变化，去提一嘴好像狗拿耗子。听说几个月之后某些地区的机器互通遇到了QoS，影响了业务。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-01-09T00:00:00+08:00</updated><entry><title>AI时代的基础设施</title><link href="https://fangpsh.github.io/posts/2025/2025-01-09.html" rel="alternate"></link><published>2025-01-09T00:00:00+08:00</published><updated>2025-01-09T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-01-09:/posts/2025/2025-01-09.html</id><summary type="html">&lt;ul&gt;
+&lt;li&gt;ai&lt;/li&gt;
+&lt;li&gt;rtc &lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;读到一篇PR稿，声网要做AI时代的基础设施。股民信不信我不知道，我信我信！借着AI吹一波，作为友商员工我手里的期权又能值钱了吧🤑。&lt;/p&gt;
+&lt;p&gt;毫不怀疑 …&lt;/p&gt;</summary><content type="html">&lt;ul&gt;
+&lt;li&gt;ai&lt;/li&gt;
+&lt;li&gt;rtc &lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;读到一篇PR稿，声网要做AI时代的基础设施。股民信不信我不知道，我信我信！借着AI吹一波，作为友商员工我手里的期权又能值钱了吧🤑。&lt;/p&gt;
+&lt;p&gt;毫不怀疑，语音交互和视频交互一定是未来AI主流的交互方式，毕竟没有比这更自然和高效的方式，音视频的交互方式会像iPhone的触摸屏一样横扫世界变成默认式。
+题外话，我一直认为，符合直觉是一个产品最佳的生长方式，而产品经理就是要找出最符合用户直觉的交互方式、交互页面。（用户不一定是终端用户，例如作为声网这种ToB厂商，用户就是服务的开发者）。&lt;/p&gt;
+&lt;p&gt;有人说，为啥一定得是实时音视频，不能和AI你一句我一句，一个websocket（openapi 目前的realtime api 看起来是这样）或者SSE 搞定！这样的话，你永远会感觉对方是个机器人，他没法（实时）感知你，你也没法打断他。&lt;/p&gt;
+&lt;p&gt;那接着问题就是，会不会是声网？个人觉得不一定。（有人一定要骂，你说的是废话！要一定股价还能趴地上？）
+要判断这个问题，等于判断声网是否有先发优势。
+目前国内网RTC领域，声网（agora）自然是领头羊。声网等一众RTC厂商原来标榜自己能力，无非是这么几个：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;端到端几ms；&lt;/li&gt;
+&lt;li&gt;弱网下依旧牛逼；&lt;/li&gt;
+&lt;li&gt;降噪、纠错、回声消除之类等；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;第1个端到端的问题，在原来rtc的场景，a和b 2个客户端通信，服务器供应商要在a和b之间规划选出一条最佳路径。但是在和ai交互时，这个问题变成了在a和AI之间规划一条路径，AI肯定是在IDC数据中心。问题一下子降级成只需要解决成一端的接入质量问题，规划的复杂度瞬间塌陷成小学生级别，和CDN的调度没啥差别，声网这块积累的优势无了。第2点和第3点能复用，但是这个问题可能会因为下面这个猜想消散。&lt;/p&gt;
+&lt;p&gt;在人和人的RTC交互中，相当于有2条流，a拉取b的声音和画面，b拉取a的声音和画面。RTC交互中最大的成本消耗在于这些声音画面的传输。
+RTC场景中，供应商关注帧率，画面、声音流畅度等。
+但是在和AI的交互中，用户给到AI的信息，比如视频，是不是不再需要那么高的帧率了？只传关键帧是否可以？因为是给AI读取的，那声音和画面是否可以压缩，精简的更加机制，不仅有利于AI消化，也能大幅降低上行带宽成本。
+如果未来端上的计算能力继续加强，AI的下行语音能不能变成端上的TTS模型自动生成，下行的流量变成了特殊的信令信息。
+这样想的话，未来AI和人的交互呈现形式会是音视频，但交互协议极有可能会基于效率、成本等原因被重新设计。&lt;/p&gt;
+&lt;p&gt;声网要成为基础设施，除非他制定和推广了新的协议，凭借目前的领先身位将他的”私有协议“变成事实标准。但目前AI还在百团大战，鹿死谁手还未可知。个人不觉得openapi 现在的&lt;a href="https://platform.openai.com/docs/api-reference/introduction"&gt;api&lt;/a&gt; 离实时交互协议还很远，国内访问不了的朋友可以看这个&lt;a href="https://juejin.cn/post/7420272008146321434"&gt;翻译文档片段&lt;/a&gt;。&lt;/p&gt;</content><category term="2025"></category></entry><entry><title>省间结算对业务的可能影响</title><link href="https://fangpsh.github.io/posts/2025/2025-01-03.html" rel="alternate"></link><published>2025-01-03T00:00:00+08:00</published><updated>2025-01-03T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-01-03:/posts/2025/2025-01-03.html</id><summary type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;23年尾巴的时候，参加了老韩组织的了一次线下聚会，在那个会上听到了运营商相关人员分享省间结算，这事其实对我现在公司的业务有点影响，不过那会刚刚被拥抱变化，去提一嘴好像狗拿耗子。听说几个月之后某些地区的机器互通遇到了QoS，影响了业务。&lt;/p&gt;
 &lt;p&gt;12月份网上热传深圳联通要客户签订协议保证书，明目张胆、霸王条款。我们一条联通的商宽上行一直很满，客户经理也找过我们几次，解释了是正常业务，也暂时没为难。&lt;/p&gt;
 &lt;p&gt;最近做饭的时候听了一期老韩在&lt;a href="https://www.xiaoyuzhoufm.com/episode/676833509e0c2b849ceb9973"&gt;津津乐道&lt;/a&gt;的节目，讲pcdn和省间结算的事。&lt;/p&gt;
 &lt;p&gt;一些总结和发散的猜想，记录一下。&lt;/p&gt;
