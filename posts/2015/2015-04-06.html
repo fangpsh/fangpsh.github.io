@@ -139,7 +139,7 @@ Content-Type: text/html
 <div class="highlight"><pre><span></span><code>Cache-Control: max-age=3600, must-revalidate
 </code></pre></div>
 
-<p>当同时存在cache-control和Expires时，cache-control优先。如果你打算使用cache-control头信息，你应该看一下HTTP1.1协议的这篇不错的文档，见【参考文档和更多信息】节。</p>
+<p>当同时存在cache-control和Expires时，cache-control优先。如果你打算使用cache-control头信息，你应该看一下HTTP1.1协议的这篇不错的文档，见【参考文档和更多信息】节。</p>
 <h3>5.5 验证器与验证</h3>
 <p>在【Web缓存是如何工作的】一节中，我们说过验证是用于当代表变更后服务器和缓存之间的通讯。通过使用它，可以禁止缓存下载整个代表，当他们本地有一份拷贝但不确定拷贝是否新鲜时。</p>
 <p>验证器非常重要，如果有一个不存在，并且没有任何其他新鲜度信息（Expires或者Cache-Control）可用，那么缓存将不会保存任何代表。</p>
