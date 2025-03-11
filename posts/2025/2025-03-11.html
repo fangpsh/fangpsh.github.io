@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>爱快的性能问题谨慎使用爱快协议分流 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="description" content="- network 某个周一上午，办公网一台出口路由（倍控+爱快3.7.11）与核心的lan大量口丢包，CPU毛刺，出现问题时连接数异常飙升，相关用户断网，持续几 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2025/2025-03-11.html" rel="bookmark"
+         title="Permalink to 爱快的性能问题谨慎使用爱快协议分流">爱快的性能问题谨慎使用爱快协议分流</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <h2>- network</h2>
+<p>某个周一上午，办公网一台出口路由（倍控+爱快3.7.11）与核心的lan大量口丢包，CPU毛刺，出现问题时连接数异常飙升，相关用户断网，持续几分钟后可自行恢复。</p>
+<p>疑问：连接数异常是因还是果？是因为性能异常导致的连接数处理不及时而堆积吗？</p>
+<p>检查核心相关端口，未观察到明显突发流量。</p>
+<p>第二天，又出现。</p>
+<p>之前爱看出现过假死（无法灰度的那种），配合假死时间的日志发现有wan口在拨号。
+之前运营商偶尔会假死，我们在爱看各个wan口上光猫配置了周期性重启，怀疑是多个wan口状态变化+端口分流内策略较多，触发了策略计算的bug，导致异常，重新调整分配了多个wan口的重启时刻，避免同时触发。</p>
+<p>疑问：是不是某运营商线路异常，导致wan口线路检测频繁失败，从而触发爱看策略计算，某些代码bug导致cpu异常？</p>
+<p>删除了部分端口分流策略。
+关闭运营商wan口线路检查，观察，又出现了，连接数有突发，但是cpu 峰值下降，影响稍微减弱。</p>
+<p>爱看和网络设备没任何变更，哪里有变化？检查日志发现爱看更新了协议库。是不是协议库的问题，某些类似正则的规则异常？例如cloudflare 之前的<a href="https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/">正则表达式引发cpu耗尽的故障</a></p>
+<p>协议库似乎没法回滚。决定关闭协议库特征库更新，升级爱快版本，删除协议分流策略。</p>
+<p>删除协议分流策略之后，关闭增强分流，CPU同比骤减50%。但是没几天，连接数突发又来了。不过cpu 起伏不大。至此得到2个结论：
+1. 连接数突增是因，不是果；
+2. 协议分流极其耗费CPU；</p>
+<p>和官方反馈后，提示关闭<a href="https://bbs.ikuai8.com/thread-160444-1-1.html">增强分流</a>。
+另外查到增强分流另外一个问题：<a href="https://github.com/XIU2/CloudflareSpeedTest/issues/464">iKuai爱快拨号下，所有tcping对端无法正常返回FINACK #464</a>。我们之前内网确实遇到过某个服务长时间上传数据之后，tcp会话拿不到 finack包，导致业务逻辑异常，一直以为是哪个地方NAT表过期淘汰的问题。</p>
+<p>后来，连接数又突增了，这次在IDS系统中查看（之前几次也看过，由于头部几个常见的高连接数ip，忽略了），取对应时间连接数top10，发现有一个办公设备段的异常IP：35.223.238.178，一分钟几万条新建连接。在ti中查到是codeium的ip，联系对应设备负责人发现是使用了windsurf，最近有更新版本。
+倒查该IP在IDS系统中的连接活动情况，与故障时间吻合。至此，确定是最新版本windsurf 的bug 导致连接数异常。</p>
+<p>在codeium的discord 提了issue，然而官方在实锤证据面前，还要我配合提取各种日志。费劲，直接drop 了这个ip完事。</p>
+<p>结论：</p>
+<ol>
+<li>谨慎开启协议分流<ol>
+<li>收益不高，消耗较大；</li>
+<li>猜测panabit 和fortinet 性能估计更好一点。</li>
+</ol>
+</li>
+<li>谨慎开启协议库与特征库更新<ol>
+<li>由于是官方自动更新，等于随时对网络设备进行变更，我们都知道网络设备更新是要有严格变更流程，如果引入异常数据导致异常，无法预计无法回滚。</li>
+<li>是不是因噎废食，就看场景了。</li>
+</ol>
+</li>
+<li>关闭增强分流<ol>
+<li>官方提出的建议思路，说明客户中出现过导致性能异常的case；</li>
+<li>存在finack 回包丢失问题；</li>
+</ol>
+</li>
+<li>对客户端连接数限制？还在考虑，但是听说又有bug。</li>
+</ol>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2025-03-11T00:00:00+08:00">
+      Tue 11 March 2025
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2025.html">2025</a> Tagged 
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
