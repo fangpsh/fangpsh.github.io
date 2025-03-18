@@ -11,7 +11,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="fangpsh" />
 <meta name="keywords" content="systemd" />
-<meta name="description" content="整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解）了 Systemd 的 Restart。 简单来说 …" />
+<meta name="description" content="整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解） Systemd 的 Restart。 简单来说，不 …" />
 
         <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
     </head>
@@ -38,7 +38,7 @@
   <div id="toc">
   </div>     
   <div id="article-content" class="entry-content">
-    <p>整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解）了 Systemd 的 Restart。</p>
+    <p>整理笔记，发现之前遗留的todo，好像是 5、6 年前一次故障，服务没有自动拉起，因为大家都误解（不够了解） Systemd 的 Restart。</p>
 <p>简单来说，不能简单的 认为在 Systemd Service Unit  中配置一个<code>Restart=always</code> 后，服务能够在任何失败的情况下自动重启。这样配置，如果遇到配置错误、服务依赖等各种情况，几秒内重启失败，直接进入失败状态，日志显示：<code>repeated too quickly</code>。</p>
 <p>这是因为还有另外几个参数，即 systemd 的默认行为，不允许无限重启的情况出现。</p>
 <ol>
@@ -67,8 +67,8 @@ DefaultStartLimitBurst=5
 </li>
 </ol>
 <p>看完Hacker News 上的讨论<a href="https://news.ycombinator.com/item?id=39032752">Systemd: Enable indefinite service restarts (stapelberg.ch)</a>，我倾向于认为这种默认设置是对的，systemd 首先要保证重启时，服务要尽快拉起，RestartSec 需要尽可能小。在这个前提下，如果存在默认无限重启的策略，可能导致 CPU资源耗费在重启上。例如讨论中提到的移动端电池的问题。<br>
-在生产环境中，服务启动，可能还伴随着一系列的 IO 行为（清理日志、准备缓存等），或与其他服务通信（葱外部拉取配置，发送信息等），控制不好，非常容易变成 DoS。</p>
-<p>所以当我们主动设置为无限重启时，也需要注意是否会带来副作用。</p>
+在生产环境中，服务启动，可能还伴随着一系列的 IO 行为（清理日志、准备缓存等），或与其他服务通信（从外部拉取配置，发送信息等），控制不好，非常容易变成 DoS。</p>
+<p><strong>所以当我们主动设置为无限重启时，也需要注意是否会带来副作用。</strong></p>
 <hr>
 <p>在互联网上搜索，有大量的用户落入这个想当然的逻辑，我怀疑这个设计上不符合用户直觉。</p>
 <p>我猜想作者这么设计，是因为底层的流控算法思维习惯，往上变成了产品逻辑，从下往上思考，而不是从用户角度倒推。</p>
