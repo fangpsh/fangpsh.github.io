@@ -535,8 +535,8 @@ bad sector – the colloquial name for the same thing
 &lt;p&gt;我见过太多运维机器上架，配置完 RAID 就不管了。至少还应该做好以下工作：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;配置好巡读周期，软 raid 也有对应的功能；&lt;/li&gt;
-&lt;li&gt;做好整列状态检查&lt;/li&gt;
-&lt;li&gt;做好整理中磁盘的状态监控，包括 SMART、LSI PD MediaError 等；&lt;/li&gt;
+&lt;li&gt;做好阵列状态检查&lt;/li&gt;
+&lt;li&gt;做好阵列中磁盘的状态监控，包括 SMART、LSI PD MediaError 等；&lt;/li&gt;
 &lt;li&gt;机房巡检&lt;/li&gt;
 &lt;li&gt;BBU 监控&lt;/li&gt;
 &lt;/ol&gt;
