@@ -130,7 +130,7 @@ bad sector – the colloquial name for the same thing
 <p>URE 会出现，但是和 厂商的UER 关联性不强，更建议参考 MTTDL。这可能是网友所说的尽量选择不同批次、不同平台磁盘组 RAID 的原因？同批次的磁盘 MTTDL 总是相近？</p>
 <p>MTTDL=MTBF，酷狼的 MTBF 是100万小时～114 年。如果随着时间推移，出现LSE的概率会越来越高。前 10 年的概率应该远小于后面100年？</p>
 <p>这也是为什么网友买二手磁盘要看 SMART 通电时间和写入数据量的底层原因？</p>
-<p>URE确实会影响到 RAID 重建成功率，但是重建过程中 LSE 的出现的概率并不能简单的用厂商的 URE 和磁盘容量来推算。</p>
+<p><strong>URE确实会影响到 RAID 重建成功率，但是重建过程中 LSE 的出现的概率并不能简单的用厂商的 URE 和磁盘容量来推算。</strong></p>
 <p>LSE 那篇论文中也提到，开启阵列的巡读（patrol reading、巡检、scrub  等）对于自动修复 bit rot和提前 发现 LSE 非常重要。</p>
 <p>我见过太多运维机器上架，配置完 RAID 就不管了。至少还应该做好以下工作：</p>
 <ol>
@@ -144,6 +144,13 @@ bad sector – the colloquial name for the same thing
 <p>RAID5 我还是会用，只是为了计算节点换盘不用停机。数据库节点不用RAID5。 </p>
 <p>另外一个控制存储池大小的原因是，重建过程会有性能下降的问题，生产环境要尽量缩短重建时间。</p>
 <p>还有，重要数据做备份，RAID 不是备份。</p>
+<hr>
+<p>2025-06-12 补充更新，这位存储专家up主提出来一个观点：由于ECC等磁盘自动纠错机制的存在，大部分错误能被自动纠正。何况还有自动重映射等机制？
+另外即使多盘出现多个URE，只要不落到一个条带上，能被RAID算法自动纠正，也不会影响到阵列整体健康。听起来有点道理。</p>
+<ul>
+<li><a href="https://www.bilibili.com/video/BV1RUVdzPEPi">深度聊一聊，URE到底是个啥，硬盘坏道并不等于硬盘故障！这里是《存储铲屎官》！</a></li>
+<li><a href="https://www.bilibili.com/video/BV1zFJJzXEfy">硬盘爆发26个URE坏道，RAID5成功对抗！安全在有些时候比速度很重要！这里是LRAID《存储铲屎官》！</a></li>
+</ul>
   </div><!-- /.entry-content -->
    <footer class="post-info text-muted">
     Posted on <abbr class="published" title="2024-03-19T00:00:00+08:00">

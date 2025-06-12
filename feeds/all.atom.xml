@@ -530,7 +530,7 @@ bad sector – the colloquial name for the same thing
 &lt;p&gt;URE 会出现，但是和 厂商的UER 关联性不强，更建议参考 MTTDL。这可能是网友所说的尽量选择不同批次、不同平台磁盘组 RAID 的原因？同批次的磁盘 MTTDL 总是相近？&lt;/p&gt;
 &lt;p&gt;MTTDL=MTBF，酷狼的 MTBF 是100万小时～114 年。如果随着时间推移，出现LSE的概率会越来越高。前 10 年的概率应该远小于后面100年？&lt;/p&gt;
 &lt;p&gt;这也是为什么网友买二手磁盘要看 SMART 通电时间和写入数据量的底层原因？&lt;/p&gt;
-&lt;p&gt;URE确实会影响到 RAID 重建成功率，但是重建过程中 LSE 的出现的概率并不能简单的用厂商的 URE 和磁盘容量来推算。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;URE确实会影响到 RAID 重建成功率，但是重建过程中 LSE 的出现的概率并不能简单的用厂商的 URE 和磁盘容量来推算。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;LSE 那篇论文中也提到，开启阵列的巡读（patrol reading、巡检、scrub  等）对于自动修复 bit rot和提前 发现 LSE 非常重要。&lt;/p&gt;
 &lt;p&gt;我见过太多运维机器上架，配置完 RAID 就不管了。至少还应该做好以下工作：&lt;/p&gt;
 &lt;ol&gt;
@@ -543,7 +543,14 @@ bad sector – the colloquial name for the same thing
 &lt;p&gt;这些工作都没做好，RAID10 也白扯。&lt;/p&gt;
 &lt;p&gt;RAID5 我还是会用，只是为了计算节点换盘不用停机。数据库节点不用RAID5。 &lt;/p&gt;
 &lt;p&gt;另外一个控制存储池大小的原因是，重建过程会有性能下降的问题，生产环境要尽量缩短重建时间。&lt;/p&gt;
-&lt;p&gt;还有，重要数据做备份，RAID 不是备份。&lt;/p&gt;</content><category term="2024"></category><category term="disk，raid"></category></entry><entry><title>高质量4G代理池</title><link href="https://fangpsh.github.io/posts/2024/2024-02-02.html" rel="alternate"></link><published>2024-02-02T00:00:00+08:00</published><updated>2024-02-02T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-02-02:/posts/2024/2024-02-02.html</id><summary type="html">&lt;p&gt;&lt;img alt="rasproxy" src="/assets/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;还有，重要数据做备份，RAID 不是备份。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;2025-06-12 补充更新，这位存储专家up主提出来一个观点：由于ECC等磁盘自动纠错机制的存在，大部分错误能被自动纠正。何况还有自动重映射等机制？
+另外即使多盘出现多个URE，只要不落到一个条带上，能被RAID算法自动纠正，也不会影响到阵列整体健康。听起来有点道理。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.bilibili.com/video/BV1RUVdzPEPi"&gt;深度聊一聊，URE到底是个啥，硬盘坏道并不等于硬盘故障！这里是《存储铲屎官》！&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.bilibili.com/video/BV1zFJJzXEfy"&gt;硬盘爆发26个URE坏道，RAID5成功对抗！安全在有些时候比速度很重要！这里是LRAID《存储铲屎官》！&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="2024"></category><category term="disk，raid"></category></entry><entry><title>高质量4G代理池</title><link href="https://fangpsh.github.io/posts/2024/2024-02-02.html" rel="alternate"></link><published>2024-02-02T00:00:00+08:00</published><updated>2024-02-02T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2024-02-02:/posts/2024/2024-02-02.html</id><summary type="html">&lt;p&gt;&lt;img alt="rasproxy" src="/assets/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="rasproxy" src="/assets/images/2024/20240218145733.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;刚刚参加工作时，在某公司负责运维，常常要给爬虫组的同事找各种云的机器，ucloud、青云、阿里云、腾讯云、aws等，后来这些段被封的差不多了，就开始用快代理之类的服务，不过速度慢，IP 也容易被封。那会在玩树莓派，外加公司给发了一个移动3G无线网卡， 有一天突然想到不如用树莓派+无线网卡做个代理池。&lt;/p&gt;
 &lt;p&gt;好处是只要重启就能换 IP， IP 来自本地运营商真实用户 IP 超大池，不容易被封，或者是说你要敢按段封，就会误伤用户。&lt;/p&gt;
