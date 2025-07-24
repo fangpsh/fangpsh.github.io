@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>Authentik关联飞书登录 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="authentik,oauth2" />
+<meta name="description" content="Authentik 的oauth2 source 没有飞书，不过可以使用通用的OpenID OAuth Source（Login using a Generic OpenID-Connect compliant provider.）达到类似的效果。 这个网友的issue 提到用github 的模板，感觉应 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2025/2025-07-24.html" rel="bookmark"
+         title="Permalink to Authentik关联飞书登录">Authentik关联飞书登录</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>Authentik 的oauth2 source 没有飞书，不过可以使用通用的OpenID OAuth Source（Login using a Generic OpenID-Connect compliant provider.）达到类似的效果。</p>
+<p>这个网友的<a href="https://github.com/goauthentik/authentik/issues/6577">issue</a> 提到用github 的模板，感觉应该不太对，参考<a href="https://github.com/goauthentik/authentik/blob/main/authentik/sources/oauth/types/github.py">type/github.py</a>的实现，get_base_user_properties() 方法里面username 取值不太对。但是这个网友issue 中那个”Profile url“很有用。我一开始用的配置是：</p>
+<ul>
+<li>Authorize url: https://accounts.feishu.cn/open-apis/authen/v1/authorize</li>
+<li>Token url: https://open.feishu.cn/open-apis/authen/v2/oauth/token</li>
+<li>Profile url: https://open.feishu.cn/open-apis/authen/v1/user_info</li>
+</ul>
+<p>创建feishu oauth2 source的时候，scope为<code>* contact:user.email:readonly contact:user.employee_id:readonly</code>，飞书开发后台对应应用记得申请权限。飞书的callback url 填oauth2 source创建之后的callback url。</p>
+<p>发现登录时出错：”Authentication failed: Could not determine id.“，看了下代码，
+这个错误在<a href="https://github.com/goauthentik/authentik/blob/6c56d612cfcff64f090279fb0e65ffe2ce8c620e/authentik/sources/oauth/views/callback.py#L63">callback.py</a>，get_user_id() 函数尝试在info 里面找id 这个key，但是实际上这个Profile url 的body 格式不太对（不标准），而且缺少了”id“，有网友说可以用<a href="https://github.com/dexidp/dex">dex</a>进行转换。嫌弃麻烦。不过可以看到在<a href="https://github.com/goauthentik/authentik/blob/6c56d612cfcff64f090279fb0e65ffe2ce8c620e/authentik/sources/oauth/types/oidc.py#L45">types/oidc.py</a>里面，get_user_id()重载成取”sub“了。恰好看到了这个<a href="https://open.feishu.cn/document/deprecated-guide/app-login/api-reference/get-user-info">老API</a>符合标准，能用。</p>
+<p>配置替换为：</p>
+<ul>
+<li>Authorize url: https://accounts.feishu.cn/open-apis/authen/v1/authorize</li>
+<li>Token url: https://open.feishu.cn/open-apis/authen/v2/oauth/token</li>
+<li>Profile url: https://passport.feishu.cn/suite/passport/oauth/userinfo</li>
+</ul>
+<p>还需要创建一个Property Mappings，例如：</p>
+<div class="highlight"><pre><span></span><code>return {
+  &quot;username&quot;: info.get(&quot;user_id&quot;),
+  &quot;email&quot;: info.get(&quot;email&quot;),
+  &quot;name&quot;: info.get(&quot;name&quot;),
+  &quot;attributes&quot;: {
+    &quot;avatar&quot;: info.get(&quot;avatar_url&quot;),
+    &quot;employee_no&quot;: info.get(&quot;employee_no&quot;),  
+  },
+}
+</code></pre></div>
+
+<p>将这个property mapping 绑定到之前创建的飞书 OAuth2 Source。
+将default-authentication-flow 这个flow的stage-&gt;default-authentication-identification -&gt;source setting -&gt; 增加feishu oauth2 source。
+修改  default-source-enrollment -&gt;stage-&gt;default-source-enrollment-write，创建内部账户，选择用户类型，用户组等等。</p>
+<p>按照前面的mapping，拿到了飞书的头像，还需要在System-&gt;Setting-&gt;Avatar 修改为<code>attributes.avatar,initials</code>。</p>
+<p>大功告成。</p>
+<p>可以搜到有一个网友提交了<a href="https://github.com/goauthentik/authentik/pull/13773/files">pr</a>，增加了<code>types/lark</code> 的支持，但是一直没合并。所以拉到最新release，单独patch 下这个pr，build一下也可以。在这个pr 中我们也可以看到重载的get_user_id() 和get_base_user_properties ()等函数，可以按需修改。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2025-07-24T00:00:00+08:00">
+      Thu 24 July 2025
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2025.html">2025</a> Tagged <a href="https://fangpsh.github.io/tag/authentik.html">authentik </a><a href="https://fangpsh.github.io/tag/oauth2.html">oauth2 </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>

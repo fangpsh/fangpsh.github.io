@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>AI时代的基础设施 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="ai,rtc" />
+<meta name="description" content="读到一篇PR稿，声网要做AI时代的基础设施。股民信不信我不知道，我信我信！借着AI吹一波，作为友商员工我手里的期权又能值钱了吧🤑。 毫不怀疑，语音 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2025/2025-01-09.html" rel="bookmark"
+         title="Permalink to AI时代的基础设施">AI时代的基础设施</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>读到一篇PR稿，声网要做AI时代的基础设施。股民信不信我不知道，我信我信！借着AI吹一波，作为友商员工我手里的期权又能值钱了吧🤑。</p>
+<p>毫不怀疑，语音交互和视频交互一定是未来AI主流的交互方式，毕竟没有比这更自然和高效的方式，音视频的交互方式会像iPhone的触摸屏一样横扫世界变成默认式。 </p>
+<p>题外话，我一直认为，符合直觉是一个产品最佳的生长方式，而产品经理就是要找出最符合用户直觉的交互方式、交互页面。（用户不一定是终端用户，例如作为声网这种ToB厂商，用户就是服务的开发者）。</p>
+<p>有人说，为啥一定得是实时音视频，不能和AI你一句我一句，一个websocket（openapi 目前的realtime api 看起来是这样）或者SSE 搞定！这样的话，你永远会感觉对方是个机器人，他没法（实时）感知你，你也没法打断他。</p>
+<p>那接着问题就是，会不会是声网？个人觉得不一定。（有人一定要骂，你说的是废话！要一定股价还能趴地上？）
+要判断这个问题，等于判断声网是否有先发优势。
+声网等一众RTC厂商原来标榜自己能力，无非是这么几个：</p>
+<ol>
+<li>端到端几ms；</li>
+<li>弱网下依旧牛逼；</li>
+<li>降噪、纠错、回声消除之类等；</li>
+</ol>
+<p>第1个端到端的问题，在原来rtc的场景，a和b 2个客户端通信，服务供应商要在a和b之间规划选出一条最佳路径：包括a到服务器x的最佳路径，b到服务器y的最佳路径，服务器x到y的最佳路径。但是在和ai交互时，这个问题变成了在a和AI之间规划一条路径，AI肯定是在IDC数据中心。问题一下子降级成只需要解决成一端的接入质量问题，规划的复杂度瞬间塌陷成小学生级别，和CDN的调度没啥差别，声网这块积累的优势无了。第2点和第3点经验/优势能复用，但是可能会因为下面这个猜想消散。</p>
+<p>在人和人的RTC交互中，相当于有2条流，a拉取b的声音和画面，b拉取a的声音和画面。RTC交互中最大的成本消耗在于这些声音画面的传输。
+RTC场景中，供应商关注帧率，画面、声音流畅度等。
+但是在和AI的交互中，用户给到AI的信息，比如视频，是不是不再需要那么高的帧率了？只传关键帧是否可以？因为是给AI读取的，那声音和画面是否可以压缩，精简的更加机制，不仅有利于AI消化，也能大幅降低上行带宽成本。
+如果未来端上的计算能力继续加强，AI的下行语音能不能变成端上的TTS模型自动生成，下行的流量变成了特殊的信令信息。
+这样想的话，未来AI和人的交互呈现形式会是音视频，但交互协议极有可能会基于效率、成本等原因被重新设计。</p>
+<p>声网要成为基础设施，除非他制定和推广了新的协议，凭借目前的领先身位将他的”私有协议“变成事实标准。但目前AI还在百团大战，鹿死谁手还未可知。个人觉得openapi 现在的<a href="https://platform.openai.com/docs/api-reference/introduction">api</a> 离理想的实时交互协议还很远，国内访问不了的朋友可以看这个<a href="https://juejin.cn/post/7420272008146321434">翻译文档片段</a>。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2025-01-09T00:00:00+08:00">
+      Thu 09 January 2025
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2025.html">2025</a> Tagged <a href="https://fangpsh.github.io/tag/ai.html">ai </a><a href="https://fangpsh.github.io/tag/rtc.html">rtc </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>
