@@ -19,7 +19,6 @@
 另外查到增强分流另外一个问题：&lt;a href="https://github.com/XIU2/CloudflareSpeedTest/issues/464"&gt;iKuai爱快拨号下，所有tcping对端无法正常返回FINACK #464&lt;/a&gt;。我们之前内网确实遇到过某个服务长时间上传数据之后，tcp会话拿不到 finack包，导致业务逻辑异常，一直以为是哪个地方NAT表过期淘汰的问题。&lt;/p&gt;
 &lt;p&gt;后来，连接数又突增了，这次在IDS系统中查看（之前几次也看过，由于头部几个常见的高连接数ip，忽略了），取对应时间连接数top10，发现有一个办公设备段的异常IP：35.223.238.178，一分钟几万条新建连接。在ti中查到是codeium的ip，联系对应设备负责人发现是使用了windsurf，最近有更新版本。
 倒查该IP在IDS系统中的连接活动情况，与故障时间吻合。至此，确定是最新版本windsurf 的bug 导致连接数异常。&lt;/p&gt;
-&lt;p&gt;在codeium的discord 提了issue，然而官方在实锤证据面前，还要我配合提取各种日志。费劲，直接drop 了这个ip完事。&lt;/p&gt;
 &lt;p&gt;结论：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;谨慎开启协议分流&lt;ol&gt;
