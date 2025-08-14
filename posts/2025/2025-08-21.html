@@ -38,8 +38,7 @@
   <div id="toc">
   </div>     
   <div id="article-content" class="entry-content">
-    <hr>
-<p>MFA（多因素认证）一般用在用户登录的时候。但是作为内网统一登录服务，我们希望用户在登录部分敏感系统的时候进行二次认证，例如绩效系统，BOSS系统等，而不是初次登录SSO的时候。所以我不是要Authentication 的时候加MFA，而是在Authorization 的时候。</p>
+    <p>MFA（多因素认证）一般用在用户登录的时候。但是作为内网统一登录服务，我们希望用户在登录部分敏感系统的时候进行二次认证，例如绩效系统，BOSS系统等，而不是初次登录SSO的时候。所以我不是要Authentication 的时候加MFA，而是在Authorization 的时候。</p>
 <p>点开管理后台-&gt;Flow and Stages-&gt;Authorization类别的default-provider-authorization-implicit-consent，仿造这个copy一个一模一样，例如就叫  <br>
 provider-authorization-implicit-consent-mfa。<br>
 点开  provider-authorization-implicit-consent-mfa-&gt;Stage Bindings，创建一个Authenticator Validation Stage Type的stage，Not configured action 配置为Force the user to configure an authenticator，紧接着 Configuration stages 选择default-authticator-totp-setup等。</p>
