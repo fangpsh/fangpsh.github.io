@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>Authentik 用户同步飞书员工属性 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="authentik" />
+<meta name="description" content="前面文章搞定了飞书作为oauth2 source，集成到了authentik，但是默认能拿到的信息非常有限，就这么几个： { &#34;sub&#34;: &#34;ou_caecc734c2e3328a62489fe0648c4b98779515d3&#34;, &#34;name&#34;: &#34;李雷&#34;, &#34;picture&#34;: &#34;https://www.feishu.cn/avatar&#34;, &#34;open_id&#34;: &#34;ou_caecc734c2e3328a62489fe0648c4b98779515d3 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2025/2025-10-14.html" rel="bookmark"
+         title="Permalink to Authentik 用户同步飞书员工属性">Authentik 用户同步飞书员工属性</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p>前面文章搞定了飞书作为oauth2 source，集成到了authentik，但是默认能拿到的信息非常有限，<a href="https://open.feishu.cn/document/deprecated-guide/app-login/api-reference/get-user-info">就这么几个</a>：</p>
+<div class="highlight"><pre><span></span><code>{
+    &quot;sub&quot;: &quot;ou_caecc734c2e3328a62489fe0648c4b98779515d3&quot;,
+    &quot;name&quot;: &quot;李雷&quot;,
+    &quot;picture&quot;: &quot;https://www.feishu.cn/avatar&quot;,
+    &quot;open_id&quot;: &quot;ou_caecc734c2e3328a62489fe0648c4b98779515d3&quot;,
+    &quot;union_id&quot;: &quot;on_d89jhsdhjsajkda7828enjdj328ydhhw3u43yjhdj&quot;,
+    &quot;en_name&quot;: &quot;Lilei&quot;,
+    &quot;tenant_key&quot;: &quot;736588c92lxf175d&quot;,
+    &quot;avatar_url&quot;: &quot;www.feishu.cn/avatar/icon&quot;,
+...
+    &quot;email&quot;: &quot;zhangsan@feishu.cn&quot;,
+    &quot;user_id&quot;: &quot;5d9bdxxx&quot;,
+    &quot;employee_no&quot;: &quot;111222333&quot;,
+    &quot;mobile&quot;: &quot;+86130xxxx0000&quot;
+}
+</code></pre></div>
+
+<p>最重要的，员工所在的组织架构，leader身份都没有，内部应用恰恰常常这些信息进行权限配置和审批流程内的审核等等。下游应用接入authentik之后，如果还需要单独去飞书拿这些信息，太麻烦了。</p>
+<p>飞书或者企业微信返回的组织架构需要重建成树，这个过程比较耗时，如果在authentik 内部脚本做不太合适，只能用外部服务周期性同步和生成供查询。</p>
+<p>想了个办法：</p>
+<div class="highlight"><pre><span></span><code>1. 服务A 定时周期性从飞书同步组织架构，重建树状的组织架构，保存到本地，供authentik 查询用户时，将组织层级信息写入用户信息；
+2. Authentik 内 Property Mappings创建一个Scope Mapping，假设scope_name 为feishu_attribute。
+  脚本主要逻辑：
+     1. 检查当前request.user.attributes 是否包含feishu_attribute，若否，请求服务A更新飞书属性；
+     2. 检查用户当前feishu_attribute_last_updated 是否过期，若是，更新飞书属性。
+3. 创建的Provider，Advanced protocol settings -&gt; Scopes，选择加入这个scope。
+4. 内部应用来认证时申请的scope增加一个: feishu_attribute。
+</code></pre></div>
+
+<p>feishu_attribute scope mapping 简化如下， 外部服务返回的user 内容按需自定义:</p>
+<div class="highlight"><pre><span></span><code>import json
+from datetime import datetime, timedelta
+
+TIME_FORMAT=&quot;%Y-%m-%d %H:%M:%S.%f&quot;
+
+def update_user_feishu_attribute():
+  url = &#39;https://xxxxx.oa.com/api/feishu/user/info&#39;
+  params = {&#39;user_id&#39;: request.user.username,
+            &#39;with_department_list_info&#39;: True,
+            &#39;token&#39;: &#39;XXXXXXX&#39;
+            }
+  resp = requests.get(url,params=params,timeout=3).json()
+  if resp.get(&#39;code&#39;) == 0:
+    user_data = resp.get(&#39;data&#39;).get(&#39;user&#39;)
+    attributes = request.user.attributes
+    attributes[&#39;feishu_attribute&#39;] = user_data
+    attributes[&#39;feishu_attribute_last_updated&#39;] = datetime.now().strftime(TIME_FORMAT)
+    request.user.update_attributes({})
+
+
+
+if &#39;feishu_attribute&#39; in request.user.attributes and &#39;feishu_attribute_last_updated&#39; in request.user.attributes:
+  now = datetime.now()
+  last_updated = datetime.strptime(request.user.attributes[&#39;feishu_attribute_last_updated&#39;], TIME_FORMAT)
+  seconds_diff = (now - last_updated).total_seconds()
+  if seconds_diff &gt; 24 * 60 * 60:
+    update_user_feishu_attribute()    
+else:
+  update_user_feishu_attribute()
+
+return {
+  &quot;feishu_attribute&quot;: request.user.attributes.get(&#39;feishu_attribute&#39;, None),
+}
+</code></pre></div>
+
+<p>scope mapping 的脚本自由度很大，可以完成各类需求，除了用户同步，还有例如自定义的登录判断等等，可玩性很高。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2025-10-14T00:00:00+08:00">
+      Tue 14 October 2025
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2025.html">2025</a> Tagged <a href="https://fangpsh.github.io/tag/authentik.html">authentik </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "jt8984mtdg");
+    </script>
+    </body>
+</html>

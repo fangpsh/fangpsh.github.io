@@ -1,5 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-08-21T00:00:00+08:00</updated><entry><title>Authentik对特定应用开启MFA</title><link href="https://fangpsh.github.io/posts/2025/2025-08-21.html" rel="alternate"></link><published>2025-08-21T00:00:00+08:00</published><updated>2025-08-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-08-21:/posts/2025/2025-08-21.html</id><summary type="html">&lt;p&gt;MFA（多因素认证）一般用在用户登录的时候。但是作为内网统一登录服务，我们希望用户在登录部分敏感系统的时候进行二 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;MFA（多因素认证）一般用在用户登录的时候。但是作为内网统一登录服务，我们希望用户在登录部分敏感系统的时候进行二次认证，例如绩效系统，BOSS系统等，而不是初次登录SSO的时候。所以不是要Authentication 的时候加MFA，而是在Authorization 的时候。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-10-14T00:00:00+08:00</updated><entry><title>Authentik 用户同步飞书员工属性</title><link href="https://fangpsh.github.io/posts/2025/2025-10-14.html" rel="alternate"></link><published>2025-10-14T00:00:00+08:00</published><updated>2025-10-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-10-14:/posts/2025/2025-10-14.html</id><summary type="html">&lt;p&gt;前面文章搞定了飞书作为oauth2 source，集成到了authentik，但是默认能拿到的信息非常有限，&lt;a href="https://open.feishu.cn/document/deprecated-guide/app-login/api-reference/get-user-info"&gt;就这么几个&lt;/a&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;{
+    &amp;quot;sub&amp;quot;: &amp;quot;ou_caecc734c2e3328a62489fe0648c4b98779515d3&amp;quot;,
+    &amp;quot;name&amp;quot;: &amp;quot;李雷&amp;quot;,
+    &amp;quot;picture&amp;quot;: &amp;quot;https://www.feishu.cn/avatar&amp;quot;,
+    &amp;quot;open_id&amp;quot;: &amp;quot;ou_caecc734c2e3328a62489fe0648c4b98779515d3 …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;前面文章搞定了飞书作为oauth2 source，集成到了authentik，但是默认能拿到的信息非常有限，&lt;a href="https://open.feishu.cn/document/deprecated-guide/app-login/api-reference/get-user-info"&gt;就这么几个&lt;/a&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;{
+    &amp;quot;sub&amp;quot;: &amp;quot;ou_caecc734c2e3328a62489fe0648c4b98779515d3&amp;quot;,
+    &amp;quot;name&amp;quot;: &amp;quot;李雷&amp;quot;,
+    &amp;quot;picture&amp;quot;: &amp;quot;https://www.feishu.cn/avatar&amp;quot;,
+    &amp;quot;open_id&amp;quot;: &amp;quot;ou_caecc734c2e3328a62489fe0648c4b98779515d3&amp;quot;,
+    &amp;quot;union_id&amp;quot;: &amp;quot;on_d89jhsdhjsajkda7828enjdj328ydhhw3u43yjhdj&amp;quot;,
+    &amp;quot;en_name&amp;quot;: &amp;quot;Lilei&amp;quot;,
+    &amp;quot;tenant_key&amp;quot;: &amp;quot;736588c92lxf175d&amp;quot;,
+    &amp;quot;avatar_url&amp;quot;: &amp;quot;www.feishu.cn/avatar/icon&amp;quot;,
+...
+    &amp;quot;email&amp;quot;: &amp;quot;zhangsan@feishu.cn&amp;quot;,
+    &amp;quot;user_id&amp;quot;: &amp;quot;5d9bdxxx&amp;quot;,
+    &amp;quot;employee_no&amp;quot;: &amp;quot;111222333&amp;quot;,
+    &amp;quot;mobile&amp;quot;: &amp;quot;+86130xxxx0000&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;最重要的，员工所在的组织架构，leader身份都没有，内部应用恰恰常常这些信息进行权限配置和审批流程内的审核等等。下游应用接入authentik之后，如果还需要单独去飞书拿这些信息，太麻烦了。&lt;/p&gt;
+&lt;p&gt;飞书或者企业微信返回的组织架构需要重建成树，这个过程比较耗时，如果在authentik 内部脚本做不太合适，只能用外部服务周期性同步和生成供查询。&lt;/p&gt;
+&lt;p&gt;想了个办法：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;1. 服务A 定时周期性从飞书同步组织架构，重建树状的组织架构，保存到本地，供authentik 查询用户时，将组织层级信息写入用户信息；
+2. Authentik 内 Property Mappings创建一个Scope Mapping，假设scope_name 为feishu_attribute。
+  脚本主要逻辑：
+     1. 检查当前request.user.attributes 是否包含feishu_attribute，若否，请求服务A更新飞书属性；
+     2. 检查用户当前feishu_attribute_last_updated 是否过期，若是，更新飞书属性。
+3. 创建的Provider，Advanced protocol settings -&amp;gt; Scopes，选择加入这个scope。
+4. 内部应用来认证时申请的scope增加一个: feishu_attribute。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;feishu_attribute scope mapping 简化如下， 外部服务返回的user 内容按需自定义:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;import json
+from datetime import datetime, timedelta
+
+TIME_FORMAT=&amp;quot;%Y-%m-%d %H:%M:%S.%f&amp;quot;
+
+def update_user_feishu_attribute():
+  url = &amp;#39;https://xxxxx.oa.com/api/feishu/user/info&amp;#39;
+  params = {&amp;#39;user_id&amp;#39;: request.user.username,
+            &amp;#39;with_department_list_info&amp;#39;: True,
+            &amp;#39;token&amp;#39;: &amp;#39;XXXXXXX&amp;#39;
+            }
+  resp = requests.get(url,params=params,timeout=3).json()
+  if resp.get(&amp;#39;code&amp;#39;) == 0:
+    user_data = resp.get(&amp;#39;data&amp;#39;).get(&amp;#39;user&amp;#39;)
+    attributes = request.user.attributes
+    attributes[&amp;#39;feishu_attribute&amp;#39;] = user_data
+    attributes[&amp;#39;feishu_attribute_last_updated&amp;#39;] = datetime.now().strftime(TIME_FORMAT)
+    request.user.update_attributes({})
+
+
+
+if &amp;#39;feishu_attribute&amp;#39; in request.user.attributes and &amp;#39;feishu_attribute_last_updated&amp;#39; in request.user.attributes:
+  now = datetime.now()
+  last_updated = datetime.strptime(request.user.attributes[&amp;#39;feishu_attribute_last_updated&amp;#39;], TIME_FORMAT)
+  seconds_diff = (now - last_updated).total_seconds()
+  if seconds_diff &amp;gt; 24 * 60 * 60:
+    update_user_feishu_attribute()    
+else:
+  update_user_feishu_attribute()
+
+return {
+  &amp;quot;feishu_attribute&amp;quot;: request.user.attributes.get(&amp;#39;feishu_attribute&amp;#39;, None),
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;scope mapping 的脚本自由度很大，可以完成各类需求，除了用户同步，还有例如自定义的登录判断等等，可玩性很高。&lt;/p&gt;</content><category term="2025"></category><category term="authentik"></category></entry><entry><title>Authentik对特定应用开启MFA</title><link href="https://fangpsh.github.io/posts/2025/2025-08-21.html" rel="alternate"></link><published>2025-08-21T00:00:00+08:00</published><updated>2025-08-21T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-08-21:/posts/2025/2025-08-21.html</id><summary type="html">&lt;p&gt;MFA（多因素认证）一般用在用户登录的时候。但是作为内网统一登录服务，我们希望用户在登录部分敏感系统的时候进行二 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;MFA（多因素认证）一般用在用户登录的时候。但是作为内网统一登录服务，我们希望用户在登录部分敏感系统的时候进行二次认证，例如绩效系统，BOSS系统等，而不是初次登录SSO的时候。所以不是要Authentication 的时候加MFA，而是在Authorization 的时候。&lt;/p&gt;
 &lt;p&gt;点开管理后台-&amp;gt;Flow and Stages-&amp;gt;Authorization类别的default-provider-authorization-implicit-consent，仿造这个copy一个一模一样，例如就叫  &lt;br&gt;
 provider-authorization-implicit-consent-mfa。&lt;br&gt;
 点开  provider-authorization-implicit-consent-mfa-&amp;gt;Stage Bindings，创建一个Authenticator Validation Stage Type的stage，Not configured action 配置为Force the user to configure an authenticator，紧接着 Configuration stages 选择default-authticator-totp-setup等。&lt;/p&gt;
