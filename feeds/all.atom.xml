@@ -1,5 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-10-14T00:00:00+08:00</updated><entry><title>Authentik 用户同步飞书员工属性</title><link href="https://fangpsh.github.io/posts/2025/2025-10-14.html" rel="alternate"></link><published>2025-10-14T00:00:00+08:00</published><updated>2025-10-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-10-14:/posts/2025/2025-10-14.html</id><summary type="html">&lt;p&gt;前面文章搞定了飞书作为oauth2 source，集成到了authentik，但是默认能拿到的信息非常有限，&lt;a href="https://open.feishu.cn/document/deprecated-guide/app-login/api-reference/get-user-info"&gt;就这么几个&lt;/a&gt;：&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>fangpsh's blog</title><link href="https://fangpsh.github.io/" rel="alternate"></link><link href="https://fangpsh.github.io/feeds/all.atom.xml" rel="self"></link><id>https://fangpsh.github.io/</id><updated>2025-12-23T00:00:00+08:00</updated><entry><title>Authentik 集成华为云认证登录</title><link href="https://fangpsh.github.io/posts/2025/2025-12-13.html" rel="alternate"></link><published>2025-12-23T00:00:00+08:00</published><updated>2025-12-23T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-12-23:/posts/2025/2025-12-13.html</id><summary type="html">&lt;p&gt;把几个云都对接完了，需要为华为云单独写一篇文章，因为它不太一样，“遥遥领先”。&lt;/p&gt;
+&lt;p&gt;第一个不同点，华为云没有角色的概念，需 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;把几个云都对接完了，需要为华为云单独写一篇文章，因为它不太一样，“遥遥领先”。&lt;/p&gt;
+&lt;p&gt;第一个不同点，华为云没有角色的概念，需要配置一个身份转换规则，将SAML带过来的角色转换为华为云的用户组。&lt;a href="https://support.huaweicloud.com/usermanual-iam/iam_08_0006.html"&gt;转换规则&lt;/a&gt;看起来设计的很强大，实际没啥用，徒费心智。&lt;/p&gt;
+&lt;p&gt;如果有网友懒得看规则，可以直接抄这个：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;[
+          {
+                    &amp;quot;remote&amp;quot;: [
+                              {
+                                        &amp;quot;type&amp;quot;: &amp;quot;http://schemas.goauthentik.io/2021/02/saml/username&amp;quot;
+                              },
+                              {
+                                        &amp;quot;type&amp;quot;: &amp;quot;huaweiIAMGroupName&amp;quot;
+                              }
+                    ],
+                    &amp;quot;local&amp;quot;: [
+                              {
+                                        &amp;quot;user&amp;quot;: {
+                                                  &amp;quot;name&amp;quot;: &amp;quot;{0}&amp;quot;
+                                        }
+                              },
+                              {
+                                        &amp;quot;groups&amp;quot;: &amp;quot;{1}&amp;quot;
+                              }
+                    ]
+          }
+]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;type: http://schemas.goauthentik.io/2021/02/saml/username 可以改成你自定义的RoleSessionName Attribute Name。这就引出第二个不同点了。&lt;/p&gt;
+&lt;p&gt;第二个不同点，它没有类似其他云的显式RoleSessionName，需要你自定义，习惯一下。&lt;/p&gt;
+&lt;p&gt;第三个不同点，如果你的用户有多个角色，每个角色都不一样，华为云是将所有角色转换为组，然后将组权限做并集。是的，目前没法选择特定角色登录。几年前在用shibboleth做第一版IdP的时候反馈过，没理我。这次和售后拉研发上会反馈了，说会安排。但是后来又说不做了，给了一个&lt;a href="https://support.huaweicloud.com/productdesc-identitycenter/iic_01_0002.html"&gt;新方案&lt;/a&gt;，&lt;a href="https://bbs.huaweicloud.com/blogs/429838"&gt;IAM身份中心如何对接Okta
+&lt;/a&gt;看得我头大，先不搞了。凑合用吧，有兴趣的网友可以试一试。估计现在维护的研发也是在维护历史项目，不想动💩⛰。&lt;/p&gt;
+&lt;p&gt;第四个不同点，从统一认证IAM发起登录，和从IdP发起登录会冲突。前者登录之后写入的cookies 会导致IdP发起的登录出错，服务端返回：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;The application has malfunctioned.
+Please contact technical support to solve this issue.
+Error code: E0019
+Error message: No InResponseTo attribute in SAMLResponse, please troubleshoot on IdP side
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;也就是只能二选一，和售后反馈了说会修，今天问了下说发布遇到bug又回退了，不知道啥时候能修好。&lt;/p&gt;
+&lt;p&gt;第五个不同点，如果你在同个厂商有多个主体账号，在其他云可以传递多个arn拼凑起来，登录之后云厂商会列出多个主体账号下不同角色供你选择。华为云的huaweiIAMGroupName 属性和其他厂商的不一样，不携带account 信息，从&lt;a href="https://bbs.huaweicloud.com/blogs/266721"&gt;这篇文章&lt;/a&gt;里看到一个参数：&lt;code&gt;IAM_SAML_Attributes_identityProviders&lt;/code&gt;，创建一个SAML Provider Property Mapping，可以达到类似效果，返回格式如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;return [ &amp;quot;iam::{domain_id_1}:identityProvider:{idp_id_1}&amp;quot;,
+         &amp;quot;iam::{domain_id_2}:identityProvider:{idp_id_2}&amp;quot;,
+         &amp;quot;iam::{domain_id_3}:identityProvider:{idp_id_3}&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;凑合用吧。&lt;/p&gt;</content><category term="2025"></category><category term="authentik"></category></entry><entry><title>Authentik 用户同步飞书员工属性</title><link href="https://fangpsh.github.io/posts/2025/2025-10-14.html" rel="alternate"></link><published>2025-10-14T00:00:00+08:00</published><updated>2025-10-14T00:00:00+08:00</updated><author><name>fangpsh</name></author><id>tag:fangpsh.github.io,2025-10-14:/posts/2025/2025-10-14.html</id><summary type="html">&lt;p&gt;前面文章搞定了飞书作为oauth2 source，集成到了authentik，但是默认能拿到的信息非常有限，&lt;a href="https://open.feishu.cn/document/deprecated-guide/app-login/api-reference/get-user-info"&gt;就这么几个&lt;/a&gt;：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;{
     &amp;quot;sub&amp;quot;: &amp;quot;ou_caecc734c2e3328a62489fe0648c4b98779515d3&amp;quot;,
     &amp;quot;name&amp;quot;: &amp;quot;李雷&amp;quot;,
