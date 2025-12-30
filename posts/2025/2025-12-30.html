@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>IT基础建设-为什么需要三套域名 - fangpsh's blog</title>
+        <meta charset="utf-8" />
+        <meta name="google-site-verification" content="CbsgsM2tKx2Ho07c_HkPj2MvG1zaj2trcjW7Ed1pyMw" />
+        <link href="https://fangpsh.github.io/theme/static/css/bootstrap-3.0.0.min.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/han.min.css" rel="stylesheet" /> 
+        <link href="https://fangpsh.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <link href="https://fangpsh.github.io/theme/static/css/code.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="fangpsh" />
+<meta name="keywords" content="dns" />
+<meta name="description" content="一个典型的中小公司基础设施环境如上图，可能没有云商的Office VPC（办公VPC），转而使用线下小机房，但都大差不差。 先说结论，对 …" />
+
+        <link href="https://fangpsh.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="fangpsh's blog Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="/">Home</a></li>
+                    <li><a href="https://fangpsh.github.io/pages/about.html">About</a></li>
+                    <li><a href="https://fangpsh.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="/">fangpsh's blog</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="https://fangpsh.github.io/posts/2025/2025-12-30.html" rel="bookmark"
+         title="Permalink to IT基础建设-为什么需要三套域名">IT基础建设-为什么需要三套域名</a></h2>
+ 
+  </header>
+  
+  <div id="toc">
+  </div>     
+  <div id="article-content" class="entry-content">
+    <p><img alt="office-vpc" src="/assets/images/2025/office-vpc.png"></p>
+<p>一个典型的中小公司基础设施环境如上图，可能没有云商的Office VPC（办公VPC），转而使用线下小机房，但都大差不差。</p>
+<p>先说结论，对于一个基础IT环境，至少需要准备三套域名（二级域名SLD），按不同的使用场景：</p>
+<ol>
+<li>接入域名/外网域名，a.com<ol>
+<li>定义：用于外部客户访问，仅用于接入，暴露给外网</li>
+<li>注意：不可用于服务间调用，服务间调用使用服务域名/内网域名</li>
+<li>如果业务有出海需求，海外请单独准备一套顶级域名，甚至分地区准备；<ol>
+<li>至少需要将境内和境外域名拆分，并且注意拆分域名注册局和权威托管商。</li>
+<li>海外的到海外注册，托管到海外去，并且用海外主体。</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>服务域名/内网域名， b.com<ol>
+<li>定义：用于内部服务之间调用，不面向公众暴露；</li>
+<li>注意：不可用于办公域名，不可用于内部运营系统；</li>
+<li>用于服务间调用，服务间自动注册等；</li>
+<li>当接入域名遇到特殊事件，例如clienthold，应当避免影响到内网域名和办公运营活动，可以通过替换外部域名恢复，或者在日常就准备多套接入域名，遇事顶上。如果混用，各类系统瘫痪，一锅粥，睁眼瞎，恢复起来手忙脚乱。</li>
+</ol>
+</li>
+<li>办公域名，c.com<ol>
+<li>定义：仅用于办公系统，面向内部员工的运营平台与服务</li>
+<li>如果一定要省域名，最多也就是将服务域名和办公域名混用一套，外网域名需要独立。</li>
+<li>运营系统域名必须和线上域名，内网域名分开，甚至在流量路径上也需要拆分。以避免遇到故障时，互相影响，参考<a href="https://www.bilibili.com/opus/681869046739632212">B站故障总结</a></li>
+</ol>
+</li>
+</ol>
+<p>BTW，既然域名已经拆开了，证书也拆开吧，不要为了省钱/省事，搞成一套Multi SAN。</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2025-12-30T00:00:00+08:00">
+      Tue 30 December 2025
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="https://fangpsh.github.io/author/fangpsh.html">fangpsh</a>
+    </address> in <a href="https://fangpsh.github.io/category/2025.html">2025</a> Tagged <a href="https://fangpsh.github.io/tag/dns.html">dns </a>
+  </footer>
+<!-- /.post-info -->
+</section>
+    <script src="https://fangpsh.github.io/theme/static/js/toc.js" type="text/javascript"></script>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="https://fangpsh.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="https://fangpsh.github.io">fangpsh's blog</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    <script src="https://fangpsh.github.io/theme/static/js/han.min.js" type="text/javascript"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5X2BSH52P0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5X2BSH52P0');
+    </script>
+
+    </body>
+</html>
