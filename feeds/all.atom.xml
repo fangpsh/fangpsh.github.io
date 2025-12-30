@@ -9710,7 +9710,7 @@ WantedBy=multi-user.target
 &lt;p&gt;今晚在&lt;a href="https://v2ex.com/t/220352"&gt;该帖子&lt;/a&gt;中见到网友说 塞尔的ipv6服务实际上包的openvpn，虽然官方只提供了Windows下的安装包，那岂不是可以拿出密钥文件和配置等，在Linux或者OSX上玩？&lt;/p&gt;
 &lt;p&gt;到六年级的&lt;a href="http://6nianji.cn/"&gt;官网&lt;/a&gt;注册，购买个人免费套餐，邮箱会收到主题为"New Account Information”的邮件，记下Username（即个人注册的邮箱地址）和官网生成的Password，后续用于登录。&lt;/p&gt;
 &lt;p&gt;下载六年级客户端，运行安装，到安装目录（默认为 C:/Program/六年级）可见到一个Link文件夹，其中的部分内容就是我们需要的，拷贝出来备用，dll和exe文件不需要。（注：也可以不拷贝，而复制我下文中提供的）&lt;/p&gt;
-&lt;p&gt;以OSX为例，安装openvpn，过程见 &lt;a href="https://fangpsh.com/post/2015/07/30/"&gt;一键连接VPN&lt;/a&gt;，我将Link下的配置拷贝至 &lt;code&gt;/usr/local/etc/openvpn/6nianji&lt;/code&gt; 文件夹中，包含以下文件：&lt;/p&gt;
+&lt;p&gt;以OSX为例，安装openvpn，过程见 &lt;a href="/posts/2015/2015-07-30.html"&gt;一键连接VPN&lt;/a&gt;，我将Link下的配置拷贝至 &lt;code&gt;/usr/local/etc/openvpn/6nianji&lt;/code&gt; 文件夹中，包含以下文件：&lt;/p&gt;
 &lt;p&gt;文件名：ca.crt&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;-----BEGIN CERTIFICATE-----
 MIIDKDCCAhCgAwIBAgIJAOOXJkeu5LvtMA0GCSqGSIb3DQEBCwUAMBIxEDAOBgNV
